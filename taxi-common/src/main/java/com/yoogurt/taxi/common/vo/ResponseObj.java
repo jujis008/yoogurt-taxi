@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.common.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yoogurt.taxi.common.enums.StatusCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,12 +21,12 @@ public class ResponseObj {
     /**
      * 返回的状态码
      */
-    private int status;
+    private int status = StatusCode.INFO_SUCCESS.getStatus();
 
     /**
      * 提示信息
      */
-    private String message;
+    private String message = StatusCode.INFO_SUCCESS.getDetail();
 
     /**
      * 返回的数据主体内容

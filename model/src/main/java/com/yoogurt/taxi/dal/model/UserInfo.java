@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.dal.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 import javax.persistence.*;
 
@@ -16,6 +18,7 @@ public class UserInfo {
     private String password;
 
     @Column(name = "gmt_create")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy年MM月dd日 HH:mm:ss", timezone = "GMT+8")
     private Date gmtCreate;
 
     /**
