@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Description:
  * 客户端响应返回值封装。
- * @Author Eric Lau
+ * @author Eric Lau
  * @Date 2017/8/28.
  */
 @Getter
