@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: taxi-order
+---
+spring:
+  profiles:
+    active: local

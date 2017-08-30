@@ -8,10 +8,11 @@
 	<artifactId>yoogurt-taxi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
-		<module>model</module>
-		<module>taxi-user</module>
-		<module>taxi-common</module>
         <module>auth-center</module>
+		<module>model</module>
+		<module>taxi-common</module>
+		<module>taxi-user</module>
+        <module>taxi-order</module>
     </modules>
 	<packaging>pom</packaging>
 
