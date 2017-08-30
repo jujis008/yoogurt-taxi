@@ -11,7 +11,8 @@
 		<module>model</module>
 		<module>taxi-user</module>
 		<module>taxi-common</module>
-	</modules>
+        <module>auth-center</module>
+    </modules>
 	<packaging>pom</packaging>
 
 	<name>yoogurt-taxi</name>
