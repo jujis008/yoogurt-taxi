@@ -15,3 +15,16 @@ yoogurt-taxi包含都是业务代码，即为上图中的Business Service部分�
 
 ![功能脑图](https://github.com/liu-weihao/yoogurt-taxi/blob/master/yoogurt-taxi(App%20Client).png?raw=true)
 
+3、taxi-system，系统设置模块，相对独立；
+
+4、taxi-auth，鉴权中心，待完善；
+
+5、taxi-account，我的钱包模块；
+
+6、taxi-user，用户管理模块；
+
+7、taxi-order，租单模块；
+
+8、taxi-finance，支付，退款，转账等财务相关操作；
+
+9、taxi-notification，通知提醒服务。
