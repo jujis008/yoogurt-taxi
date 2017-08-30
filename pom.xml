@@ -12,6 +12,7 @@
 		<module>model</module>
 		<module>taxi-common</module>
 		<module>taxi-user</module>
+        <module>taxi-account</module>
         <module>taxi-order</module>
     </modules>
 	<packaging>pom</packaging>

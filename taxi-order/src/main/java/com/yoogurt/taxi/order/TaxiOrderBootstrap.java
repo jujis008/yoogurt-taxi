@@ -12,11 +12,11 @@ import java.net.InetAddress;
 @Slf4j
 @SpringBootApplication
 @EnableEurekaClient
-public class TaxiOrderApplication {
+public class TaxiOrderBootstrap {
 
 	public static void main(String[] args) throws Exception {
 
-        ConfigurableApplicationContext context = SpringApplication.run(TaxiOrderApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(TaxiOrderBootstrap.class, args);
         ConfigurableEnvironment env = context.getEnvironment();
         log.info("\n----------------------------------------------------------\n\t" +
                         "Application '{}' is running! Access URLs:\n\t" +
