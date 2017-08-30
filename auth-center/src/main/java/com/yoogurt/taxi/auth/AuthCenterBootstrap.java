@@ -1,4 +1,5 @@
-package com.yoogurt.taxi.user;
+package com.yoogurt.taxi.auth;
+
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
@@ -12,11 +13,11 @@ import java.net.InetAddress;
 @Slf4j
 @EnableEurekaClient
 @SpringBootApplication
-public class TaxiUserBootstrap {
+public class AuthCenterBootstrap {
 
     public static void main(String[] args) throws Exception {
+        ConfigurableApplicationContext context = SpringApplication.run(AuthCenterBootstrap.class, args);
 
-        ConfigurableApplicationContext context = SpringApplication.run(TaxiUserBootstrap.class, args);
         ConfigurableEnvironment env = context.getEnvironment();
         log.info("\n----------------------------------------------------------\n\t" +
                         "Application '{}' is running! Access URLs:\n\t" +

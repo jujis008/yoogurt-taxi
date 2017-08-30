@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: taxi-user
+---
+spring:
+  profiles:
+    active: local
