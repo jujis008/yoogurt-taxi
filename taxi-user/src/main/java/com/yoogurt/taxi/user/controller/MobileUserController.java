@@ -17,8 +17,6 @@ public class MobileUserController {
 
     @RequestMapping("/info/{id}")
     public ResponseObj userInfo(@PathVariable(name = "id") Integer id) {
-        ResponseObj obj = new ResponseObj();
-        obj.setBody(userService.getUserInfo(id));
-        return obj;
+        return ResponseObj.success(userService.getUserInfo(id));
     }
 }
