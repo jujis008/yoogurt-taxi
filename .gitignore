@@ -26,3 +26,6 @@ nbdist/
 ## mvn ##
 .mvn
 mvnw*
+
+## log ##
+logs/**

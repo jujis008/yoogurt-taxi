@@ -1,0 +1,4 @@
+logging:
+  level: debug
+  config: classpath:log/logback-spring.xml
+  path: logs/yoogurt/taxi
