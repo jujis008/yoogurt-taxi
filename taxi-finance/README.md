@@ -49,7 +49,7 @@
 ![支付-类图](https://github.com/liu-weihao/yoogurt-taxi/blob/master/taxi-finance/docs/uml/export/payment.png?raw=true)
 
 大部分还是能看懂的，我解释几个关键的property：
-1) CommonParams.appId，这是为了区分不同的产品所设置的。现实中，很有可能一个产品会申请与之对应的支付渠道，然后再nirvana-pay中创建应用，设置好对应的支付参数，系统将会分配一个appId，凭此值就可以直接定位到各个支付参数。本想再区分一下测试环境和正式环境，想想还是算了吧！会把自己玩死的；
+1) CommonParams.appId，这是为了区分不同的产品所设置的。现实中，很有可能一个产品会申请与之对应的支付渠道，然后再taxi-finance中创建应用，设置好对应的支付参数，系统将会分配一个appId，凭此值就可以直接定位到各个支付参数。本想再区分一下测试环境和正式环境，想想还是算了吧！会把自己玩死的；
 
 2) PayParams.amount，这里代表的是支付金额的意思，但是这套支付系统的金额单位统一设置成：人民币【分】；
 
@@ -59,7 +59,7 @@
 
 5) Payment.credential，这个字段非常非常重要，其中装载的就是客户端最终发起支付请求的凭证；
 
-6) Retry机制，用户可以设置重试与否，一旦设置了TaskInfo.needRetry=true（不出意外，默认就是允许重试），就启用了nirvana-pay的Retry机制。还可以设置重试的次数（TaskInfo.retryTimes），默认三次，分别间隔1s，2s，3s，间隔时间以公差为1的等差数列组成。当然不会让用户无限重试，系统内置有一个最大重试次数，最大重试次数内置为5次。
+6) Retry机制，用户可以设置重试与否，一旦设置了TaskInfo.needRetry=true（不出意外，默认就是允许重试），就启用了taxi-finance的Retry机制。还可以设置重试的次数（TaskInfo.retryTimes），默认三次，分别间隔1s，2s，3s，间隔时间以公差为1的等差数列组成。当然不会让用户无限重试，系统内置有一个最大重试次数，最大重试次数内置为5次。
 
 <font color=red>
 **为什么是5次？
@@ -84,45 +84,45 @@
 
 document_name = “Payment”
 
-	{
-	    "payId": "pay_Oyvrf9vP880STm1e9G5CSCm1",
-	    "method": "gogen.nirvana.pay",
-	    "version": "v1.0",
-	    "timestamp": 1473044885,
-	    "created": 1473042835,
-	    "paid": false,
-	    "appId": "app_KiPGa98abDmLe9ev",
-	    "channel": "wx",
-	    "orderNo": "20161899798416",
-	    "clientIp": "192.168.18.189",
-	    "amount": 10000,
-	    "subject": "用户充值订单(￥100.0)",
-	    "body": "用户充值订单(￥100.0)",
-	    "paidTime": null,
-	    "transactionNo": "",
-	    "statusCode": "",
-	    "message": "",
-	    "metadata": {
-	        "user_id": "170204469176",
-	        "phone_number": "13811234567"
-	    },
-	    "credential": {
-	        "appId": "wx4932b5159d18311e",
-	        "partnerId": "1269774001",
-	        "prepayId": "wx201609051033574da13955420883291539",
-	        "nonceStr": "1e99d8ffdde926ed9cbdf4d2e614abad",
-	        "timeStamp": "1473042837",
-	        "packageValue": "Sign=WXPay",
-	        "sign": "1CECCE6B13C956DEBA88800B3DEC4DBE"
-	    },
-	    "extra": {},
-	    "description": ""
-	}
+    {
+        "payId": "pay_Oyvrf9vP880STm1e9G5CSCm1",
+        "method": "yogurt.taxi.pay",
+        "version": "v1.0",
+        "timestamp": 1473044885,
+        "created": 1473042835,
+        "paid": false,
+        "appId": "app_KiPGa98abDmLe9ev",
+        "channel": "wx",
+        "orderNo": "20161899798416",
+        "clientIp": "192.168.18.189",
+        "amount": 10000,
+        "subject": "用户充值订单(￥100.0)",
+        "body": "用户充值订单(￥100.0)",
+        "paidTime": null,
+        "transactionNo": "",
+        "statusCode": "",
+        "message": "",
+        "metadata": {
+            "user_id": "170204469176",
+            "phone_number": "13811234567"
+        },
+        "credential": {
+            "appId": "wx4932b5159d18311e",
+            "partnerId": "1269774001",
+            "prepayId": "wx201609051033574da13955420883291539",
+            "nonceStr": "1e99d8ffdde926ed9cbdf4d2e614abad",
+            "timeStamp": "1473042837",
+            "packageValue": "Sign=WXPay",
+            "sign": "1CECCE6B13C956DEBA88800B3DEC4DBE"
+        },
+        "extra": {},
+        "description": ""
+    }
 
 其中，metadata，credential，extra这类字段，并没有一个特别固定的规范，用MySQL要冗余一下字段才行，或者针对每个渠道去分表，想想都觉得烦！
 
 ### 2、MySQL
-因为nirvana-pay被设计成为支持多应用，多渠道，所以此处用到MySQL存放一些应用配置。
+因为taxi-finance被设计成为支持多应用，多渠道，所以此处用到MySQL存放一些应用配置。
 暂时只支持支付宝接入，其他渠道日后可随时扩展。
 E-R图免了，直接上数据库表结构：
 
@@ -196,3 +196,131 @@ E-R图免了，直接上数据库表结构：
 | gmt_modify | 上次修改时间 | datetime | TRUE |   |
 
 
+## 2、发起退款
+
+不出意外，客户在平台的每笔订单都可以发起退款，而且还能分批退，也就是同一个订单，可以多次发起退款申请。
+架构图如下所示：
+
+![退款-架构图](https://github.com/liu-weihao/yoogurt-taxi/blob/master/taxi-finance/docs/draw.io/export/refund.png?raw=true)
+
+跟发起支付请求的流程有很多相似之处，不再一一解释了，两个关键的地方说明一下：
+
+1) 客户端发起退款请求的时候，需要携带payId，就是支付对象的id。这就意味着，taxi-finance的调用方需要维护payId与orderNo的对应关系，务必在客户端发起退款请求之前，获取到正确的payId；
+
+2)  承接上一步，这才有了图中的第5、6个步骤，从MongoDB中查询之前的支付对象。第三方渠道通常会要求在退款的时候指定一个退款单号，因为一笔订单可以分多次退款，所以不建议将订单号作为退款单号使用。这里的退款单号由taxi-finance生成并维护。
+
+再放一张Class Diagram，如下：
+
+![退款-类图](https://github.com/liu-weihao/yoogurt-taxi/blob/master/taxi-finance/docs/uml/export/refund.png?raw=true)
+
+发起退款的最后一部分——数据库设计：
+
+1) MongoDB 
+
+document_name = “Refund”
+
+    {
+        "payId": "pay_Oyvrf9vP880STm1e9G5CSCm1",
+        "method": "yoogurt.taxi.pay",
+        "version": "v1.0",
+        "timestamp": 1473044885,
+        "created": 1473042835,
+        "refundId": "refund_kmw1vrf9wSrP1e9Gkp05CSCm1",
+        "appId": "app_KiPGa98abDmLe9ev",
+        "orderNo": "20161899798416",
+        "clientIp": "192.168.18.189",
+        "amount": 10000,
+        "succeedTime": 1473150835,
+        "transactionNo": "6405996874204000684260056054",
+        "refundStatus": "success",
+        "message": "",
+        "metadata": {
+            "user_id": "170204469176",
+            "phone_number": "13811234567"
+        },
+        "description": ""
+    }
+
+2) MySQL
+
+同【发起支付】的设计
+
+## 3、接收回调
+
+说到支付回调，Webhooks当仁不让。架构图如下：
+
+![支付回调](https://github.com/liu-weihao/yoogurt-taxi/blob/master/taxi-finance/docs/draw.io/export/pay_callback.png?raw=true)
+
+如图，taxi-finance被设计成一个事件转发者。
+
+值得注意的是，taxi-finance是根据客户选择的支付渠道，对应的设置每个支付渠道的notify_url参数。
+这一部分没有体现在架构图上，形式上是为每个支付渠道新建一个Controller，单独处理其回调请求，各个支付渠道达到了高度解耦。
+
+#### 再说两点：
+
+1) Retry机制，类似支付任务的重试机制，每个回调事件都会在MongoDB里面持久化一份。当应用服务器未在制定时间内消费完对应的回调事件，就会触发taxi-finance重试；
+
+2) Feedback机制。当应用服务器成功消费了一次回调事件，必须反馈给taxi-finance，否则会触发上述的重试机制。此处有坑，还未想好Feedback机制的通信协议，暂定为Broker。
+
+接着放一张Class Diagram，如下：
+
+![回调-类图](https://github.com/liu-weihao/yoogurt-taxi/blob/master/taxi-finance/docs/uml/export/webhooks.png?raw=true)
+
+除了上述提到了Feedback协议问题，还有一个棘手的问题是在NotifyHandler。
+
+因为每个支付渠道的回调参数千差万别，我能想到的办法如下：
+
+既然每个支付渠道都有一个Controller，那么为此再配一个Service也不为过吧？！实现图中的WebhooksService即可。
+
+MongoDB数据库设计如下：
+
+document_name = “Event”
+
+    {
+        "eventId": "evt_la06CoQAiPojSgJKe5gt3nwq",
+        "created": 1427555016,
+        "eventType": "pay.succeeded",
+        "data": {
+            "payId": "pay_Oyvrf9vP880STm1e9G5CSCm1",
+            "method": "yoogurt.taxi.pay",
+            "version": "v1.0",
+            "timestamp": 1473044885,
+            "created": 1473042835,
+            "paid": false,
+            "appId": "app_KiPGa98abDmLe9ev",
+            "channel": "wx",
+            "orderNo": "20161899798416",
+            "clientIp": "192.168.18.189",
+            "amount": 10000,
+            "subject": "用户充值订单(￥100.0)",
+            "body": "用户充值订单(￥100.0)",
+            "paidTime": null,
+            "transactionNo": "",
+            "statusCode": "",
+            "message": "",
+            "metadata": {
+                "user_id": "170204469176",
+                "phone_number": "13811234567"
+            },
+            "credential": {
+                "appId": "wx4932b5159d18311e",
+                "partnerId": "1269774001",
+                "prepayId": "wx201609051033574da13955420883291539",
+                "nonceStr": "1e99d8ffdde926ed9cbdf4d2e614abad",
+                "timeStamp": "1473042837",
+                "packageValue": "Sign=WXPay",
+                "sign": "1CECCE6B13C956DEBA88800B3DEC4DBE"
+            },
+            "extra": {
+               
+            },
+            "description": ""
+        },
+        "retryTimes": 0
+    }
+
+特别说明一下data字段：
+
+如果是支付成功事件，则返回对应的Payment对象；
+
+如果是退款成功时间，则返回对应的Refund对象。
