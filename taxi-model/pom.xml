@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.yoogurt.taxi.model</groupId>
-    <artifactId>model</artifactId>
+    <artifactId>taxi-model</artifactId>
 
     <properties>
         <!--  Java接口和实体类  -->
