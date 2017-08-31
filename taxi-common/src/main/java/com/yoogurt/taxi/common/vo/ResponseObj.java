@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -18,7 +19,7 @@ import java.util.Map;
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResponseObj {
+public class ResponseObj implements Serializable {
 
     /**
      * 返回的状态码
