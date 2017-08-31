@@ -7,6 +7,10 @@
 	<groupId>com.yoogurt.taxi</groupId>
 	<artifactId>yoogurt-taxi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>yoogurt-taxi</name>
+	<description>yoogurt-taxi project</description>
+	
 	<modules>
         <module>auth-center</module>
 		<module>taxi-model</module>
@@ -16,10 +20,6 @@
         <module>taxi-order</module>
         <module>taxi-finance</module>
     </modules>
-	<packaging>pom</packaging>
-
-	<name>yoogurt-taxi</name>
-	<description>yoogurt-taxi project</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

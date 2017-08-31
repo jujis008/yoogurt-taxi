@@ -12,7 +12,6 @@
     <groupId>com.yoogurt.taxi.user</groupId>
     <artifactId>taxi-user</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>com.yoogurt.taxi.model</groupId>
@@ -25,6 +24,6 @@
             <artifactId>taxi-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
     </dependencies>
+
 </project>
