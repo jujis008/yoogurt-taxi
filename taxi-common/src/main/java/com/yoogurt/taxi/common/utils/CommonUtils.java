@@ -14,46 +14,22 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.yoogurt.taxi.common.constant.Constants;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 public class CommonUtils {
 
-    private static final String UNKNOWN = "unknown";
-
-	/** 文件后缀分割符（占用1个字符） */
-    public static final String FILE_SUFFIX_SPLIT_MARK = "\\.";
-
-    /** excel后缀 */
-    public static final String EXCELX_FILE_SUFFIX     = "xlsx";
-
-    /** excel后缀 */
-    public static final String EXCEL_FILE_SUFFIX      = "xls";
-
-    /** jpg后缀 */
-    public static final String JPG_FILE_SUFFIX        = "jpg";
-
-    /** jpeg后缀 */
-    public static final String JPEG_FILE_SUFFIX       = "jpeg";
-
-    /** png后缀 */
-    public static final String PNG_FILE_SUFFIX        = "png";
-
-    /** ico后缀 */
-    public static final String ICO_FILE_SUFFIX        = "ico";
-
-    /** ico后缀 */
-    public static final String GIF_FILE_SUFFIX        = "gif";
 
     public static List<String> PIC_FILE_SUFFIXS;
 
     static {
         PIC_FILE_SUFFIXS = new ArrayList<>();
-        PIC_FILE_SUFFIXS.add(JPG_FILE_SUFFIX);
-        PIC_FILE_SUFFIXS.add(JPEG_FILE_SUFFIX);
-        PIC_FILE_SUFFIXS.add(PNG_FILE_SUFFIX);
-        PIC_FILE_SUFFIXS.add(ICO_FILE_SUFFIX);
-        PIC_FILE_SUFFIXS.add(GIF_FILE_SUFFIX);
+        PIC_FILE_SUFFIXS.add(Constants.JPG_FILE_SUFFIX);
+        PIC_FILE_SUFFIXS.add(Constants.JPEG_FILE_SUFFIX);
+        PIC_FILE_SUFFIXS.add(Constants.PNG_FILE_SUFFIX);
+        PIC_FILE_SUFFIXS.add(Constants.ICO_FILE_SUFFIX);
+        PIC_FILE_SUFFIXS.add(Constants.GIF_FILE_SUFFIX);
     }
 
     /**
@@ -169,11 +145,11 @@ public class CommonUtils {
      */
     public static boolean checkExcelFile(String filename) {
         String suffix = getFileSuffix(filename);
-        if (StringUtils.equalsIgnoreCase(EXCELX_FILE_SUFFIX, suffix)) {
+        if (StringUtils.equalsIgnoreCase(Constants.EXCELX_FILE_SUFFIX, suffix)) {
             return true;
         }
 
-        if (StringUtils.equalsIgnoreCase(EXCEL_FILE_SUFFIX, suffix)) {
+        if (StringUtils.equalsIgnoreCase(Constants.EXCEL_FILE_SUFFIX, suffix)) {
             return true;
         }
 
@@ -192,7 +168,7 @@ public class CommonUtils {
             return "";
         }
 
-        String[] strs = filename.split(FILE_SUFFIX_SPLIT_MARK);
+        String[] strs = filename.split(Constants.FILE_SUFFIX_SPLIT_MARK);
         if (strs.length < 2) {
             return "";
         }
@@ -322,15 +298,15 @@ public class CommonUtils {
 	public static String getIpAddress(HttpServletRequest request) {
 		String ipAddress = request.getHeader("x-forwarded-for");
 		if (ipAddress == null || ipAddress.length() == 0
-				|| UNKNOWN.equalsIgnoreCase(ipAddress)) {
+				|| Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getHeader("Proxy-Client-IP");
 		}
 		if (ipAddress == null || ipAddress.length() == 0
-				|| UNKNOWN.equalsIgnoreCase(ipAddress)) {
+				|| Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getHeader("WL-Proxy-Client-IP");
 		}
 		if (ipAddress == null || ipAddress.length() == 0
-				|| UNKNOWN.equalsIgnoreCase(ipAddress)) {
+				|| Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
 			ipAddress = request.getRemoteAddr();
 			if (ipAddress.equals("127.0.0.1")
 					|| ipAddress.equals("0:0:0:0:0:0:0:1")) {
