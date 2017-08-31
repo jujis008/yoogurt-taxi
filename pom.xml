@@ -9,11 +9,12 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
         <module>auth-center</module>
-		<module>model</module>
+		<module>taxi-model</module>
 		<module>taxi-common</module>
 		<module>taxi-user</module>
         <module>taxi-account</module>
         <module>taxi-order</module>
+        <module>taxi-finance</module>
     </modules>
 	<packaging>pom</packaging>
 
