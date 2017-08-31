@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: taxi-notification
+---
+spring:
+  profiles:
+    active: local

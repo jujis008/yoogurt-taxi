@@ -20,6 +20,7 @@
         <module>taxi-order</module>
         <module>taxi-finance</module>
         <module>taxi-system</module>
+        <module>taxi-notification</module>
     </modules>
 
 	<parent>
