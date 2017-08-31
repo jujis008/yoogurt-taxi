@@ -19,6 +19,7 @@
         <module>taxi-account</module>
         <module>taxi-order</module>
         <module>taxi-finance</module>
+        <module>taxi-system</module>
     </modules>
 
 	<parent>

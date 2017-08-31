@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: taxi-system
+---
+spring:
+  profiles:
+    active: local
