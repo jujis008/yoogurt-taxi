@@ -51,6 +51,11 @@
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.obiteaaron</groupId>
+            <artifactId>pinyin4j-multi</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

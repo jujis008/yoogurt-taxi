@@ -53,6 +53,8 @@
 
 		<guava.version>21.0</guava.version>
 
+		<pinyin4j.multi.version>1.0.0</pinyin4j.multi.version>
+
 		<common.io.version>2.5</common.io.version>
 		<common.lang3.version>3.4</common.lang3.version>
 		<common.codec.version>1.10</common.codec.version>
@@ -285,6 +287,13 @@
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
+			</dependency>
+
+			<!-- 汉-拼 互转工具 -->
+			<dependency>
+				<groupId>com.github.obiteaaron</groupId>
+				<artifactId>pinyin4j-multi</artifactId>
+				<version>${pinyin4j.multi.version}</version>
 			</dependency>
 
 			<!--common系列-->
