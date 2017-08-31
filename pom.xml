@@ -52,6 +52,7 @@
 		<mapper.version>3.4.0</mapper.version>
 
 		<guava.version>21.0</guava.version>
+		<joda.time.version>2.9.9</joda.time.version>
 
 		<pinyin4j.multi.version>1.0.0</pinyin4j.multi.version>
 
@@ -287,6 +288,12 @@
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda-time.version}</version>
 			</dependency>
 
 			<!-- 汉-拼 互转工具 -->
