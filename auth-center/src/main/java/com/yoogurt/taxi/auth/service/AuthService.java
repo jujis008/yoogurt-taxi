@@ -1,10 +1,12 @@
 package com.yoogurt.taxi.auth.service;
 
 
+import org.springframework.security.core.userdetails.UserDetailsService;
+
 /**
  * 用户认证服务接口
  */
-public interface AuthService {
+public interface AuthService extends UserDetailsService {
 
     String auth(String clientId, String secret);
 

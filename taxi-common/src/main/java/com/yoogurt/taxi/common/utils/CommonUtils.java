@@ -1,22 +1,15 @@
 package com.yoogurt.taxi.common.utils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.util.CollectionUtils;
+import com.yoogurt.taxi.common.constant.Constants;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.yoogurt.taxi.common.constant.Constants;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 public class CommonUtils {
 
