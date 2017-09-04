@@ -15,7 +15,7 @@ public class UserMobileController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/info/{id}")
+    @RequestMapping("/api/info/{id}")
     public ResponseObj userInfo(@PathVariable(name = "id") Integer id) {
         return ResponseObj.success(userService.getUserInfo(id));
     }

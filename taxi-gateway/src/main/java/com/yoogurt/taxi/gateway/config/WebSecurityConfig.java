@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin().loginPage("/login").defaultSuccessUrl("/auth").permitAll().and()
                 .logout().logoutSuccessUrl("/login").invalidateHttpSession(true).and().authorizeRequests()
-                .antMatchers("/**/*.css", "/img/**", "/**/*.js", "/api/**", "/*/api/**") // 放开"/api/**",通过oauth2.0来鉴权
+                .antMatchers("/**/*.css", "/img/**", "/**/*.js", "/mobile/**", "/*/mobile/**") // 放开"/*/mobile/**"，通过oauth2.0来鉴权
                 .permitAll().and().authorizeRequests().antMatchers("/**").authenticated();
         http.csrf().disable();
         http.headers().frameOptions().disable();
