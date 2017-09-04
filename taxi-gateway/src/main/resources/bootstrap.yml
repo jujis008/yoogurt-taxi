@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: taxi-gateway
+  cloud:
+    config:
+      uri: http://127.0.0.1:8888
+      fail-fast: true
+---
+spring:
+  profiles:
+    active: local
+
