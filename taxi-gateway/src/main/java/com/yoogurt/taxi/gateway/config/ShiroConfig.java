@@ -6,13 +6,10 @@ import com.yoogurt.taxi.gateway.filter.AccessFilter;
 import com.yoogurt.taxi.gateway.filter.UrlPrivilegeCtrlFilter;
 import com.yoogurt.taxi.gateway.shiro.ShiroRealm;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,7 +37,7 @@ public class ShiroConfig {
     }
 
     @Bean("shiroFilterFactoryBean")
-    public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("securityManager") SecurityManager securityManager) {
+    public ShiroFilterFactoryBean getShiroFilterFactoryBean(SecurityManager securityManager) {
 
         ShiroFilterFactoryBean bean = new ShiroFilterFactoryBean();
         bean.setSecurityManager(securityManager);
