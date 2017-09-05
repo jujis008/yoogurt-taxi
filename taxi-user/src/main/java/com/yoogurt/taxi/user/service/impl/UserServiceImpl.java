@@ -5,6 +5,7 @@ import com.yoogurt.taxi.user.dao.UserDao;
 import com.yoogurt.taxi.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -16,5 +17,13 @@ public class UserServiceImpl implements UserService {
     public UserInfo getUserInfo(Integer id) {
 
         return userDao.selectById(id);
+    }
+
+    @Override
+    public UserInfo getUserInfo(String username, String password) {
+        UserInfo probe = new UserInfo();
+        probe.setUsername(username);
+        probe.setPassword(password);
+        return userDao.selectOne(probe);
     }
 }

@@ -2,6 +2,9 @@ package com.yoogurt.taxi.user.controller.web;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.model.UserInfo;
+import com.yoogurt.taxi.user.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,14 +21,17 @@ import java.util.Date;
 @RequestMapping("/web/user")
 public class UserWebController {
 
-    @RequestMapping(value = "login", method = RequestMethod.GET)
-    public ResponseObj login(String username, String password) {
+    @Autowired
+    private UserService userService;
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsername("18814892833");
-        userInfo.setPassword("123456");
-        userInfo.setGmtCreate(new Date());
-        userInfo.setName("Eric");
-        return ResponseObj.success(userInfo);
+    @RequestMapping(value = "/info/username/{username}/password/{password}", method = RequestMethod.GET)
+    public ResponseObj login(@PathVariable(name="username") String username, @PathVariable(name="password") String password) {
+
+        return ResponseObj.success(userService.getUserInfo(username, password));
+    }
+
+    @RequestMapping("/info/{id}")
+    public ResponseObj userInfo(@PathVariable(name = "id") Integer id) {
+        return ResponseObj.success(userService.getUserInfo(id));
     }
 }

@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.gateway.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author wanghaobin
  * @create 2017-06-02 13:43
  */
+@Slf4j
 @Controller
 public class SecurityController {
 
@@ -21,4 +23,5 @@ public class SecurityController {
     public String login() {
         return "login";
     }
+
 }
