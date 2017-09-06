@@ -14,6 +14,10 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 @Getter
 public class UserAuthenticationToken extends UsernamePasswordToken {
 
+    private String userId;
+
+    private String grantCode;
+
     private String from = RequestFrom.TAXI_MOBILE.toString();
 
     public UserAuthenticationToken() {

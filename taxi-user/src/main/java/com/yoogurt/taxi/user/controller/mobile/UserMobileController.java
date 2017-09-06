@@ -17,14 +17,20 @@ public class UserMobileController {
     @Autowired
     private UserService userService;
 
+    /**
+     * 客户端请求登录，获取用户信息以及授权码，并缓存。
+     * @param username 用户名
+     * @param password 登录密码，使用MD5加密传入
+     * @return
+     */
+    @RequestMapping(value = "/login/username/{username}/password/{password}", method = RequestMethod.GET)
+    public ResponseObj login(@PathVariable(name="username") String username, @PathVariable(name="password") String password) {
+
+        return ResponseObj.success(userService.doLogin(username, password));
+    }
+
     @RequestMapping("/info/{id}")
     public ResponseObj userInfo(@PathVariable(name = "id") Integer id) {
         return ResponseObj.success(userService.getUserInfo(id));
-    }
-
-    @RequestMapping(value = "/info/username/{username}/password/{password}", method = RequestMethod.GET)
-    public ResponseObj login(@PathVariable(name="username") String username, @PathVariable(name="password") String password) {
-
-        return ResponseObj.success(userService.getUserInfo(username, password));
     }
 }

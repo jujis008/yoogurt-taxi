@@ -45,7 +45,7 @@ public class RedisHelper {
         Object value = get(key);
         if (value == null) {
             if(setIfNull) {
-                set(key, defaultVal, expireSeconds, TimeUnit.SECONDS);
+                set(key, defaultVal, expireSeconds);
                 return defaultVal;
             }
             return null;
@@ -88,11 +88,10 @@ public class RedisHelper {
      * 设置缓存，并指定超时时间
      * @param key
      * @param value
-     * @param timeOut
-     * @param timeUnit
+     * @param expirySeconds
      */
-    public void set(String key, Object value, int timeOut, TimeUnit timeUnit) {
-        redisTemplate.opsForValue().set(key, value, timeOut, timeUnit);
+    public void set(String key, Object value, int expirySeconds) {
+        redisTemplate.opsForValue().set(key, value, expirySeconds, TimeUnit.SECONDS);
     }
 
     /**

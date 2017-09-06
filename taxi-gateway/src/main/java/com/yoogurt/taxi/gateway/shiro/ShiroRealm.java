@@ -1,5 +1,8 @@
 package com.yoogurt.taxi.gateway.shiro;
 
+import com.yoogurt.taxi.common.bo.SessionUser;
+import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.dal.model.UserInfo;
 import com.yoogurt.taxi.gateway.rest.IUserService;
 import org.apache.shiro.authc.AuthenticationException;
@@ -22,6 +25,9 @@ import org.springframework.stereotype.Component;
  */
 @Component("shiroRealm")
 public class ShiroRealm extends AuthorizingRealm{
+
+    @Autowired
+    private RedisHelper redisHelper;
 
     @Autowired
     private IUserService userService;
@@ -66,12 +72,16 @@ public class ShiroRealm extends AuthorizingRealm{
 
         if (authToken instanceof UserAuthenticationToken) {
             UserAuthenticationToken token = (UserAuthenticationToken) authToken;
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//            String password = encoder.encode(new String(token.getPassword()));
-            String username = token.getUsername();
-            UserInfo userInfo = userService.getUserInfo(username, new String(token.getPassword()));
-            if(userInfo == null) throw new AuthenticationException("登录失败，请核对登录名和密码");
-            return new SimpleAuthenticationInfo(username, token.getPassword(), getName());
+            String grantCode = token.getGrantCode();
+            Object cacheObj = redisHelper.getObject(CacheKey.GRANT_CODE_KEY + grantCode);
+            //grantCode不存在，或者已失效
+            if(cacheObj == null) return null;
+            if (cacheObj instanceof UserInfo) {
+                UserInfo userInfo = (UserInfo) cacheObj;
+                token.setUsername(userInfo.getUsername());
+                token.setPassword(userInfo.getPassword().toCharArray());
+                return new SimpleAuthenticationInfo(userInfo.getUsername(), userInfo.getPassword(), getName());
+            }
         }
         return null;
     }
