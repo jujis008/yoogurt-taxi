@@ -2,7 +2,7 @@ package com.yoogurt.taxi.gateway.config;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.yoogurt.taxi.gateway.filter.AccessFilter;
+import com.yoogurt.taxi.gateway.filter.MobileAccessFilter;
 import com.yoogurt.taxi.gateway.filter.UrlPrivilegeCtrlFilter;
 import com.yoogurt.taxi.gateway.shiro.ShiroRealm;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +36,25 @@ public class ShiroConfig {
         return new DefaultWebSecurityManager(shiroRealm);
     }
 
+    /**
+     * shiro拦截器总配置。
+     * 内置的Filter如下所示：
+     -----------------------------------------------------------------
+     ||                anon AnonymousFilter                         ||
+     ||                auth FormAuthenticationFilter                ||
+     ||                authcBasic BasicHttpAuthenticationFilter     ||
+     ||                logout LogoutFilter                          ||
+     ||                noSessionCreation NoSessionCreationFilter    ||
+     ||                perms PermissionsAuthorizationFilter         ||
+     ||                port PortFilter                              ||
+     ||                rest HttpMethodPermissionFilter              ||
+     ||                roles RolesAuthorizationFilter               ||
+     ||                ssl SslFilter                                ||
+     ||                user UserFilter                              ||
+     ================================================================
+     * @param securityManager securityManager
+     * @return shiroFilterFactoryBean
+     */
     @Bean("shiroFilterFactoryBean")
     public ShiroFilterFactoryBean getShiroFilterFactoryBean(SecurityManager securityManager) {
 
@@ -43,43 +62,61 @@ public class ShiroConfig {
         bean.setSecurityManager(securityManager);
         bean.setLoginUrl("/login");
         Map<String, Filter> filterMap = Maps.newHashMap();
-        filterMap.put("urlPrivilege", getUrlPrivilegeCtrlFilter());
-        filterMap.put("accessFilter", getAccessFilter());
+        //自定义Filter
+        filterMap.put("urlPrivilegeFilter", getUrlPrivilegeCtrlFilter());
+        filterMap.put("mobileAccessFilter", getAccessFilter());
         bean.setFilters(filterMap);
 
 
         Map<String, String> chains = Maps.newLinkedHashMap();
 
+        // anon:所有url都都可以匿名访问
         chains.put("/**/**.js", "anon");
-        chains.put("/**.ico", "anon");
+        chains.put("/**/**.ico", "anon");
+        chains.put("/**/**.woff", "anon");
         chains.put("/**/**.css", "anon");
         chains.put("/**/**.html", "anon");
         chains.put("/resource/**", "anon");
         chains.put("/img/**", "anon");
-        chains.put("/ticket/**", "anon");
-
-        // 配置不会被拦截的链接 顺序判断
         chains.put("/static/**", "anon");
-        chains.put("/**.html", "noSessionCreation");
-        chains.put("/mobile/**", "noSessionCreation,accessFilter");
+        chains.put("/login.html", "anon");
+        chains.put("/info", "anon");
+        chains.put("/env", "anon");
+        chains.put("/shutdown", "anon");
+        chains.put("/health", "anon");
+        chains.put("/metrics", "anon");
+        chains.put("/dump", "anon");
+        chains.put("/configprops", "anon");
+        chains.put("/autoconfig", "anon");
+        chains.put("/loggers", "anon");
+        chains.put("/mappings", "anon");
+        chains.put("/trace", "anon");
+        chains.put("/actuator", "anon");
+        chains.put("/autoconfig", "anon");
+        chains.put("/readness", "anon");
 
-        // <!-- 过滤链定义，从上向下顺序执行，一般将 /**放在最为下边 -->:这是一个坑呢，一不小心代码就不好使了;
-        // <!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问-->
-        chains.put("/**", "authc");
+        // noSessionCreation: 要求shiro不创建session
+        chains.put("/**.html", "noSessionCreation");
+        //移动端接口，对于不需要拦截的url，在accessFilter中的ignoreUrls配置
+        chains.put("/mobile/**", "noSessionCreation,authcBasic[GET,POST,PUT,PATCH,DELETE],accessFilter");
+
+        // <!-- 过滤链定义，从上向下顺序执行，一般将 /** 放在最下边 -->
+        // <!-- user: subject.getPrincipal() != null -->
+        chains.put("/**", "user,urlPrivilegeFilter");
 
         bean.setFilterChainDefinitionMap(chains);
 
-        log.info("ShiroFilterFactoryBean。");
+        log.info("初始化ShiroFilterFactoryBean");
         return bean;
     }
 
 
-    @Bean(name = "accessFilter")
-    public AccessFilter getAccessFilter() {
-        Set<String> ignoreUrls = Sets.newHashSet(
+    @Bean(name = "mobileAccessFilter")
+    public MobileAccessFilter getAccessFilter() {
+        Set<String> ignoreUris = Sets.newHashSet(
                 "/mobile/user/doLogin"
         );
-        return new AccessFilter(ignoreUrls);
+        return new MobileAccessFilter(ignoreUris);
     }
 
     @Bean(name = "urlPrivilegeCtrlFilter")
