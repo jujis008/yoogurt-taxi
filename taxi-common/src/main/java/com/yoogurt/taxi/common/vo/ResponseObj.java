@@ -1,6 +1,8 @@
 package com.yoogurt.taxi.common.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,7 +76,25 @@ public class ResponseObj implements Serializable {
         return builder.message(message).build();
     }
 
+    /**
+     * 将ResponseObj对象转换成JSON字符串。
+     * 基于Jackson对象序列化技术。
+     * @return
+     */
+    public String toJSON() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return StringUtils.EMPTY;
+    }
 
+    @Override
+    public String toString() {
+        return toJSON();
+    }
 
     public static class ResponseBuilder {
 
