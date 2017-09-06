@@ -94,7 +94,7 @@ public class ShiroConfig {
         // noSessionCreation: 要求shiro不创建session
         chains.put("/**.html", "noSessionCreation");
         //移动端接口，对于不需要拦截的url，在mobileAccessFilter中的ignoreUrls配置
-        chains.put("/mobile/**", "noSessionCreation,authcBasic[GET,POST,PUT,PATCH,DELETE],mobileAccessFilter");
+        chains.put("/mobile/**", "noSessionCreation,mobileAccessFilter");
         //后台接口
         chains.put("/web/**", "urlPrivilegeFilter");
 
@@ -117,7 +117,7 @@ public class ShiroConfig {
     @Bean(name = "mobileAccessFilter")
     public MobileAccessFilter getAccessFilter() {
         Set<String> ignoreUris = Sets.newHashSet(
-                "/mobile/user/login/",
+                "/mobile/user/login",
                 "/mobile/user/info/{id}"
         );
         return new MobileAccessFilter(ignoreUris);
