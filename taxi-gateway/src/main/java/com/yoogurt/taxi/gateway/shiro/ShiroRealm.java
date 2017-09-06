@@ -14,7 +14,6 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Component;
  * @Author Eric Lau
  * @Date 2017/9/5.
  */
-@Component("shiroRealm")
+@Component
 public class ShiroRealm extends AuthorizingRealm{
 
     @Autowired

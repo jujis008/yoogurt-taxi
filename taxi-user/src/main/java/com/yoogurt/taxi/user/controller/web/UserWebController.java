@@ -24,10 +24,10 @@ public class UserWebController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/info/username/{username}/password/{password}", method = RequestMethod.GET)
+    @RequestMapping(value = "/login/username/{username}/password/{password}", method = RequestMethod.GET)
     public ResponseObj login(@PathVariable(name="username") String username, @PathVariable(name="password") String password) {
 
-        return ResponseObj.success(userService.getUserInfo(username, password));
+        return ResponseObj.success(userService.doLogin(username, password));
     }
 
     @RequestMapping("/info/{id}")

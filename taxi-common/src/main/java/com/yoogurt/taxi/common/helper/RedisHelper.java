@@ -6,15 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Description:
- *
- * @Author Eric Lau
- * @Date 2017/8/31.
+ * redis 帮助类
+ * @author Eric Lau
+ * @Date 2017/8/31
  */
 @Component
 public class RedisHelper {

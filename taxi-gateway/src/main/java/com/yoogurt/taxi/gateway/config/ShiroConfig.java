@@ -30,12 +30,6 @@ public class ShiroConfig {
     @Autowired
     private ShiroRealm shiroRealm;
 
-    @Bean("securityManager")
-    public SecurityManager getSecurityManager() {
-        log.info("初始化SecurityManager，设置ShiroRealm。");
-        return new DefaultWebSecurityManager(shiroRealm);
-    }
-
     /**
      * shiro拦截器总配置。
      * 内置的Filter如下所示：
@@ -70,7 +64,7 @@ public class ShiroConfig {
 
         Map<String, String> chains = Maps.newLinkedHashMap();
 
-        // anon:所有url都都可以匿名访问
+        // anon: 允许匿名访问
         chains.put("/**/**.js", "anon");
         chains.put("/**/**.ico", "anon");
         chains.put("/**/**.woff", "anon");
@@ -79,6 +73,8 @@ public class ShiroConfig {
         chains.put("/resource/**", "anon");
         chains.put("/img/**", "anon");
         chains.put("/static/**", "anon");
+        chains.put("/favicon.ico", "anon");
+        chains.put("/login", "anon");
         chains.put("/login.html", "anon");
         chains.put("/info", "anon");
         chains.put("/env", "anon");
@@ -97,12 +93,13 @@ public class ShiroConfig {
 
         // noSessionCreation: 要求shiro不创建session
         chains.put("/**.html", "noSessionCreation");
-        //移动端接口，对于不需要拦截的url，在accessFilter中的ignoreUrls配置
-        chains.put("/mobile/**", "noSessionCreation,authcBasic[GET,POST,PUT,PATCH,DELETE],accessFilter");
+        //移动端接口，对于不需要拦截的url，在mobileAccessFilter中的ignoreUrls配置
+        chains.put("/mobile/**", "noSessionCreation,authcBasic[GET,POST,PUT,PATCH,DELETE],mobileAccessFilter");
+        //后台接口
+        chains.put("/web/**", "urlPrivilegeFilter");
 
         // <!-- 过滤链定义，从上向下顺序执行，一般将 /** 放在最下边 -->
-        // <!-- user: subject.getPrincipal() != null -->
-        chains.put("/**", "user,urlPrivilegeFilter");
+        chains.put("/**", "authc");
 
         bean.setFilterChainDefinitionMap(chains);
 
@@ -110,11 +107,18 @@ public class ShiroConfig {
         return bean;
     }
 
+    @Bean("securityManager")
+    public SecurityManager getSecurityManager() {
+        log.info("初始化SecurityManager，设置ShiroRealm。");
+        return new DefaultWebSecurityManager(shiroRealm);
+    }
+
 
     @Bean(name = "mobileAccessFilter")
     public MobileAccessFilter getAccessFilter() {
         Set<String> ignoreUris = Sets.newHashSet(
-                "/mobile/user/doLogin"
+                "/mobile/user/login/",
+                "/mobile/user/info/{id}"
         );
         return new MobileAccessFilter(ignoreUris);
     }

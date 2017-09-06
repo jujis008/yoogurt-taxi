@@ -9,6 +9,7 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.net.InetAddress;
@@ -19,6 +20,7 @@ import java.net.InetAddress;
 @EnableEurekaClient
 @EnableFeignClients
 @SpringBootApplication
+@ComponentScan({"com.yoogurt.taxi"})
 public class TaxiGatewayBootstrap {
 
     public static void main(String[] args) throws Exception {
