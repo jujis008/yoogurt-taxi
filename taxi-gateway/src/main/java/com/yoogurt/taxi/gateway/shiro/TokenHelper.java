@@ -12,29 +12,35 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
+import java.util.Locale;
 import java.util.Map;
 
 @Component
-public class TokenHelper {
+public final class TokenHelper {
 
-    private static final String bearer = "bearer";
+    public static final String bearer = "bearer";
 
     @Value("${gate.jwt.secret}")
     private String secret;
 
     @Value("${gate.jwt.header}")
-    private String tokenHeaderName;
+    private String header;
 
     @Value("${gate.jwt.expiration}")
     private Integer expirySeconds;
 
+    /**
+     * 获取token
+     * @param request
+     * @return 获取不到，返回 ""，否则返回客户端传来的token
+     */
     public String getAuthToken(HttpServletRequest request) {
         if(request == null) return StringUtils.EMPTY;
-        String content = request.getHeader(tokenHeaderName);
+        String content = request.getHeader(header);
         if(StringUtils.isBlank(content)) return StringUtils.EMPTY;
+        if(!StringUtils.startsWith(content, bearer)) return StringUtils.EMPTY;
         String[] contents = content.split(StringUtils.SPACE);
         if(contents.length < 2) return StringUtils.EMPTY;
-        if(!bearer.equals(contents[0])) return StringUtils.EMPTY;
         return contents[1];
     }
 
