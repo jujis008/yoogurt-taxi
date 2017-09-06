@@ -20,13 +20,13 @@ public final class TokenHelper {
 
     public static final String bearer = "bearer";
 
-    @Value("${gate.jwt.secret}")
+    @Value("${gateway.jwt.secret}")
     private String secret;
 
-    @Value("${gate.jwt.header}")
+    @Value("${gateway.jwt.header}")
     private String header;
 
-    @Value("${gate.jwt.expiration}")
+    @Value("${gateway.jwt.expire_seconds}")
     private Integer expirySeconds;
 
     /**
