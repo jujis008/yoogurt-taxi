@@ -8,6 +8,17 @@ package com.yoogurt.taxi.common.constant;
  */
 public final class Constants {
 
+    /**
+     * 密码试错最大次数
+     */
+    public static final int PASSWORD_RETRY_MAX_COUNT = 5;
+
+    /**
+     * 半小时内重置密码试错次数
+     */
+    public static final int PASSWORD_RETRY_INTERVAL_SECONDS = 1800;
+
+    /** unknown */
     public static final String UNKNOWN = "unknown";
 
     /** 文件后缀分割符（占用1个字符） */
