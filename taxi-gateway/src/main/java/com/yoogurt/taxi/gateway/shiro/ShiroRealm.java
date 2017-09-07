@@ -11,6 +11,7 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +75,14 @@ public class ShiroRealm extends AuthorizingRealm{
                 UserInfo userInfo = (UserInfo) cacheObj;
                 token.setUsername(userInfo.getUsername());
                 token.setPassword(userInfo.getPassword().toCharArray());
-                return new SimpleAuthenticationInfo(userInfo.getUsername(), userInfo.getPassword(), getName());
+                //填充principals，第一个add进去的即为PrimaryPrincipal
+                SimplePrincipalCollection principals = new SimplePrincipalCollection();
+                //UserId为PrimaryPrincipal，可直接使用Subject.getPrincipal()获取
+                principals.add(userInfo.getId(), "UserId");
+                principals.add(userInfo.getUsername(), "UserName");
+                principals.add(userInfo, "UserInfo");
+                return new SimpleAuthenticationInfo(principals, userInfo.getPassword());
+
             }
         }
         return null;
