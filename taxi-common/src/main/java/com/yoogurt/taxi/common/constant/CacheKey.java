@@ -36,7 +36,7 @@ public final class CacheKey {
      * 凭此授权码，获取系统颁发的token。
      * 成功生成token，并返回给客户端，将清除grant_code缓存。
      */
-    public static final String GRANT_CODE_KEY = "T_GRANT_CODE#";
+    public static final String GRANT_CODE_KEY = "E_GRANT_CODE#";
 
     /**
      * 客户端通过授权码，获取到token，拼接userId。
@@ -47,4 +47,9 @@ public final class CacheKey {
      * 用于缓存用户密码试错的次数，后面拼接username。
      */
     public static final String PASSWORD_RETRY_MAX_COUNT_KEY = "E_PASSWORD_RETRY_MAX_COUNT#";
+
+    /**
+     * 短信验证码，后面拼接手机号码
+     */
+    public static final String VERIFY_CODE_KEY = "E_VERIFY_CODE#";
 }
