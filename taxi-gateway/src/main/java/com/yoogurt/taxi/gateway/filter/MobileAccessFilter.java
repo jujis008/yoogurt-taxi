@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 
@@ -63,7 +64,17 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         //在Basic基础上，增加对ignoreUris的处理能力
-        return canAccessPostRequest(request) || super.isAccessAllowed(request, response, mappedValue);
+        if(canAccessPostRequest(request)) return true;
+        if(!super.isAccessAllowed(request, response, mappedValue)) return false;
+        // 获取当前用户
+        Subject subject = this.getSubject(request, response);
+        // 获取当前用户的URL
+        String currentUrl = this.getPathWithinApplication(request);
+        if (!subject.isPermitted(currentUrl)) {
+            log.info("User: [" + subject.getPrincipal() + "] access denied on URL: " + currentUrl);
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -99,9 +110,10 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
         try {
             super.sendChallenge(request, response);
             String currentUrl = this.getPathWithinApplication(request);
-            ResponseObj result = ResponseObj.fail(StatusCode.LOGIN_EXPIRE.getStatus(),
+            ResponseObj result = ResponseObj.fail(StatusCode.NO_AUTHORITY.getStatus(),
                     "抱歉，您没有访问URL:" + currentUrl + "的权限，请联系系统管理员。");
-            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+            HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             httpServletResponse.setHeader("Content-type", "application/json;charset=UTF-8");
             httpServletResponse.getWriter().write(result.toJSON());
             log.warn("Access denied on URL: " + currentUrl);

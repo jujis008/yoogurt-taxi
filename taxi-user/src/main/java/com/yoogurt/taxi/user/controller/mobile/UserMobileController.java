@@ -36,4 +36,9 @@ public class UserMobileController {
     public ResponseObj userInfo(@PathVariable(name = "id") Integer id) {
         return ResponseObj.success(userService.getUserInfo(id));
     }
+
+    @RequestMapping("/tt")
+    public String tt() {
+        return "tt";
+    }
 }

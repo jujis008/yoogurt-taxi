@@ -5,6 +5,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.http.HttpStatus;
 
 import javax.servlet.ServletRequest;
@@ -31,11 +32,9 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
         if (subject != null && subject.isAuthenticated()) {
             if (!subject.isPermitted(currentUrl)) {
                 log.info("User: [" + subject.getPrincipal() + "] access denied on URL: " + currentUrl);
-                onDeny(request, response);
                 return false;
             }
         } else {
-            onDeny(request, response);
             return false;
         }
         return true;
@@ -63,7 +62,7 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
         ResponseObj result = ResponseObj.fail(StatusCode.NO_AUTHORITY.getStatus(),
                 "抱歉，您没有访问URL:" + currentUrl + "的权限，请联系系统管理员。");
 
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value()); //设置状态码
         httpServletResponse.setHeader("Content-type", "application/json;charset=UTF-8");
         httpServletResponse.setHeader("Cache-Control", "no-cache, must-revalidate");
