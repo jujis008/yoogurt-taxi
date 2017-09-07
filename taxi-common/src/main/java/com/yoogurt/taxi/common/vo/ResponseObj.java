@@ -68,6 +68,14 @@ public class ResponseObj implements Serializable {
         return new ResponseBuilder().status(StatusCode.BIZ_FAILED.getStatus()).message(StatusCode.BIZ_FAILED.getDetail()).build();
     }
 
+    public static ResponseObj fail(StatusCode statusCode, String message) {
+        int status = StatusCode.BIZ_FAILED.getStatus();
+        if (statusCode != null) {
+            status = statusCode.getStatus();
+        }
+        return fail(status, message);
+    }
+
     public static ResponseObj fail(int status, String message) {
         ResponseBuilder builder = new ResponseBuilder().status(status);
         if (StringUtils.isBlank(message)) {
@@ -120,6 +128,13 @@ public class ResponseObj implements Serializable {
 
         public ResponseBuilder status(int status) {
             this.status = status;
+            return this;
+        }
+
+        public ResponseBuilder status(StatusCode status) {
+            if (status != null) {
+                this.status = status.getStatus();
+            }
             return this;
         }
 
