@@ -41,6 +41,7 @@
 		<shiro.version>1.4.0</shiro.version>
 		<jwt.version>2.2.1</jwt.version>
 		<poi.version>3.15</poi.version>
+		<fastjson.version>1.2.35</fastjson.version>
 
 		<mysql.version>5.1.41</mysql.version>
 		<hikaricp.version>2.6.1</hikaricp.version>
@@ -320,6 +321,12 @@
 				<groupId>com.github.obiteaaron</groupId>
 				<artifactId>pinyin4j-multi</artifactId>
 				<version>${pinyin4j.multi.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>${fastjson.version}</version>
 			</dependency>
 
 			<!--common系列-->
