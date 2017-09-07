@@ -76,20 +76,22 @@ public class ShiroConfig {
         chains.put("/favicon.ico", "anon");
         chains.put("/login", "anon");
         chains.put("/login.html", "anon");
+        chains.put("/refresh", "anon");
         chains.put("/info", "anon");
         chains.put("/env", "anon");
-        chains.put("/shutdown", "anon");
+        chains.put("/beans", "anon");
+        chains.put("/restart", "anon");
         chains.put("/health", "anon");
         chains.put("/metrics", "anon");
         chains.put("/dump", "anon");
         chains.put("/configprops", "anon");
-        chains.put("/autoconfig", "anon");
         chains.put("/loggers", "anon");
         chains.put("/mappings", "anon");
         chains.put("/trace", "anon");
         chains.put("/actuator", "anon");
         chains.put("/autoconfig", "anon");
         chains.put("/readness", "anon");
+        chains.put("/hystrix", "anon");
 
         // noSessionCreation: 要求shiro不创建session
         chains.put("/**.html", "noSessionCreation");
@@ -117,8 +119,7 @@ public class ShiroConfig {
     @Bean(name = "mobileAccessFilter")
     public MobileAccessFilter getAccessFilter() {
         Set<String> ignoreUris = Sets.newHashSet(
-                "/mobile/user/login",
-                "/mobile/user/info/{id}"
+                "/mobile/user/login"
         );
         return new MobileAccessFilter(ignoreUris);
     }

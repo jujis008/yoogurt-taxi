@@ -5,6 +5,22 @@ spring:
     config:
       uri: http://127.0.0.1:8888
       fail-fast: true
+management:
+  security:
+    enabled: false
+endpoints:
+  restart:
+    enabled: false
+  shutdown:
+    enabled: false
+  pause:
+    enabled: false
+  refresh:
+    enabled: false
+security:
+  user:
+    name: taxi-booter
+    password: taxi123!@#
 ---
 spring:
   profiles:
