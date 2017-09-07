@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.gateway.shiro;
 
+import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.dal.model.UserInfo;
@@ -14,6 +15,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 
 /**
  * Description:
@@ -67,22 +69,24 @@ public class ShiroRealm extends AuthorizingRealm{
 
         if (authToken instanceof UserAuthenticationToken) {
             UserAuthenticationToken token = (UserAuthenticationToken) authToken;
-            String grantCode = token.getGrantCode();
-            Object cacheObj = redisHelper.getObject(CacheKey.GRANT_CODE_KEY + grantCode);
+            Object cacheObj = redisHelper.getObject(CacheKey.GRANT_CODE_KEY + token.getUserId());
             //grantCode不存在，或者已失效
             if(cacheObj == null) return null;
-            if (cacheObj instanceof UserInfo) {
-                UserInfo userInfo = (UserInfo) cacheObj;
-                token.setUsername(userInfo.getUsername());
-                token.setPassword(userInfo.getPassword().toCharArray());
+            if (cacheObj instanceof SessionUser) {
+                SessionUser user = (SessionUser) cacheObj;
+                if (!user.getGrantCode().equals(token.getGrantCode())) return null;
                 //填充principals，第一个add进去的即为PrimaryPrincipal
                 SimplePrincipalCollection principals = new SimplePrincipalCollection();
                 //UserId为PrimaryPrincipal，可直接使用Subject.getPrincipal()获取
-                principals.add(userInfo.getId(), "UserId");
-                principals.add(userInfo.getUsername(), "UserName");
-                principals.add(userInfo, "UserInfo");
-                return new SimpleAuthenticationInfo(principals, userInfo.getPassword());
-
+                principals.add(user.getUserId(), "UserId");
+                principals.add(user.getUsername(), "UserName");
+                principals.add(user, "UserInfo");
+                //userId和username拼接，MD5加密，作为shiro中的临时密码
+                byte[] bytes = (user.getUserId() + user.getUsername()).getBytes();
+                String credentials = DigestUtils.md5DigestAsHex(bytes);
+                //将临时密码设置到token中，shiro会将token中的password和AuthenticationInfo中的credentials进行匹配
+                token.setPassword(credentials.toCharArray());
+                return new SimpleAuthenticationInfo(principals, credentials);
             }
         }
         return null;

@@ -92,6 +92,8 @@ public class ShiroConfig {
         chains.put("/autoconfig", "anon");
         chains.put("/readness", "anon");
         chains.put("/hystrix", "anon");
+        //token颁发接口
+        chains.put("/token/**", "anon");
 
         // noSessionCreation: 要求shiro不创建session
         chains.put("/**.html", "noSessionCreation");

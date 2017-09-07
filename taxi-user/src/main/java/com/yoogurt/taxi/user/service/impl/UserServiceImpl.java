@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
         sessionUser.setStatus(1);
         sessionUser.setGrantCode(grantCode);
         //缓存授权码，30秒内有效
-        redisHelper.setObject(CacheKey.GRANT_CODE_KEY + grantCode, userInfo, 30);
+        redisHelper.setObject(CacheKey.GRANT_CODE_KEY + userInfo.getId(), sessionUser, 300);
         return sessionUser;
     }
 
