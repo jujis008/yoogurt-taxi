@@ -1,10 +1,8 @@
 package com.yoogurt.taxi.gateway.shiro;
 
-import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.dal.model.UserInfo;
-import com.yoogurt.taxi.gateway.rest.IUserService;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -27,9 +25,6 @@ public class ShiroRealm extends AuthorizingRealm{
 
     @Autowired
     private RedisHelper redisHelper;
-
-    @Autowired
-    private IUserService userService;
 
     /**
      * <p>授权方法，标识用户能访问的url。</p>
