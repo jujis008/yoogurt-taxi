@@ -99,7 +99,7 @@ public class ShiroConfig {
         chains.put("/web/**", "urlPrivilegeFilter");
 
         // <!-- 过滤链定义，从上向下顺序执行，一般将 /** 放在最下边 -->
-        chains.put("/**", "authc");
+        chains.put("/**", "user");
 
         bean.setFilterChainDefinitionMap(chains);
 
