@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.user.controller.mobile;
 
+import com.yoogurt.taxi.common.bo.SessionUser;
+import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.user.Form.LoginForm;
 import com.yoogurt.taxi.user.service.UserService;
@@ -20,10 +22,14 @@ public class UserMobileController {
      * @param loginForm
      * @return
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj login(@RequestBody LoginForm loginForm) {
 
-        return ResponseObj.success(userService.doLogin(loginForm.getUsername(), loginForm.getPassword()));
+        SessionUser sessionUser = userService.doLogin(loginForm.getUsername(), loginForm.getPassword());
+        if (sessionUser != null) {
+            return ResponseObj.success(sessionUser);
+        }
+        return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "登录失败，请核对用户名和密码");
     }
 
     @RequestMapping("/info/{id}")
