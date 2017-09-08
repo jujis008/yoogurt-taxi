@@ -39,6 +39,12 @@ public final class CacheKey {
     public static final String GRANT_CODE_KEY = "E_GRANT_CODE#";
 
     /**
+     * 缓存{@link com.yoogurt.taxi.common.bo.SessionUser} SessionUser对象。
+     * 后面拼接userId.
+     */
+    public static final String SESSION_USER_KEY = "P_SESSION_USER#";
+
+    /**
      * 客户端通过授权码，获取到token，拼接userId。
      */
     public static final String TOKEN_KEY = "P_TOKEN#";
