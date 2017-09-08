@@ -3,6 +3,7 @@ package com.yoogurt.taxi.gateway.shiro;
 import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,10 +16,11 @@ import java.security.SignatureException;
 import java.util.Locale;
 import java.util.Map;
 
+@Slf4j
 @Component
 public final class TokenHelper {
 
-    public static final String bearer = "bearer";
+    public static final String bearer = HttpServletRequest.BASIC_AUTH.toLowerCase(Locale.ENGLISH);
 
     @Value("${gateway.jwt.secret}")
     private String secret;
@@ -51,16 +53,29 @@ public final class TokenHelper {
         return signer.sign(claims, options);
     }
 
-    public Object getUserIdFromToken(HttpServletRequest request) {
+    public Object getUserId(HttpServletRequest request) {
         String token = getAuthToken(request);
         if(StringUtils.isBlank(token)) return null;
         try {
-            JWTVerifier verifier = new JWTVerifier(secret);
-            Map<String, Object> claims = verifier.verify(token);
-            return claims.get("userId");
-        } catch (NoSuchAlgorithmException | JWTVerifyException | InvalidKeyException | SignatureException | IOException e) {
-            e.printStackTrace();
+            return getClaims(token).get("userId");
+        } catch (Exception e) {
+            log.error("获取userId异常: {}", e);
         }
         return null;
+    }
+
+    public Object getUserId(String authToken) {
+        if(StringUtils.isBlank(authToken)) return null;
+        try {
+            return getClaims(authToken).get("userId");
+        } catch (Exception e) {
+            log.error("获取userId异常: {}", e);
+        }
+        return null;
+    }
+
+    private Map<String, Object> getClaims(String authToken) throws Exception {
+        JWTVerifier verifier = new JWTVerifier(secret);
+        return verifier.verify(authToken);
     }
 }
