@@ -183,14 +183,4 @@ public class ServletHelper {
             return null;
         }
     }
-
-    public static void redirect2Login(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setStatus(HttpStatus.UNAUTHORIZED.value()); //设置状态码
-//        response.setHeader("Content-type", "application/json;charset=UTF-8");
-//        response.setHeader("Cache-Control", "no-cache, must-revalidate");
-//        Map<String, Object> resultMap = Maps.newHashMap();
-//        resultMap.put("status", false);
-//        resultMap.put("code", 500);
-//        response.getWriter().write(JSON.toJSONString(resultMap));
-    }
 }
