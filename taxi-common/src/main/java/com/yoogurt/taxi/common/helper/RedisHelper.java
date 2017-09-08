@@ -3,12 +3,14 @@ package com.yoogurt.taxi.common.helper;
 import com.yoogurt.taxi.common.utils.SerializeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,6 +24,14 @@ public class RedisHelper {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    /**
+     * 获取redis的连接工厂对象
+     * @return
+     */
+    public RedisConnectionFactory getConnectionFactory() {
+        return redisTemplate.getConnectionFactory();
+    }
 
     /**
      * 获取缓存内容
@@ -152,6 +162,15 @@ public class RedisHelper {
     }
 
     /**
+     * 缓存对象
+     * @param key
+     * @param value
+     */
+    public void setObject(String key, Object value) {
+        setObject(key, value, 0);
+    }
+
+    /**
      * 设置缓存（复杂对象）
      * @param key          键
      * @param value        值
@@ -173,4 +192,13 @@ public class RedisHelper {
         });
     }
 
+    /**
+     * 根据格式，获取所有key
+     * @param pattern 不可为空
+     * @return 符合条件的key集合
+     */
+    public Set<?> keys(String pattern) {
+        if(StringUtils.isBlank(pattern)) return null;
+        return redisTemplate.keys(pattern);
+    }
 }
