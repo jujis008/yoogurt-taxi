@@ -32,11 +32,11 @@ public class UserServiceImpl implements UserService {
         if (!Encipher.matches(password, userInfo.getPassword())) return null;
         //生成6位授权码
         String grantCode = RandomUtils.getRandNum(6);
-        SessionUser sessionUser = new SessionUser(userInfo.getId().longValue(), username);
+        SessionUser sessionUser = new SessionUser(userInfo.getId().toString(), username);
         sessionUser.setStatus(1);
         sessionUser.setGrantCode(grantCode);
         //缓存授权码，30秒内有效
-        redisHelper.setObject(CacheKey.GRANT_CODE_KEY + userInfo.getId(), sessionUser, 300);
+        redisHelper.set(CacheKey.GRANT_CODE_KEY + userInfo.getId(), grantCode, 300);
         return sessionUser;
     }
 
