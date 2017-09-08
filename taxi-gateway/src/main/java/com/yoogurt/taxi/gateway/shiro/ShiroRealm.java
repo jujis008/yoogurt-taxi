@@ -3,7 +3,6 @@ package com.yoogurt.taxi.gateway.shiro;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.dal.model.UserInfo;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -45,7 +44,7 @@ public class ShiroRealm extends AuthorizingRealm{
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 
         authorizationInfo.addRole("ADMIN");
-//        authorizationInfo.addStringPermission("/web/user/tt");
+        authorizationInfo.addStringPermission("/web/user/tt");
         return authorizationInfo;
     }
 
@@ -71,25 +70,28 @@ public class ShiroRealm extends AuthorizingRealm{
 
         if (authToken instanceof UserAuthenticationToken) {
             UserAuthenticationToken token = (UserAuthenticationToken) authToken;
-            Object cacheObj = redisHelper.getObject(CacheKey.GRANT_CODE_KEY + token.getUserId());
+            Object obj = redisHelper.get(CacheKey.GRANT_CODE_KEY + token.getUserId());
             //grantCode不存在，或者已失效
-            if(cacheObj == null) return null;
-            if (cacheObj instanceof SessionUser) {
-                SessionUser user = (SessionUser) cacheObj;
-                if (!user.getGrantCode().equals(token.getGrantCode())) return null;
-                //填充principals，第一个add进去的即为PrimaryPrincipal
-                SimplePrincipalCollection principals = new SimplePrincipalCollection();
-                //UserId为PrimaryPrincipal，可直接使用Subject.getPrincipal()获取
-                principals.add(user.getUserId(), "UserId");
-                principals.add(user.getUsername(), "UserName");
-                principals.add(user, "UserInfo");
-                //userId和username拼接，MD5加密，作为shiro中的临时密码
-                byte[] bytes = (user.getUserId() + user.getUsername()).getBytes();
-                String credentials = DigestUtils.md5DigestAsHex(bytes);
-                //将临时密码设置到token中，shiro会将token中的password和AuthenticationInfo中的credentials进行匹配
-                token.setPassword(credentials.toCharArray());
-                return new SimpleAuthenticationInfo(principals, credentials);
-            }
+            if(obj == null || !obj.toString().equals(token.getGrantCode())) return null;
+            String userId = token.getUserId();
+            String username = token.getUsername();
+            SessionUser user = new SessionUser(userId, username);
+            user.setGrantCode(obj.toString());
+            user.setToken(token.getToken());
+
+            //缓存SessionUser
+            redisHelper.setObject(CacheKey.SESSION_USER_KEY + userId, user);
+            //填充principals，第一个add进去的即为PrimaryPrincipal
+            SimplePrincipalCollection principals = new SimplePrincipalCollection();
+            //UserId为PrimaryPrincipal，可直接使用Subject.getPrincipal()获取
+            principals.add(userId, "UserId");
+            principals.add(username, "UserName");
+            principals.add(user, "UserInfo");
+            //userId和username拼接，MD5加密，作为shiro中的临时密码
+            String credentials = DigestUtils.md5DigestAsHex((userId + username).getBytes());
+            //将临时密码设置到token中，shiro会将token中的password和AuthenticationInfo中的credentials进行匹配
+            token.setPassword(credentials.toCharArray());
+            return new SimpleAuthenticationInfo(principals, credentials);
         }
         return null;
     }

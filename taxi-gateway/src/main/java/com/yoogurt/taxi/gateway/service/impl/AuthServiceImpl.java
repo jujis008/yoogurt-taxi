@@ -21,27 +21,30 @@ public class AuthServiceImpl implements AuthService{
     @Autowired
     private TokenHelper tokenHelper;
 
-    @Autowired
-    private RedisHelper redisHelper;
-
     @Override
     public String getAuthToken(String userId, String grantCode, String username) {
-        String authToken = "";
         try {
+            //生成token
+            Map<String, Object> claims = Maps.newHashMap();
+            claims.put("userId", userId);
+            claims.put("username", username);
+            String authToken = tokenHelper.createToken(claims);
+
+            //shiro认证
             UserAuthenticationToken token = new UserAuthenticationToken();
             token.setUserId(userId);
             token.setGrantCode(grantCode);
             token.setUsername(username);
+            token.setToken(authToken);
+            token.setRememberMe(true);
+            token.setLoginAgain(false);
+
             Subject subject = SecurityUtils.getSubject();
             subject.login(token);
-            Map<String, Object> claims = Maps.newHashMap();
-            claims.put("userId", userId);
-            claims.put("username", username);
-            authToken = tokenHelper.createToken(claims);
-            redisHelper.set(CacheKey.TOKEN_KEY + userId, authToken);
+            return authToken;
         } catch (Exception e) {
             log.error("授权失败, {}", e);
+            return null;
         }
-        return authToken;
     }
 }

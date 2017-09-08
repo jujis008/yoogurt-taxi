@@ -19,8 +19,8 @@ import java.util.Set;
 
 /**
  * Description:
- *
- * @Author Eric Lau
+ * shiro配置中心
+ * @author Eric Lau
  * @Date 2017/9/5.
  */
 @Slf4j
@@ -116,7 +116,6 @@ public class ShiroConfig {
         log.info("初始化SecurityManager，设置ShiroRealm。");
         return new DefaultWebSecurityManager(shiroRealm);
     }
-
 
     @Bean(name = "mobileAccessFilter")
     public MobileAccessFilter getAccessFilter() {

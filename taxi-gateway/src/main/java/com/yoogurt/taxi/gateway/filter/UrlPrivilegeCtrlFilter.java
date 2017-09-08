@@ -29,7 +29,8 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
         Subject subject = this.getSubject(request, response);
         // 获取当前用户的URL
         String currentUrl = this.getPathWithinApplication(request);
-        if (subject != null && subject.isAuthenticated()) {
+        if (subject != null) {
+
             if (!subject.isPermitted(currentUrl)) {
                 log.info("User: [" + subject.getPrincipal() + "] access denied on URL: " + currentUrl);
                 return false;
