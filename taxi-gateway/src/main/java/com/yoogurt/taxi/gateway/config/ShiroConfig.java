@@ -5,13 +5,20 @@ import com.google.common.collect.Sets;
 import com.yoogurt.taxi.gateway.filter.MobileAccessFilter;
 import com.yoogurt.taxi.gateway.filter.UrlPrivilegeCtrlFilter;
 import com.yoogurt.taxi.gateway.shiro.ShiroRealm;
+import com.yoogurt.taxi.gateway.shiro.cache.RedisCacheManager;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.codec.Base64;
+import org.apache.shiro.mgt.RememberMeManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
 import java.util.Map;
@@ -114,7 +121,23 @@ public class ShiroConfig {
     @Bean("securityManager")
     public SecurityManager getSecurityManager() {
         log.info("初始化SecurityManager，设置ShiroRealm。");
-        return new DefaultWebSecurityManager(shiroRealm);
+        /** 开启了rememberMe功能，不要使用缓存，不好驾驭 ￣□￣｜｜*/
+//        shiroRealm.setCacheManager(getRedisCacheManager());
+//        shiroRealm.setCachingEnabled(true);
+//        shiroRealm.setAuthenticationCachingEnabled(true);
+//        shiroRealm.setAuthorizationCachingEnabled(true);
+
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(shiroRealm);
+        securityManager.setRememberMeManager(getRememberMeManager());
+//        securityManager.setCacheManager(getRedisCacheManager());
+        /** 不要维护session */
+//        securityManager.setSessionManager(new DefaultWebSessionManager());
+        return securityManager;
+    }
+
+    @Bean(name = "redisCacheManager")
+    public RedisCacheManager getRedisCacheManager() {
+        return new RedisCacheManager();
     }
 
     @Bean(name = "mobileAccessFilter")
@@ -123,6 +146,23 @@ public class ShiroConfig {
                 "/mobile/user/login"
         );
         return new MobileAccessFilter(ignoreUris);
+    }
+
+    /**
+     * 因为需要开启rememberMe功能，需要注入一个RememberMeManager，
+     * 通常情况，使用基于Cookie的实现方式。
+     * @return RememberMeManager
+     */
+    @Bean
+    public RememberMeManager getRememberMeManager() {
+        CookieRememberMeManager rememberMeManager = new CookieRememberMeManager();
+        rememberMeManager.setCipherKey(Base64.decode("4AvVhmFLUs0KTA3Kprsdag=="));
+        SimpleCookie cookie = new SimpleCookie();
+        cookie.setMaxAge(2592000);
+        cookie.setHttpOnly(true);
+        cookie.setName("yoogurt-taxi");
+        rememberMeManager.setCookie(cookie);
+        return rememberMeManager;
     }
 
     @Bean(name = "urlPrivilegeCtrlFilter")

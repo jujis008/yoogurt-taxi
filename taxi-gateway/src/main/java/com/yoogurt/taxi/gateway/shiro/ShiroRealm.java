@@ -12,6 +12,7 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
@@ -91,7 +92,7 @@ public class ShiroRealm extends AuthorizingRealm{
             String credentials = DigestUtils.md5DigestAsHex((userId + username).getBytes());
             //将临时密码设置到token中，shiro会将token中的password和AuthenticationInfo中的credentials进行匹配
             token.setPassword(credentials.toCharArray());
-            return new SimpleAuthenticationInfo(principals, credentials);
+            return new SimpleAuthenticationInfo(principals, credentials, ByteSource.Util.bytes(credentials));
         }
         return null;
     }
