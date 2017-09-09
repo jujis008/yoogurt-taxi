@@ -26,28 +26,29 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
 
         // 获取当前用户
-        Subject subject = this.getSubject(request, response);
+        Subject subject = getSubject(request, response);
         // 获取当前用户的URL
-        String currentUrl = this.getPathWithinApplication(request);
-        if (subject != null) {
-
-            if (!subject.isPermitted(currentUrl)) {
-                log.info("User: [" + subject.getPrincipal() + "] access denied on URL: " + currentUrl);
-                return false;
-            }
-        } else {
+        String currentUrl = getPathWithinApplication(request);
+        //判断当前用户是有该url的访问权限
+        if (!subject.isPermitted(currentUrl)) {
+            log.info("User: [" + subject.getPrincipal() + "] access denied on URL: " + currentUrl);
             return false;
         }
         return true;
     }
 
+    /**
+     * isAccessAllowed(request, response)==false触发此方法。
+     * @param request
+     * @param response
+     * @return always false
+     * @throws Exception
+     */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
-        Subject subject = this.getSubject(request, response);
-        String currentUrl = this.getPathWithinApplication(request);
-        if (subject != null) {
-            log.info("URL:" + currentUrl + " [user:" + subject.getPrincipal() + "]");
-        }
+        Subject subject = getSubject(request, response);
+        String currentUrl = getPathWithinApplication(request);
+        log.info("URL:" + currentUrl + " [user:" + subject.getPrincipal() + "]");
         onDeny(request, response);
         return false;
     }
@@ -62,9 +63,9 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
         String currentUrl = this.getPathWithinApplication(request);
         ResponseObj result = ResponseObj.fail(StatusCode.NO_AUTHORITY.getStatus(),
                 "抱歉，您没有访问URL:" + currentUrl + "的权限，请联系系统管理员。");
-
         HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
-        httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value()); //设置状态码
+        /** 设置状态码，此处若用401将会使得前端弹出一个输入用户名密码的Promotion，所以建议不要返回401状态码。 */
+        httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
         httpServletResponse.setHeader("Content-type", "application/json;charset=UTF-8");
         httpServletResponse.setHeader("Cache-Control", "no-cache, must-revalidate");
         httpServletResponse.getWriter().write(result.toJSON());

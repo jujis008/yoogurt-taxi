@@ -46,6 +46,7 @@ public class ShiroRealm extends AuthorizingRealm{
 
         authorizationInfo.addRole("ADMIN");
         authorizationInfo.addStringPermission("/web/user/tt");
+
         return authorizationInfo;
     }
 

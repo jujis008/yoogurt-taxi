@@ -1,0 +1,8 @@
+# 以下为自定义的配置项
+yoogurt:
+  #关于JWT方面的配置项
+  jwt:
+    header: Authorization
+    secret: taxi!@#
+    basic: basic
+    expireSeconds: 6000

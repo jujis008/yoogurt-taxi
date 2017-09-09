@@ -3,8 +3,10 @@ package com.yoogurt.taxi.gateway.shiro;
 import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
+import com.yoogurt.taxi.gateway.config.JwtProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,16 +22,8 @@ import java.util.Map;
 @Component
 public final class TokenHelper {
 
-    public static final String bearer = HttpServletRequest.BASIC_AUTH.toLowerCase(Locale.ENGLISH);
-
-    @Value("${gateway.jwt.secret}")
-    private String secret;
-
-    @Value("${gateway.jwt.header}")
-    private String header;
-
-    @Value("${gateway.jwt.expire_seconds}")
-    private Integer expirySeconds;
+    @Autowired
+    private JwtProperties properties;
 
     /**
      * 获取token
@@ -38,21 +32,31 @@ public final class TokenHelper {
      */
     public String getAuthToken(HttpServletRequest request) {
         if(request == null) return StringUtils.EMPTY;
-        String content = request.getHeader(header);
+        String content = request.getHeader(properties.getHeader());
         if(StringUtils.isBlank(content)) return StringUtils.EMPTY;
-        if(!StringUtils.startsWith(content, bearer)) return StringUtils.EMPTY;
+        if(!StringUtils.startsWith(content, properties.getBasic())) return StringUtils.EMPTY;
         String[] contents = content.split(StringUtils.SPACE);
         if(contents.length < 2) return StringUtils.EMPTY;
         return contents[1];
     }
 
+    /**
+     * 创建一个token
+     * @param claims 格外的payload信息
+     * @return token
+     */
     public String createToken(Map<String, Object> claims) {
-        JWTSigner signer = new JWTSigner(secret);
+        JWTSigner signer = new JWTSigner(properties.getSecret());
         JWTSigner.Options options = new JWTSigner.Options();
-        options.setExpirySeconds(expirySeconds);
+        options.setExpirySeconds(properties.getExpireSeconds());
         return signer.sign(claims, options);
     }
 
+    /**
+     * 直接获取用户id
+     * @param request
+     * @return 用户id
+     */
     public Object getUserId(HttpServletRequest request) {
         String token = getAuthToken(request);
         if(StringUtils.isBlank(token)) return null;
@@ -75,7 +79,7 @@ public final class TokenHelper {
     }
 
     private Map<String, Object> getClaims(String authToken) throws Exception {
-        JWTVerifier verifier = new JWTVerifier(secret);
+        JWTVerifier verifier = new JWTVerifier(properties.getSecret());
         return verifier.verify(authToken);
     }
 }

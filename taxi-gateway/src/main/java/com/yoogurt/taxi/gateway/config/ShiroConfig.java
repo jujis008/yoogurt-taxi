@@ -167,6 +167,8 @@ public class ShiroConfig {
 
     @Bean(name = "urlPrivilegeCtrlFilter")
     public UrlPrivilegeCtrlFilter getUrlPrivilegeCtrlFilter() {
-        return new UrlPrivilegeCtrlFilter();
+        UrlPrivilegeCtrlFilter ctrlFilter = new UrlPrivilegeCtrlFilter();
+        ctrlFilter.setLoginUrl("/login");
+        return ctrlFilter;
     }
 }

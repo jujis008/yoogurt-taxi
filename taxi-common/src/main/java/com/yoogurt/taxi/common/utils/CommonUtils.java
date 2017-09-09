@@ -138,7 +138,7 @@ public class CommonUtils {
      */
     public static boolean checkExcelFile(String filename) {
         String suffix = getFileSuffix(filename);
-        if (StringUtils.equalsIgnoreCase(Constants.EXCELX_FILE_SUFFIX, suffix)) {
+        if (StringUtils.equalsIgnoreCase(Constants.EXCEL_FILE_SUFFIX_X, suffix)) {
             return true;
         }
 

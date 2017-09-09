@@ -1,23 +1,15 @@
 package com.yoogurt.taxi.gateway.filter;
 
-import com.auth0.jwt.JWTVerifier;
 import com.google.common.collect.Sets;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.gateway.service.AuthService;
 import com.yoogurt.taxi.gateway.shiro.TokenHelper;
 import com.yoogurt.taxi.gateway.shiro.UserAuthenticationToken;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +20,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,9 +33,6 @@ import java.util.Set;
  */
 @Slf4j
 public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
-
-    @Autowired
-    private AuthService authService;
 
     @Autowired
     private RedisHelper redisHelper;
@@ -96,7 +83,6 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected AuthenticationToken createToken(ServletRequest request, ServletResponse response) {
 
-        log.info("mobile####createToken#####" + SecurityUtils.getSubject().isAuthenticated());
         //createToken方法调用的前置条件是 isLoginAttempt(request, response) == true
         //这意味着userId和SessionUser一定有值，无需判空
         String userId = tokenHelper.getUserId(WebUtils.toHttp(request)).toString();
@@ -114,7 +100,6 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
         token.setRememberMe(true);
         token.setLoginAgain(true);
         return token;
-
     }
 
     @Override

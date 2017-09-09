@@ -18,6 +18,13 @@ public final class Constants {
      */
     public static final int PASSWORD_RETRY_INTERVAL_SECONDS = 1800;
 
+    /**
+     * 为了保证API的幂等性，每次请求需要有一个唯一的REQUEST_ID，所以加一个自定义Header：yoogurt-request-id: <request_id>。
+     * 系统中用到的request_id生成算法暂定为UUID。
+     * 对于只读操作的API，request_id不强制性要求传入，涉及到对系统数据有更改的操作，则是必传的！
+     */
+    public static final String REQUEST_ID_HEADER_NAME = "yoogurt-request-id";
+
     /** unknown */
     public static final String UNKNOWN = "unknown";
 
@@ -25,7 +32,7 @@ public final class Constants {
     public static final String FILE_SUFFIX_SPLIT_MARK = "\\.";
 
     /** excel后缀 */
-    public static final String EXCELX_FILE_SUFFIX     = "xlsx";
+    public static final String EXCEL_FILE_SUFFIX_X    = "xlsx";
 
     /** excel后缀 */
     public static final String EXCEL_FILE_SUFFIX      = "xls";
