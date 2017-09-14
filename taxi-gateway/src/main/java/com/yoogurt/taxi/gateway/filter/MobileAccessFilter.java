@@ -13,7 +13,9 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.PathMatcher;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -40,6 +42,13 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
     @Autowired
     private TokenHelper tokenHelper;
 
+    private PathMatcher matcher;
+
+    /**
+     * 符合此路径规则的uri将会被忽略
+     */
+    private static final String IGNORE_PATTERN = "/**/i/**";
+
     /**
      * 应用名将出现在查询令牌时，默认是<code>application</code>。 可以通过
      * {@link #setApplicationName(String) setApplicationName} 方法覆盖
@@ -53,11 +62,20 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
 
     public MobileAccessFilter() {
         super.setApplicationName(APPLICATION_NAME);
+        this.matcher = new AntPathMatcher();
     }
 
     public MobileAccessFilter(Set<String> ignoreUris) {
         this();
         this.ignoreUris = ignoreUris;
+    }
+
+    public PathMatcher getMatcher() {
+        return matcher;
+    }
+
+    public void setMatcher(PathMatcher matcher) {
+        this.matcher = matcher;
     }
 
     /**
@@ -76,8 +94,11 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+//        log.info("########## " + SecurityUtils.getSubject().isAuthenticated() + " #########");
+        HttpServletRequest req = WebUtils.toHttp(request);
+        String uri = WebUtils.getPathWithinApplication(req);
         //在Basic基础上，增加对ignoreUris的处理能力
-        return canAccessPostRequest(request) || super.isAccessAllowed(request, response, mappedValue);
+        return matcher.match(IGNORE_PATTERN, uri) || canAccessPostRequest(req) || super.isAccessAllowed(request, response, mappedValue);
     }
 
     @Override
@@ -110,13 +131,12 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
 
     /**
      * 判断本次请求是否可以忽略
-     * @param request 请求request
+     * @param request request请求
      * @return 是否可以忽略
      */
-    private boolean canAccessPostRequest(ServletRequest request) {
-        HttpServletRequest httpRequest = WebUtils.toHttp(request);
-        String url = WebUtils.getPathWithinApplication(httpRequest);
-        return ignoreUris.contains(url);
+    private boolean canAccessPostRequest(HttpServletRequest request) {
+        String uri = WebUtils.getPathWithinApplication(request);
+        return ignoreUris.contains(uri);
     }
 
 
