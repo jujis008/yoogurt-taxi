@@ -5,4 +5,5 @@ yoogurt:
     header: Authorization
     secret: dGF4aSFAIw==
     basic: basic
-    expireSeconds: 6000
+    #7天后过期
+    expireSeconds: 604800
