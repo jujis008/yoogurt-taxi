@@ -2,9 +2,7 @@ package com.yoogurt.taxi.gateway.shiro;
 
 import com.google.common.collect.Maps;
 import com.yoogurt.taxi.gateway.config.JwtConfig;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClaims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -65,13 +63,14 @@ public final class TokenHelper {
      * @return 用户id
      */
     public String getUserId(String token) {
+        if(StringUtils.isBlank(token)) return null;
         String userId;
         try {
             final Claims claims = getClaims(token);
             userId = claims.getId();
-        } catch (Exception e) {
-            userId = StringUtils.EMPTY;
-            log.error("获取用户ID异常: {}", e);
+        } catch (ExpiredJwtException e) {
+            userId = null;
+            log.error("token过期:{}", e);
         }
         return userId;
     }
@@ -104,13 +103,14 @@ public final class TokenHelper {
      * @return 用户登录名
      */
     public String getUsername(String token) {
+        if(StringUtils.isBlank(token)) return null;
         String username;
         try {
             final Claims claims = getClaims(token);
             username = claims.getSubject();
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             username = StringUtils.EMPTY;
-            log.error("获取用户名异常: {}", e);
+            log.error("token过期:{}", e);
         }
         return username;
     }
@@ -121,13 +121,14 @@ public final class TokenHelper {
      * @return 颁发（创建）时间
      */
     public Date getCreatedDate(String token) {
+        if(StringUtils.isBlank(token)) return null;
         Date created;
         try {
             final Claims claims = getClaims(token);
             created = claims.getIssuedAt();
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             created = null;
-            log.error("获取token创建时间异常: {}", e);
+            log.error("token过期:{}", e);
         }
         return created;
     }
@@ -138,13 +139,14 @@ public final class TokenHelper {
      * @return 过期时间
      */
     public Date getExpirationDate(String token) {
+        if(StringUtils.isBlank(token)) return null;
         Date expiration;
         try {
             final Claims claims = getClaims(token);
             expiration = claims.getExpiration();
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             expiration = null;
-            log.error("获取token过期时间异常: {}", e);
+            log.error("token过期:{}", e);
         }
         return expiration;
     }
@@ -155,7 +157,10 @@ public final class TokenHelper {
      * @return 是否失效
      */
     public Boolean isTokenExpired(String token) {
+        if(StringUtils.isBlank(token)) return true;
         final Date expiration = getExpirationDate(token);
+        //返回null，可以判定是token过期
+        if(expiration == null) return true;
         return expiration.before(new Date());
     }
 
@@ -181,9 +186,9 @@ public final class TokenHelper {
             final Claims claims = getClaims(token);
             claims.setIssuedAt(new Date()); //重置颁发时间
             refreshedToken = generateToken(claims);
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
             refreshedToken = null;
-            log.error("刷新token异常: {}", e);
+            log.error("token过期:{}", e);
         }
         return refreshedToken;
     }
@@ -210,16 +215,16 @@ public final class TokenHelper {
      * @param token token
      * @return Claims
      */
-    private Claims getClaims(String token) {
+    private Claims getClaims(String token) throws ExpiredJwtException {
         Claims claims;
         try {
             claims = Jwts.parser()
                     .setSigningKey(jwtConfig.getSecret())
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (Exception e) {
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
             claims = null;
-            log.error("获取JWT Claims异常: {}", e);
+            log.error("获取claims异常:{}", e);
         }
         return claims;
     }
