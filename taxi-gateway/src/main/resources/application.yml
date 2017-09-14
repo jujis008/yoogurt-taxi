@@ -3,6 +3,6 @@ yoogurt:
   #关于JWT方面的配置项
   jwt:
     header: Authorization
-    secret: taxi!@#
+    secret: dGF4aSFAIw==
     basic: basic
     expireSeconds: 6000
