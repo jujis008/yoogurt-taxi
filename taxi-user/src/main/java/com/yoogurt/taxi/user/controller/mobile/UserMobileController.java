@@ -22,7 +22,7 @@ public class UserMobileController {
      * @param loginForm
      * @return
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/i/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj login(@RequestBody LoginForm loginForm) {
 
         SessionUser sessionUser = userService.doLogin(loginForm.getUsername(), loginForm.getPassword());
