@@ -3,26 +3,24 @@ package com.yoogurt.taxi.gateway;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.net.InetAddress;
 
 @Slf4j
-@EnableAutoConfiguration
+@EnableAsync
 @EnableZuulProxy
-@EnableDiscoveryClient
 @EnableEurekaClient
 @EnableFeignClients
+@EnableDiscoveryClient
 @SpringBootApplication
-@ComponentScan({"com.yoogurt.taxi"})
 public class TaxiGatewayBootstrap {
 
     public static void main(String[] args) throws Exception {
