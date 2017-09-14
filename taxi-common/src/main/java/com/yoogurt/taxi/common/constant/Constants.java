@@ -14,7 +14,7 @@ public final class Constants {
     public static final int PASSWORD_RETRY_MAX_COUNT = 5;
 
     /**
-     * 半小时内重置密码试错次数
+     * 重置密码试错次数的间隔时间，单位：秒
      */
     public static final int PASSWORD_RETRY_INTERVAL_SECONDS = 1800;
 
@@ -24,6 +24,11 @@ public final class Constants {
      * 对于只读操作的API，request_id不强制性要求传入，涉及到对系统数据有更改的操作，则是必传的！
      */
     public static final String REQUEST_ID_HEADER_NAME = "yoogurt-request-id";
+
+    /**
+     * 授权码的有效期，单位：秒
+     */
+    public static final int GRANT_CODE_EXPIRE_SECONDS = 60;
 
     /** unknown */
     public static final String UNKNOWN = "unknown";

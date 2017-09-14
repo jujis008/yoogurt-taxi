@@ -2,6 +2,7 @@ package com.yoogurt.taxi.user.service.impl;
 
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
         sessionUser.setStatus(1);
         sessionUser.setGrantCode(grantCode);
         //缓存授权码，30秒内有效
-        redisHelper.set(CacheKey.GRANT_CODE_KEY + userInfo.getId(), grantCode, 300);
+        redisHelper.set(CacheKey.GRANT_CODE_KEY + userInfo.getId(), grantCode, Constants.GRANT_CODE_EXPIRE_SECONDS);
         return sessionUser;
     }
 
