@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
 @ConfigurationProperties(prefix = "yoogurt.jwt")
-public class JwtProperties {
+public class JwtConfig {
 
     private String header;
 
