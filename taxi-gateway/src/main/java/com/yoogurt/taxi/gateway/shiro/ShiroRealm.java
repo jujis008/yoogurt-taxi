@@ -81,7 +81,7 @@ public class ShiroRealm extends AuthorizingRealm{
             user.setGrantCode(obj.toString());
             user.setToken(token.getToken());
 
-            //缓存SessionUser
+            //缓存SessionUser，不需要设置过期时间，以JWT的过期时间为准
             redisHelper.setObject(CacheKey.SESSION_USER_KEY + userId, user);
             //填充principals，第一个add进去的即为PrimaryPrincipal
             SimplePrincipalCollection principals = new SimplePrincipalCollection();

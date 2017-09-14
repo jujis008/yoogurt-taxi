@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yoogurt.taxi.gateway.filter.MobileAccessFilter;
 import com.yoogurt.taxi.gateway.filter.UrlPrivilegeCtrlFilter;
+import com.yoogurt.taxi.gateway.filter.UserTokenFilter;
 import com.yoogurt.taxi.gateway.shiro.ShiroRealm;
 import com.yoogurt.taxi.gateway.shiro.cache.RedisCacheManager;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +65,7 @@ public class ShiroConfig {
         bean.setLoginUrl("/login");
         Map<String, Filter> filterMap = Maps.newHashMap();
         //自定义Filter
+        filterMap.put("userTokenFilter", getUserTokenFilter());
         filterMap.put("urlPrivilegeFilter", getUrlPrivilegeCtrlFilter());
         filterMap.put("mobileAccessFilter", getAccessFilter());
         bean.setFilters(filterMap);
@@ -104,10 +106,10 @@ public class ShiroConfig {
 
         // noSessionCreation: 要求shiro不创建session
         chains.put("/**.html", "noSessionCreation");
-        //移动端接口，对于不需要拦截的url，在mobileAccessFilter中的ignoreUrls配置
-        chains.put("/mobile/**", "noSessionCreation,mobileAccessFilter");
-        //后台接口
-        chains.put("/web/**", "urlPrivilegeFilter");
+        //需要拦截的移动端uri
+        chains.put("/mobile/**", "noSessionCreation,userTokenFilter,mobileAccessFilter");
+        //需要拦截的后台uri
+        chains.put("/web/**", "userTokenFilter,urlPrivilegeFilter");
 
         // <!-- 过滤链定义，从上向下顺序执行，一般将 /** 放在最下边 -->
         chains.put("/**", "user");
@@ -142,12 +144,13 @@ public class ShiroConfig {
 
     @Bean(name = "mobileAccessFilter")
     public MobileAccessFilter getAccessFilter() {
-        Set<String> ignoreUris = Sets.newHashSet(
-                "/mobile/user/login"
-        );
-        return new MobileAccessFilter(ignoreUris);
+        return new MobileAccessFilter();
     }
 
+    @Bean(name = "userTokenFilter")
+    public UserTokenFilter getUserTokenFilter() {
+        return new UserTokenFilter();
+    }
     /**
      * 因为需要开启rememberMe功能，需要注入一个RememberMeManager，
      * 通常情况，使用基于Cookie的实现方式。
@@ -158,7 +161,8 @@ public class ShiroConfig {
         CookieRememberMeManager rememberMeManager = new CookieRememberMeManager();
         rememberMeManager.setCipherKey(Base64.decode("4AvVhmFLUs0KTA3Kprsdag=="));
         SimpleCookie cookie = new SimpleCookie();
-        cookie.setMaxAge(2592000);
+        // 7天后过期
+        cookie.setMaxAge(604800);
         cookie.setHttpOnly(true);
         cookie.setName("yoogurt-taxi");
         rememberMeManager.setCookie(cookie);
