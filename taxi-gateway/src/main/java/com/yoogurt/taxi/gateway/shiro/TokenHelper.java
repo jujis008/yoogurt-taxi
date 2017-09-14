@@ -175,6 +175,7 @@ public final class TokenHelper {
      * @return 新的token
      */
     public String refreshToken(String token) {
+        if(isTokenExpired(token)) return null;
         String refreshedToken;
         try {
             final Claims claims = getClaims(token);
