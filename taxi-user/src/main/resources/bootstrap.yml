@@ -1,6 +1,10 @@
 spring:
   application:
     name: taxi-user
+  cloud:
+    config:
+      uri: http://192.168.0.111:9998
+      fail-fast: true
 ---
 spring:
   profiles:
