@@ -1,6 +1,10 @@
 spring:
   application:
     name: taxi-notification
+  cloud:
+    config:
+      uri: http://127.0.0.1:9998
+      fail-fast: true
 ---
 spring:
   profiles:
