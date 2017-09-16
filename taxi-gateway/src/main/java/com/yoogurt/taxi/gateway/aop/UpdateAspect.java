@@ -26,8 +26,7 @@ public class UpdateAspect {
 
     @Before("execution(* com.yoogurt.taxi.dal.mapper..*..*update*(..))" +
         "||execution(* com.yoogurt.taxi.dal.mapper..*..*edit*(..))" +
-        "||execution(* com.yoogurt.taxi.dal.mapper..*..*delete*(..))"
-    )
+        "||execution(* com.yoogurt.taxi.dal.mapper..*..*delete*(..))")
     public void before(JoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         if(args != null && args.length > 0)
@@ -49,10 +48,8 @@ public class UpdateAspect {
         if (object.getClass().isAnnotationPresent(Domain.class)) {
             Long userId = null;
             try {
+                //不需要考虑token过期的情况了
                 userId = tokenHelper.getUserId(ServletHelper.getRequest());
-                if (userId == null) {
-                    userId = tokenHelper.getUserId();
-                }
             } catch (Exception e) {
                 log.error("获取用户ID失败,{}", e);
             }
