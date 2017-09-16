@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
         if (!Encipher.matches(password, userInfo.getPassword())) return null;
         //生成6位授权码
         String grantCode = RandomUtils.getRandNum(6);
-        SessionUser sessionUser = new SessionUser(userInfo.getId().toString(), username);
+        SessionUser sessionUser = new SessionUser(userInfo.getId(), username);
         sessionUser.setStatus(1);
         sessionUser.setGrantCode(grantCode);
         //缓存授权码，30秒内有效
