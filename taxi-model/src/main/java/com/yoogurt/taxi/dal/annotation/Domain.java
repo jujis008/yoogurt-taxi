@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.common.annotation;
+package com.yoogurt.taxi.dal.annotation;
 
 import java.lang.annotation.*;
 
