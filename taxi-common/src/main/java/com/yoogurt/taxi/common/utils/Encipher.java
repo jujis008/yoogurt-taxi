@@ -14,12 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class Encipher {
 
     /**
-     * 加密强度，取值范围：[4, 31]，默认使用11
+     * 加密强度，取值范围：[4, 31]，默认使用10
      * <p>
      * 加密强度切勿过高，否则会拉长加密的时间，容易导致请求TIMEOUT。
      * </p>
      */
-    private static final int STRENGTH = 11;
+    private static final int STRENGTH = 10;
 
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(STRENGTH);
 
