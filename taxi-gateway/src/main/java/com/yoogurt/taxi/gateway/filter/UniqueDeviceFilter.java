@@ -83,7 +83,7 @@ public class UniqueDeviceFilter extends AccessControlFilter {
         if(matcher.match(IGNORE_PATTERN, uri)) return true;
         //验证token是否过期
         String authToken = tokenHelper.getAuthToken(req);
-        String userId = tokenHelper.getUserId(authToken);
+        Long userId = tokenHelper.getUserId(authToken);
         Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
         if (obj == null) return false;
         SessionUser user = (SessionUser) obj;

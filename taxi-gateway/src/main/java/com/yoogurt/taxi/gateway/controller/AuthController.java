@@ -32,7 +32,7 @@ public class AuthController {
     private TokenHelper tokenHelper;
 
     @RequestMapping(value = "/token/userId/{userId}/grantCode/{grantCode}/username/{username}", method = RequestMethod.GET)
-    public ResponseObj token(@PathVariable("userId") String userId, @PathVariable("grantCode") String grantCode, @PathVariable("username") String username) {
+    public ResponseObj token(@PathVariable("userId") Long userId, @PathVariable("grantCode") String grantCode, @PathVariable("username") String username) {
 
         String authToken = authService.getAuthToken(userId, grantCode, username);
         if(StringUtils.isNoneBlank(authToken)){

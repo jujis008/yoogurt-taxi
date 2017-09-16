@@ -48,9 +48,9 @@ public final class TokenHelper {
      * @param username 用户登录名
      * @return jwt 颁发的token
      */
-    public String createToken(String userId, String username) {
+    public String createToken(Long userId, String username) {
         Claims claims = new DefaultClaims();
-        claims.setId(userId);
+        claims.setId(userId.toString());
         claims.setSubject(username);
         claims.setIssuer(CLAIM_KEY_ISS);
         claims.setIssuedAt(new Date());
@@ -62,12 +62,12 @@ public final class TokenHelper {
      * @param token token
      * @return 用户id
      */
-    public String getUserId(String token) {
+    public Long getUserId(String token) {
         if(StringUtils.isBlank(token)) return null;
-        String userId;
+        Long userId;
         try {
             final Claims claims = getClaims(token);
-            userId = claims.getId();
+            userId = Long.valueOf(claims.getId());
         } catch (ExpiredJwtException e) {
             userId = null;
             log.error("token过期:{}", e);
@@ -80,7 +80,7 @@ public final class TokenHelper {
      * @param request request
      * @return userId
      */
-    public String getUserId(HttpServletRequest request) {
+    public Long getUserId(HttpServletRequest request) {
         String authToken = getAuthToken(request);
         return getUserId(authToken);
     }
@@ -89,12 +89,12 @@ public final class TokenHelper {
      * 通过shiro获取用户id，App客户端慎用
      * @return 用户id
      */
-    public String getUserId() {
+    public Long getUserId() {
         Subject subject = SecurityUtils.getSubject();
         if (subject.getPrincipal() != null) {
-            return subject.getPrincipal().toString();
+            return Long.valueOf(subject.getPrincipal().toString());
         }
-        return StringUtils.EMPTY;
+        return null;
     }
 
     /**

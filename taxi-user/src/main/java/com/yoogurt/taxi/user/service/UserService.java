@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.user.service;
 
 import com.yoogurt.taxi.common.bo.SessionUser;
+import com.yoogurt.taxi.dal.beans.UserInfo;
 
 public interface UserService {
 

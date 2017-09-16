@@ -1,10 +1,14 @@
 package com.yoogurt.taxi.dal.beans;
 
 import com.yoogurt.taxi.dal.common.SuperModel;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
 
+@Getter
+@Setter
 @Table(name = "driver_info")
 public class DriverInfo extends SuperModel{
     @Id
