@@ -1,12 +1,11 @@
 package com.yoogurt.taxi.gateway.aop;
 
-import com.yoogurt.taxi.common.annotation.Domain;
+import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.gateway.shiro.ServletHelper;
 import com.yoogurt.taxi.gateway.shiro.TokenHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
