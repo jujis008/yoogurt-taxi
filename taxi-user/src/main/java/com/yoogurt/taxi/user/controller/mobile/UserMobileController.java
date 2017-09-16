@@ -3,6 +3,7 @@ package com.yoogurt.taxi.user.controller.mobile;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.user.Form.LoginForm;
 import com.yoogurt.taxi.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,10 @@ public class UserMobileController {
     }
 
     @RequestMapping("/tt")
-    public String tt() {
-        return "tt";
+    public boolean tt() {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserId(123576574L);
+        return userService.addUserInfo(userInfo);
     }
+
 }

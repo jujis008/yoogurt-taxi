@@ -10,4 +10,8 @@ public interface UserService {
     UserInfo getUserInfo(Integer id);
 
     UserInfo getUserInfo(String username);
+
+    boolean addUserInfo(UserInfo userInfo);
+
+    boolean deleteUserInfo(Long userId);
 }

@@ -51,4 +51,14 @@ public class UserServiceImpl implements UserService {
         probe.setUsername(username);
         return userDao.selectOne(probe);
     }
+
+    @Override
+    public boolean addUserInfo(UserInfo userInfo) {
+        return userDao.insert(userInfo) == 1;
+    }
+
+    @Override
+    public boolean deleteUserInfo(Long userId) {
+        return userDao.deleteById(userId) == 1;
+    }
 }
