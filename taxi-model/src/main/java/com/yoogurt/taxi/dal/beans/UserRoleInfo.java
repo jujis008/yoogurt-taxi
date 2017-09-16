@@ -1,10 +1,15 @@
 package com.yoogurt.taxi.dal.beans;
 
+import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
-
+@Domain
+@Setter
+@Getter
 @Table(name = "user_role_info")
 public class UserRoleInfo extends SuperModel{
     @Id
@@ -16,48 +21,5 @@ public class UserRoleInfo extends SuperModel{
 
     @Column(name = "role_id")
     private Long roleId;
-
-
-    /**
-     * @return id
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * @param id
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * @return user_id
-     */
-    public String getUserId() {
-        return userId;
-    }
-
-    /**
-     * @param userId
-     */
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    /**
-     * @return role_id
-     */
-    public Long getRoleId() {
-        return roleId;
-    }
-
-    /**
-     * @param roleId
-     */
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
-    }
 
 }

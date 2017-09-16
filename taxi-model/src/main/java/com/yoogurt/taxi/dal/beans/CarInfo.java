@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.dal.beans;
 
+import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.Date;
 
+@Domain
 @Getter
 @Setter
 @Table(name = "car_info")
