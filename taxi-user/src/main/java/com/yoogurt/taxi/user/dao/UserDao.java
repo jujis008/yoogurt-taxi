@@ -2,7 +2,6 @@ package com.yoogurt.taxi.user.dao;
 
 import com.yoogurt.taxi.common.dao.IDao;
 import com.yoogurt.taxi.dal.mapper.UserInfoMapper;
-import com.yoogurt.taxi.dal.model.UserInfo;
 
 /**
  * Description:

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoogurt.taxi.dal.mapper.AuthorityInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.model.AuthorityInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="authority_name" jdbcType="VARCHAR" property="authorityName" />
+    <result column="authority_group" jdbcType="VARCHAR" property="authorityGroup" />
+    <result column="uri" jdbcType="VARCHAR" property="uri" />
+    <result column="associated_control" jdbcType="VARCHAR" property="associatedControl" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="creator" jdbcType="BIGINT" property="creator" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+    <result column="modifier" jdbcType="BIGINT" property="modifier" />
+  </resultMap>
+</mapper>

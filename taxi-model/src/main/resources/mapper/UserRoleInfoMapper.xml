@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoogurt.taxi.dal.mapper.UserRoleInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.model.UserRoleInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    <result column="is_deleted" jdbcType="TINYINT" property="isDeleted" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="creator" jdbcType="BIGINT" property="creator" />
+    <result column="gmt_modifier" jdbcType="TIMESTAMP" property="gmtModifier" />
+    <result column="modify" jdbcType="BIGINT" property="modify" />
+  </resultMap>
+</mapper>

@@ -6,13 +6,10 @@ import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
-import com.yoogurt.taxi.dal.model.UserInfo;
 import com.yoogurt.taxi.user.dao.UserDao;
 import com.yoogurt.taxi.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
