@@ -31,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
      * @return 新生成的token
      */
     @Override
-    public String getAuthToken(String userId, String grantCode, String username) {
+    public String getAuthToken(Long userId, String grantCode, String username) {
         try {
             //生成token
             String authToken = tokenHelper.createToken(userId, username);
@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
         //先生成一个新的token
         String newToken = tokenHelper.refreshToken(token);
         if (StringUtils.isNoneBlank(newToken)) {
-            String userId = tokenHelper.getUserId(newToken);
+            Long userId = tokenHelper.getUserId(newToken);
             //获取缓存用户信息
             Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
             if(obj == null) return null; //缓存失效

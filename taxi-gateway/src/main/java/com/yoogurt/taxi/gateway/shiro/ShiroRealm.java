@@ -75,7 +75,7 @@ public class ShiroRealm extends AuthorizingRealm{
             Object obj = redisHelper.get(CacheKey.GRANT_CODE_KEY + token.getUserId());
             //grantCode不存在，或者已失效
             if(obj == null || !obj.toString().equals(token.getGrantCode())) return null;
-            String userId = token.getUserId();
+            Long userId = token.getUserId();
             String username = token.getUsername();
             SessionUser user = new SessionUser(userId, username);
             user.setGrantCode(obj.toString());

@@ -25,7 +25,7 @@ public class TaxiGatewayApplicationTests {
 
 	@Test
 	public void createTokenTest() {
-		String token = tokenHelper.createToken("1709141005132330", "18814892833");
+		String token = tokenHelper.createToken(17091410051320L, "18814892833");
 		Assert.assertNotNull("token is null", token);
 		log.info("获得的token：" + token);
 	}
@@ -34,7 +34,7 @@ public class TaxiGatewayApplicationTests {
 	public void getUserIdTest() {
 
 		String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJqdGkiOiIxNzA5MTQxMDA1MTMyMzMwIiwic3ViIjoiMTg4MTQ4OTI4MzMiLCJpc3MiOiJ5b29ndXJ0LnRheGkuZ2F0ZXdheSIsImlhdCI6MTUwNTM1NjUyMiwiZXhwIjoxNTA1MzYyNTIyfQ.Te4Huo8Uvj9Y-ELhwfHfyivo88ewSMS5zPM-TscZcIUGiZOL7iGTNgkY6zIeFUwJ8RywdvxNMGxiNeQf5TpsKQ";
-		String userId = tokenHelper.getUserId(token);
+		Long userId = tokenHelper.getUserId(token);
 		Assert.assertEquals("1709141005132330", userId);
 		log.info("获得的userId：" + userId);
 	}
