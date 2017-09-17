@@ -24,7 +24,8 @@ public class InsertAspect {
     private TokenHelper tokenHelper;
 
     @Before("execution(* com.yoogurt.taxi.dal.mapper..*..insert*(..)) " +
-            "|| execution(* com.yoogurt.taxi.dal.mapper..*..add*(..))")
+            "|| execution(* com.yoogurt.taxi.dal.mapper..*..add*(..)) " +
+            "|| execution(* com.yoogurt.taxi.*.dao..*..add*(..))")
     public void before(JoinPoint joinPoint) throws Throwable {
 
         Object[] args = joinPoint.getArgs();
