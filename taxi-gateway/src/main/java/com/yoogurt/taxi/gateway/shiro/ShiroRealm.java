@@ -3,6 +3,9 @@ package com.yoogurt.taxi.gateway.shiro;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
+import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.model.AuthorityModel;
+import com.yoogurt.taxi.gateway.rest.AuthorityService;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -17,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
+import java.util.List;
+
 /**
  * Description:
  * 用于实现shiro的鉴权（Authentication）和授权（Authorization）。
@@ -28,6 +33,9 @@ public class ShiroRealm extends AuthorizingRealm{
 
     @Autowired
     private RedisHelper redisHelper;
+
+    @Autowired
+    private AuthorityService authorityService;
 
     /**
      * <p>授权方法，标识用户能访问的url。</p>
@@ -43,10 +51,15 @@ public class ShiroRealm extends AuthorizingRealm{
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-
-        authorizationInfo.addRole("ADMIN");
-        authorizationInfo.addStringPermission("/web/user/saveUser");
-
+        final Long userId = Long.valueOf(principals.getPrimaryPrincipal().toString());
+        final ResponseObj obj = authorityService.getAuthoritiesByUserId(userId);
+        if (obj.getBody() != null) {
+            List<AuthorityModel> authorities = (List<AuthorityModel>) obj.getBody();
+            authorities.forEach(authority -> {
+//                authorizationInfo.addRole("ADMIN");
+                authorizationInfo.addStringPermission(authority.getUri());
+            });
+        }
         return authorizationInfo;
     }
 
@@ -89,6 +102,7 @@ public class ShiroRealm extends AuthorizingRealm{
             //UserId为PrimaryPrincipal，可直接使用Subject.getPrincipal()获取
             principals.add(userId, "UserId");
             principals.add(username, "UserName");
+            principals.add(token.getFrom(), "From");
             principals.add(user, "UserInfo");
             //userId和username拼接，MD5加密，作为shiro中的临时密码
             String credentials = DigestUtils.md5DigestAsHex((userId + username).getBytes());
