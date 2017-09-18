@@ -1,6 +1,5 @@
 package com.yoogurt.taxi.gateway.shiro;
 
-import com.yoogurt.taxi.dal.enums.UserTypeEnums;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shiro.authc.UsernamePasswordToken;

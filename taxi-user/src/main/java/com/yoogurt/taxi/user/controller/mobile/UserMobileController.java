@@ -1,16 +1,17 @@
 package com.yoogurt.taxi.user.controller.mobile;
 
-import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.enums.UserTypeEnums;
 import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.user.service.LoginService;
 import com.yoogurt.taxi.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -58,6 +59,6 @@ public class UserMobileController {
         if (StringUtils.isBlank(password)) {
             return ResponseObj.fail(StatusCode.PARAM_BLANK.getStatus(),"请填写密码");
         }
-        return loginService.login(username,password, UserTypeEnums.USER_WEB);
+        return loginService.login(username,password, UserType.USER_WEB);
     }
 }

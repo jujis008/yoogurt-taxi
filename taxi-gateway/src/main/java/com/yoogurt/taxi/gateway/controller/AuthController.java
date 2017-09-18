@@ -3,7 +3,6 @@ package com.yoogurt.taxi.gateway.controller;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.enums.UserTypeEnums;
 import com.yoogurt.taxi.gateway.service.AuthService;
 import com.yoogurt.taxi.common.helper.TokenHelper;
 import lombok.extern.slf4j.Slf4j;

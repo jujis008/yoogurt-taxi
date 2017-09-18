@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.dal.enums;
 
-public enum UserFromEnums {
+public enum UserFrom {
     IMPORT(10,"导入"),
     APP(20,"app注册"),
     WEB(30,"web端注册")
@@ -9,7 +9,7 @@ public enum UserFromEnums {
     private Integer code;
     private String name;
 
-    UserFromEnums(Integer code, String name) {
+    UserFrom(Integer code, String name) {
         this.code = code;
         this.name = name;
     }

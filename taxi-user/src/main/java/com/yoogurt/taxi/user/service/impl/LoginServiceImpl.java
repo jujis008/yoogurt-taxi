@@ -8,10 +8,10 @@ import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.enums.UserFromEnums;
-import com.yoogurt.taxi.dal.enums.UserStatusEnums;
-import com.yoogurt.taxi.dal.enums.UserTypeEnums;
 import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.enums.UserFrom;
+import com.yoogurt.taxi.dal.enums.UserStatus;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.user.dao.UserDao;
 import com.yoogurt.taxi.user.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class LoginServiceImpl implements LoginService {
 
 
     @Override
-    public ResponseObj login(String username, String password, UserTypeEnums userType) {
+    public ResponseObj login(String username, String password, UserType userType) {
         Example example = new Example(UserInfo.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("username", username).andEqualTo("type", userType.getCode());
@@ -54,7 +54,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public ResponseObj register(String username, String password, UserTypeEnums userType) {
+    public ResponseObj register(String username, String password, UserType userType) {
         Example example = new Example(UserInfo.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("username", username).andEqualTo("type", userType.getCode());
@@ -67,11 +67,11 @@ public class LoginServiceImpl implements LoginService {
         user.setUsername(username);
         user.setLoginPassword(Encipher.encrypt(password));
         user.setType(userType.getCode());
-        user.setStatus(UserStatusEnums.UN_AUTHENTICATE.getCode());
+        user.setStatus(UserStatus.UN_AUTHENTICATE.getCode());
         user.setModifier(Long.valueOf(userId));
         user.setGmtModify(new Date());
-        user.setUserFrom(UserFromEnums.APP.getCode());
-        user.setDeleted(Boolean.FALSE);
+        user.setUserFrom(UserFrom.APP.getCode());
+        user.setIsDeleted(Boolean.FALSE);
         return null;
     }
 

@@ -1,10 +1,10 @@
 package com.yoogurt.taxi.user.controller.web;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.enums.UserFromEnums;
-import com.yoogurt.taxi.dal.enums.UserStatusEnums;
-import com.yoogurt.taxi.dal.enums.UserTypeEnums;
 import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.enums.UserFrom;
+import com.yoogurt.taxi.dal.enums.UserStatus;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,11 +43,11 @@ public class UserWebController {
         user.setUsername(username);
         user.setLoginPassword(password);
         user.setName(name);
-        user.setStatus(UserStatusEnums.AUTHENTICATED.getCode());
-        user.setType(UserTypeEnums.USER_WEB.getCode());
-        user.setUserFrom(UserFromEnums.WEB.getCode());
+        user.setStatus(UserStatus.AUTHENTICATED.getCode());
+        user.setType(UserType.USER_WEB.getCode());
+        user.setUserFrom(UserFrom.WEB.getCode());
         user.setUserId(new Long("1232131463"));
-        user.setDeleted(Boolean.TRUE);
+        user.setIsDeleted(Boolean.TRUE);
         user.setGmtCreate(new Date());
         user.setCreator(8888L);
         user.setGmtModify(new Date());
