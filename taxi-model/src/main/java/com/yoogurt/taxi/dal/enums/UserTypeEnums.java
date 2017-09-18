@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.dal.enums;
 
-public enum UserType {
+public enum UserTypeEnums {
     SUPER_ADMIN(0,"超级管理员"),
     USER_WEB(10,"后端用户"),
     USER_APP_AGENT(20,"代理端用户"),
@@ -10,8 +10,8 @@ public enum UserType {
     private Integer code;
     private String name;
 
-    public static UserType getEnumsByCode(Integer code) {
-        for (UserType enums: UserType.values()) {
+    public static UserTypeEnums getEnumsByCode(Integer code) {
+        for (UserTypeEnums enums: UserTypeEnums.values()) {
             if(code.equals(enums.getCode())) {
                 return  enums;
             }
@@ -19,7 +19,7 @@ public enum UserType {
         return null;
     }
 
-    UserType(Integer code, String name) {
+    UserTypeEnums(Integer code, String name) {
         this.code = code;
         this.name = name;
     }
