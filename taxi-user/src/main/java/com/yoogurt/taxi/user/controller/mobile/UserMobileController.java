@@ -2,16 +2,13 @@ package com.yoogurt.taxi.user.controller.mobile;
 
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.user.service.LoginService;
 import com.yoogurt.taxi.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -44,12 +41,12 @@ public class UserMobileController {
 //        return ResponseObj.success(userService.getUserInfo(id));
 //    }
 
-    @RequestMapping("/tt")
-    public boolean tt() {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUserId(123576574L);
-        return userService.addUserInfo(userInfo);
-    }
+//    @RequestMapping("/tt")
+//    public boolean tt() {
+//        UserInfo userInfo = new UserInfo();
+//        userInfo.setUserId(123576574L);
+//        return userService.addUserInfo(userInfo);
+//    }
 
     @RequestMapping(value = "/i/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj login(String username, String password) {

@@ -8,10 +8,10 @@ import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.enums.UserFrom;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.user.dao.UserDao;
 import com.yoogurt.taxi.user.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,11 +68,14 @@ public class LoginServiceImpl implements LoginService {
         user.setLoginPassword(Encipher.encrypt(password));
         user.setType(userType.getCode());
         user.setStatus(UserStatus.UN_AUTHENTICATE.getCode());
-        user.setModifier(Long.valueOf(userId));
-        user.setGmtModify(new Date());
         user.setUserFrom(UserFrom.APP.getCode());
         user.setIsDeleted(Boolean.FALSE);
-        return null;
+        user.setModifier(Long.valueOf(userId));
+        user.setGmtModify(new Date());
+        user.setGmtCreate(new Date());
+        user.setCreator(Long.valueOf(userId));
+        userDao.insert(user);
+        return ResponseObj.success();
     }
 
 }
