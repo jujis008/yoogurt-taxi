@@ -1,9 +1,4 @@
-# 以下为自定义的配置项
-yoogurt:
-  #关于JWT方面的配置项
-  jwt:
-    header: Authorization
-    secret: dGF4aSFAIw==
-    basic: basic
-    #7天后过期
-    expireSeconds: 604800
+zuul:
+  # 设置敏感的Header，默认是"Cookie", "Set-Cookie", "Authorization"
+  # 如果加入了Authorization，gateway下游的服务将收不到这个Header了，无法获取token
+  sensitive-headers: Cookie, Set-Cookie
