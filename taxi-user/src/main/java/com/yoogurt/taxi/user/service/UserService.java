@@ -5,11 +5,7 @@ import com.yoogurt.taxi.dal.beans.UserInfo;
 
 public interface UserService {
 
-    SessionUser doLogin(String username, String password);
-
-    UserInfo getUserInfo(Integer id);
-
-    UserInfo getUserInfo(String username);
+    UserInfo getUserByUserId(Integer id);
 
     boolean addUserInfo(UserInfo userInfo);
 
