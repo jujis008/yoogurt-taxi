@@ -19,11 +19,18 @@ public final class Constants {
     public static final int PASSWORD_RETRY_INTERVAL_SECONDS = 1800;
 
     /**
-     * 为了保证API的幂等性，每次请求需要有一个唯一的REQUEST_ID，所以加一个自定义Header：yoogurt-request-id: <request_id>。
+     * 为了保证API的幂等性，每次请求需要有一个唯一的REQUEST_ID，
+     * 所以加一个自定义Header：yoogurt-request-id: <request_id>。
      * 系统中用到的request_id生成算法暂定为UUID。
      * 对于只读操作的API，request_id不强制性要求传入，涉及到对系统数据有更改的操作，则是必传的！
      */
-    public static final String REQUEST_ID_HEADER_NAME = "yoogurt-request-id";
+    public static final String REQUEST_ID_HEADER_NAME = "X-yoogurt-request-id";
+
+    /**
+     * 标识App的用户类型
+     * (20,"代理端用户"), (30,"正式端用户"),
+     */
+    public static final String USER_TYPE_HERDER_NAME = "X-yoogurt-user-type";
 
     /**
      * 授权码的有效期，单位：秒
