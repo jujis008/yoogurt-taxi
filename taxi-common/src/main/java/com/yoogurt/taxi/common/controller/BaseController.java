@@ -7,6 +7,8 @@ import com.yoogurt.taxi.common.helper.ServletHelper;
 import com.yoogurt.taxi.common.helper.TokenHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Description:
  * 公共Controller，所有Controller继承于此
@@ -29,8 +31,21 @@ public class BaseController {
         return tokenHelper.getUserId(ServletHelper.getRequest());
     }
 
+    /**
+     * 从请求中获取userName
+     * @return username
+     */
     public String getUserName() {
         return tokenHelper.getUserName(ServletHelper.getRequest());
+    }
+
+    /**
+     * 从请求中获取用户类型
+     * @return 用户类型
+     */
+    public Integer getUserType() {
+        HttpServletRequest request = ServletHelper.getRequest();
+        return tokenHelper.getUserType(request);
     }
 
     /**

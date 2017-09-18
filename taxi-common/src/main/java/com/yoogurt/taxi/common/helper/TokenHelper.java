@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.common.helper;
 
 import com.google.common.collect.Maps;
+import com.yoogurt.taxi.common.constant.Constants;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClaims;
 import lombok.extern.slf4j.Slf4j;
@@ -126,6 +127,17 @@ public final class TokenHelper {
         String authToken = getAuthToken(request);
         if(StringUtils.isBlank(authToken)) return null;
         return getUserName(authToken);
+    }
+
+    /**
+     * 从请求中获取用户类型
+     * @return 用户类型
+     */
+    public Integer getUserType(HttpServletRequest request) {
+        if(request == null) return -1;
+        String userType = request.getHeader(Constants.USER_TYPE_HERDER_NAME);
+        if(StringUtils.isBlank(userType)) return -1;
+        return Integer.valueOf(userType);
     }
 
     /**
