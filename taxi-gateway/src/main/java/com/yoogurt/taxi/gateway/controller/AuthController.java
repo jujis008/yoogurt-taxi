@@ -32,7 +32,7 @@ public class AuthController extends BaseController {
     @Autowired
     private TokenHelper tokenHelper;
 
-    @RequestMapping(value = "/token/userId/{userId}/grantCode/{grantCode}/username/{username}/type/{type}", method = RequestMethod.GET)
+    @RequestMapping(value = "/token/userId/{userId}/grantCode/{grantCode}/username/{username}", method = RequestMethod.GET)
     public ResponseObj token(@PathVariable("userId") Long userId,
                              @PathVariable("grantCode") String grantCode,
                              @PathVariable("username") String username) {
