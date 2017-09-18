@@ -22,6 +22,7 @@ import java.net.InetAddress;
 @EnableFeignClients
 @EnableDiscoveryClient
 @SpringBootApplication
+@ComponentScan({"com.yoogurt.taxi"})
 public class TaxiGatewayBootstrap {
 
     public static void main(String[] args) throws Exception {
