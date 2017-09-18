@@ -119,6 +119,7 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
         token.setUserId(userId);
         token.setGrantCode(user.getGrantCode());
         token.setToken(user.getToken());
+
         token.setRememberMe(true);
         token.setLoginAgain(true);
         return token;

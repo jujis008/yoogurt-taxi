@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.gateway.shiro;
 
+import com.yoogurt.taxi.dal.enums.UserTypeEnums;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -38,6 +39,11 @@ public class UserAuthenticationToken extends UsernamePasswordToken {
      * 传入的token中，loginAgain赋值为true。
      */
     private boolean loginAgain = false;
+
+    /**
+     * 用户类型
+     */
+    private Integer userType;
 
     /**
      * 请求来源，不同的来源，处理会有所不同。

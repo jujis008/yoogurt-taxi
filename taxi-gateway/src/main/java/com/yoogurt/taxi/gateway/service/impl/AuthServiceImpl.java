@@ -28,10 +28,11 @@ public class AuthServiceImpl implements AuthService {
      * @param userId 用户id
      * @param grantCode 登录接口返回的授权码
      * @param username 用户名
+     * @param userType 用户类型
      * @return 新生成的token
      */
     @Override
-    public String getAuthToken(Long userId, String grantCode, String username) {
+    public String getAuthToken(Long userId, String grantCode, String username, Integer userType) {
         try {
             //生成token
             String authToken = tokenHelper.createToken(userId, username);
@@ -42,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
             token.setGrantCode(grantCode);
             token.setUsername(username);
             token.setToken(authToken);
+            token.setUserType(userType);
             token.setRememberMe(true);
             token.setLoginAgain(false);
 

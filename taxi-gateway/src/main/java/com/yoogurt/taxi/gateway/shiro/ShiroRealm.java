@@ -79,6 +79,7 @@ public class ShiroRealm extends AuthorizingRealm{
             String username = token.getUsername();
             SessionUser user = new SessionUser(userId, username);
             user.setGrantCode(obj.toString());
+            user.setType(token.getUserType());
             user.setToken(token.getToken());
 
             //缓存SessionUser，不需要设置过期时间，以JWT的过期时间为准

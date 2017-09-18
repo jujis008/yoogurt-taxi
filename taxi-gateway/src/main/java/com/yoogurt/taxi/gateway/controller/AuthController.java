@@ -1,7 +1,9 @@
 package com.yoogurt.taxi.gateway.controller;
 
+import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.enums.UserTypeEnums;
 import com.yoogurt.taxi.gateway.service.AuthService;
 import com.yoogurt.taxi.common.helper.TokenHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 @RestController
 @RequestMapping("/")
-public class AuthController {
+public class AuthController extends BaseController {
 
     @Autowired
     private AuthService authService;
@@ -31,13 +33,15 @@ public class AuthController {
     @Autowired
     private TokenHelper tokenHelper;
 
-    @RequestMapping(value = "/token/userId/{userId}/grantCode/{grantCode}/username/{username}", method = RequestMethod.GET)
-    public ResponseObj token(@PathVariable("userId") Long userId, @PathVariable("grantCode") String grantCode, @PathVariable("username") String username) {
+    @RequestMapping(value = "/token/userId/{userId}/grantCode/{grantCode}/username/{username}/type/{type}", method = RequestMethod.GET)
+    public ResponseObj token(@PathVariable("userId") Long userId,
+                             @PathVariable("grantCode") String grantCode,
+                             @PathVariable("username") String username) {
 
-        String authToken = authService.getAuthToken(userId, grantCode, username);
-        if(StringUtils.isNoneBlank(authToken)){
-            return ResponseObj.success(authToken);
-        }
+        Integer userType = super.getUserType();
+        String authToken = authService.getAuthToken(userId, grantCode, username, userType);
+        if(StringUtils.isNoneBlank(authToken)) return ResponseObj.success(authToken);
+
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "授权码不存在或已过期");
     }
 
