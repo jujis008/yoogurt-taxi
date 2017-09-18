@@ -44,6 +44,11 @@ public class SessionUser implements Serializable{
     private Integer status;
 
     /**
+     * 用户类型
+     */
+    private Integer type;
+
+    /**
      * 系统颁发的token，使用授权码获取
      */
     private String token;
