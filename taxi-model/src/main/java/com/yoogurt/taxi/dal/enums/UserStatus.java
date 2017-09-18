@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.dal.enums;
 
 
-public enum UserStatusEnums {
+public enum UserStatus {
     UN_ACTIVE(10,"未激活"),
     UN_AUTHENTICATE(20,"未认证"),
     AUTHENTICATED(30,"已认证"),
@@ -10,8 +10,8 @@ public enum UserStatusEnums {
     private Integer code;
     private String name;
 
-    public static UserStatusEnums getEnumsByCode(Integer code) {
-        for (UserStatusEnums enums:UserStatusEnums.values()) {
+    public static UserStatus getEnumsByCode(Integer code) {
+        for (UserStatus enums: UserStatus.values()) {
             if(code.equals(enums)) {
                 return enums;
             }
@@ -19,7 +19,7 @@ public enum UserStatusEnums {
         return null;
     }
 
-    UserStatusEnums(Integer code, String name) {
+    UserStatus(Integer code, String name) {
         this.code = code;
         this.name = name;
     }
