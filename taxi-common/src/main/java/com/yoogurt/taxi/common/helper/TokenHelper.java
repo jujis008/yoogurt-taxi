@@ -1,14 +1,10 @@
-package com.yoogurt.taxi.gateway.shiro;
+package com.yoogurt.taxi.common.helper;
 
 import com.google.common.collect.Maps;
-import com.yoogurt.taxi.gateway.config.JwtConfig;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClaims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +15,25 @@ import java.util.Map;
 @Component
 public final class TokenHelper {
 
-    @Autowired
-    private JwtConfig jwtConfig;
+    /**
+     * Authorization: basic <access-token>
+     */
+    private static final String BASIC = "basic";
+
+    /**
+     * 头部的键名
+     */
+    private static final String HEADER = "Authorization";
+
+    /**
+     * 生成token的密钥
+     */
+    private static final String SECRET = "dGF4aSFAIw==";
+
+    /**
+     * token过期时间，7天
+     */
+    private static final int EXPIRE_SECONDS = 604800;
 
     /**
      * TOKEN 的颁发者，规定为yoogurt.taxi.gateway
@@ -34,9 +47,9 @@ public final class TokenHelper {
      */
     public String getAuthToken(HttpServletRequest request) {
         if(request == null) return StringUtils.EMPTY;
-        String content = request.getHeader(jwtConfig.getHeader());
+        String content = request.getHeader(HEADER);
         if(StringUtils.isBlank(content)) return StringUtils.EMPTY;
-        if(!StringUtils.startsWith(content, jwtConfig.getBasic())) return StringUtils.EMPTY;
+        if(!StringUtils.startsWith(content, BASIC)) return StringUtils.EMPTY;
         String[] contents = content.split(StringUtils.SPACE);
         if(contents.length < 2) return StringUtils.EMPTY;
         return contents[1];
@@ -82,19 +95,8 @@ public final class TokenHelper {
      */
     public Long getUserId(HttpServletRequest request) {
         String authToken = getAuthToken(request);
+        if(StringUtils.isBlank(authToken)) return null;
         return getUserId(authToken);
-    }
-
-    /**
-     * 通过shiro获取用户id，App客户端慎用
-     * @return 用户id
-     */
-    public Long getUserId() {
-        Subject subject = SecurityUtils.getSubject();
-        if (subject.getPrincipal() != null) {
-            return Long.valueOf(subject.getPrincipal().toString());
-        }
-        return null;
     }
 
     /**
@@ -102,17 +104,28 @@ public final class TokenHelper {
      * @param token token
      * @return 用户登录名
      */
-    public String getUsername(String token) {
+    public String getUserName(String token) {
         if(StringUtils.isBlank(token)) return null;
         String username;
         try {
             final Claims claims = getClaims(token);
             username = claims.getSubject();
         } catch (ExpiredJwtException e) {
-            username = StringUtils.EMPTY;
+            username = null;
             log.error("token过期:{}", e);
         }
         return username;
+    }
+
+    /**
+     * 从request中获取username
+     * @param request request
+     * @return 用户登录名
+     */
+    public String getUserName(HttpServletRequest request) {
+        String authToken = getAuthToken(request);
+        if(StringUtils.isBlank(authToken)) return null;
+        return getUserName(authToken);
     }
 
     /**
@@ -171,7 +184,7 @@ public final class TokenHelper {
      */
     public long remainTimes(String token) {
         Date expirationDate = getExpirationDate(token);
-        return expirationDate.before(new Date()) ? 0L : (expirationDate.getTime() - new Date().getTime());
+        return expirationDate != null && expirationDate.before(new Date()) ? (expirationDate.getTime() - new Date().getTime()) : 0L;
     }
 
     /**
@@ -198,7 +211,7 @@ public final class TokenHelper {
      * @param claims token的负载
      * @return token
      */
-    protected String generateToken(Claims claims) {
+    private String generateToken(Claims claims) {
         Map<String, Object> header = Maps.newHashMap();
         header.put("alg", SignatureAlgorithm.HS512.getValue());
         header.put("typ", "JWT");
@@ -206,7 +219,7 @@ public final class TokenHelper {
                 .setHeader(header)
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())
-                .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret())
+                .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
 
@@ -219,7 +232,7 @@ public final class TokenHelper {
         Claims claims;
         try {
             claims = Jwts.parser()
-                    .setSigningKey(jwtConfig.getSecret())
+                    .setSigningKey(SECRET)
                     .parseClaimsJws(token)
                     .getBody();
         } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
@@ -234,6 +247,6 @@ public final class TokenHelper {
      * @return 过期时间
      */
     private Date generateExpirationDate() {
-        return new Date(System.currentTimeMillis() + jwtConfig.getExpireSeconds() * 1000);
+        return new Date(System.currentTimeMillis() + EXPIRE_SECONDS * 1000);
     }
 }

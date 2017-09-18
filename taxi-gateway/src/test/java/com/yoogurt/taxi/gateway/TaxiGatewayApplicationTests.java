@@ -1,18 +1,14 @@
 package com.yoogurt.taxi.gateway;
 
-import com.yoogurt.taxi.gateway.shiro.TokenHelper;
+import com.yoogurt.taxi.common.helper.TokenHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
@@ -42,7 +38,7 @@ public class TaxiGatewayApplicationTests {
 	@Test
 	public void getUserNameTest() {
 		String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJqdGkiOiIxNzA5MTQxMDA1MTMyMzMwIiwic3ViIjoiMTg4MTQ4OTI4MzMiLCJpc3MiOiJ5b29ndXJ0LnRheGkuZ2F0ZXdheSIsImlhdCI6MTUwNTM1NjUyMiwiZXhwIjoxNTA1MzYyNTIyfQ.Te4Huo8Uvj9Y-ELhwfHfyivo88ewSMS5zPM-TscZcIUGiZOL7iGTNgkY6zIeFUwJ8RywdvxNMGxiNeQf5TpsKQ";
-		String username = tokenHelper.getUsername(token);
+		String username = tokenHelper.getUserName(token);
 		Assert.assertEquals("18814892833", username);
 		log.info("获得的username：" + username);
 	}

@@ -1,15 +1,13 @@
-package com.yoogurt.taxi.gateway.shiro;
+package com.yoogurt.taxi.common.helper;
 
 import com.google.common.net.HttpHeaders;
 import org.apache.commons.lang3.Validate;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.Map.Entry;

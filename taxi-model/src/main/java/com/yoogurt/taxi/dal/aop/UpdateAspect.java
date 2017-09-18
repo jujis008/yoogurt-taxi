@@ -1,8 +1,8 @@
-package com.yoogurt.taxi.gateway.aop;
+package com.yoogurt.taxi.dal.aop;
 
+import com.yoogurt.taxi.common.helper.ServletHelper;
+import com.yoogurt.taxi.common.helper.TokenHelper;
 import com.yoogurt.taxi.dal.annotation.Domain;
-import com.yoogurt.taxi.gateway.shiro.ServletHelper;
-import com.yoogurt.taxi.gateway.shiro.TokenHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.collections.CollectionUtils;

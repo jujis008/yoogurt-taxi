@@ -2,7 +2,7 @@ package com.yoogurt.taxi.gateway.filter;
 
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.gateway.shiro.TokenHelper;
+import com.yoogurt.taxi.common.helper.TokenHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;

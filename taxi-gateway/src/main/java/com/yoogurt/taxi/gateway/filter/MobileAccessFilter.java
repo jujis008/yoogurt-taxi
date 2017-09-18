@@ -6,7 +6,7 @@ import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.gateway.shiro.TokenHelper;
+import com.yoogurt.taxi.common.helper.TokenHelper;
 import com.yoogurt.taxi.gateway.shiro.UserAuthenticationToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationToken;
