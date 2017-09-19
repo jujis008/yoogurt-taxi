@@ -16,7 +16,6 @@ import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.user.UserWLModel;
 import com.yoogurt.taxi.user.dao.UserDao;
 import com.yoogurt.taxi.user.service.UserService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
