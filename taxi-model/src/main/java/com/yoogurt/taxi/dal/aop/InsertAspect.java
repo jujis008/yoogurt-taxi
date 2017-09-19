@@ -15,6 +15,10 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 为Mapper的插入方法设置切面，设置Bean中的公共字段值。
+ * @see com.yoogurt.taxi.dal.common.SuperModel
+ */
 @Slf4j
 @Aspect
 @Component
@@ -23,9 +27,7 @@ public class InsertAspect {
     @Autowired
     private TokenHelper tokenHelper;
 
-    @Before("execution(* com.yoogurt.taxi.dal.mapper..*..insert*(..)) " +
-            "|| execution(* com.yoogurt.taxi.dal.mapper..*..add*(..)) " +
-            "|| execution(* com.yoogurt.taxi.*.dao..*..add*(..))")
+    @Before("execution(* com.yoogurt.taxi.dal.mapper..*..insert*(..)) || execution(* com.yoogurt.taxi.dal.mapper..*..add*(..)) ")
     public void before(JoinPoint joinPoint) throws Throwable {
 
         Object[] args = joinPoint.getArgs();
@@ -56,12 +58,21 @@ public class InsertAspect {
                 log.error("获取用户ID失败,{}", e);
             }
 
-            try {//无特殊情况，以下四个字段一定会出现在Bean内
-                MethodUtils.invokeMethod(object, "setCreator", userId == null ? 0L : userId);
-                MethodUtils.invokeMethod(object, "setGmtCreate", new Date());
+            try {//无特殊情况，以下五个字段一定会出现在Bean内
                 MethodUtils.invokeMethod(object, "setIsDeleted", Boolean.FALSE);
-                MethodUtils.invokeMethod(object, "setModifier", userId == null ? 0L : userId);
+                MethodUtils.invokeMethod(object, "setGmtCreate", new Date());
                 MethodUtils.invokeMethod(object, "setGmtModify", new Date());
+
+                //如果没有注入修改人的id，就默认设置当前登录人的id
+                if (MethodUtils.invokeMethod(object, "getCreator", null) == null) {
+
+                    MethodUtils.invokeMethod(object, "setCreator", userId == null ? 0L : userId);
+                }
+                //如果没有注入修改人的id，就默认设置当前登录人的id
+                if (MethodUtils.invokeMethod(object, "setModifier", null) == null) {
+
+                    MethodUtils.invokeMethod(object, "setModifier", userId == null ? 0L : userId);
+                }
             } catch (Exception e) {
                 log.error("设置公共字段失败,{}", e);
             }

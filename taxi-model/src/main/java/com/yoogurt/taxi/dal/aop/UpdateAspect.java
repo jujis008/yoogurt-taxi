@@ -16,6 +16,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 为Mapper的更新方法设置切面，设置Bean中的公共字段值。
+ * @see com.yoogurt.taxi.dal.common.SuperModel
+ */
 @Slf4j
 @Aspect
 @Component
@@ -55,7 +59,12 @@ public class UpdateAspect {
             }
             try {
                 MethodUtils.invokeMethod(object, "setGmtModify", new Date());
-                MethodUtils.invokeMethod(object, "setModifier", userId == null ? 0L : userId);
+
+                //如果没有注入修改人的id，就默认设置当前登录人的id
+                if (MethodUtils.invokeMethod(object, "setModifier", null) == null) {
+
+                    MethodUtils.invokeMethod(object, "setModifier", userId == null ? 0L : userId);
+                }
             } catch (Exception e) {
                 log.error("设置公共字段失败,{}", e);
             }
