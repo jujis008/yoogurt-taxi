@@ -32,6 +32,11 @@ package com.yoogurt.taxi.common.constant;
 public final class CacheKey {
 
     /**
+     * shiro授权缓存
+     */
+    public static final String SHIRO_AUTHORITY_CACHE = "P_SHIRO_AUTHORITY_CACHE";
+
+    /**
      * 客户端登录成功，获取授权码。
      * 凭此授权码，获取系统颁发的token。
      * 成功生成token，并返回给客户端，将清除grant_code缓存。
