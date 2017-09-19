@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 自定义RedisCache,将cache对象方法全部实现
- * Created by Slahser on 8/22/16 18:14 in gogen-nirvana
+ * 自定义RedisCache,将cache对象方法全部实现。
+ * 此功能主要用于shiro的缓存，不需要每次都读取数据库。
  */
 @Component
 public class RedisCache<K, V> implements Cache<K, V> {
