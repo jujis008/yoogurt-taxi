@@ -138,7 +138,7 @@ public class ShiroConfig {
         AuthorizingRealm realm = new ShiroRealm();
         realm.setCachingEnabled(true);
         realm.setAuthorizationCachingEnabled(true);
-        realm.setAuthorizationCacheName(CacheKey.SHIRO_AUTHORITY_CACHE);
+        realm.setAuthorizationCacheName(CacheKey.SHIRO_AUTHORITY_KEY);
         realm.setCacheManager(getRedisCacheManager());
         return realm;
     }
