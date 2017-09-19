@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.gateway.config;
 
 import com.google.common.collect.Maps;
+import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.gateway.filter.MobileAccessFilter;
 import com.yoogurt.taxi.gateway.filter.UniqueDeviceFilter;
 import com.yoogurt.taxi.gateway.filter.UrlPrivilegeCtrlFilter;
@@ -11,11 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.RememberMeManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,9 +32,6 @@ import java.util.Map;
 @Slf4j
 @Configuration
 public class ShiroConfig {
-
-    @Autowired
-    private ShiroRealm shiroRealm;
 
     /**
      * shiro拦截器总配置。
@@ -115,17 +113,34 @@ public class ShiroConfig {
 
         bean.setFilterChainDefinitionMap(chains);
 
-        log.info("初始化ShiroFilterFactoryBean");
         return bean;
     }
 
+    /**
+     * 构造一个SecurityManager
+     * @return SecurityManager
+     */
     @Bean("securityManager")
     public SecurityManager getSecurityManager() {
-        log.info("初始化SecurityManager，设置ShiroRealm。");
-        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(shiroRealm);
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(getShiroRealm());
+        securityManager.setCacheManager(getRedisCacheManager());
         //cookie功能加持
         securityManager.setRememberMeManager(getRememberMeManager());
         return securityManager;
+    }
+
+    /**
+     * 构造一个AuthorizingRealm用于鉴权和授权
+     * @return {@link ShiroRealm} ShiroRealm
+     */
+    @Bean("shiroRealm")
+    public AuthorizingRealm getShiroRealm() {
+        AuthorizingRealm realm = new ShiroRealm();
+        realm.setCachingEnabled(true);
+        realm.setAuthorizationCachingEnabled(true);
+        realm.setAuthorizationCacheName(CacheKey.SHIRO_AUTHORITY_CACHE);
+        realm.setCacheManager(getRedisCacheManager());
+        return realm;
     }
 
     /**
@@ -185,7 +200,6 @@ public class ShiroConfig {
     }
 
     @Bean(name = "redisCacheManager")
-    @Deprecated
     public RedisCacheManager getRedisCacheManager() {
         return new RedisCacheManager();
     }
