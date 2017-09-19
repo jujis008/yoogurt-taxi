@@ -17,7 +17,7 @@ public class UserRoleInfo extends SuperModel{
     private Long id;
 
     @Column(name = "user_id")
-    private String userId;
+    private Long userId;
 
     @Column(name = "role_id")
     private Long roleId;

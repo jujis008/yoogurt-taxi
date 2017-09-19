@@ -1,17 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yoogurt.taxi.dal.mapper.RoleAuthorityInfoMapper">
-  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.RoleAuthorityInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="role_id" jdbcType="BIGINT" property="roleId" />
-    <result column="authority_id" jdbcType="BIGINT" property="authorityId" />
-    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="creator" jdbcType="BIGINT" property="creator" />
-    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-    <result column="modifier" jdbcType="BIGINT" property="modifier" />
-  </resultMap>
+    <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.RoleAuthorityInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="role_id" jdbcType="BIGINT" property="roleId"/>
+        <result column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="creator" jdbcType="BIGINT" property="creator"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="modifier" jdbcType="BIGINT" property="modifier"/>
+    </resultMap>
+
+    <resultMap id="AuthorityModel" type="com.yoogurt.taxi.dal.model.AuthorityModel">
+        <id column="authority_id" jdbcType="BIGINT" property="authorityId"/>
+        <result column="role_id" jdbcType="BIGINT" property="roleId"/>
+        <result column="authority_name" jdbcType="VARCHAR" property="authorityName"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+        <result column="authority_group" jdbcType="VARCHAR" property="authorityGroup"/>
+        <result column="uri" jdbcType="VARCHAR" property="uri"/>
+        <result column="associated_control" jdbcType="VARCHAR" property="associatedControl"/>
+    </resultMap>
+
+    <select id="getAuthoritiesByRoleId" parameterType="long" resultMap="AuthorityModel">
+        SELECT rau.authority_id, rau.role_id, r.role_name, au.authority_name, au.authority_group, au.uri, au.associated_control
+        FROM role_authority_info AS rau
+        LEFT JOIN authority_info AS au ON (rau.id=rau.authority_id)
+        LEFT JOIN role_info AS r ON (rau.role_id=r.id)
+        WHERE rau.role_id=#{roleId}
+        ORDER BY rau.gmt_create
+    </select>
 </mapper>

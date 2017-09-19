@@ -4,7 +4,9 @@ import com.yoogurt.taxi.dal.beans.UserRoleInfo;
 import com.yoogurt.taxi.user.dao.UserRoleDao;
 import com.yoogurt.taxi.user.service.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserRoleServiceImpl implements UserRoleService {
 
     @Autowired
