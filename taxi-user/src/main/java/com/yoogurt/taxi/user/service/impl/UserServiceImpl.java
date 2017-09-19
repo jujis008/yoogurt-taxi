@@ -1,18 +1,13 @@
 package com.yoogurt.taxi.user.service.impl;
 
-import ch.qos.logback.core.pattern.util.RegularEscapeUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
-import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.pager.Pager;
-import com.yoogurt.taxi.common.pager.WebPager;
 import com.yoogurt.taxi.common.utils.Encipher;
-import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
@@ -41,7 +36,7 @@ public class UserServiceImpl implements UserService {
     private PagerFactory webPagerFactory;
 
     @Override
-    public UserInfo getUserByUserId(Integer id) {
+    public UserInfo getUserByUserId(Long id) {
         return userDao.selectById(id);
     }
 
@@ -51,7 +46,7 @@ public class UserServiceImpl implements UserService {
         if(user == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"用户不存在");
         }
-        if(oldPassword.equals(Encipher.encrypt(user.getLoginPassword()))) {
+        if(Encipher.matches(oldPassword, user.getLoginPassword())) {
             user.setLoginPassword(Encipher.encrypt(newPassword));
             userDao.updateById(user);
             return ResponseObj.success();
@@ -66,6 +61,7 @@ public class UserServiceImpl implements UserService {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"用户不存在");
         }
         user.setAvatar(avatar);
+        userDao.updateById(user);
         return ResponseObj.success();
     }
 
@@ -110,8 +106,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseObj modifyPayPwd(Long userId, String oldPassword, String newPassword) {
         UserInfo user = userDao.selectById(userId);
-        if(user.getPayPassword().equals(Encipher.encrypt(oldPassword))) {
+        if(Encipher.matches(oldPassword, user.getPayPassword())) {
             user.setPayPassword(Encipher.encrypt(newPassword));
+            userDao.updateById(user);
             return ResponseObj.success();
         }
         return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"旧密码错误");
@@ -145,7 +142,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"账号异常");
         }
-        if(!user.getLoginPassword().equals(Encipher.encrypt(password))) {
+        if(!Encipher.matches(password, user.getLoginPassword())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"密码有误");
         }
         Object cachePhoneCode = redisHelper.get(CacheKey.VERIFY_CODE_KEY+phoneNumber);
@@ -176,15 +173,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Pager<UserInfo> getUserWebList(UserWLCondition condition) {
+    public Pager<UserWLModel> getUserWebList(UserWLCondition condition) {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
-        Example example = new Example(UserInfo.class);
-        Example.Criteria criteria = example.createCriteria();
-        if(StringUtils.isNotBlank(condition.getEmployeeNo())) {
-            criteria.andLike("employeeNo",condition.getEmployeeNo());
-        }
-//        if(condition.getName() !)
-        Page<UserInfo> userList = (Page<UserInfo>) userDao.selectByExample(example);
-        return webPagerFactory.generatePager(userList);
+        Page<UserWLModel> userWebListPage = userDao.getUserWebListPage(condition);
+        return webPagerFactory.generatePager(userWebListPage);
     }
 }

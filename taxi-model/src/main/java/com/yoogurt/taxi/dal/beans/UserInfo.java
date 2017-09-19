@@ -21,7 +21,6 @@ public class UserInfo extends SuperModel{
     /**
      * 工号
      */
-    @Id
     @Column(name = "employee_no")
     private String employeeNo;
 

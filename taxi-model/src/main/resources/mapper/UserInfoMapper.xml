@@ -1,24 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.yoogurt.taxi.dal.mapper1.UserInfoMapper">
-  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.UserInfo">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="user_id" jdbcType="BIGINT" property="userId" />
-    <id column="employee_no" jdbcType="VARCHAR" property="employeeNo" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
-    <result column="login_password" jdbcType="VARCHAR" property="loginPassword" />
-    <result column="pay_password" jdbcType="VARCHAR" property="payPassword" />
-    <result column="user_from" jdbcType="INTEGER" property="userFrom" />
-    <result column="type" jdbcType="INTEGER" property="type" />
-    <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="creator" jdbcType="BIGINT" property="creator" />
-    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-    <result column="modifier" jdbcType="BIGINT" property="modifier" />
-  </resultMap>
+<mapper namespace="com.yoogurt.taxi.dal.mapper.UserInfoMapper">
+    <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.UserInfo">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="employee_no" jdbcType="VARCHAR" property="employeeNo"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
+        <result column="login_password" jdbcType="VARCHAR" property="loginPassword"/>
+        <result column="pay_password" jdbcType="VARCHAR" property="payPassword"/>
+        <result column="user_from" jdbcType="INTEGER" property="userFrom"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="creator" jdbcType="BIGINT" property="creator"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="modifier" jdbcType="BIGINT" property="modifier"/>
+    </resultMap>
+
+    <resultMap id="userWLModel" type="com.yoogurt.taxi.dal.model.user.UserWLModel">
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="employee_no" jdbcType="VARCHAR" property="employeeNo"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="role_name" jdbcType="VARCHAR" property="roleName"/>
+    </resultMap>
+
+    <select id="getUserWebListPage" resultMap="userWLModel"
+            parameterType="com.yoogurt.taxi.dal.condition.user.UserWLCondition">
+    SELECT
+        t1.user_id,
+        t1.username,
+        t1.name,
+        t1.employee_no,
+        t1.gmt_modify,
+        t3.role_name
+    FROM user_info t1
+    LEFT JOIN user_role_info t2
+    ON t1.user_id=t2.user_id
+    LEFT JOIN role_info t3
+    ON t2.role_id=t3.id
+    <where>
+        <if test="username != null and username != ''">
+            t1.username LIKE concat('%',#{username},'%')
+        </if>
+        <if test="employeeNo != null and employeeNo != ''">
+            t1.employee_no LIKE concat('%',#{employeeNo},'%')
+        </if>
+        <if test="name != null and name != ''">
+            t1.employee_no LIKE concat('%',#{name},'%')
+        </if>
+        <if test="roleId != null">
+            t2.id = #{roleId}
+        </if>
+    </where>
+    ORDER BY t1.gmt_create DESC
+  </select>
 </mapper>

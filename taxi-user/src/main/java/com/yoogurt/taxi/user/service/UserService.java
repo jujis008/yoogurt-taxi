@@ -1,16 +1,12 @@
 package com.yoogurt.taxi.user.service;
 
-import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.pager.Pager;
-import com.yoogurt.taxi.common.pager.WebPager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.user.UserWLModel;
-
-import java.util.List;
 
 public interface UserService {
 
@@ -19,7 +15,7 @@ public interface UserService {
      * @param id
      * @return
      */
-    UserInfo getUserByUserId(Integer id);
+    UserInfo getUserByUserId(Long id);
 
     /**
      * 修改登陆密码
@@ -110,5 +106,5 @@ public interface UserService {
      * @param condition
      * @return
      */
-    Pager<UserInfo> getUserWebList(UserWLCondition condition);
+    Pager<UserWLModel> getUserWebList(UserWLCondition condition);
 }
