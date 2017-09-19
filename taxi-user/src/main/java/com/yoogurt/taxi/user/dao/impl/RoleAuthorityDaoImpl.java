@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.yoogurt.taxi.common.dao.BaseDao;
 import com.yoogurt.taxi.dal.beans.RoleAuthorityInfo;
 import com.yoogurt.taxi.dal.mapper.RoleAuthorityInfoMapper;
-import com.yoogurt.taxi.dal.model.AuthorityModel;
+import com.yoogurt.taxi.dal.model.user.AuthorityModel;
 import com.yoogurt.taxi.user.dao.RoleAuthorityDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

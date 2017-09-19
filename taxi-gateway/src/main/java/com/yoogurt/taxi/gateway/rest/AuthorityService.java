@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.gateway.rest;
 
-import com.yoogurt.taxi.dal.model.AuthorityModel;
+import com.yoogurt.taxi.dal.model.user.AuthorityModel;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

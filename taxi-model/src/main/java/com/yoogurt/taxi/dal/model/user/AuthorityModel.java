@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.dal.model;
+package com.yoogurt.taxi.dal.model.user;
 
 import lombok.Getter;
 import lombok.Setter;
