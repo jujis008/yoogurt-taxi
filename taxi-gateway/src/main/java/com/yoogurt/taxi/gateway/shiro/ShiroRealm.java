@@ -28,7 +28,6 @@ import java.util.List;
  * @Author Eric Lau
  * @Date 2017/9/5.
  */
-@Component
 public class ShiroRealm extends AuthorizingRealm{
 
     @Autowired
@@ -110,5 +109,16 @@ public class ShiroRealm extends AuthorizingRealm{
             return new SimpleAuthenticationInfo(principals, credentials, ByteSource.Util.bytes(credentials));
         }
         return null;
+    }
+
+    /**
+     * 重写方法，将userId作为一部分拼接在redis key后面
+     * @param principals 凭证
+     * @return principals.getPrimaryPrincipal()
+     */
+    @Override
+    protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
+
+        return principals.getPrimaryPrincipal();
     }
 }
