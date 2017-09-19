@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.gateway.shiro.cache;
 
+import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
@@ -21,9 +22,24 @@ public class RedisCache<K, V> implements Cache<K, V> {
     @Autowired
     private RedisHelper redisHelper;
 
-    private String shiroRedisPrefix = "shiro_redis#";
+    /**
+     * 缓存的名称
+     */
+    private String shiroRedisPrefix = CacheKey.SHIRO_AUTHORITY_KEY;
+
+    /**
+     * 缓存过期时间，默认1小时
+     */
+    private int expireSeconds = 3600;
+
 
     public RedisCache() {
+    }
+
+    public RedisCache(String name, int expireSeconds) {
+
+        this.shiroRedisPrefix = name;
+        this.expireSeconds = expireSeconds;
     }
 
     @Override
@@ -41,7 +57,7 @@ public class RedisCache<K, V> implements Cache<K, V> {
     public V put(K key, V value) throws CacheException {
 
         if (key == null || value == null) return null;
-        redisHelper.setObject(shiroRedisPrefix + key, value, 1800);
+        redisHelper.setObject(shiroRedisPrefix + key, value, expireSeconds);
         return value;
     }
 
@@ -85,5 +101,19 @@ public class RedisCache<K, V> implements Cache<K, V> {
         return values;
     }
 
+    public String getShiroRedisPrefix() {
+        return shiroRedisPrefix;
+    }
 
+    public void setShiroRedisPrefix(String shiroRedisPrefix) {
+        this.shiroRedisPrefix = shiroRedisPrefix;
+    }
+
+    public int getExpireSeconds() {
+        return expireSeconds;
+    }
+
+    public void setExpireSeconds(int expireSeconds) {
+        this.expireSeconds = expireSeconds;
+    }
 }
