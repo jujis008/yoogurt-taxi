@@ -1,6 +1,8 @@
 package com.yoogurt.taxi.gateway.filter;
 
+import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.helper.TokenHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +18,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * 通常作为第一个过滤器存在，主要判断token是否存在，以及是否过期。
+ */
 @Slf4j
 public class UserTokenFilter extends AccessControlFilter {
+
+    @Autowired
+    private RedisHelper redisHelper;
 
     @Autowired
     private TokenHelper tokenHelper;
@@ -74,9 +82,14 @@ public class UserTokenFilter extends AccessControlFilter {
         //uri忽略处理
         if(matcher.match(IGNORE_PATTERN, uri)) return true;
 
-        //token过期判定
-        String token = tokenHelper.getAuthToken(req);
-        return !tokenHelper.isTokenExpired(token);
+        Object userId = tokenHelper.getUserId(WebUtils.toHttp(request));
+        //Token是否存在
+        if (userId != null && redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId) != null) {
+            //token过期判定
+            String token = tokenHelper.getAuthToken(req);
+            return !tokenHelper.isTokenExpired(token);
+        }
+        return false;
     }
 
     /**

@@ -85,7 +85,7 @@ public class UniqueDeviceFilter extends AccessControlFilter {
         String authToken = tokenHelper.getAuthToken(req);
         Long userId = tokenHelper.getUserId(authToken);
         Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
-        if (obj == null) return false;
+        if (obj == null) return true; //token丢失交给下游的Filter处理
         SessionUser user = (SessionUser) obj;
         //判断redis缓存的token与客户端传入的token是一致的
         //token不一致说明存在多设备登录，不允许通过
@@ -111,7 +111,7 @@ public class UniqueDeviceFilter extends AccessControlFilter {
 
     public boolean kickOut(ServletRequest request, ServletResponse response) {
         try {
-            ResponseObj result = ResponseObj.fail(StatusCode.KICK_OUT.getStatus(), StatusCode.KICK_OUT.getDetail());
+            ResponseObj result = ResponseObj.fail(StatusCode.KICK_OUT, StatusCode.KICK_OUT.getDetail());
             HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             httpServletResponse.setHeader("Content-type", "application/json;charset=UTF-8");

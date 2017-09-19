@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * Description:
  * shiro过滤器，针对以 /mobile 开头的URI进行拦截处理。
- * 优先于 {@link UrlPrivilegeCtrlFilter} UrlPrivilegeCtrlFilter。
+ * 该过滤器的顺序是最后，前面的过滤器保证了token是存在的。
  * 在{@link BasicHttpAuthenticationFilter} BasicHttpAuthenticationFilter的基础上，
  * 增加了对ignoreUris的处理
  * @Author Eric Lau
@@ -125,12 +125,6 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
         return token;
     }
 
-    @Override
-    protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
-        Object userId = tokenHelper.getUserId(WebUtils.toHttp(request));
-        return super.isLoginAttempt(request, response) && userId != null && redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId) != null;
-    }
-
     /**
      * 判断本次请求是否可以忽略
      * @param request request请求
@@ -167,8 +161,7 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
         try {
             super.sendChallenge(request, response);
             String currentUrl = this.getPathWithinApplication(request);
-            ResponseObj result = ResponseObj.fail(StatusCode.NO_AUTHORITY.getStatus(),
-                    "抱歉，您没有访问URL:" + currentUrl + "的权限，请联系系统管理员。");
+            ResponseObj result = ResponseObj.fail(StatusCode.LOGIN_EXPIRE, StatusCode.LOGIN_EXPIRE.getDetail());
             HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             httpServletResponse.setHeader("Content-type", "application/json;charset=UTF-8");

@@ -60,6 +60,7 @@ public class ShiroConfig {
         bean.setLoginUrl("/login");
         Map<String, Filter> filterMap = Maps.newHashMap();
         //自定义Filter
+        //上一个Filter返回true将会进入下一个Filter，返回false则调用链条中断
         filterMap.put("userTokenFilter", getUserTokenFilter());
         filterMap.put("uniqueDeviceFilter", getUniqueDeviceFilter());
         filterMap.put("urlPrivilegeFilter", getUrlPrivilegeCtrlFilter());
@@ -102,10 +103,15 @@ public class ShiroConfig {
 
         // noSessionCreation: 要求shiro不创建session
         chains.put("/**.html", "noSessionCreation");
-        //需要拦截的移动端uri
-        //uniqueDeviceFilter在userTokenFilter之后
+        //拦截客户端的uri
+        // 1. userTokenFilter：判断token是否存在，是否过期
+        // 2. uniqueDeviceFilter：判断是否在另外一个客户端登录
+        // 3. mobileAccessFilter：如果subject.isAuthenticated()==false，而redis中存在SessionUser，此过滤器会进行二次登录
         chains.put("/mobile/**", "noSessionCreation,userTokenFilter,uniqueDeviceFilter,mobileAccessFilter");
-        //需要拦截的后台uri
+
+        //拦截后台的uri
+        // 1. userTokenFilter：判断token是否存在，是否过期
+        // 2. urlPrivilegeFilter：主要用于对所访问的url进行鉴权
         chains.put("/web/**", "userTokenFilter,urlPrivilegeFilter");
 
         // <!-- 过滤链定义，从上向下顺序执行，一般将 /** 放在最下边 -->
