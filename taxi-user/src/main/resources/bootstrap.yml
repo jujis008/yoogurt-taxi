@@ -5,12 +5,6 @@ spring:
     config:
       uri: http://127.0.0.1:9998
       fail-fast: true
-  aop:
-    auto: true
-    proxy-target-class: true
-    output:
-      ansi:
-        enabled: ALWAYS
 ---
 spring:
   profiles:
