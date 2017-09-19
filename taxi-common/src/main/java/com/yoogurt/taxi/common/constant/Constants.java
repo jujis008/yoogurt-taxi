@@ -37,6 +37,11 @@ public final class Constants {
      */
     public static final int GRANT_CODE_EXPIRE_SECONDS = 60;
 
+    /**
+     * 授权码的长度
+     */
+    public static final int GRANT_CODE_LENGTH = 6;
+
     /** unknown */
     public static final String UNKNOWN = "unknown";
 
