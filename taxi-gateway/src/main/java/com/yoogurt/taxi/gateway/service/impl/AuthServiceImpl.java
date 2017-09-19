@@ -3,12 +3,14 @@ package com.yoogurt.taxi.gateway.service.impl;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.gateway.service.AuthService;
 import com.yoogurt.taxi.common.helper.TokenHelper;
+import com.yoogurt.taxi.gateway.service.AuthService;
 import com.yoogurt.taxi.gateway.shiro.UserAuthenticationToken;
+import com.yoogurt.taxi.gateway.shiro.cache.RedisCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class AuthServiceImpl implements AuthService {
+
+    @Autowired
+    private RedisCache redisCache;
 
     @Autowired
     private TokenHelper tokenHelper;
@@ -79,5 +84,12 @@ public class AuthServiceImpl implements AuthService {
             return newToken;
         }
         return null;
+    }
+
+    @Override
+    public void clearCachedAuthorizationInfo() {
+        PrincipalCollection principals = SecurityUtils.getSubject().getPrincipals();
+        if (principals == null) return;
+        redisCache.remove(principals.getPrimaryPrincipal());
     }
 }
