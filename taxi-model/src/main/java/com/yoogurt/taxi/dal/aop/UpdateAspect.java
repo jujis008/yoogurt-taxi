@@ -61,7 +61,7 @@ public class UpdateAspect {
                 MethodUtils.invokeMethod(object, "setGmtModify", new Date());
 
                 //如果没有注入修改人的id，就默认设置当前登录人的id
-                if (MethodUtils.invokeMethod(object, "setModifier", null) == null) {
+                if (MethodUtils.invokeMethod(object, "getModifier", null) == null) {
 
                     MethodUtils.invokeMethod(object, "setModifier", userId == null ? 0L : userId);
                 }
