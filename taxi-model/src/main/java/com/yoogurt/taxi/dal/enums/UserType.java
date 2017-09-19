@@ -8,12 +8,15 @@ public enum UserType {
     ;
 
     private Integer code;
+
     private String name;
 
     public static UserType getEnumsByCode(Integer code) {
-        for (UserType enums: UserType.values()) {
-            if(code.equals(enums.getCode())) {
-                return  enums;
+        if (code != null) {
+            for (UserType enums: UserType.values()) {
+                if(code.equals(enums.getCode())) {
+                    return  enums;
+                }
             }
         }
         return null;
@@ -21,13 +24,11 @@ public enum UserType {
 
     /**
      * 判断是否app用户
-     * @param code
-     * @return
+     * @return true 是
      */
-    public static Boolean isAppUser (Integer code) {
-        switch (getEnumsByCode(code)) {
+    public boolean isAppUser () {
+        switch (this) {
             case USER_APP_AGENT:
-                return true;
             case USER_APP_OFFICE:
                 return true;
             default:
