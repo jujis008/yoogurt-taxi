@@ -3,9 +3,9 @@ package com.yoogurt.taxi.gateway.shiro;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.model.AuthorityModel;
 import com.yoogurt.taxi.gateway.rest.AuthorityService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -52,11 +52,10 @@ public class ShiroRealm extends AuthorizingRealm{
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         final Long userId = Long.valueOf(principals.getPrimaryPrincipal().toString());
-        final ResponseObj obj = authorityService.getAuthoritiesByUserId(userId);
-        if (obj.getBody() != null) {
-            List<AuthorityModel> authorities = (List<AuthorityModel>) obj.getBody();
+        final List<AuthorityModel> authorities = authorityService.getAuthoritiesByUserId(userId);
+        if (CollectionUtils.isNotEmpty(authorities)) {
             authorities.forEach(authority -> {
-//                authorizationInfo.addRole("ADMIN");
+                authorizationInfo.addRole(authority.getRoleName());
                 authorizationInfo.addStringPermission(authority.getUri());
             });
         }
