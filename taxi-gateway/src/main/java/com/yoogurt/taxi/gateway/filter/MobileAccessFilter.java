@@ -106,7 +106,8 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
 
         //createToken方法调用的前置条件是 isLoginAttempt(request, response) == true
         //这意味着userId和SessionUser一定有值，无需判空
-        Long userId = tokenHelper.getUserId(WebUtils.toHttp(request));
+        String authToken = tokenHelper.getAuthToken(WebUtils.toHttp(request));
+        Long userId = tokenHelper.getUserId(authToken);
         SessionUser user = (SessionUser) redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
 
         //伪造一份授权码，内部二次登录，可以保证安全。
@@ -117,8 +118,8 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
         //构造shiro使用的Token对象
         UserAuthenticationToken token = new UserAuthenticationToken(username, credentials.toCharArray());
         token.setUserId(userId);
+        token.setToken(authToken);
         token.setGrantCode(user.getGrantCode());
-        token.setToken(user.getToken());
 
         token.setRememberMe(true);
         token.setLoginAgain(true);

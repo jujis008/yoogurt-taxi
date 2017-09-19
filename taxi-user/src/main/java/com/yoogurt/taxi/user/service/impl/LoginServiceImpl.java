@@ -43,13 +43,16 @@ public class LoginServiceImpl implements LoginService {
         if (!Encipher.matches(password, user.getLoginPassword())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "登录失败，请核对密码");
         }
-        //生成6位授权码
-        String grantCode = RandomUtils.getRandNum(6);
+        //生成授权码
+        String grantCode = RandomUtils.getRandNum(Constants.GRANT_CODE_LENGTH);
         SessionUser sessionUser = new SessionUser(user.getUserId(), username);
-        sessionUser.setStatus(1);
+        sessionUser.setStatus(user.getStatus());
         sessionUser.setGrantCode(grantCode);
+        sessionUser.setType(userType.getCode());
         //缓存授权码，30秒内有效
         redisHelper.set(CacheKey.GRANT_CODE_KEY + user.getUserId(), grantCode, Constants.GRANT_CODE_EXPIRE_SECONDS);
+        //缓存SessionUser，不需要设置过期时间，以JWT的过期时间为准
+        redisHelper.setObject(CacheKey.SESSION_USER_KEY + user.getUserId(), sessionUser);
         return ResponseObj.success(sessionUser);
     }
 
