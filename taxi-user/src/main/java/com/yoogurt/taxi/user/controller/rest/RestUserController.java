@@ -2,6 +2,7 @@ package com.yoogurt.taxi.user.controller.rest;
 
 import com.google.common.collect.Lists;
 import com.yoogurt.taxi.common.controller.BaseController;
+import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.UserRoleInfo;
 import com.yoogurt.taxi.dal.model.AuthorityModel;
 import com.yoogurt.taxi.user.service.RoleAuthorityService;
@@ -25,12 +26,12 @@ public class RestUserController extends BaseController {
     private RoleAuthorityService roleAuthorityService;
 
     @RequestMapping(value = "/authorities/userId/{userId}", method = RequestMethod.GET)
-    public List<AuthorityModel> authorities(@PathVariable(name = "userId") Long userId) {
+    public RestResult<List<AuthorityModel>> authorities(@PathVariable(name = "userId") Long userId) {
         List<AuthorityModel> authorities = Lists.newArrayList();
         UserRoleInfo userRoleInfo = userRoleService.getUserRoleInfo(userId, null);
         if (userRoleInfo != null) {
             authorities = roleAuthorityService.getAuthoritiesByRoleId(userRoleInfo.getRoleId());
         }
-        return authorities;
+        return RestResult.success(authorities);
     }
 }
