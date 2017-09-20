@@ -3,12 +3,8 @@ package com.yoogurt.taxi.gateway.shiro;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-<<<<<<< HEAD
 import com.yoogurt.taxi.common.vo.RestResult;
-import com.yoogurt.taxi.dal.model.AuthorityModel;
-=======
 import com.yoogurt.taxi.dal.model.user.AuthorityModel;
->>>>>>> db1849fbabb28d3991a6520f7116a1eb0a4f1660
 import com.yoogurt.taxi.gateway.rest.AuthorityService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

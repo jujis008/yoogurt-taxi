@@ -31,5 +31,4 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
-  <resultMap id="" type=""
 </mapper>
