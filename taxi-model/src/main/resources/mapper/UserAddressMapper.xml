@@ -7,11 +7,11 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="lng" jdbcType="VARCHAR" property="lng" />
-    <result column="lat" jdbcType="VARCHAR" property="lat" />
+    <result column="lng" jdbcType="DOUBLE" property="lng" />
+    <result column="lat" jdbcType="DOUBLE" property="lat" />
     <result column="adcode" jdbcType="VARCHAR" property="adcode" />
     <result column="address" jdbcType="VARCHAR" property="address" />
-    <result column="is_primary" jdbcType="TINYINT" property="isPrimary" />
+    <result column="is_primary" jdbcType="BIT" property="isPrimary" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="creator" jdbcType="BIGINT" property="creator" />

@@ -14,4 +14,15 @@
     <result column="gmt_modifier" jdbcType="TIMESTAMP" property="gmtModifier" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
+
+  <resultMap id="RoleWLModelMap" type="com.yoogurt.taxi.dal.model.user.RoleWLModel">
+    <result column="id" jdbcType="BIGINT" property="roleId" />
+    <result column="role_name" jdbcType="VARCHAR" property="roleName" />
+    <result column="role_code" jdbcType="VARCHAR" property="roleCode" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+  </resultMap>
+
+  <select id="getRoleWebList" resultMap="RoleWLModelMap">
+    SELECT id,role_name,role_code,gmt_create FROM role_info WHERE is_deleted =0
+  </select>
 </mapper>
