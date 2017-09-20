@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 自定义授权缓存管理类
  */
-public class RedisCacheManager extends AbstractCacheManager {
+public class AuthorizationCacheManager extends AbstractCacheManager {
 
     @Autowired
-    private RedisCache<byte[], Object> redisCache;
+    private AuthorizationCache authorizationCache;
 
     @Override
-    protected Cache<byte[], Object> createCache(String name) throws CacheException {
-        redisCache.setCacheName(name);
-        return this.redisCache;
+    protected Cache createCache(String authorizationCacheKey) throws CacheException {
+        authorizationCache.setCacheName(authorizationCacheKey);
+        return authorizationCache;
     }
 }
