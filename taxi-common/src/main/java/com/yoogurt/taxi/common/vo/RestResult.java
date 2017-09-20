@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Map;
 
 /**
@@ -17,6 +19,7 @@ import java.util.Map;
  * @author Eric Lau
  * @Date 2017/8/28.
  */
+@Slf4j
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -95,9 +98,10 @@ public class RestResult<T> implements Serializable {
     public String toJSON() {
         try {
             ObjectMapper mapper = new ObjectMapper();
+            mapper.setDateFormat(DateFormat.getDateTimeInstance());
             return mapper.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("JSON序列化异常,{}", e);
         }
         return StringUtils.EMPTY;
     }

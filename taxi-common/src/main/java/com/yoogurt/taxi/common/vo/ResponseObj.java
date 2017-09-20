@@ -7,9 +7,11 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Map;
 
 /**
@@ -18,6 +20,7 @@ import java.util.Map;
  * @author Eric Lau
  * @Date 2017/8/28.
  */
+@Slf4j
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -91,10 +94,11 @@ public class ResponseObj implements Serializable {
      */
     public String toJSON() {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsString(this);
+            ObjectMapper m = new ObjectMapper();
+            m.setDateFormat(DateFormat.getDateTimeInstance());
+            return m.writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("JSON序列化异常,{}", e);
         }
         return StringUtils.EMPTY;
     }

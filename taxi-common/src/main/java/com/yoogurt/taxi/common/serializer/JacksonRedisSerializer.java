@@ -35,7 +35,7 @@ public class JacksonRedisSerializer<T> implements RedisSerializer<T> {
         }
         try {
             ObjectMapper mapper = new ObjectMapper();
-            mapper.setDateFormat(DateFormat.getDateInstance());
+            mapper.setDateFormat(DateFormat.getDateTimeInstance());
             return mapper.writeValueAsBytes(t);
         } catch (JsonProcessingException e) {
             log.error("JSON序列化异常,{}", e);
@@ -56,7 +56,7 @@ public class JacksonRedisSerializer<T> implements RedisSerializer<T> {
         }
         try {
             ObjectMapper mapper = new ObjectMapper();
-            mapper.setDateFormat(DateFormat.getDateInstance());
+            mapper.setDateFormat(DateFormat.getDateTimeInstance());
             return mapper.readValue(bytes, clazz);
         } catch (IOException e) {
             log.error("JSON解析异常,{}", e);
