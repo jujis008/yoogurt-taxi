@@ -7,7 +7,7 @@ import com.yoogurt.taxi.gateway.filter.UniqueDeviceFilter;
 import com.yoogurt.taxi.gateway.filter.UrlPrivilegeCtrlFilter;
 import com.yoogurt.taxi.gateway.filter.UserTokenFilter;
 import com.yoogurt.taxi.gateway.shiro.ShiroRealm;
-import com.yoogurt.taxi.gateway.shiro.cache.RedisCacheManager;
+import com.yoogurt.taxi.gateway.shiro.cache.AuthorizationCacheManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.RememberMeManager;
@@ -129,7 +129,6 @@ public class ShiroConfig {
     @Bean("securityManager")
     public SecurityManager getSecurityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(getShiroRealm());
-        securityManager.setCacheManager(getRedisCacheManager());
         //cookie功能加持
         securityManager.setRememberMeManager(getRememberMeManager());
         return securityManager;
@@ -144,7 +143,7 @@ public class ShiroConfig {
         AuthorizingRealm realm = new ShiroRealm();
         realm.setCachingEnabled(true);
         realm.setAuthorizationCachingEnabled(true);
-        realm.setAuthorizationCacheName(CacheKey.SHIRO_AUTHORITY_KEY);
+        realm.setAuthorizationCacheName(CacheKey.SHIRO_AUTHORITY_MAP);
         realm.setCacheManager(getRedisCacheManager());
         return realm;
     }
@@ -206,7 +205,7 @@ public class ShiroConfig {
     }
 
     @Bean(name = "redisCacheManager")
-    public RedisCacheManager getRedisCacheManager() {
-        return new RedisCacheManager();
+    public AuthorizationCacheManager getRedisCacheManager() {
+        return new AuthorizationCacheManager();
     }
 }
