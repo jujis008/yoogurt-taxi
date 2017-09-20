@@ -7,9 +7,9 @@ yoogurt-taxi包含都是业务代码，即为上图中的Business Service部分�
 
 自底向上进行讲解：
 
-1、taxi-model，严格意义上讲，这不是一个spring boot项目，而是一个普通的maven module，所以不能单独启动，更不能单独部署。这里面存放的是与Mybatis3相关的model，mapper，以及[mybatis-generator](https://github.com/mybatis/generator "mybatis-generator")插件。作为公共依赖存在，taxi-model将被绝大数module依赖，除非打算不与MySQL交互；
+1、taxi-common，严格意义上讲，这不是一个spring boot项目，而是一个普通的maven module。这里面放置了一些共用的类，比如controller，dao，enums，vo等。项目的所有module都依赖于此；
 
-2、taxi-common，与taxi-model一样，这也是一个普通的maven module。这里面放置了一些共用的类，比如controller，dao，enums，vo等。项目的所有module都依赖于此，但是与taxi-model没有直接关联；
+2、taxi-model，与taxi-common一样，这也是一个普通的maven module，所以不能单独启动，更不能单独部署。这里面存放的是与Mybatis3相关的model，mapper，以及[mybatis-generator](https://github.com/mybatis/generator "mybatis-generator")插件。依赖于taxi-common；
 
 3、taxi-gateway，统一网关，基于zuul实现，集成了Apache Shiro和JWT作为安全验证。
 
