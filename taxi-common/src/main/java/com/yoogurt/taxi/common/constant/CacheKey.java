@@ -34,7 +34,7 @@ public final class CacheKey {
     /**
      * shiro授权缓存
      */
-    public static final String SHIRO_AUTHORITY_KEY = "P_SHIRO_AUTHORITY#";
+    public static final String SHIRO_AUTHORITY_MAP = "P_SHIRO_AUTHORITY_MAP";
 
     /**
      * 客户端登录成功，获取授权码。
