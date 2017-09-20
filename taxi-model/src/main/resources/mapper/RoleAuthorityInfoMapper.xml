@@ -28,9 +28,9 @@
     <select id="getAuthoritiesByRoleId" parameterType="long" resultMap="AuthorityModel">
         SELECT rau.authority_id, rau.role_id, r.role_name, au.authority_name, au.authority_group, au.uri, au.associated_control
         FROM role_authority_info AS rau
-        LEFT JOIN authority_info AS au ON (rau.id=rau.authority_id)
+        LEFT JOIN authority_info AS au ON (au.id=rau.authority_id)
         LEFT JOIN role_info AS r ON (rau.role_id=r.id)
-        WHERE rau.role_id=#{roleId}
+        WHERE rau.role_id=#{roleId} AND rau.is_deleted=0
         ORDER BY rau.gmt_create
     </select>
 </mapper>
