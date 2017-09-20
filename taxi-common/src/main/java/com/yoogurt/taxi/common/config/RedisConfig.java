@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.common.config;
 
-import com.yoogurt.taxi.common.serializer.FastJsonJsonRedisSerializer;
+import com.yoogurt.taxi.common.serializer.JacksonRedisSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -15,31 +15,21 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
-    /**
-     * 序列化器
-     *
-     * @return
-     */
-    @Bean(name = "fastJsonJsonRedisSerializer")
-    public RedisSerializer getFastJsonJsonRedisSerializer() {
-        return new FastJsonJsonRedisSerializer<>(Object.class);
+    @Bean(name = "jacksonRedisSerializer")
+    public RedisSerializer getRedisSerializer() {
+        return new JacksonRedisSerializer<>(Object.class);
     }
 
-    /**
-     * 操作模板设置
-     * getRedisTemplate
-     */
     @Bean(name = "redisTemplate")
-    public RedisTemplate<String, String> getRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate template = new RedisTemplate();
+    public RedisTemplate<String, Object> getRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
 
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(getFastJsonJsonRedisSerializer());
+        template.setHashValueSerializer(getRedisSerializer());
         template.afterPropertiesSet();
-
         return template;
     }
 

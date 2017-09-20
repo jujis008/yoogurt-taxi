@@ -15,7 +15,7 @@ public class RedisCacheManager extends AbstractCacheManager {
 
     @Override
     protected Cache<byte[], Object> createCache(String name) throws CacheException {
-        redisCache.setShiroRedisPrefix(name);
+        redisCache.setCacheName(name);
         return this.redisCache;
     }
 }
