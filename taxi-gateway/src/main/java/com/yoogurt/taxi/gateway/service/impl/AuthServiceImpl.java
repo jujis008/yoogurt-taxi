@@ -6,11 +6,10 @@ import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.helper.TokenHelper;
 import com.yoogurt.taxi.gateway.service.AuthService;
 import com.yoogurt.taxi.gateway.shiro.UserAuthenticationToken;
-import com.yoogurt.taxi.gateway.shiro.cache.RedisCache;
+import com.yoogurt.taxi.gateway.shiro.cache.AuthorizationCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
-    private RedisCache redisCache;
+    private AuthorizationCache authorizationCache;
 
     @Autowired
     private TokenHelper tokenHelper;
@@ -87,9 +86,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void clearCachedAuthorizationInfo() {
-        PrincipalCollection principals = SecurityUtils.getSubject().getPrincipals();
-        if (principals == null) return;
-        redisCache.remove(principals.getPrimaryPrincipal());
+    public void clearCachedAuthorizationInfo(String... userIds) {
+        if(userIds != null && userIds.length > 0){
+            authorizationCache.remove(CacheKey.SHIRO_AUTHORITY_MAP, userIds);
+        }
     }
 }
