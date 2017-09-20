@@ -3,7 +3,7 @@ package com.yoogurt.taxi.user.dao;
 import com.yoogurt.taxi.common.dao.IDao;
 import com.yoogurt.taxi.dal.beans.RoleAuthorityInfo;
 import com.yoogurt.taxi.dal.mapper.RoleAuthorityInfoMapper;
-import com.yoogurt.taxi.dal.model.AuthorityModel;
+import com.yoogurt.taxi.dal.model.user.AuthorityModel;
 
 import java.util.List;
 

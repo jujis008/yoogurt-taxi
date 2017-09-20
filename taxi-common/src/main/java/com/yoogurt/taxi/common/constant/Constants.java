@@ -17,6 +17,10 @@ public final class Constants {
      * 重置密码试错次数的间隔时间，单位：秒
      */
     public static final int PASSWORD_RETRY_INTERVAL_SECONDS = 1800;
+    /**
+     * 验证码有效时间3*60s
+     */
+    public static final int VERIFY_CODE_EXPIRE_SECONDS = 180;
 
     /**
      * 为了保证API的幂等性，每次请求需要有一个唯一的REQUEST_ID，

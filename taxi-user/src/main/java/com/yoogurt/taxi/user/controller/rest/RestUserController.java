@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.UserRoleInfo;
-import com.yoogurt.taxi.dal.model.AuthorityModel;
+import com.yoogurt.taxi.dal.model.user.AuthorityModel;
 import com.yoogurt.taxi.user.service.RoleAuthorityService;
 import com.yoogurt.taxi.user.service.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;

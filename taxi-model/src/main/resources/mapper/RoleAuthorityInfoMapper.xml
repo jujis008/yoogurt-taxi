@@ -15,7 +15,7 @@
         <result column="modifier" jdbcType="BIGINT" property="modifier"/>
     </resultMap>
 
-    <resultMap id="AuthorityModel" type="com.yoogurt.taxi.dal.model.AuthorityModel">
+    <resultMap id="AuthorityModel" type="com.yoogurt.taxi.dal.model.user.AuthorityModel">
         <id column="authority_id" jdbcType="BIGINT" property="authorityId"/>
         <result column="role_id" jdbcType="BIGINT" property="roleId"/>
         <result column="authority_name" jdbcType="VARCHAR" property="authorityName"/>

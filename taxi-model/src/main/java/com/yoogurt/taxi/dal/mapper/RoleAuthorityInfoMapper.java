@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.dal.mapper;
 
 import com.yoogurt.taxi.dal.beans.RoleAuthorityInfo;
-import com.yoogurt.taxi.dal.model.AuthorityModel;
+import com.yoogurt.taxi.dal.model.user.AuthorityModel;
 import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
