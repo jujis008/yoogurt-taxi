@@ -7,8 +7,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -125,20 +125,77 @@ public class RedisHelper {
 
     /**
      * 获取Map缓存
-     * @param key 键
+     * @param redisKey redis存储Map数据的key
      * @return Map结构的缓存对象
      */
-    public Map<String, String> getMap(String key) {
-        return redisTemplate.opsForHash().entries(key);
+    public Map<String, String> getMap(String redisKey) {
+        return redisTemplate.opsForHash().entries(redisKey);
+    }
+
+    /**
+     * 添加Map的值
+     * @param redisKey redis存储Map数据的key
+     * @param hashKey Map数据本身的hash key
+     * @param value 存入Map中的值
+     */
+    public void put(String redisKey, Object hashKey, Object value) {
+        redisTemplate.opsForHash().put(redisKey, hashKey, value);
+    }
+
+    /**
+     * 获取Map中的数据
+     * @param redisKey redis存储Map数据的key
+     * @param hashKey Map数据本身的hash key
+     * @return hashKey对应的值
+     */
+    public Object getMapValue(String redisKey, Object hashKey) {
+        return redisTemplate.opsForHash().get(redisKey, hashKey);
+    }
+
+    /**
+     * 获取Map的所有key
+     * @param redisKey redis缓存的key名称
+     * @return Map的所有key
+     */
+    public Set<?> mapKeys(String redisKey) {
+
+        return redisTemplate.opsForHash().keys(redisKey);
+    }
+
+    /**
+     * 获取Map的所有value
+     * @param redisKey redis缓存的key名称
+     * @return Map的所有value
+     */
+    public Collection<?> mapValues(String redisKey) {
+        return redisTemplate.opsForHash().values(redisKey);
     }
 
     /**
      * 设置Map缓存
-     * @param key   键
-     * @param value 值
+     * @param redisKey redis缓存的key名称
+     * @param map 要缓存的Map对象
      */
-    public void setMap(String key, Map<String, String> value) {
-        redisTemplate.opsForHash().putAll(key, value);
+    public void setMap(String redisKey, Map<String, Object> map) {
+        redisTemplate.opsForHash().putAll(redisKey, map);
+    }
+
+    /**
+     * 删除Map元素
+     * @param redisKey redis存储Map数据的key
+     * @param hashKeys Map数据本身的hash redisKey
+     */
+    public void deleteMap(String redisKey, Object... hashKeys) {
+        redisTemplate.opsForHash().delete(redisKey, hashKeys);
+    }
+
+    /**
+     * 获取Map元素个数
+     * @param redisKey redis存储Map数据的key
+     * @return Map元素个数
+     */
+    public Long getMapSize(String redisKey) {
+        return redisTemplate.opsForHash().size(redisKey);
     }
 
     /**
