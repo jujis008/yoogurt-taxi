@@ -3,6 +3,7 @@ package com.yoogurt.taxi.gateway.shiro;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
+import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.model.AuthorityModel;
 import com.yoogurt.taxi.gateway.rest.AuthorityService;
 import org.apache.commons.collections.CollectionUtils;
@@ -18,7 +19,6 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 
 import java.util.List;
@@ -52,12 +52,15 @@ public class ShiroRealm extends AuthorizingRealm{
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         final Long userId = Long.valueOf(principals.getPrimaryPrincipal().toString());
-        final List<AuthorityModel> authorities = authorityService.getAuthoritiesByUserId(userId);
-        if (CollectionUtils.isNotEmpty(authorities)) {
-            authorities.forEach(authority -> {
-                authorizationInfo.addRole(authority.getRoleName());
-                authorizationInfo.addStringPermission(authority.getUri());
-            });
+        final RestResult<List<AuthorityModel>> obj = authorityService.getAuthoritiesByUserId(userId);
+        if (obj.getBody() != null) {
+            List<AuthorityModel> authorities = obj.getBody();
+            if (CollectionUtils.isNotEmpty(authorities)) {
+                authorities.forEach(authority -> {
+                    authorizationInfo.addRole(authority.getRoleName());
+                    authorizationInfo.addStringPermission(authority.getUri());
+                });
+            }
         }
         return authorizationInfo;
     }
@@ -123,6 +126,6 @@ public class ShiroRealm extends AuthorizingRealm{
     @Override
     protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
 
-        return principals.getPrimaryPrincipal();
+        return principals.getPrimaryPrincipal().toString();
     }
 }
