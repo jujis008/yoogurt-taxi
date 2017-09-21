@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.user.service.impl;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.beans.RoleAuthorityInfo;
 import com.yoogurt.taxi.dal.model.user.AuthorityModel;
 import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
 import com.yoogurt.taxi.user.dao.RoleAuthorityDao;
@@ -24,16 +25,28 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
 
     @Override
     public ResponseObj saveRoleAuthorityInfo(Long roleId, List<Long> authorityIdList) {
-        return null;
+        for (Long authorityId:authorityIdList) {
+            RoleAuthorityInfo roleAuthorityInfo = new RoleAuthorityInfo();
+            roleAuthorityInfo.setAuthorityId(authorityId);
+            roleAuthorityInfo.setRoleId(roleId);
+            roleAuthorityDao.insert(roleAuthorityInfo);
+        }
+        return ResponseObj.success();
     }
 
     @Override
     public List<GroupAuthorityLModel> getAuthorityListByRoleId(Long roleId) {
-        return null;
+        return roleAuthorityDao.getAuthorityListByRoleId(roleId);
     }
 
     @Override
     public ResponseObj removeRoleAuthority(Long id) {
-        return null;
+        RoleAuthorityInfo roleAuthorityInfo = roleAuthorityDao.selectById(id);
+        if (roleAuthorityInfo == null) {
+            return ResponseObj.success();
+        }
+        roleAuthorityInfo.setIsDeleted(Boolean.TRUE);
+        roleAuthorityDao.updateById(roleAuthorityInfo);
+        return ResponseObj.success();
     }
 }
