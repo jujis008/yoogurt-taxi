@@ -34,9 +34,6 @@ public class PeriodWithPageableCondition extends PageableCondition {
     @Override
     public boolean validate() {
 
-        if(startTime != null && endTime != null && startTime.compareTo(endTime) > 0){
-            return false;
-        }
-        return super.validate();
+        return startTime == null || endTime == null || startTime.compareTo(endTime) <= 0 && super.validate();
     }
 }

@@ -41,9 +41,6 @@ public class PeriodCondition extends BaseCondition {
      */
     @Override
     public boolean validate() {
-        if(startTime != null && endTime != null && startTime.compareTo(endTime) > 0){
-            return false;
-        }
-        return true;
+        return startTime == null || endTime == null || startTime.compareTo(endTime) <= 0;
     }
 }
