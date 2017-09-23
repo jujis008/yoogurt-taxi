@@ -12,11 +12,12 @@ import java.util.List;
  * @Author Eric Lau
  * @Date 2017/8/28.
  */
-public abstract class BatchDao<M extends MySqlMapper<T>, T> extends BaseDao {
+public abstract class BatchDao<M extends MySqlMapper<T>, T> extends BaseDao implements IBatchDao<M, T> {
 
     @Autowired
     private M mapper;
 
+    @Override
     public int insertList(List<T> dataList) { return mapper.insertList(dataList); }
 
 
