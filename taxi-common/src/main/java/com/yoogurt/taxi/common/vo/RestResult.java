@@ -72,7 +72,7 @@ public class RestResult<T> implements Serializable {
         return result;
     }
 
-    public static RestResult fail(StatusCode statusCode, String message) {
+    public static <T> RestResult<T>  fail(StatusCode statusCode, String message) {
         int status = StatusCode.BIZ_FAILED.getStatus();
         if (statusCode != null) {
             status = statusCode.getStatus();
@@ -80,8 +80,8 @@ public class RestResult<T> implements Serializable {
         return fail(status, message);
     }
 
-    public static RestResult fail(int status, String message) {
-        RestResult result = new RestResult();
+    public static <T> RestResult<T>  fail(int status, String message) {
+        RestResult<T> result = new RestResult<>();
         result.setStatus(status);
         if (StringUtils.isBlank(message)) {
             message = StatusCode.BIZ_FAILED.getDetail();
