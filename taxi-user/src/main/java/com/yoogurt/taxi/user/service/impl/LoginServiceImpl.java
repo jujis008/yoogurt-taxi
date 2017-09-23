@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -33,7 +35,9 @@ public class LoginServiceImpl implements LoginService {
     public ResponseObj login(String username, String password, UserType userType) {
         Example example = new Example(UserInfo.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("username", username).andEqualTo("type", userType.getCode());
+        criteria.andEqualTo("username", username)
+                .andEqualTo("isDeleted",0)
+                .andEqualTo("type", userType.getCode());
         List<UserInfo> userList = userDao.selectByExample(example);
         if (userList.size() == 0) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "登录失败，请核对账号");
@@ -42,6 +46,9 @@ public class LoginServiceImpl implements LoginService {
         // 密码不匹配
         if (!Encipher.matches(password, user.getLoginPassword())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "登录失败，请核对密码");
+        }
+        if (user.getStatus().equals(UserStatus.FROZEN.getCode())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"账号已被冻结");
         }
         //生成授权码
         String grantCode = RandomUtils.getRandNum(Constants.GRANT_CODE_LENGTH);
@@ -53,6 +60,16 @@ public class LoginServiceImpl implements LoginService {
         redisHelper.set(CacheKey.GRANT_CODE_KEY + user.getUserId(), grantCode, Constants.GRANT_CODE_EXPIRE_SECONDS);
         //缓存SessionUser，不需要设置过期时间，以JWT的过期时间为准
         redisHelper.setObject(CacheKey.SESSION_USER_KEY + user.getUserId(), sessionUser);
+        if (user.getStatus().equals(UserStatus.UN_ACTIVE.getCode())) {
+            Map<String,Object> map = new HashMap<>();
+            Object o = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + user.getUserId());
+            if(o!=null){
+                map.put("activeStatus",o);
+            }
+            ResponseObj successObj = ResponseObj.success(sessionUser);
+            successObj.setExtras(map);
+            return successObj;
+        }
         return ResponseObj.success(sessionUser);
     }
 

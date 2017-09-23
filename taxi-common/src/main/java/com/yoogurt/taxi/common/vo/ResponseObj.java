@@ -79,6 +79,10 @@ public class ResponseObj implements Serializable {
         return fail(status, message);
     }
 
+    public static ResponseObj fail(StatusCode statusCode) {
+        return new ResponseBuilder().status(statusCode.getStatus()).message(statusCode.getDetail()).build();
+    }
+
     public static ResponseObj fail(int status, String message) {
         ResponseBuilder builder = new ResponseBuilder().status(status);
         if (StringUtils.isBlank(message)) {

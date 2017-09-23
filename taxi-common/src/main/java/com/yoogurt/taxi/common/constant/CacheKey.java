@@ -58,6 +58,15 @@ public final class CacheKey {
      * 用于缓存用户密码试错的次数，后面拼接username。
      */
     public static final String PASSWORD_RETRY_MAX_COUNT_KEY = "E_PASSWORD_RETRY_MAX_COUNT#";
+    /**
+     * 用于缓存用户激活试错的次数，后面拼接username。
+     */
+    public static final String ACTIVATE_RETRY_MAX_COUNT_KEY = "E_ACTIVATE_RETRY_MAX_COUNT_KEY#";
+
+    /**
+     * 用户缓存用户激活的步骤数，后面拼接userId
+     */
+    public static final String ACTIVATE_PROGRESS_STATUS_KEY = "E_ACTIVATE_PROGRESS_STATUS_KEY#";
 
     /**
      * 短信验证码，后面拼接手机号码

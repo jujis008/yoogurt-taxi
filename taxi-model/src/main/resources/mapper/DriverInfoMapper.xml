@@ -42,30 +42,43 @@
 
     <select id="getDriverWebList" resultMap="DriverWLModelMap"
             parameterType="com.yoogurt.taxi.dal.condition.user.DriverWLCondition">
-    SELECT
-      t1.id,
-      t3.plate_number,
-      t2.username,
-      t2.name,
-      t1.id_card,
-      t2.status
-    FROM driver_info t1 LEFT JOIN user_info t2 ON t1.user_id = t2.user_id
-    LEFT JOIN car_info t3 ON t1.id = t3.driver_id
-    <where>
-        <if test="name != null and name != ''">
-            t2.name LIKE concat('%',#{name},'%')
-        </if>
-        <if test="username != null and username != ''">
-            AND t2.username LIKE concat('%',#{username},'%')
-        </if>
-        <if test="null != idCard and '' != idCard">
-            AND t1.id_card LIKE concat('%',#{idCard},'%')
-        </if>
-        <if test="userStatus != null and userStatus != ''">
-            AND t2.status=#{userStatus}
-        </if>
-        AND t1.type=#{userType}
-        AND t1.is_deleted=0
-    </where>
-  </select>
+        SELECT
+        t1.id,
+        t3.plate_number,
+        t2.username,
+        t2.name,
+        t1.id_card,
+        t2.status
+        FROM driver_info t1 LEFT JOIN user_info t2 ON t1.user_id = t2.user_id
+        LEFT JOIN car_info t3 ON t1.id = t3.driver_id
+        <where>
+            <if test="name != null and name != ''">
+                t2.name LIKE concat('%',#{name},'%')
+            </if>
+            <if test="username != null and username != ''">
+                AND t2.username LIKE concat('%',#{username},'%')
+            </if>
+            <if test="null != idCard and '' != idCard">
+                AND t1.id_card LIKE concat('%',#{idCard},'%')
+            </if>
+            <if test="userStatus != null and userStatus != ''">
+                AND t2.status=#{userStatus}
+            </if>
+            AND t1.type=#{userType}
+            AND t1.is_deleted=0
+        </where>
+    </select>
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO driver_info(id_card,driving_license,user_id,
+        `type`,mobile,gender,
+        is_deleted,gmt_modify,modifier,gmt_create,
+        creator)
+        VALUES
+        <foreach collection="list" item="driver" separator=",">
+            (#{driver.idCard},#{driver.drivingLicense},#{driver.userId},
+            #{driver.type},#{driver.mobile},#{driver.gender},
+            #{driver.isDeleted},#{driver.gmtModify},#{driver.modifier},#{driver.gmtCreate},
+            #{driver.creator})
+        </foreach>
+    </insert>
 </mapper>

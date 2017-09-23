@@ -60,5 +60,17 @@
         </if>
     </where>
     ORDER BY t1.gmt_create DESC
-  </select>
+    </select>
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO user_info (user_id,username,`name`,
+        login_password,status,user_from,
+        `type`,is_deleted,gmt_modify,
+        modifier,gmt_create,creator)VALUES
+        <foreach collection="list" item="user" separator=",">
+            (#{user.userId},#{user.username},#{user.name},
+            #{user.loginPassword},#{user.status},#{user.userFrom,},
+            #{user.type},#{user.isDeleted},#{user.gmtModify},
+            #{user.modifier},#{user.gmtCreate},#{user.creator})
+        </foreach>
+    </insert>
 </mapper>

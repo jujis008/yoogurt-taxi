@@ -19,5 +19,4 @@ public abstract class BatchDao<M extends MySqlMapper<T>, T> extends BaseDao {
 
     public int insertList(List<T> dataList) { return mapper.insertList(dataList); }
 
-
 }

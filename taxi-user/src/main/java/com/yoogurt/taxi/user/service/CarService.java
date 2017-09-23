@@ -5,7 +5,7 @@ import com.yoogurt.taxi.dal.beans.CarInfo;
 
 import java.util.List;
 
-public interface CarInfoService {
+public interface CarService {
     ResponseObj saveCarInfo(CarInfo carInfo);
     CarInfo getCarInfo(Long carId);
     List<CarInfo> getCarByUserId(Long userId);

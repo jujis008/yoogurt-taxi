@@ -1,12 +1,17 @@
 package com.yoogurt.taxi.user.service;
 
+import com.yoogurt.taxi.common.ExcelHelper.ErrorCellBean;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.user.UserWLModel;
+
+import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -16,6 +21,8 @@ public interface UserService {
      * @return
      */
     UserInfo getUserByUserId(Long id);
+
+    UserInfo getUserByUsernameAndType(String username, Integer userType);
 
     /**
      * 修改登陆密码
@@ -107,4 +114,7 @@ public interface UserService {
      * @return
      */
     Pager<UserWLModel> getUserWebList(UserWLCondition condition);
+
+    List<ErrorCellBean> importAgentDriversFromExcel(List<Map<String, Object>> list);
+
 }
