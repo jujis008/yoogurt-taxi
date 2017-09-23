@@ -4,6 +4,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.UserRoleInfo;
 import com.yoogurt.taxi.user.dao.UserRoleDao;
 import com.yoogurt.taxi.user.service.UserRoleService;
+import jdk.nashorn.internal.ir.ReturnNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +33,23 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Override
     public ResponseObj saveUserRoleInfo(Long userId, List<Long> roleIdList) {
-        return null;
+        for (Long roleId:roleIdList) {
+            UserRoleInfo roleInfo = new UserRoleInfo();
+            roleInfo.setRoleId(roleId);
+            roleInfo.setUserId(userId);
+            userRoleDao.insert(roleInfo);
+        }
+        return ResponseObj.success();
     }
 
     @Override
     public ResponseObj removeUserRole(Long id) {
-        return null;
+        UserRoleInfo userRoleInfo = userRoleDao.selectById(id);
+        if (userRoleInfo == null) {
+            return ResponseObj.success();
+        }
+        userRoleInfo.setIsDeleted(Boolean.TRUE);
+        userRoleDao.updateById(userRoleInfo);
+        return ResponseObj.success();
     }
 }

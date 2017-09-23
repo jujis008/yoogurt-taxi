@@ -9,4 +9,5 @@ public interface DriverService {
     DriverInfo getDriverInfo(Long driverId);
     ResponseObj getDriverWebList(DriverWLCondition condition);
     ResponseObj removeDriver(Long driverId);
+    DriverInfo getDriverByUserId(Long userId);
 }

@@ -3,7 +3,7 @@ package com.yoogurt.taxi.user.service.impl;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.CarInfo;
 import com.yoogurt.taxi.user.dao.CarDao;
-import com.yoogurt.taxi.user.service.CarInfoService;
+import com.yoogurt.taxi.user.service.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -11,7 +11,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.List;
 
 @Service
-public class CarInfoServiceImpl implements CarInfoService{
+public class CarInfoServiceImpl implements CarService {
     @Autowired
     private CarDao carDao;
 

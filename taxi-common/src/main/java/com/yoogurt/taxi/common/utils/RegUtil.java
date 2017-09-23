@@ -40,11 +40,11 @@ public class RegUtil {
      */   
     public static boolean checkIdCard(String idCard) {   
     	if(StringUtils.isBlank(idCard))	return false;
-        String regex = "[1-9]\\d{13,16}[a-zA-Z0-9]{1}";
+        String regex = "[1-9]\\d{13,16}[X|x]{1}";
         return Pattern.matches(regex,idCard);   
-    }   
-       
-    /** 
+    }
+
+    /**
      * <p class="detail">
 	 * 验证手机号码（支持国际格式，+86135xxxx...（中国内地），+00852137xxxx...（中国香港））   
 	 * </p>
@@ -59,7 +59,7 @@ public class RegUtil {
      */   
     public static boolean checkMobile(String mobile) {  
     	if(StringUtils.isBlank(mobile))	return false;
-        String regex = "(\\+\\d+)?1[34578]\\d{9}$";   
+        String regex = "(\\+\\d+)?1[34578]\\d{9}$";
         return Pattern.matches(regex,mobile);   
     }
        

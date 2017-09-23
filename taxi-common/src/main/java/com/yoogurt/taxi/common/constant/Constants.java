@@ -20,7 +20,7 @@ public final class Constants {
     /**
      * 验证码有效时间3*60s
      */
-    public static final int VERIFY_CODE_EXPIRE_SECONDS = 180;
+    public static final int VERIFY_CODE_EXPIRE_SECONDS = 300;
 
     /**
      * 为了保证API的幂等性，每次请求需要有一个唯一的REQUEST_ID，

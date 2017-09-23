@@ -9,8 +9,12 @@ import com.yoogurt.taxi.dal.condition.user.DriverWLCondition;
 import com.yoogurt.taxi.dal.model.user.DriverWLModel;
 import com.yoogurt.taxi.user.dao.DriverDao;
 import com.yoogurt.taxi.user.service.DriverService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.List;
 
 @Service
 public class DriverServiceImpl implements DriverService{
@@ -46,5 +50,16 @@ public class DriverServiceImpl implements DriverService{
         driverInfo.setIsDeleted(Boolean.TRUE);
         driverDao.updateById(driverInfo);
         return ResponseObj.success();
+    }
+
+    @Override
+    public DriverInfo getDriverByUserId(Long userId) {
+        Example example = new Example(DriverInfo.class);
+        example.createCriteria().andEqualTo("userId",userId);
+        List<DriverInfo> driverInfoList = driverDao.selectByExample(example);
+        if (CollectionUtils.isEmpty(driverInfoList)) {
+            return null;
+        }
+        return driverInfoList.get(0);
     }
 }
