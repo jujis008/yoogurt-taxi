@@ -37,7 +37,7 @@ public class RestUserController extends BaseController {
     @Autowired
     private CarService carService;
 
-    @RequestMapping(value = "/driverInfo/id/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "/driver/id/{id}",method = RequestMethod.GET)
     public RestResult<DriverInfo> driverInfo(@PathVariable(name = "id") Long id) {
 
         DriverInfo driverInfo = driverService.getDriverInfo(id);
@@ -47,7 +47,7 @@ public class RestUserController extends BaseController {
         return RestResult.success(driverInfo);
     }
 
-    @RequestMapping(value = "/driverInfoByUserId/userId/{userId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/driver/userId/{userId}",method = RequestMethod.GET)
     public RestResult<DriverInfo> driverInfoByUserId(@PathVariable(name = "userId") Long userId) {
         DriverInfo driverInfo = driverService.getDriverByUserId(userId);
         if (driverInfo == null) {
@@ -66,7 +66,7 @@ public class RestUserController extends BaseController {
         return RestResult.success(authorities);
     }
 
-    @RequestMapping(value = "/userInfo/userId/{userId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/userId/{userId}", method = RequestMethod.GET)
     public RestResult<UserInfo> userInfo(@PathVariable(name = "userId") Long userId) {
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (userInfo == null) {
@@ -84,13 +84,13 @@ public class RestUserController extends BaseController {
         return RestResult.success(carInfo);
     }
 
-    @RequestMapping(value = "/carInfoByUserId/userId/{userId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/car/userId/{userId}", method = RequestMethod.GET)
     public RestResult<List<CarInfo>> carInfoByUserId(@PathVariable(name = "userId") Long userId) {
         List<CarInfo> carList = carService.getCarByUserId(userId);
         return RestResult.success(carList);
     }
 
-    @RequestMapping(value = "/carInfoByDriverId/driverId/{driverId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/car/driverId/{driverId}", method = RequestMethod.GET)
     public RestResult<List<CarInfo>> carInfoByDriverId(@PathVariable(name = "driverId") Long driverId) {
         return RestResult.success(carService.getCarByDriverId(driverId));
     }
