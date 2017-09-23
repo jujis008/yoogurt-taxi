@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "order_comment_info")
-public class OrderCommentInfo extends SuperModel{
+public class OrderCommentInfo extends SuperModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,9 +30,15 @@ public class OrderCommentInfo extends SuperModel{
      */
     private Integer score;
 
+    /**
+     * 多个评价标签用逗号分隔
+     */
     @Column(name = "tag_id")
-    private Long tagId;
+    private String tagId;
 
+    /**
+     * 多个评价标签用逗号分隔
+     */
     @Column(name = "tag_name")
     private String tagName;
 
