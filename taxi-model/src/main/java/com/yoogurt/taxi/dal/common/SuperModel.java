@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.dal.common;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,14 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.util.Date;
 
+/**
+ * 超级model，所有数据库的实体类都继承于此。
+ * 没有特殊情况，Jackson序列化的时候，将会
+ * 忽略isDeleted，creator和modifier三个
+ * 字段(增加了@JsonIgnore注解)。
+ * 如需返回三个字段，就不需要继承SuperModel，
+ * 将公共字段直接放入数据库实体类中。
+ */
 @Getter
 @Setter
 @MappedSuperclass
@@ -16,6 +25,7 @@ public class SuperModel {
      * 是否删除
      */
     @Column(name = "is_deleted")
+    @JsonIgnore
     private Boolean isDeleted;
 
     /**
@@ -28,6 +38,7 @@ public class SuperModel {
      * 创建人ID
      */
     @Column(name = "creator")
+    @JsonIgnore
     private Long creator;
 
     /**
@@ -40,5 +51,6 @@ public class SuperModel {
      * 最后修改人ID
      */
     @Column(name = "modifier")
+    @JsonIgnore
     private Long modifier;
 }
