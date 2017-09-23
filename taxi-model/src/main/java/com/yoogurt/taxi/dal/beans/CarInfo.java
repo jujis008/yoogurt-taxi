@@ -66,4 +66,10 @@ public class CarInfo extends SuperModel{
     @Column(name = "vehicle_register_time")
     private Date vehicleRegisterTime;
 
+    /**
+     * 是否认证
+     */
+    @Column(name = "is_authentication")
+    private Boolean isAuthentication;
+
 }

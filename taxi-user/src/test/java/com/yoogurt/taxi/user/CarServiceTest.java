@@ -2,9 +2,8 @@ package com.yoogurt.taxi.user;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.CarInfo;
-import com.yoogurt.taxi.user.service.CarInfoService;
+import com.yoogurt.taxi.user.service.CarService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +18,19 @@ import java.util.List;
 @SpringBootTest
 public class CarServiceTest {
     @Autowired
-    private CarInfoService carInfoService;
+    private CarService carService;
 
     @Test
     public void getCarByUserId() {
         Long userId = 0L;
-        List<CarInfo> carInfoList = carInfoService.getCarByUserId(userId);
+        List<CarInfo> carInfoList = carService.getCarByUserId(userId);
         carInfoList.forEach(car-> System.out.println(ResponseObj.success(car).toJSON()));
     }
 
     @Test
     public void getCarInfo() {
         Long carId = 1L;
-        CarInfo carInfo = carInfoService.getCarInfo(carId);
+        CarInfo carInfo = carService.getCarInfo(carId);
         System.out.println(ResponseObj.success(carInfo).toJSON());
     }
 
@@ -47,14 +46,14 @@ public class CarServiceTest {
         carInfo.setVehicleRegisterTime(new Date());
         carInfo.setVehicleType("");
         carInfo.setVin("");
-        ResponseObj responseObj = carInfoService.saveCarInfo(carInfo);
+        ResponseObj responseObj = carService.saveCarInfo(carInfo);
         System.out.println(responseObj.toJSON());
     }
 
     @Test
     public void test() {
         Long driverId = 0L;
-        List<CarInfo> carInfoList = carInfoService.getCarByDriverId(driverId);
+        List<CarInfo> carInfoList = carService.getCarByDriverId(driverId);
         carInfoList.forEach(car-> System.out.println(ResponseObj.success(car).toJSON()));
     }
 }
