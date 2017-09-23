@@ -47,10 +47,27 @@ public abstract class BaseCondition {
     /**
      * 根据关键字构造模糊查询条件
      * @param matchHead true 表示用前一部分匹配，即在keywords右侧追加%，否则在左侧追加。
-     * @return 
+     * @return 含有通配符的LIKE语句
      */
     public String likes(boolean matchHead) {
         if(StringUtils.isBlank(this.keywords)) return StringUtils.EMPTY;
         return matchHead ? (this.keywords + "%") : ("%" + this.keywords);
+    }
+
+    /**
+     * 构造含有占位符的LIKE语句，形如：LIKE '__Eric'。
+     * 一个下划线(_)代表一个字符
+     * @param matchHead true 表示用前一部分匹配，即在keywords右侧追加占位符，否则在左侧追加。
+     * @param placeCount 占位符的数量
+     * @return 含有占位符的LIKE语句
+     */
+    public String likes(boolean matchHead, int placeCount) {
+        if(StringUtils.isBlank(this.keywords)) return StringUtils.EMPTY;
+        if(placeCount == 0) return likes(matchHead);
+        StringBuilder placeBuilder = new StringBuilder(placeCount);
+        for (int i=0; i < placeCount; i++) {
+            placeBuilder.append("_");
+        }
+        return matchHead ? (this.keywords + placeBuilder) : (placeBuilder + this.keywords);
     }
 }
