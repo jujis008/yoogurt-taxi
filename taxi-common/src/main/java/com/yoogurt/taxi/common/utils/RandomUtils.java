@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.common.utils;
 
+import org.joda.time.DateTime;
+
 import java.util.Random;
 import java.util.UUID;
 
@@ -47,5 +49,14 @@ public class RandomUtils {
             charValue.append(r.nextInt(10));
         }
         return charValue.toString();
+    }
+
+    /**
+     * 生成主键ID
+     * @return 主键ID，long类型
+     */
+    public static long getPrimaryKey(){
+        DateTime dateTime = new DateTime();
+        return Long.valueOf(dateTime.toString("yyMMddHHmmss") + getRandNum(5));
     }
 }
