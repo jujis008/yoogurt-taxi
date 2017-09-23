@@ -22,12 +22,6 @@
             <artifactId>taxi-model</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.yoogurt.taxi.common</groupId>
-            <artifactId>taxi-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 
     <build>
