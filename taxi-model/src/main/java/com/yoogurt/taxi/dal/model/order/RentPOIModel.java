@@ -8,7 +8,15 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class RentListModel {
+public class RentPOIModel {
+
+	private Long rentId;
+
+	private Long userId;
+
+	private Long driverId;
+
+	private String driverName;
 
 	private String platNumber;
 
@@ -20,15 +28,18 @@ public class RentListModel {
 
 	private String carThumb;
 
+	private String avatar;
+
 	private String address;
+
+	private Double lng;
+
+	private Double lat;
 
 	private Integer orderCount;
 
 	private Integer score;
 
-	/**
-	 * 还车时间减去交车时间，计算间隔的时长，单位：小时，向下取整。
-	 */
-	private Integer rentTime;
+	private Integer status;
 
 }
