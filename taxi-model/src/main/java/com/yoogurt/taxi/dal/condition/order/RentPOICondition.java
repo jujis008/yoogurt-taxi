@@ -9,7 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class RentListCondition extends PeriodCondition {
+public class RentPOICondition extends PeriodCondition {
 
     private Double lng;
 
