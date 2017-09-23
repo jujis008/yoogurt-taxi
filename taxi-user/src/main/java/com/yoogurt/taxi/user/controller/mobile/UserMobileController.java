@@ -102,7 +102,7 @@ public class UserMobileController extends BaseController{
         }
     }
 
-    @RequestMapping(value = "/activeLoginPassword", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj activeLoginPassword(String oldPassword,String newPassword) {
         if (StringUtils.isBlank(oldPassword)) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"请输入默认密码");
@@ -128,7 +128,7 @@ public class UserMobileController extends BaseController{
         return responseObj;
     }
 
-    @RequestMapping(value = "/activePayPassword", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/payPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj activePayPassword(String password) {
         if (StringUtils.isBlank(password)) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"请输入交易密码");
@@ -144,6 +144,5 @@ public class UserMobileController extends BaseController{
         ResponseObj responseObj = userService.payPwdSetting(userId, password);
         return responseObj;
     }
-
 
 }

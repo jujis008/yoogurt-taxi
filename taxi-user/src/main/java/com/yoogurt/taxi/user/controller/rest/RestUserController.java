@@ -75,7 +75,7 @@ public class RestUserController extends BaseController {
         return RestResult.success(userInfo);
     }
 
-    @RequestMapping(value = "/carInfo/id/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/car/id/{id}", method = RequestMethod.GET)
     public RestResult<CarInfo> carInfo(@PathVariable(name = "id") Long id) {
         CarInfo carInfo = carService.getCarInfo(id);
         if (carInfo == null) {
