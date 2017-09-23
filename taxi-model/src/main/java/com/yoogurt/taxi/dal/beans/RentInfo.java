@@ -2,6 +2,7 @@ package com.yoogurt.taxi.dal.beans;
 
 import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
+import com.yoogurt.taxi.dal.enums.RentStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,9 @@ public class RentInfo extends SuperModel{
     @Id
     @Column(name = "rent_id")
     private Long rentId;
+
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "driver_id")
     private Long driverId;
@@ -73,4 +77,11 @@ public class RentInfo extends SuperModel{
 
     private String remark;
 
+    public RentInfo() {
+    }
+
+    public RentInfo(Long rentId) {
+        this.rentId = rentId;
+        this.status = RentStatus.WAITING.getCode();
+    }
 }
