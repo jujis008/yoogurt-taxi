@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoogurt.taxi.dal.mapper.OrderGiveBackInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.OrderGiveBackInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="rule_id" jdbcType="BIGINT" property="ruleId" />
+    <result column="real_give_back_address" jdbcType="VARCHAR" property="realGiveBackAddress" />
+    <result column="lng" jdbcType="DOUBLE" property="lng" />
+    <result column="lat" jdbcType="DOUBLE" property="lat" />
+    <result column="is_disobey" jdbcType="BIT" property="isDisobey" />
+    <result column="time" jdbcType="INTEGER" property="time" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+  </resultMap>
+</mapper>

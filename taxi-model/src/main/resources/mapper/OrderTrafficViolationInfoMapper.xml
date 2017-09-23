@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoogurt.taxi.dal.mapper.OrderTrafficViolationInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.OrderTrafficViolationInfo">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="driver_id" jdbcType="BIGINT" property="driverId" />
+    <result column="driver_name" jdbcType="VARCHAR" property="driverName" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="car_id" jdbcType="BIGINT" property="carId" />
+    <result column="plate_number" jdbcType="VARCHAR" property="plateNumber" />
+    <result column="vin" jdbcType="VARCHAR" property="vin" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="happen_time" jdbcType="TIMESTAMP" property="happenTime" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+</mapper>

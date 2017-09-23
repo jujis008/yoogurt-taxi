@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoogurt.taxi.dal.mapper.OrderPaymentMapper">
+  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.OrderPayment">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="pay_id" jdbcType="VARCHAR" property="payId" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="pay_channel" jdbcType="VARCHAR" property="payChannel" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="subject" jdbcType="VARCHAR" property="subject" />
+    <result column="body" jdbcType="VARCHAR" property="body" />
+    <result column="paid_time" jdbcType="TIMESTAMP" property="paidTime" />
+    <result column="transaction_no" jdbcType="VARCHAR" property="transactionNo" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoogurt.taxi.dal.mapper.OrderStatisticMapper">
+  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.OrderStatistic">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="driver_id" jdbcType="BIGINT" property="driverId" />
+    <result column="order_count" jdbcType="INTEGER" property="orderCount" />
+    <result column="score" jdbcType="DECIMAL" property="score" />
+    <result column="traffic_violation_count" jdbcType="INTEGER" property="trafficViolationCount" />
+    <result column="disobey_count" jdbcType="INTEGER" property="disobeyCount" />
+  </resultMap>
+</mapper>

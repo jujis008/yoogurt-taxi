@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yoogurt.taxi.dal.mapper.OrderCancelRuleMapper">
+  <resultMap id="BaseResultMap" type="com.yoogurt.taxi.dal.beans.OrderCancelRule">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="rule_id" jdbcType="BIGINT" property="ruleId" />
+    <result column="start" jdbcType="INTEGER" property="start" />
+    <result column="end" jdbcType="INTEGER" property="end" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="allow_cancel" jdbcType="BIT" property="allowCancel" />
+    <result column="percent" jdbcType="DECIMAL" property="percent" />
+    <result column="pay_channel" jdbcType="VARCHAR" property="payChannel" />
+  </resultMap>
+</mapper>
