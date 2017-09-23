@@ -11,9 +11,11 @@ public enum UserStatus {
     private String name;
 
     public static UserStatus getEnumsByCode(Integer code) {
-        for (UserStatus enums: UserStatus.values()) {
-            if(code.equals(enums)) {
-                return enums;
+        if(code != null && code > 0) {
+            for (UserStatus enums : UserStatus.values()) {
+                if (code.equals(enums.getCode())) {
+                    return enums;
+                }
             }
         }
         return null;
