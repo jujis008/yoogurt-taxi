@@ -2,6 +2,7 @@ package com.yoogurt.taxi.dal.beans;
 
 import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
+import com.yoogurt.taxi.dal.enums.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -95,4 +96,14 @@ public class OrderInfo extends SuperModel{
 
     private String remark;
 
+    public OrderInfo() {
+    }
+
+    public OrderInfo(Long orderId) {
+        this.orderId = orderId;
+        this.status = OrderStatus.HAND_OVER.getCode();
+        this.isPaid = false;
+        this.isCommented = false;
+
+    }
 }
