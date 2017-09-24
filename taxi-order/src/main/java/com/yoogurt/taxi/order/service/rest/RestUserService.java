@@ -17,6 +17,9 @@ public interface RestUserService {
     @RequestMapping(value = "/driver/id/{id}", method = RequestMethod.GET)
     DriverInfo getDriverInfoById(@PathVariable(name = "driverId") Long driverId);
 
+    @RequestMapping(value = "/driver/userId/{userId}", method = RequestMethod.GET)
+    DriverInfo getDriverInfoByUserId(@PathVariable(name = "userId") Long userId);
+
     @RequestMapping(value = "/car/userId/{userId}", method = RequestMethod.GET)
     CarInfo getCarInfoByUserId(@PathVariable(name = "userId") Long userId);
 }
