@@ -2,6 +2,7 @@ package com.yoogurt.taxi.order.form;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
 
@@ -13,6 +14,6 @@ public class PlaceOrderForm {
 	private Long rentId;
 
 	@NotNull(message = "请指定接单司机")
-	private Long driverId;
+	private Long userId;
 
 }
