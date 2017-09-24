@@ -24,6 +24,7 @@
         <result column="energy_type" jdbcType="INTEGER" property="energyType"/>
         <result column="vehicle_type" jdbcType="VARCHAR" property="vehicleType"/>
         <result column="car_thumb" jdbcType="VARCHAR" property="carThumb"/>
+        <result column="vin" jdbcType="VARCHAR" property="vin"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
     </resultMap>
 

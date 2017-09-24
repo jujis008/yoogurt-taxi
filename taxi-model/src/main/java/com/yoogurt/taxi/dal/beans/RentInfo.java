@@ -75,6 +75,8 @@ public class RentInfo extends SuperModel{
     @Column(name = "car_thumb")
     private String carThumb;
 
+    private String vin;
+
     private String remark;
 
     public RentInfo() {
