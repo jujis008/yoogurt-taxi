@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.order;
 
+import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.order.form.RentForm;
 import com.yoogurt.taxi.order.service.RentInfoService;
@@ -30,7 +31,7 @@ public class RentInfoTests {
         rentForm.setLng(120.365214521);
         rentForm.setPrice(new BigDecimal(120));
         rentForm.setUserId(8888L);
-        RentInfo rentInfo = rentInfoService.addRentInfo(rentForm);
-        Assert.assertNotNull("租单发布失败", rentInfo);
+        ResponseObj rentInfo = rentInfoService.addRentInfo(rentForm);
+        Assert.assertNotNull("租单发布失败", rentInfo.getBody());
     }
 }

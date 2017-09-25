@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.order.service;
 
 
+import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
 import com.yoogurt.taxi.dal.model.order.RentPOIModel;
@@ -14,7 +15,6 @@ public interface RentInfoService {
 
 	RentInfo getRentInfo(Long rentId);
 
-	RentInfo addRentInfo(RentForm rentForm);
+	ResponseObj addRentInfo(RentForm rentForm);
 
-	RentInfo buildRentInfo(RentForm rentForm);
 }

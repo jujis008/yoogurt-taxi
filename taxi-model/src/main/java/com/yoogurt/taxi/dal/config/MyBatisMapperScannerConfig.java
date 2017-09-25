@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.user.config;
+package com.yoogurt.taxi.dal.config;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;

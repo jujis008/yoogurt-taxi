@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Date;
 @Getter
 @Setter
 @MappedSuperclass
-public class SuperModel {
+public class SuperModel implements Serializable{
 
     /**
      * 是否删除

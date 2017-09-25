@@ -10,6 +10,9 @@ import lombok.Getter;
 @Getter
 public enum StatusCode {
 
+    /** REST远程调用失败 */
+    REST_FAIL(504, "远程调用失败"),
+
     /** 系统出现异常 */
     SYS_ERROR(500, "系统繁忙，请稍后重试"),
 

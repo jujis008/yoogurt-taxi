@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.user.config;
+package com.yoogurt.taxi.dal.config;
 
 import com.github.pagehelper.PageHelper;
 import org.apache.ibatis.plugin.Interceptor;
@@ -31,7 +31,7 @@ public class MyBatisConfig implements TransactionManagementConfigurer {
 
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setTypeAliasesPackage("com.yoogurt.taxi.dal.model");
+        bean.setTypeAliasesPackage("com.yoogurt.taxi.dal.beans");
 
         Properties properties = new Properties();
         properties.setProperty("dialect", "mysql");

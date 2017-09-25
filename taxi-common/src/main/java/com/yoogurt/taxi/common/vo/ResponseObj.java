@@ -107,6 +107,21 @@ public class ResponseObj implements Serializable {
         return StringUtils.EMPTY;
     }
 
+    /**
+     * 将RestResult转换成ResponseObj
+     * @param restResult restResult
+     * @param <T> REST泛型
+     * @return ResponseObj
+     */
+    public static <T> ResponseObj of(RestResult<T> restResult) {
+        ResponseObj obj = new ResponseObj();
+        obj.setStatus(restResult.getStatus());
+        obj.setMessage(restResult.getMessage());
+        obj.setBody(restResult.getBody());
+        obj.setExtras(restResult.getExtras());
+        return obj;
+    }
+
     @Override
     public String toString() {
         return toJSON();

@@ -1,7 +1,9 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
+import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.RentInfo;
@@ -14,10 +16,14 @@ import com.yoogurt.taxi.order.form.PlaceOrderForm;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Slf4j
 @Service
 public class OrderInfoServiceImpl implements OrderInfoService {
 
@@ -34,7 +40,9 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     public OrderModel placeOrder(PlaceOrderForm orderForm) {
         OrderInfo orderInfo = buildOrderInfo(orderForm);
         if (orderDao.insertSelective(orderInfo) == 1) {
-            return getOrderInfo(orderInfo.getOrderId());
+            OrderModel model = new OrderModel();
+            BeanUtils.copyProperties(orderInfo, model);
+            return model;
         }
         return null;
     }
@@ -56,28 +64,20 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     public OrderInfo buildOrderInfo(PlaceOrderForm orderForm) {
         RentInfo rentInfo = rentInfoService.getRentInfo(orderForm.getRentId());
         OrderInfo order = new OrderInfo(RandomUtils.getPrimaryKey());
-        UserInfo userInfo = userService.getUserInfoById(orderForm.getUserId());
-        DriverInfo driverInfo = userService.getDriverInfoByUserId(userInfo.getUserId());
+        RestResult<UserInfo> userResult = userService.getUserInfoById(orderForm.getUserId());
+        if (userResult.getStatus() != StatusCode.INFO_SUCCESS.getStatus()) {
+            log.warn("[REST]{}", userResult.getMessage());
+            return null;
+        }
+        UserInfo userInfo = userResult.getBody();
+        RestResult<List<DriverInfo>> driverResult = userService.getDriverInfoByUserId(userInfo.getUserId());
+        if (driverResult.getStatus() != StatusCode.INFO_SUCCESS.getStatus()) {
+            log.warn("[REST]{}", userResult.getMessage());
+            return null;
+        }
+        DriverInfo driverInfo = driverResult.getBody().get(0);
         if (!rentInfo.getUserType().equals(userInfo.getType())) {
-            if (rentInfo.getUserType().equals(UserType.USER_APP_AGENT.getCode())) {
-                //代理司机发单，正式司机接单
-                order.setAgentDriverId(rentInfo.getDriverId());
-                order.setAgentDriverPhone(rentInfo.getMobile());
-                order.setAgentDriverName(rentInfo.getDriverName());
-
-                order.setOfficialDriverId(driverInfo.getId());
-                order.setOfficialDriverPhone(driverInfo.getMobile());
-                order.setOfficialDriverName(userInfo.getName());
-            } else if (rentInfo.getUserType().equals(UserType.USER_APP_OFFICE.getCode())) {
-                //正式司机发单，代理司机接单
-                order.setOfficialDriverId(rentInfo.getDriverId());
-                order.setOfficialDriverPhone(rentInfo.getMobile());
-                order.setOfficialDriverName(rentInfo.getDriverName());
-
-                order.setAgentDriverId(driverInfo.getId());
-                order.setAgentDriverPhone(driverInfo.getMobile());
-                order.setAgentDriverName(userInfo.getName());
-            }
+            buildDriverInfo(order, rentInfo, driverInfo, userInfo);
             buildRentInfo(order, rentInfo);
             buildCarInfo(order, rentInfo);
         }
@@ -94,10 +94,6 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         order.setPrice(rent.getPrice());
     }
 
-    private void buildDriverInfo(OrderInfo order, RentInfo rent) {
-
-    }
-
     private void buildCarInfo(OrderInfo order, RentInfo rent) {
         order.setCarId(rent.getCarId());
         order.setPlateNumber(rent.getPlateNumber());
@@ -107,4 +103,27 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         order.setVin(rent.getVin());
         order.setRemark(rent.getRemark());
     }
+
+    private void buildDriverInfo(OrderInfo order, RentInfo rent, DriverInfo driver, UserInfo user) {
+        if (rent.getUserType().equals(UserType.USER_APP_AGENT.getCode())) {
+            //代理司机发单，正式司机接单
+            order.setAgentDriverId(rent.getDriverId());
+            order.setAgentDriverPhone(rent.getMobile());
+            order.setAgentDriverName(rent.getDriverName());
+
+            order.setOfficialDriverId(driver.getId());
+            order.setOfficialDriverPhone(driver.getMobile());
+            order.setOfficialDriverName(user.getName());
+        } else if (rent.getUserType().equals(UserType.USER_APP_OFFICE.getCode())) {
+            //正式司机发单，代理司机接单
+            order.setOfficialDriverId(rent.getDriverId());
+            order.setOfficialDriverPhone(rent.getMobile());
+            order.setOfficialDriverName(rent.getDriverName());
+
+            order.setAgentDriverId(driver.getId());
+            order.setAgentDriverPhone(driver.getMobile());
+            order.setAgentDriverName(user.getName());
+        }
+    }
+
 }

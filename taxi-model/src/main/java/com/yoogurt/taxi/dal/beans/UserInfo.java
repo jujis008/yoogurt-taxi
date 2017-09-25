@@ -13,7 +13,7 @@ import java.util.Date;
 @Setter
 @Getter
 @Table(name = "user_info")
-public class UserInfo extends SuperModel{
+public class UserInfo extends SuperModel {
     @Id
     @Column(name = "user_id")
     private Long userId;

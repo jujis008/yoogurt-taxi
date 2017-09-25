@@ -65,6 +65,10 @@ public class RestResult<T> implements Serializable {
         return result;
     }
 
+    public boolean isSuccess() {
+        return this.status == StatusCode.INFO_SUCCESS.getStatus();
+    }
+
     public static RestResult fail() {
         RestResult result = new RestResult();
         result.setStatus(StatusCode.BIZ_FAILED.getStatus());
