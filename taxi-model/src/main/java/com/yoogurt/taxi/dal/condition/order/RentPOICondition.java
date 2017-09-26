@@ -1,8 +1,12 @@
 package com.yoogurt.taxi.dal.condition.order;
 
 import com.yoogurt.taxi.common.condition.PeriodCondition;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 用于客户端地图POI检索的条件
@@ -10,6 +14,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RentPOICondition extends PeriodCondition {
+
+    /**
+     * 指定发布人的ID
+     */
+    private Long userId;
 
     /**
      * 指定范围的最大经度
@@ -32,10 +41,33 @@ public class RentPOICondition extends PeriodCondition {
     private Double minLat;
 
     /**
+     * 要匹配的租单状态。
+     * @see com.yoogurt.taxi.dal.enums.OrderStatus
+     */
+    private Integer status;
+
+    /**
      * 距离，默认1km。
      * 此字段已废弃
      */
     private Integer distance;
+
+    public RentPOICondition() {
+    }
+
+    public RentPOICondition(Long userId, Double maxLng, Double minLng, Double maxLat, Double minLat, Integer status, Integer distance) {
+        this.userId = userId;
+        this.maxLng = maxLng;
+        this.minLng = minLng;
+        this.maxLat = maxLat;
+        this.minLat = minLat;
+        this.status = status;
+        this.distance = distance;
+    }
+
+    public RentPOICondition(Date startTime, Date endTime) {
+        super(startTime, endTime);
+    }
 
     /**
      * 对查询条件进行必要的逻辑验证。
@@ -45,7 +77,7 @@ public class RentPOICondition extends PeriodCondition {
      */
     @Override
     public boolean validate() {
-        return super.validate()
+        return super.validate() && (userId == null || userId > 0)
                 && (minLng == null || maxLng == null || minLng <= maxLng)
                 && (minLat == null || maxLat == null || minLat <= maxLat);
     }

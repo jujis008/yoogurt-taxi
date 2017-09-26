@@ -21,6 +21,11 @@ import java.util.Date;
 public class RentListCondition extends SortWithPageableCondition {
 
     /**
+     * 指定发布人的ID
+     */
+    private Long userId;
+
+    /**
      * 指定范围的最大经度
      */
     private Double maxLng;
@@ -39,6 +44,12 @@ public class RentListCondition extends SortWithPageableCondition {
      * 指定范围的最大纬度
      */
     private Double minLat;
+
+    /**
+     * 要匹配的租单状态。
+     * @see com.yoogurt.taxi.dal.enums.OrderStatus
+     */
+    private Integer status;
 
     /**
      * 距离，默认1km。
@@ -62,6 +73,10 @@ public class RentListCondition extends SortWithPageableCondition {
      * 是否是来自App端的请求
      */
     private boolean fromApp;
+
+    public RentListCondition() {
+    }
+
 
     /**
      * 对查询条件进行必要的逻辑验证。
