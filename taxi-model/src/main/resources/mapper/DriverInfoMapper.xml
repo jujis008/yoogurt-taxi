@@ -10,7 +10,7 @@
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
         <result column="type" jdbcType="INTEGER" property="type"/>
         <result column="gender" jdbcType="INTEGER" property="gender"/>
-        <result column="birthday" jdbcType="VARCHAR" property="birthday"/>
+        <result column="birthday" jdbcType="TIMESTAMP" property="birthday"/>
         <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
         <result column="driving_license" jdbcType="VARCHAR" property="drivingLicense"/>
         <result column="household" jdbcType="VARCHAR" property="household"/>
@@ -21,10 +21,6 @@
         <result column="id_back" jdbcType="VARCHAR" property="idBack"/>
         <result column="driving_license_front" jdbcType="VARCHAR" property="drivingLicenseFront"/>
         <result column="driving_license_back" jdbcType="VARCHAR" property="drivingLicenseBack"/>
-        <result column="driving_permit_front" jdbcType="VARCHAR" property="drivingPermitFront"/>
-        <result column="driving_permit_back" jdbcType="VARCHAR" property="drivingPermitBack"/>
-        <result column="compulsory_insurance" jdbcType="VARCHAR" property="compulsoryInsurance"/>
-        <result column="commercial_insurance" jdbcType="VARCHAR" property="commercialInsurance"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="is_authentication" jdbcType="BIT" property="isAuthentication" />
         <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>

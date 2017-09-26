@@ -17,14 +17,19 @@ import tk.mybatis.mapper.entity.Example;
 import java.util.List;
 
 @Service
-public class DriverServiceImpl implements DriverService{
+public class DriverServiceImpl implements DriverService {
     @Autowired
-    private DriverDao   driverDao;
+    private DriverDao driverDao;
     @Autowired
     private WebPagerFactory webPagerFactory;
+
     @Override
     public ResponseObj saveDriverInfo(DriverInfo driverInfo) {
-        driverDao.insert(driverInfo);
+        if (driverInfo.getId() == null) {
+            driverDao.insert(driverInfo);
+        } else {
+            driverDao.updateByIdSelective(driverInfo);
+        }
         return ResponseObj.success();
     }
 
@@ -36,7 +41,7 @@ public class DriverServiceImpl implements DriverService{
 
     @Override
     public ResponseObj getDriverWebList(DriverWLCondition condition) {
-        PageHelper.startPage(condition.getPageNum(),condition.getPageSize(),"gmt_modify desc");
+        PageHelper.startPage(condition.getPageNum(), condition.getPageSize(), "gmt_modify desc");
         Page<DriverWLModel> driverWebList = driverDao.getDriverWebList(condition);
         return ResponseObj.success(webPagerFactory.generatePager(driverWebList));
     }
@@ -44,7 +49,7 @@ public class DriverServiceImpl implements DriverService{
     @Override
     public ResponseObj removeDriver(Long driverId) {
         DriverInfo driverInfo = driverDao.selectById(driverId);
-        if(driverInfo == null) {
+        if (driverInfo == null) {
             return ResponseObj.success();
         }
         driverInfo.setIsDeleted(Boolean.TRUE);
@@ -55,7 +60,7 @@ public class DriverServiceImpl implements DriverService{
     @Override
     public DriverInfo getDriverByUserId(Long userId) {
         Example example = new Example(DriverInfo.class);
-        example.createCriteria().andEqualTo("userId",userId);
+        example.createCriteria().andEqualTo("userId", userId);
         List<DriverInfo> driverInfoList = driverDao.selectByExample(example);
         if (CollectionUtils.isEmpty(driverInfoList)) {
             return null;

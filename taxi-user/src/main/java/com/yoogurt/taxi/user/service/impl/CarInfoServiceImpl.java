@@ -17,7 +17,11 @@ public class CarInfoServiceImpl implements CarService {
 
     @Override
     public ResponseObj saveCarInfo(CarInfo carInfo) {
-        carDao.insert(carInfo);
+        if (carInfo.getId() == null) {
+            carDao.insert(carInfo);
+        } else {
+            carDao.updateById(carInfo);
+        }
         return ResponseObj.success();
     }
 

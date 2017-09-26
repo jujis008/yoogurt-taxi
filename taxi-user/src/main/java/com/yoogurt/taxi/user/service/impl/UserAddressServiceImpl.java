@@ -4,10 +4,13 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.UserAddress;
 import com.yoogurt.taxi.user.dao.UserAddressDao;
 import com.yoogurt.taxi.user.service.UserAddressService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.List;
 
 @Service
 public class UserAddressServiceImpl implements UserAddressService {
@@ -17,7 +20,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     public ResponseObj getUserAddressListByUserId(Long userId, String keywords) {
         Example example = new Example(UserAddress.class);
-        example.setOrderByClause("order by field(is_primary,1,0),gmt_modify desc");
+        example.setOrderByClause("is_primary,gmt_modify desc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("userId", userId);
         if (StringUtils.isNotBlank(keywords)) {
@@ -28,6 +31,16 @@ public class UserAddressServiceImpl implements UserAddressService {
 
     @Override
     public ResponseObj saveUserAddress(UserAddress userAddress) {
+        if (userAddress.getIsPrimary()) {
+            Example example = new Example(UserAddress.class);
+            example.createCriteria().andEqualTo("userId",userAddress.getUserId())
+                    .andEqualTo("isPrimary",Boolean.TRUE);
+            List<UserAddress> userAddresses = userAddressDao.selectByExample(example);
+            if (CollectionUtils.isNotEmpty(userAddresses)) {
+                UserAddress dbUserAddress = userAddresses.get(0);
+                dbUserAddress.setIsPrimary(Boolean.FALSE);
+            }
+        }
         if (userAddress.getId() == null) {
             userAddressDao.insert(userAddress);
             return ResponseObj.success();
