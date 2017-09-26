@@ -45,15 +45,9 @@ public class DriverServiceTest {
     public void saveDriverInfo() {
         DriverInfo driverInfo = new DriverInfo();
         driverInfo.setAddress("");
-        driverInfo.setBirthday("");
-        driverInfo.setCommercialInsurance("");
-        driverInfo.setCompulsoryInsurance("");
         driverInfo.setDrivingLicense("");
         driverInfo.setDrivingLicenseBack("");
         driverInfo.setDrivingLicenseFront("");
-        driverInfo.setDrivingPermitBack("");
-        driverInfo.setDrivingPermitFront("");
-        driverInfo.setDrivingPermitFront("");
         driverInfo.setGender(UserGender.female.getCode());
         driverInfo.setHousehold("");
         driverInfo.setIdBack("");

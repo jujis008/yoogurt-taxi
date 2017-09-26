@@ -35,7 +35,7 @@ public class DriverInfo extends SuperModel{
     /**
      * 出生年月：xxxx年xx月
      */
-    private String birthday;
+    private Date birthday;
 
     /**
      * 身份证号
@@ -79,18 +79,6 @@ public class DriverInfo extends SuperModel{
 
     @Column(name = "driving_license_back")
     private String drivingLicenseBack;
-
-    @Column(name = "driving_permit_front")
-    private String drivingPermitFront;
-
-    @Column(name = "driving_permit_back")
-    private String drivingPermitBack;
-
-    @Column(name = "compulsory_insurance")
-    private String compulsoryInsurance;
-
-    @Column(name = "commercial_insurance")
-    private String commercialInsurance;
 
     /**
      * 是否认证

@@ -15,6 +15,6 @@ public class ActiveAccountForm {
     @NotBlank(message = "姓名不能为空")
     private String name;
     @NotBlank(message = "身份证号不能为空")
-    @Pattern(regexp = "[1-9]\\d{13,16}[X|x]{1}",message = "身份证号格式有误")
+    @Pattern(regexp = "[1-9]\\d{13,16}(\\d|[X|x]{1})",message = "身份证号格式有误")
     private String idCard;
 }

@@ -46,10 +46,16 @@ public class CarInfo extends SuperModel{
     private String vehicleType;
 
     /**
-     * 能源：10（GASOLINE）-汽油，GAS-天然气，20（POWER）-电能，30（HYBRID）-混合，40（OTHER）-其它
+     * 能源：10（GASOLINE）-汽油，20-GAS-天然气，30（POWER）-电能，40（HYBRID）-混合，50（OTHER）-其它
      */
     @Column(name = "energy_type")
     private Integer energyType;
+
+    /**
+     * 发动机号
+     */
+    @Column(name = "engine_number")
+    private String engineNumber;
 
     /**
      * 车架号
@@ -66,6 +72,30 @@ public class CarInfo extends SuperModel{
      */
     @Column(name = "vehicle_register_time")
     private Date vehicleRegisterTime;
+
+    /**
+     * 行车证正面照
+     */
+    @Column(name = "driving_permit_front")
+    private String drivingPermitFront;
+
+    /**
+     * 行车证反面照
+     */
+    @Column(name = "driving_permit_back")
+    private String drivingPermitBack;
+
+    /**
+     * 交强险
+     */
+    @Column(name = "compulsory_insurance")
+    private String compulsoryInsurance;
+
+    /**
+     * 商业险
+     */
+    @Column(name = "commercial_insurance")
+    private String commercialInsurance;
 
     /**
      * 是否认证
