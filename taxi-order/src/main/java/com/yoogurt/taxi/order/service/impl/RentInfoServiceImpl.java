@@ -37,6 +37,9 @@ public class RentInfoServiceImpl implements RentInfoService {
     private PagerFactory webPagerFactory;
 
     @Autowired
+    private PagerFactory appPagerFactory;
+
+    @Autowired
     private RestUserService userService;
 
     @Autowired
@@ -67,7 +70,10 @@ public class RentInfoServiceImpl implements RentInfoService {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize(), orderBy);
         Page<RentInfoModel> page = rentDao.getRentListByPage(condition.getMaxLng(), condition.getMinLng(), condition.getMaxLat(), condition.getMinLat(),
                 condition.getStartTime(), condition.getEndTime(), condition.likes(), condition.getSortName(), condition.getSortOrder());
-        return webPagerFactory.generatePager(page);
+        if(!condition.isFromApp()){
+            return webPagerFactory.generatePager(page);
+        }
+        return appPagerFactory.generatePager(page);
     }
 
     @Override

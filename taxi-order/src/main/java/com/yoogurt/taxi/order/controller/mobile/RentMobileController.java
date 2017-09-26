@@ -11,10 +11,7 @@ import com.yoogurt.taxi.order.service.RentInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -47,6 +44,7 @@ public class RentMobileController extends BaseController {
     public ResponseObj getRentList(RentListCondition condition) {
 
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        condition.setFromApp(true);
         return ResponseObj.success(rentInfoService.getRentListByPage(condition));
     }
 
@@ -57,9 +55,9 @@ public class RentMobileController extends BaseController {
      * @return ResponseObj
      */
     @RequestMapping(value = "/rent", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
-    public ResponseObj publishRentInfo(@Valid RentForm rentForm, BindingResult result) {
+    public ResponseObj publishRentInfo(@Valid @RequestBody RentForm rentForm, BindingResult result) {
 
-        if(result.hasErrors()) return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).toString());
+        if(result.hasErrors()) return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         rentForm.setUserId(getUserId());
         return rentInfoService.addRentInfo(rentForm);
     }

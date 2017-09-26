@@ -27,7 +27,7 @@ public class RentPOICondition extends PeriodCondition {
     private Double maxLat;
 
     /**
-     * 指定范围的最大纬度
+     * 指定范围的最小纬度
      */
     private Double minLat;
 

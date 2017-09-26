@@ -2,6 +2,7 @@ package com.yoogurt.taxi.common.condition;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -18,11 +19,13 @@ public class PeriodCondition extends BaseCondition {
     /**
      * 开始时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     /**
      * 结束时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
     public PeriodCondition() {

@@ -4,6 +4,7 @@ import com.yoogurt.taxi.common.condition.SortWithPageableCondition;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -48,12 +49,19 @@ public class RentListCondition extends SortWithPageableCondition {
     /**
      * 开始时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     /**
      * 结束时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
+
+    /**
+     * 是否是来自App端的请求
+     */
+    private boolean fromApp;
 
     /**
      * 对查询条件进行必要的逻辑验证。
