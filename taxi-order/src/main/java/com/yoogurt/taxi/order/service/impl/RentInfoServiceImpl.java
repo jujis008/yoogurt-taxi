@@ -2,6 +2,8 @@ package com.yoogurt.taxi.order.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.yoogurt.taxi.common.bo.DateTimeSection;
+import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.pager.Pager;
@@ -14,6 +16,7 @@ import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.dao.RentDao;
@@ -26,7 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -48,45 +53,41 @@ public class RentInfoServiceImpl implements RentInfoService {
     @Override
     public List<RentInfoModel> getRentList(RentPOICondition condition) {
 
-        return rentDao.getRentList(condition.getMaxLng(), condition.getMinLng(), condition.getMaxLat(), condition.getMinLat(),
-                condition.getStartTime(), condition.getEndTime(), condition.likes());
+        return rentDao.getRentList(condition);
     }
 
     @Override
     public Pager<RentInfoModel> getRentListByPage(RentListCondition condition) {
-        String orderBy = "";
-        if (StringUtils.isNotBlank(condition.getSortName())) {
-            orderBy += condition.getSortName();
-        }
-        orderBy += " ";
-        if(StringUtils.isNotBlank(condition.getSortOrder())) {
-            orderBy += condition.getSortOrder();
-        }
-        //没有传入排序字段
-        if (StringUtils.isBlank(orderBy)) {
-            //默认按发布时间倒序排列
-            orderBy += "r.gmt_create DESC";
-        }
-        PageHelper.startPage(condition.getPageNum(), condition.getPageSize(), orderBy);
-        Page<RentInfoModel> page = rentDao.getRentListByPage(condition.getMaxLng(), condition.getMinLng(), condition.getMaxLat(), condition.getMinLat(),
-                condition.getStartTime(), condition.getEndTime(), condition.likes(), condition.getSortName(), condition.getSortOrder());
+
+        Page<RentInfoModel> page = rentDao.getRentListByPage(condition);
         if(!condition.isFromApp()){
             return webPagerFactory.generatePager(page);
         }
         return appPagerFactory.generatePager(page);
     }
 
+    /**
+     * 获取租单信息
+     * @param rentId 租单信息ID
+     * @param userId 发单人ID
+     * @return 租单信息
+     */
     @Override
-    public RentInfo getRentInfo(Long rentId) {
+    public RentInfo getRentInfo(Long rentId, Long userId) {
         if (rentId != null && rentId > 0) {
-            return rentDao.selectById(rentId);
+            RentInfo rentInfo = rentDao.selectById(rentId);
+            if(rentInfo == null) return null;
+            if(userId != null && !userId.equals(rentInfo.getUserId())) return null;
+            return rentInfo;
         }
         return null;
     }
 
     @Override
     public ResponseObj addRentInfo(RentForm rentForm) {
-
+        if (rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_HOURS * 3600000) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "交车时间与还车时间必须间隔" + Constants.MIN_HOURS + "小时以上");
+        }
         ResponseObj obj = buildRentInfo(rentForm);
         if (obj.isSuccess()) {
             rentDao.insertSelective((RentInfo) obj.getBody());
@@ -94,7 +95,61 @@ public class RentInfoServiceImpl implements RentInfoService {
         return obj;
     }
 
+    /**
+     * 指定用户id和租单状态，获取相应的租单列表，并按交车时间升序排列。
+     * @param userId 用户id
+     * @param status 租单状态，可以传入多个
+     * @return 租单列表
+     */
+    private List<RentInfo> getRentList(Long userId, Integer... status) {
+        Example ex = new Example(RentInfo.class);
+        ex.createCriteria()
+                .andEqualTo("userId", userId)
+                .andIn("status", Arrays.asList(status))
+                .andEqualTo("isDeleted", Boolean.FALSE);
+        ex.setOrderByClause("handover_time ASC");
+        return rentDao.selectByExample(ex);
+    }
+
+    /**
+     * 校验是否可以发单。
+     * 1、押金余额：充足；
+     * 2、不能超过未完成订单数量上限；
+     * 3、订单时间不能重叠。
+     * @return 校验结果
+     */
+    private ResponseObj isAllowPublish(RentForm rentForm) {
+        Long userId = rentForm.getUserId();
+        //TODO 1. 押金校验
+
+
+
+        List<RentInfo> rentList = getRentList(userId, RentStatus.WAITING.getCode(), RentStatus.RENT.getCode());
+        if(CollectionUtils.isEmpty(rentList)) //未发布过租单，直接返回成功
+            return ResponseObj.success();
+
+        //2. 订单数量上限校验
+        if(rentList.size() >= Constants.MAX_RENT_COUNT)
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "最多发布" + Constants.MAX_RENT_COUNT + "笔租单");
+
+        DateTimeSection section = new DateTimeSection(rentForm.getHandoverTime(), rentForm.getGiveBackTime());
+
+        //3.订单时间校验
+        for (RentInfo rentInfo : rentList) {
+            DateTimeSection sectionA = new DateTimeSection(rentInfo.getHandoverTime(), rentInfo.getGiveBackTime());
+            if (DateTimeSection.isInclude(sectionA, section)) {
+                return ResponseObj.fail(StatusCode.BIZ_FAILED, sectionA.toString() + "已有订单安排，请重新选择");
+            }
+        }
+        //校验通过
+        return ResponseObj.success();
+    }
+
     private ResponseObj buildRentInfo(RentForm rentForm) {
+        ResponseObj validateResult = isAllowPublish(rentForm);
+        //校验不成功，直接返回校验结果
+        if(!validateResult.isSuccess()) return validateResult;
+
         RentInfo rentInfo = new RentInfo(RandomUtils.getPrimaryKey());
         BeanUtils.copyProperties(rentForm, rentInfo);
         Long userId = rentForm.getUserId();

@@ -55,7 +55,7 @@ public class RentMobileController extends BaseController {
      * @return ResponseObj
      */
     @RequestMapping(value = "/rent", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
-    public ResponseObj publishRentInfo(@Valid @RequestBody RentForm rentForm, BindingResult result) {
+    public ResponseObj publishRentInfo(@Valid RentForm rentForm, BindingResult result) {
 
         if(result.hasErrors()) return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         rentForm.setUserId(getUserId());
@@ -70,7 +70,7 @@ public class RentMobileController extends BaseController {
     @RequestMapping(value = "/rent/info/{rentId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentInfo(@PathVariable(name = "rentId") Long rentId) {
 
-        RentInfo rentInfo = rentInfoService.getRentInfo(rentId);
+        RentInfo rentInfo = rentInfoService.getRentInfo(rentId, getUserId());
         if(rentInfo != null) {
             return ResponseObj.success(rentInfo);
         }

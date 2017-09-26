@@ -3,7 +3,7 @@ package com.yoogurt.taxi.dal.enums;
 import lombok.Getter;
 
 /**
- * 10-待接单，20-已接单，30-手动取消，40-超时自动取消
+ * 10-待接单，20-已接单，但订单还未结束，30-手动取消，40-超时自动取消
  */
 @Getter
 public enum RentStatus {
@@ -12,6 +12,7 @@ public enum RentStatus {
     RENT(20,"已接单"),
     CANCELED(30,"手动取消"),
     TIMEOUT(40,"超时自动取消"),
+    FINISH(50,"已完成"),
     ;
     private Integer code;
     private String name;

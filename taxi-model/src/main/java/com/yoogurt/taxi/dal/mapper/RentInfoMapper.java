@@ -13,14 +13,16 @@ import java.util.List;
 public interface RentInfoMapper extends Mapper<RentInfo>, MySqlMapper<RentInfo> {
 
     List<RentInfoModel> getRentList(
+            @Param("userId") Long userId, @Param("status") Integer status,
             @Param("maxLng") Double maxLng, @Param("minLng") Double minLng,
             @Param("maxLat") Double maxLat, @Param("minLat") Double minLat,
-            @Param("startTime")Date startTime, @Param("endTime") Date endTime,
+            @Param("startTime") Date startTime, @Param("endTime") Date endTime,
             @Param("keywords") String keywords);
 
     Page<RentInfoModel> getRentListByPage(
+            @Param("userId") Long userId, @Param("status") Integer status,
             @Param("maxLng") Double maxLng, @Param("minLng") Double minLng,
             @Param("maxLat") Double maxLat, @Param("minLat") Double minLat,
-            @Param("startTime")Date startTime, @Param("endTime") Date endTime,
+            @Param("startTime") Date startTime, @Param("endTime") Date endTime,
             @Param("keywords") String keywords, @Param("sortName") String sortName, @Param("sortOrder") String sortOrder);
 }

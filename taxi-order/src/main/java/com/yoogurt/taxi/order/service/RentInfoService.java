@@ -17,7 +17,7 @@ public interface RentInfoService {
 
 	Pager<RentInfoModel> getRentListByPage(RentListCondition condition);
 
-	RentInfo getRentInfo(Long rentId);
+	RentInfo getRentInfo(Long rentId, Long userId);
 
 	ResponseObj addRentInfo(RentForm rentForm);
 

@@ -55,11 +55,14 @@
     </resultMap>
 
     <select id="getRentList" resultMap="RentPOIModel" parameterType="map">
-        SELECT rent_id, r.driver_id, driver_name, plate_number, avatar, car_thumb, handover_time, give_back_time,
+        SELECT rent_id, r.user_id, r.driver_id, driver_name, plate_number, avatar, car_thumb, handover_time, give_back_time,
         address, lng, lat, price, order_count, traffic_violation_count, disobey_count, score, status, remark
         FROM rent_info AS r
         LEFT JOIN order_statistic AS o ON (r.driver_id=o.driver_id)
         WHERE r.is_deleted=0
+        <if test="userId != null and userId > 0">
+            AND r.user_id=#{userId}
+        </if>
         <if test="maxLng != null">
             <![CDATA[ AND r.lng <= #{maxLng} ]]>
         </if>
@@ -82,6 +85,10 @@
 
         <if test="endTime != null">
             <![CDATA[ AND r.give_back_time <= #{endTime} ]]>
+        </if>
+
+        <if test="status != null and status > 0">
+            AND r.status=#{status}
         </if>
 
         <if test="keywords != null and keywords != ''">
@@ -91,12 +98,16 @@
     </select>
 
     <select id="getRentListByPage" parameterType="map" resultMap="RentListModel">
-        SELECT rent_id, r.driver_id, driver_name, plate_number, avatar, car_thumb, handover_time, give_back_time,
+        SELECT rent_id, r.user_id, r.driver_id, driver_name, plate_number, avatar, car_thumb, handover_time, give_back_time,
         address, lng, lat, price, order_count, traffic_violation_count, disobey_count, score, status, remark,
         HOUR(give_back_time - handover_time) AS rent_time
         FROM rent_info AS r
         LEFT JOIN order_statistic AS o ON (r.driver_id=o.driver_id)
         WHERE r.is_deleted=0
+        <if test="userId != null and userId > 0">
+            AND r.user_id=#{userId}
+        </if>
+
         <if test="maxLng != null">
             <![CDATA[ AND r.lng <= #{maxLng} ]]>
         </if>
@@ -119,6 +130,10 @@
 
         <if test="endTime != null">
             <![CDATA[ AND r.give_back_time <= #{endTime} ]]>
+        </if>
+
+        <if test="status != null and status > 0">
+            AND r.status=#{status}
         </if>
 
         <if test="keywords != null and keywords != ''">
