@@ -70,12 +70,12 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             return null;
         }
         UserInfo userInfo = userResult.getBody();
-        RestResult<List<DriverInfo>> driverResult = userService.getDriverInfoByUserId(userInfo.getUserId());
+        RestResult<DriverInfo> driverResult = userService.getDriverInfoByUserId(userInfo.getUserId());
         if (driverResult.getStatus() != StatusCode.INFO_SUCCESS.getStatus()) {
             log.warn("[REST]{}", userResult.getMessage());
             return null;
         }
-        DriverInfo driverInfo = driverResult.getBody().get(0);
+        DriverInfo driverInfo = driverResult.getBody();
         if (!rentInfo.getUserType().equals(userInfo.getType())) {
             buildDriverInfo(order, rentInfo, driverInfo, userInfo);
             buildRentInfo(order, rentInfo);

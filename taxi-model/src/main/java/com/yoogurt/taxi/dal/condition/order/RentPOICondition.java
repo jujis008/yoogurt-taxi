@@ -36,4 +36,17 @@ public class RentPOICondition extends PeriodCondition {
      * 此字段已废弃
      */
     private Integer distance;
+
+    /**
+     * 对查询条件进行必要的逻辑验证。
+     * 简单的验证可以加注解，复杂的验证交给validate()
+     *
+     * @return true 验证通过，false 验证不通过
+     */
+    @Override
+    public boolean validate() {
+        return super.validate()
+                && (minLng == null || maxLng == null || minLng <= maxLng)
+                && (minLat == null || maxLat == null || minLat <= maxLat);
+    }
 }

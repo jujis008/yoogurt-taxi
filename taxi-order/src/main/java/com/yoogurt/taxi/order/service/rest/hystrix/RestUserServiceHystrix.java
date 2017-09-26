@@ -24,7 +24,7 @@ public class RestUserServiceHystrix implements RestUserService {
     }
 
     @Override
-    public RestResult<List<DriverInfo>> getDriverInfoByUserId(Long userId) {
+    public RestResult<DriverInfo> getDriverInfoByUserId(Long userId) {
         return RestResult.fail(StatusCode.REST_FAIL, "获取司机信息失败");
     }
 

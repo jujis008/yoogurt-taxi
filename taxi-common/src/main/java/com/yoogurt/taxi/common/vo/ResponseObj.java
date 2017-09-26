@@ -127,6 +127,10 @@ public class ResponseObj implements Serializable {
         return toJSON();
     }
 
+    public boolean isSuccess() {
+        return this.status == StatusCode.INFO_SUCCESS.getStatus();
+    }
+
     public static class ResponseBuilder {
 
         /**

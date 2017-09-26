@@ -28,12 +28,12 @@
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
     </resultMap>
 
-    <resultMap id="RentPOIModel" type="com.yoogurt.taxi.dal.model.order.RentPOIModel">
+    <resultMap id="RentPOIModel" type="com.yoogurt.taxi.dal.model.order.RentInfoModel">
         <id column="rent_id" jdbcType="BIGINT" property="rentId"/>
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="driver_id" jdbcType="BIGINT" property="driverId"/>
         <result column="driver_name" jdbcType="VARCHAR" property="driverName"/>
-        <result column="plat_number" jdbcType="VARCHAR" property="platNumber"/>
+        <result column="plate_number" jdbcType="VARCHAR" property="plateNumber"/>
         <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
         <result column="car_thumb" jdbcType="VARCHAR" property="carThumb"/>
         <result column="handover_time" jdbcType="TIMESTAMP" property="handoverTime"/>
@@ -54,24 +54,75 @@
         <result column="rent_time" jdbcType="INTEGER" property="rentTime"/>
     </resultMap>
 
-    <select id="getRentList" resultMap="RentPOIModel" parameterType="com.yoogurt.taxi.dal.condition.order.RentPOICondition">
-        SELECT rent_id, r.driver_id, driver_name, plat_number, avatar, car_thumb, handover_time, give_back_time,
-        address, lng, lat,
-        price, order_count, traffic_violation_count, disobey_count, score, status, remark
+    <select id="getRentList" resultMap="RentPOIModel" parameterType="map">
+        SELECT rent_id, r.driver_id, driver_name, plate_number, avatar, car_thumb, handover_time, give_back_time,
+        address, lng, lat, price, order_count, traffic_violation_count, disobey_count, score, status, remark
         FROM rent_info AS r
         LEFT JOIN order_statistic AS o ON (r.driver_id=o.driver_id)
         WHERE r.is_deleted=0
-        <if test="${startTime != null}">
-            <![CDATA[ r.handover_time >= #{startTime} ]]>
+        <if test="maxLng != null">
+            <![CDATA[ AND r.lng <= #{maxLng} ]]>
         </if>
 
-        <if test="${endTime != null}">
-            <![CDATA[ r.give_back_time <= #{endTime} ]]>
+        <if test="minLng != null">
+            <![CDATA[ AND r.lng >= #{minLng} ]]>
         </if>
 
-        <if test="${keywords != null and keywords != ''}">
-            r.address LIKE #{keywords}
+        <if test="maxLat != null">
+            <![CDATA[ AND r.lat <= #{maxLat} ]]>
+        </if>
+
+        <if test="minLat != null">
+            <![CDATA[ AND r.lat >= #{minLat} ]]>
+        </if>
+
+        <if test="startTime != null">
+            <![CDATA[ AND r.handover_time >= #{startTime} ]]>
+        </if>
+
+        <if test="endTime != null">
+            <![CDATA[ AND r.give_back_time <= #{endTime} ]]>
+        </if>
+
+        <if test="keywords != null and keywords != ''">
+            AND r.address LIKE #{keywords}
         </if>
         ORDER BY r.gmt_create DESC
+    </select>
+
+    <select id="getRentListByPage" parameterType="map" resultMap="RentListModel">
+        SELECT rent_id, r.driver_id, driver_name, plate_number, avatar, car_thumb, handover_time, give_back_time,
+        address, lng, lat, price, order_count, traffic_violation_count, disobey_count, score, status, remark,
+        HOUR(give_back_time - handover_time) AS rent_time
+        FROM rent_info AS r
+        LEFT JOIN order_statistic AS o ON (r.driver_id=o.driver_id)
+        WHERE r.is_deleted=0
+        <if test="maxLng != null">
+            <![CDATA[ AND r.lng <= #{maxLng} ]]>
+        </if>
+
+        <if test="minLng != null">
+            <![CDATA[ AND r.lng >= #{minLng} ]]>
+        </if>
+
+        <if test="maxLat != null">
+            <![CDATA[ AND r.lat <= #{maxLat} ]]>
+        </if>
+
+        <if test="minLat != null">
+            <![CDATA[ AND r.lat >= #{minLat} ]]>
+        </if>
+
+        <if test="startTime != null">
+            <![CDATA[ AND r.handover_time >= #{startTime} ]]>
+        </if>
+
+        <if test="endTime != null">
+            <![CDATA[ AND r.give_back_time <= #{endTime} ]]>
+        </if>
+
+        <if test="keywords != null and keywords != ''">
+            AND r.address LIKE #{keywords}
+        </if>
     </select>
 </mapper>

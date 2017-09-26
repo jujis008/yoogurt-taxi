@@ -1,7 +1,8 @@
 package com.yoogurt.taxi.dal.mapper;
 
+import com.github.pagehelper.Page;
 import com.yoogurt.taxi.dal.beans.RentInfo;
-import com.yoogurt.taxi.dal.model.order.RentPOIModel;
+import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import org.apache.ibatis.annotations.Param;
 import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.common.MySqlMapper;
@@ -11,6 +12,15 @@ import java.util.List;
 
 public interface RentInfoMapper extends Mapper<RentInfo>, MySqlMapper<RentInfo> {
 
-    List<RentPOIModel> getRentList(@Param("startTime")Date startTime, @Param("endTime") Date endTime, @Param("keywords") String keywords);
+    List<RentInfoModel> getRentList(
+            @Param("maxLng") Double maxLng, @Param("minLng") Double minLng,
+            @Param("maxLat") Double maxLat, @Param("minLat") Double minLat,
+            @Param("startTime")Date startTime, @Param("endTime") Date endTime,
+            @Param("keywords") String keywords);
 
+    Page<RentInfoModel> getRentListByPage(
+            @Param("maxLng") Double maxLng, @Param("minLng") Double minLng,
+            @Param("maxLat") Double maxLat, @Param("minLat") Double minLat,
+            @Param("startTime")Date startTime, @Param("endTime") Date endTime,
+            @Param("keywords") String keywords, @Param("sortName") String sortName, @Param("sortOrder") String sortOrder);
 }

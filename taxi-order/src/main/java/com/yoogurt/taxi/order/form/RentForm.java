@@ -13,7 +13,6 @@ import java.util.Date;
 @Setter
 public class RentForm {
 
-    @NotNull(message = "请指定司机")
     private Long userId;
 
     @NotBlank(message = "请指定交班地址")

@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class RentPOIModel {
+public class RentInfoModel {
 
 	private Long rentId;
 
@@ -18,7 +18,7 @@ public class RentPOIModel {
 
 	private String driverName;
 
-	private String platNumber;
+	private String plateNumber;
 
 	private Date handoverTime;
 

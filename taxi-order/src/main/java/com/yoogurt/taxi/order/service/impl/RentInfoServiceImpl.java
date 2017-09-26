@@ -1,6 +1,10 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.factory.PagerFactory;
+import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -8,15 +12,17 @@ import com.yoogurt.taxi.dal.beans.CarInfo;
 import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
 import com.yoogurt.taxi.dal.enums.UserType;
-import com.yoogurt.taxi.dal.model.order.RentPOIModel;
+import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.dao.RentDao;
 import com.yoogurt.taxi.order.form.RentForm;
 import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,15 +34,40 @@ import java.util.List;
 public class RentInfoServiceImpl implements RentInfoService {
 
     @Autowired
+    private PagerFactory webPagerFactory;
+
+    @Autowired
     private RestUserService userService;
 
     @Autowired
     private RentDao rentDao;
 
     @Override
-    public List<RentPOIModel> getRentList(RentPOICondition condition) {
+    public List<RentInfoModel> getRentList(RentPOICondition condition) {
 
-        return rentDao.getRentList(condition.getStartTime(), condition.getEndTime(), condition.likes());
+        return rentDao.getRentList(condition.getMaxLng(), condition.getMinLng(), condition.getMaxLat(), condition.getMinLat(),
+                condition.getStartTime(), condition.getEndTime(), condition.likes());
+    }
+
+    @Override
+    public Pager<RentInfoModel> getRentListByPage(RentListCondition condition) {
+        String orderBy = "";
+        if (StringUtils.isNotBlank(condition.getSortName())) {
+            orderBy += condition.getSortName();
+        }
+        orderBy += " ";
+        if(StringUtils.isNotBlank(condition.getSortOrder())) {
+            orderBy += condition.getSortOrder();
+        }
+        //没有传入排序字段
+        if (StringUtils.isBlank(orderBy)) {
+            //默认按发布时间倒序排列
+            orderBy += "r.gmt_create DESC";
+        }
+        PageHelper.startPage(condition.getPageNum(), condition.getPageSize(), orderBy);
+        Page<RentInfoModel> page = rentDao.getRentListByPage(condition.getMaxLng(), condition.getMinLng(), condition.getMaxLat(), condition.getMinLat(),
+                condition.getStartTime(), condition.getEndTime(), condition.likes(), condition.getSortName(), condition.getSortOrder());
+        return webPagerFactory.generatePager(page);
     }
 
     @Override
@@ -51,7 +82,7 @@ public class RentInfoServiceImpl implements RentInfoService {
     public ResponseObj addRentInfo(RentForm rentForm) {
 
         ResponseObj obj = buildRentInfo(rentForm);
-        if (obj != null) {
+        if (obj.isSuccess()) {
             rentDao.insertSelective((RentInfo) obj.getBody());
         }
         return obj;
@@ -66,17 +97,12 @@ public class RentInfoServiceImpl implements RentInfoService {
             log.warn("[REST]{}", userResult.getMessage());
             return ResponseObj.of(userResult);
         }
-        RestResult<List<DriverInfo>> driverResult = userService.getDriverInfoByUserId(userId);
+        RestResult<DriverInfo> driverResult = userService.getDriverInfoByUserId(userId);
         if (!driverResult.isSuccess()) {
             log.warn("[REST]{}", driverResult.getMessage());
             return ResponseObj.of(driverResult);
         }
-        List<DriverInfo> drivers = driverResult.getBody();
-        if (CollectionUtils.isEmpty(drivers)) {
-            log.info("司机信息未录入");
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "司机信息未录入");
-        }
-        DriverInfo driverInfo = drivers.get(0);
+        DriverInfo driverInfo = driverResult.getBody();
         rentInfo.setDriverId(driverInfo.getId());
         UserInfo user = userResult.getBody();
         if(user != null) {
@@ -108,6 +134,7 @@ public class RentInfoServiceImpl implements RentInfoService {
         rent.setVehicleType(car.getVehicleType());
         rent.setCarThumb(car.getCarPicture());
         rent.setDriverId(car.getDriverId());
+        rent.setVin(car.getVin());
     }
 
     private void buildUserInfo(RentInfo rent, UserInfo user) {

@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RentListModel extends RentPOIModel {
+public class RentListModel extends RentInfoModel {
 
 
     /**

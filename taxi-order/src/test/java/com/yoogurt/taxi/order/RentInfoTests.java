@@ -1,9 +1,14 @@
 package com.yoogurt.taxi.order;
 
+import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
+import com.yoogurt.taxi.dal.condition.order.RentListCondition;
+import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.form.RentForm;
 import com.yoogurt.taxi.order.service.RentInfoService;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -33,5 +39,46 @@ public class RentInfoTests {
         rentForm.setUserId(8888L);
         ResponseObj rentInfo = rentInfoService.addRentInfo(rentForm);
         Assert.assertNotNull("租单发布失败", rentInfo.getBody());
+    }
+
+    @Test
+    public void getRentInfo() {
+        Long rentId = 17092516275957311L;
+        RentInfo rentInfo = rentInfoService.getRentInfo(rentId);
+        Assert.assertNotNull("租单信息不存在", rentInfo);
+    }
+
+    @Test
+    public void getRentPOIs() {
+        RentPOICondition condition = new RentPOICondition();
+//        condition.setMaxLat(30.9866632);
+//        condition.setMinLat(29.89663321);
+//        condition.setMaxLng(121.563121);
+//        condition.setMinLng(120.1123654);
+//        condition.setKeywords("临丁路");
+//        condition.setStartTime(new DateTime().minusDays(2).toDate());
+//        condition.setEndTime(new Date());
+
+        List<RentInfoModel> rentList = rentInfoService.getRentList(condition);
+        Assert.assertNotNull("租单信息不存在", rentList);
+    }
+
+    @Test
+    public void getRentList() {
+
+        RentListCondition condition = new RentListCondition();
+//        condition.setMaxLat(30.9866632);
+//        condition.setMinLat(29.89663321);
+//        condition.setMaxLng(121.563121);
+//        condition.setMinLng(120.1123654);
+//        condition.setKeywords("临丁路");
+//        condition.setStartTime(new DateTime().minusDays(2).toDate());
+//        condition.setEndTime(new Date());
+//        condition.setPageNum(1);
+//        condition.setPageSize(15);
+//        condition.setSortName("price");
+//        condition.setSortOrder("ASC");
+        Pager<RentInfoModel> pager = rentInfoService.getRentListByPage(condition);
+        Assert.assertNotNull("租单信息不存在", pager);
     }
 }
