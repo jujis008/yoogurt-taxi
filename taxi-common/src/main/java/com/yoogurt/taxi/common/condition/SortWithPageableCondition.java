@@ -17,4 +17,11 @@ public class SortWithPageableCondition extends PageableCondition {
 
     private String sortOrder;
 
+    public SortWithPageableCondition() {
+    }
+
+    public SortWithPageableCondition(String sortName, String sortOrder) {
+        this.sortName = sortName;
+        this.sortOrder = sortOrder;
+    }
 }
