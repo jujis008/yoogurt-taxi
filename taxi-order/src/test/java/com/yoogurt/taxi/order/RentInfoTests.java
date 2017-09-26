@@ -31,20 +31,20 @@ public class RentInfoTests {
     public void addRentInfoTest() {
         RentForm rentForm = new RentForm();
         rentForm.setAddress("江干区幸福南路1118号");
-        rentForm.setGiveBackTime(new Date());
-        rentForm.setHandoverTime(new Date());
-        rentForm.setLat(30.263684012);
-        rentForm.setLng(120.365214521);
-        rentForm.setPrice(new BigDecimal(120));
-        rentForm.setUserId(8888L);
-        ResponseObj rentInfo = rentInfoService.addRentInfo(rentForm);
-        Assert.assertNotNull("租单发布失败", rentInfo.getBody());
+        rentForm.setHandoverTime(new DateTime().plusDays(19).toDate());
+        rentForm.setGiveBackTime(new DateTime().plusDays(22).toDate());
+        rentForm.setLat(30.20684012);
+        rentForm.setLng(120.36450212);
+        rentForm.setPrice(new BigDecimal(125));
+        rentForm.setUserId(350098098587428185L);
+        ResponseObj result = rentInfoService.addRentInfo(rentForm);
+        Assert.assertNotNull(result.getMessage(), result.getBody());
     }
 
     @Test
     public void getRentInfo() {
         Long rentId = 17092516275957311L;
-        RentInfo rentInfo = rentInfoService.getRentInfo(rentId);
+        RentInfo rentInfo = rentInfoService.getRentInfo(rentId, 8888L);
         Assert.assertNotNull("租单信息不存在", rentInfo);
     }
 
