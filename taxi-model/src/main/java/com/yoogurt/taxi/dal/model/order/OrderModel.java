@@ -47,8 +47,6 @@ public class OrderModel {
 	 */
 	private Date orderTime;
 
-	private Date publishTime;
-
 	private Integer status;
 
 	private Boolean isCommented;

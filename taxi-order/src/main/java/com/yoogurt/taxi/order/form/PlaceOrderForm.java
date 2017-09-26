@@ -13,7 +13,6 @@ public class PlaceOrderForm {
 	@NotNull(message = "请指定发布信息")
 	private Long rentId;
 
-	@NotNull(message = "请指定接单司机")
 	private Long userId;
 
 }

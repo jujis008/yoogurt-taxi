@@ -9,7 +9,8 @@ public enum OrderStatus {
     PICK_UP(20,"待取车"),
     GIVE_BACK(30,"待还车"),
     ACCEPT(40,"待收车"),
-    CANCELED(50,"手动取消"),
+    FINISH(50,"已完成"),
+    CANCELED(60,"已取消"),
     ;
     private Integer code;
 
