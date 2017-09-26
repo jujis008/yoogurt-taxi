@@ -11,9 +11,29 @@ import lombok.Setter;
 @Setter
 public class RentPOICondition extends PeriodCondition {
 
-    private Double lng;
+    /**
+     * 指定范围的最大经度
+     */
+    private Double maxLng;
 
-    private Double lat;
+    /**
+     * 指定范围的最小经度
+     */
+    private Double minLng;
 
+    /**
+     * 指定范围的最大纬度
+     */
+    private Double maxLat;
+
+    /**
+     * 指定范围的最大纬度
+     */
+    private Double minLat;
+
+    /**
+     * 距离，默认1km。
+     * 此字段已废弃
+     */
     private Integer distance;
 }
