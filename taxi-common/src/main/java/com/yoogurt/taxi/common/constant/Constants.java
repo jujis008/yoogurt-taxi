@@ -23,6 +23,16 @@ public final class Constants {
     public static final int VERIFY_CODE_EXPIRE_SECONDS = 300;
 
     /**
+     * 发布的租单，交车时间和还车时间的间隔时长
+     */
+    public static final int MIN_HOURS = 8;
+
+    /**
+     * 允许最大的发单数量
+     */
+    public static final int MAX_RENT_COUNT = 5;
+
+    /**
      * 为了保证API的幂等性，每次请求需要有一个唯一的REQUEST_ID，
      * 所以加一个自定义Header：yoogurt-request-id: <request_id>。
      * 系统中用到的request_id生成算法暂定为UUID。
