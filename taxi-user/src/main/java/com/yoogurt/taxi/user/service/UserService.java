@@ -117,4 +117,5 @@ public interface UserService {
 
     List<ErrorCellBean> importAgentDriversFromExcel(List<Map<String, Object>> list);
 
+    List<ErrorCellBean> importOfficeDriversFromExcel(List<Map<String, Object>> list);
 }

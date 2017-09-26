@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.dal.beans;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
@@ -13,18 +15,21 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "car_info")
-public class CarInfo extends SuperModel{
+public class CarInfo{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     /**
      * 用户id
      */
     @Column(name = "user_id")
+    @JsonIgnore
     private Long userId;
 
     @Column(name = "driver_id")
+    @JsonIgnore
     private Long driverId;
 
     /**
@@ -71,6 +76,7 @@ public class CarInfo extends SuperModel{
      * 车辆登记时间
      */
     @Column(name = "vehicle_register_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private Date vehicleRegisterTime;
 
     /**
@@ -102,5 +108,40 @@ public class CarInfo extends SuperModel{
      */
     @Column(name = "is_authentication")
     private Boolean isAuthentication;
+
+    /**
+     * 是否删除
+     */
+    @Column(name = "is_deleted")
+    @JsonIgnore
+    private Boolean isDeleted;
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "gmt_create")
+    @JsonIgnore
+    private Date gmtCreate;
+
+    /**
+     * 创建人ID
+     */
+    @Column(name = "creator")
+    @JsonIgnore
+    private Long creator;
+
+    /**
+     * 最后修改时间
+     */
+    @Column(name = "gmt_modify")
+    @JsonIgnore
+    private Date gmtModify;
+
+    /**
+     * 最后修改人ID
+     */
+    @Column(name = "modifier")
+    @JsonIgnore
+    private Long modifier;
 
 }

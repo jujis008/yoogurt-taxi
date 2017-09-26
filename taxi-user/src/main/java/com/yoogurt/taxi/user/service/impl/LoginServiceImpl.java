@@ -60,16 +60,6 @@ public class LoginServiceImpl implements LoginService {
         redisHelper.set(CacheKey.GRANT_CODE_KEY + user.getUserId(), grantCode, Constants.GRANT_CODE_EXPIRE_SECONDS);
         //缓存SessionUser，不需要设置过期时间，以JWT的过期时间为准
         redisHelper.setObject(CacheKey.SESSION_USER_KEY + user.getUserId(), sessionUser);
-        if (user.getStatus().equals(UserStatus.UN_ACTIVE.getCode())) {
-            Map<String,Object> map = new HashMap<>();
-            Object o = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + user.getUserId());
-            if(o!=null){
-                map.put("activeStatus",o);
-            }
-            ResponseObj successObj = ResponseObj.success(sessionUser);
-            successObj.setExtras(map);
-            return successObj;
-        }
         return ResponseObj.success(sessionUser);
     }
 
