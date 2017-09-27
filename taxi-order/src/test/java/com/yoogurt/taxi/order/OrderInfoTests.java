@@ -40,8 +40,9 @@ public class OrderInfoTests {
     @Test
     public void placeFormTest() {
         PlaceOrderForm orderForm = new PlaceOrderForm();
-        orderForm.setRentId(17092620134341936L);
+        orderForm.setRentId(17092615020308202L);
         orderForm.setUserId(8888L);
+        orderForm.setUserType(20);
         ResponseObj obj = orderInfoService.placeOrder(orderForm);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }

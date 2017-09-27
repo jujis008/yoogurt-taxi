@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -57,6 +58,8 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     public ResponseObj placeOrder(PlaceOrderForm orderForm) {
         ResponseObj obj = buildOrderInfo(orderForm);
         if (obj.isSuccess() && orderDao.insertSelective((OrderInfo) obj.getBody()) == 1) {
+            //更改租单状态 --> 已接单
+            rentInfoService.modifyStatus(orderForm.getRentId(), RentStatus.RENT);
             OrderModel model = new OrderModel();
             BeanUtils.copyProperties(obj, model);
             return ResponseObj.success(model);
@@ -85,15 +88,20 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     /**
      * 指定用户id和订单状态，获取相应的订单列表，并按交车时间升序排列。
-     * @param userId 用户id
+     * @param orderForm 用户id
      * @param status 订单状态，可以传入多个
      * @return 租单列表
      */
-    private List<OrderInfo> getOrderList(Long userId, Integer... status) {
+    private List<OrderInfo> getOrderList(PlaceOrderForm orderForm, Integer... status) {
         Example ex = new Example(OrderInfo.class);
-        ex.createCriteria().andEqualTo("userId", userId)
+        Example.Criteria criteria = ex.createCriteria()
                 .andIn("status", Arrays.asList(status))
                 .andEqualTo("isDeleted", Boolean.FALSE);
+        if (UserType.USER_APP_AGENT.getCode().equals(orderForm.getUserType())) {
+            criteria.andEqualTo("agentUserId", orderForm.getUserId());
+        } else {
+            criteria.andEqualTo("officialUserId", orderForm.getUserId());
+        }
         ex.setOrderByClause("handover_time ASC");
         return orderDao.selectByExample(ex);
     }
@@ -105,10 +113,10 @@ public class OrderInfoServiceImpl implements OrderInfoService {
      * 3、未完成订单数量不超过上限
      * 4、交易时间不重叠
      * @param rentInfo 租单信息
-     * @param orderUserId 下单用户ID
+     * @param orderForm 下单用户ID
      * @return 校验结果
      */
-    private ResponseObj isAllowOrder(RentInfo rentInfo, Long orderUserId) {
+    private ResponseObj isAllowOrder(RentInfo rentInfo, PlaceOrderForm orderForm) {
 
         //1. 租单状态
         if (rentInfo == null) {
@@ -119,12 +127,12 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             log.warn("该租单信息已被他人接单");
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单信息已被他人接单");
         }
-        //TODO 2. 押金余额
+        //TODO 2. 押金余额 "extras": {"redirect": "charge"}
 
 
         DateTimeSection section = new DateTimeSection(rentInfo.getHandoverTime(), rentInfo.getGiveBackTime());
         //3. 未完成订单数量不超过上限
-        List<OrderInfo> orderList = getOrderList(orderUserId, OrderStatus.HAND_OVER.getCode(), OrderStatus.PICK_UP.getCode(), OrderStatus.GIVE_BACK.getCode(), OrderStatus.ACCEPT.getCode());
+        List<OrderInfo> orderList = getOrderList(orderForm, OrderStatus.HAND_OVER.getCode(), OrderStatus.PICK_UP.getCode(), OrderStatus.GIVE_BACK.getCode(), OrderStatus.ACCEPT.getCode());
         if(CollectionUtils.size(orderList) >= Constants.MAX_RENT_COUNT)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "最多发布" + Constants.MAX_RENT_COUNT + "笔租单");
 
@@ -141,7 +149,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     private ResponseObj buildOrderInfo(PlaceOrderForm orderForm) {
         RentInfo rentInfo = rentInfoService.getRentInfo(orderForm.getRentId(), null);
-        ResponseObj validateResult = isAllowOrder(rentInfo, orderForm.getUserId());
+        ResponseObj validateResult = isAllowOrder(rentInfo, orderForm);
         //下单校验未通过
         if(!validateResult.isSuccess()) return validateResult;
 
@@ -191,22 +199,26 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     private void buildDriverInfo(OrderInfo order, RentInfo rent, DriverInfo driver, UserInfo user) {
         if (rent.getUserType().equals(UserType.USER_APP_AGENT.getCode())) {
             //代理司机发单，正式司机接单
+            order.setAgentUserId(rent.getUserId());
             order.setAgentDriverId(rent.getDriverId());
             order.setAgentDriverPhone(rent.getMobile());
             order.setAgentDriverName(rent.getDriverName());
 
+            order.setOfficialUserId(user.getUserId());
+            order.setOfficialDriverName(user.getName());
             order.setOfficialDriverId(driver.getId());
             order.setOfficialDriverPhone(driver.getMobile());
-            order.setOfficialDriverName(user.getName());
         } else if (rent.getUserType().equals(UserType.USER_APP_OFFICE.getCode())) {
             //正式司机发单，代理司机接单
+            order.setOfficialUserId(rent.getUserId());
             order.setOfficialDriverId(rent.getDriverId());
             order.setOfficialDriverPhone(rent.getMobile());
             order.setOfficialDriverName(rent.getDriverName());
 
+            order.setAgentUserId(user.getUserId());
+            order.setAgentDriverName(user.getName());
             order.setAgentDriverId(driver.getId());
             order.setAgentDriverPhone(driver.getMobile());
-            order.setAgentDriverName(user.getName());
         }
     }
 

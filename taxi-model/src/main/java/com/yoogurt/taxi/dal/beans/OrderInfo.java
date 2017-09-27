@@ -25,6 +25,9 @@ public class OrderInfo extends SuperModel{
     @Column(name = "rent_id")
     private Long rentId;
 
+    @Column(name = "agent_user_id")
+    private Long agentUserId;
+
     @Column(name = "agent_driver_id")
     private Long agentDriverId;
 
@@ -72,6 +75,9 @@ public class OrderInfo extends SuperModel{
      * 10-待交车，20-待取车，30-待还车，40-待收车，50-已完成，60-已取消
      */
     private Integer status;
+
+    @Column(name = "official_user_id")
+    private Long officialUserId;
 
     @Column(name = "official_driver_id")
     private Long officialDriverId;

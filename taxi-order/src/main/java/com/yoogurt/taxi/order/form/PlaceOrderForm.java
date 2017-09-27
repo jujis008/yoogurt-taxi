@@ -13,6 +13,14 @@ public class PlaceOrderForm {
 	@NotNull(message = "请指定发布信息")
 	private Long rentId;
 
+	/**
+	 * 接单用户ID
+	 */
 	private Long userId;
+
+	/**
+	 * 接单用户类型
+	 */
+	private Integer userType;
 
 }

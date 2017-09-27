@@ -26,6 +26,8 @@ public class OrderModel {
 
 	private BigDecimal price;
 
+	private Long agentUserId;
+
 	private Long agentDriverId;
 
 	private String agentDriverName;
@@ -35,6 +37,8 @@ public class OrderModel {
 	private Long carId;
 
 	private String plateNumber;
+
+	private Long officialUserId;
 
 	private Long officialDriverId;
 
