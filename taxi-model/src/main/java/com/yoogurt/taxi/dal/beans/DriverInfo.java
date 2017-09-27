@@ -18,20 +18,16 @@ import java.util.Date;
 public class DriverInfo{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     @Column(name = "user_id")
-    @JsonIgnore
     private Long userId;
 
-    @JsonIgnore
     private String mobile;
 
     /**
      * 类型：20-USER_APP_AGENT,30-USER_APP_OFFICE
      */
-    @JsonIgnore
     private Integer type;
 
     /**
