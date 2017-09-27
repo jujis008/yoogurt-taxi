@@ -56,7 +56,7 @@
         SELECT order_id, rent_id, agent_driver_id, agent_driver_name, agent_driver_phone, handover_time, give_back_time,
             address, lng, lat, price, car_id, plate_number, official_driver_id, official_driver_name, official_driver_phone,
             is_commented, is_paid, status
-        FROM order_Info
+        FROM order_info
         WHERE is_deleted=0
 
         <if test="orderId != null and orderId > 0">

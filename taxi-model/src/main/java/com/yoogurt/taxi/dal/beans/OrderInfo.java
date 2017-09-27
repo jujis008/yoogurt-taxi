@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Domain
 @Getter
 @Setter
-@Table(name = "order_Info")
+@Table(name = "order_info")
 public class OrderInfo extends SuperModel{
     /**
      * 订单号
