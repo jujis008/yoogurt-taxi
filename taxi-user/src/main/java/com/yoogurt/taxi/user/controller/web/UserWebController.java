@@ -13,6 +13,8 @@ import com.yoogurt.taxi.dal.enums.UserFrom;
 import com.yoogurt.taxi.dal.enums.UserGender;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.user.Form.LoginForm;
+import com.yoogurt.taxi.user.service.LoginService;
 import com.yoogurt.taxi.user.service.UserService;
 import jdk.internal.util.xml.impl.Input;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -86,6 +88,7 @@ public class UserWebController {
         return ResponseObj.success();
     }
 
+    @RequestMapping(value = "/import/officeDrivers",method = RequestMethod.POST,produces = {"application/json;UTF-8"})
     public ResponseObj importOfficeUsersFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
         List<ExcelParamBean> paramBeanList = new ArrayList<>();
         ExcelParamBean bean0 = new ExcelParamBean(0, "name", "^[\\u4e00-\\u9fa5\\s]{2,8}$", "姓名长度在2-8个字符", Boolean.FALSE, null);
@@ -95,9 +98,17 @@ public class UserWebController {
         ExcelParamBean bean4 = new ExcelParamBean(4, "serviceNumber","^\\S{1,20}$", "不能为空，且最大长度为20位", Boolean.FALSE, null);
         ExcelParamBean bean5 = new ExcelParamBean(5, "plateNumber","^\\S{1,8}$", "不能为空，且最大长度为8位", Boolean.FALSE, null);
         ExcelParamBean bean6 = new ExcelParamBean(6, "vehicleType","^\\S{1,20}$", "不能为空，且最大长度为8位", Boolean.FALSE, null);
-        ExcelParamBean bean7 = new ExcelParamBean(7, "vehicleRegisterTime","^\\S{1,20}$", "不能为空，且最大长度为8位", Boolean.FALSE, null);
+        ExcelParamBean bean7 = new ExcelParamBean(7, "vehicleRegisterTime","", null, Boolean.FALSE, null);
         ExcelParamBean bean8 = new ExcelParamBean(8, "company","^\\S{1,20}$", "不能为空，且最大长度为8位", Boolean.FALSE, null);
-
+        paramBeanList.add(bean0);
+        paramBeanList.add(bean1);
+        paramBeanList.add(bean2);
+        paramBeanList.add(bean3);
+        paramBeanList.add(bean4);
+        paramBeanList.add(bean5);
+        paramBeanList.add(bean6);
+        paramBeanList.add(bean7);
+        paramBeanList.add(bean8);
         Map<ExcelParamBean, List<CellPropertyBean>> map = ExcelUtils.importExcel(file.getInputStream(), paramBeanList);
 
         Set<Integer> skipSet = new HashSet<>();//忽略跳过行数
@@ -120,10 +131,4 @@ public class UserWebController {
         return ResponseObj.success();
     }
 
-    public static void main(String[] args) throws ParseException {
-        String now = "2016年11月08日";
-        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
-        Date date = format.parse(now);
-        System.out.println(date);
-    }
 }

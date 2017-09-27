@@ -66,13 +66,13 @@
         </where>
     </select>
     <insert id="batchInsert" parameterType="java.util.List">
-        INSERT INTO driver_info(id_card,driving_license,user_id,
+        INSERT INTO driver_info(id,id_card,driving_license,user_id,
         `type`,mobile,gender,
         is_deleted,gmt_modify,modifier,gmt_create,
         creator)
         VALUES
         <foreach collection="list" item="driver" separator=",">
-            (#{driver.idCard},#{driver.drivingLicense},#{driver.userId},
+            (#{driver.id},#{driver.idCard},#{driver.drivingLicense},#{driver.userId},
             #{driver.type},#{driver.mobile},#{driver.gender},
             #{driver.isDeleted},#{driver.gmtModify},#{driver.modifier},#{driver.gmtCreate},
             #{driver.creator})

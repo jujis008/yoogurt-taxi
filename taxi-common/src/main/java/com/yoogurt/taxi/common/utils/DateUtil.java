@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.common.utils;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -123,5 +124,16 @@ public class DateUtil {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime endOfDay = LocalDateTime.of(now.getYear(),now.getMonth(),now.getDayOfMonth(),23,59,59);
         return Duration.between(now,endOfDay).getSeconds();
+    }
+
+    public static Date strToDate(String source, String pattern) {
+	    SimpleDateFormat format = new SimpleDateFormat(pattern);
+        Date date = null;
+        try {
+            date = format.parse(source);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 }

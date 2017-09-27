@@ -75,7 +75,11 @@ public class ExcelUtils {
             if (cellType.equals(CellType.STRING)) {
                 return StringUtils.trimToEmpty(cell.getStringCellValue());
             } else if (cellType.equals(CellType.NUMERIC)) {
-                return DateUtil.isCellDateFormatted(cell) ? cell.getDateCellValue() : cell.getNumericCellValue();
+                boolean b = DateUtil.isCellDateFormatted(cell);
+                if (b) {
+                    return com.yoogurt.taxi.common.utils.DateUtil.dateToStr(cell.getDateCellValue(),"yyyy-MM-dd HH:mm:ss");
+                }
+                return cell.getNumericCellValue();
             } else if (cellType.equals(CellType.FORMULA)) {
                 return !StringUtils.isBlank(cell.getStringCellValue()) ? StringUtils.trimToEmpty(cell.getStringCellValue()) : cell.getNumericCellValue();
             } else if (!cellType.equals(CellType.BLANK) && !cellType.equals(CellType.ERROR)) {

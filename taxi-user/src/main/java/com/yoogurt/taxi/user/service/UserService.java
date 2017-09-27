@@ -10,6 +10,7 @@ import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.user.UserWLModel;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 

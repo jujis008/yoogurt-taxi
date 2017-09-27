@@ -27,4 +27,22 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    INSERT INTO car_info(
+      user_id,driver_id,
+      plate_number,vehicle_type,company,
+      vehicle_register_time,is_authentication,is_deleted,
+      gmt_create,creator,
+      gmt_modify,modifier)
+    VALUES
+    <foreach collection="list" item="car" separator=",">
+      (#{car.userId},#{car.driverId},
+      #{car.plateNumber},#{car.vehicleType},#{car.company},
+      #{car.vehicleRegisterTime},#{car.isAuthentication},#{car.isDeleted},
+      #{car.gmtCreate},#{car.creator},
+      #{car.gmtModify},#{car.modifier}
+      )
+    </foreach>
+  </insert>
 </mapper>
