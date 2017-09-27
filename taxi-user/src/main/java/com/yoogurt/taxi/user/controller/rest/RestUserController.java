@@ -42,7 +42,7 @@ public class RestUserController extends BaseController {
 
         DriverInfo driverInfo = driverService.getDriverInfo(id);
         if (driverInfo == null) {
-            return RestResult.fail(StatusCode.BIZ_FAILED,"对象不存在");
+            return RestResult.fail(StatusCode.BIZ_FAILED,"找不到司机信息");
         }
         return RestResult.success(driverInfo);
     }
@@ -51,7 +51,7 @@ public class RestUserController extends BaseController {
     public RestResult<DriverInfo> driverInfoByUserId(@PathVariable(name = "userId") Long userId) {
         DriverInfo driverInfo = driverService.getDriverByUserId(userId);
         if (driverInfo == null) {
-            return RestResult.fail(StatusCode.BIZ_FAILED,"对象不存在");
+            return RestResult.fail(StatusCode.BIZ_FAILED,"找不到司机信息");
         }
         return RestResult.success(driverInfo);
     }
