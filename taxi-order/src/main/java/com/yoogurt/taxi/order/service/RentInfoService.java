@@ -6,6 +6,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.form.RentForm;
 
@@ -21,4 +22,5 @@ public interface RentInfoService {
 
 	ResponseObj addRentInfo(RentForm rentForm);
 
+	boolean modifyStatus(Long rentId, RentStatus status);
 }

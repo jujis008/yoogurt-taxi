@@ -1,7 +1,6 @@
 package com.yoogurt.taxi.order.service.impl;
 
 import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.bo.DateTimeSection;
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
@@ -25,13 +24,13 @@ import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -95,6 +94,18 @@ public class RentInfoServiceImpl implements RentInfoService {
         return obj;
     }
 
+    @Override
+    public boolean modifyStatus(Long rentId, RentStatus status) {
+        if(rentId == null || rentId <= 0 || status == null) return false;
+        RentInfo rentInfo = getRentInfo(rentId, null);
+        if(rentInfo == null) return false;
+        if(status.getCode().equals(rentInfo.getStatus())) return true; //与原租单状态相同，直接返回true
+        if(status.getCode() < rentInfo.getStatus()) return false; //不允许状态回退
+
+        rentInfo.setStatus(status.getCode());
+        return rentDao.updateByIdSelective(rentInfo) == 1;
+    }
+
     /**
      * 指定用户id和租单状态，获取相应的租单列表，并按交车时间升序排列。
      * @param userId 用户id
@@ -113,6 +124,7 @@ public class RentInfoServiceImpl implements RentInfoService {
 
     /**
      * 校验是否可以发单。
+     * 0、交车时间与发单时间至少间隔一个小时，交车时间与还车时间至少间隔8小时；
      * 1、押金余额：充足；
      * 2、不能超过未完成订单数量上限；
      * 3、订单时间不能重叠。
@@ -120,6 +132,13 @@ public class RentInfoServiceImpl implements RentInfoService {
      */
     private ResponseObj isAllowPublish(RentForm rentForm) {
         Long userId = rentForm.getUserId();
+        //0. 交车时间与发单时间至少间隔一个小时
+        if (rentForm.getHandoverTime().getTime() - new Date().getTime() < Constants.MIN_PUBLISH_INTERVAL_HOURS * 3600000)
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与发单时间至少间隔" + Constants.MIN_PUBLISH_INTERVAL_HOURS + "小时");
+
+        if(rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_WORKING_HOURS * 3600000)
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与还车时间至少间隔" + Constants.MIN_WORKING_HOURS + "小时");
+
         //TODO 1. 押金校验
 
 
