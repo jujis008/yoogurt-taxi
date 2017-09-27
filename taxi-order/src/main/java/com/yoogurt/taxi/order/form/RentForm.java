@@ -2,6 +2,7 @@ package com.yoogurt.taxi.order.form;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -34,4 +35,7 @@ public class RentForm {
 
     @NotNull(message = "请填写出租价格")
     private BigDecimal price;
+
+    @Length(max = 200, message = "备注内容不能超过200个字")
+    private String remark;
 }
