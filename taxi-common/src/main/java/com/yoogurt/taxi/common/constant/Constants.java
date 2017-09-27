@@ -23,6 +23,16 @@ public final class Constants {
     public static final int VERIFY_CODE_EXPIRE_SECONDS = 300;
 
     /**
+     * 交车时间与发单时间的间隔时间
+     */
+    public static final int MIN_PUBLISH_INTERVAL_HOURS = 1;
+
+    /**
+     * 交车时间与还车时间的间隔时间
+     */
+    public static final int MIN_WORKING_HOURS = 8;
+
+    /**
      * 发布的租单，交车时间和还车时间的间隔时长
      */
     public static final int MIN_HOURS = 8;
