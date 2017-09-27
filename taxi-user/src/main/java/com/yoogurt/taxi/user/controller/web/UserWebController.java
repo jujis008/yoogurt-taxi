@@ -32,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -53,7 +55,7 @@ public class UserWebController {
     }
 
     @RequestMapping(value = "/import/agentDrivers",method = RequestMethod.POST,produces = {"application/json;UTF-8"})
-    public ResponseObj importUserFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
+    public ResponseObj importAgentUserFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
         List<ExcelParamBean> paramBeanList = new ArrayList<>();
         ExcelParamBean bean1 = new ExcelParamBean(0, "name", "^[\\u4e00-\\u9fa5\\s]{2,8}$", "姓名长度在2-8个字符", Boolean.FALSE, null);
         ExcelParamBean bean2 = new ExcelParamBean(1, "idCard", "^(\\d{18}$|^\\d{17}(\\d|X|x))$", "身份证格式有误", Boolean.TRUE, "表格存在身份证号重复");
@@ -82,5 +84,46 @@ public class UserWebController {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,sb.toString());
         }
         return ResponseObj.success();
+    }
+
+    public ResponseObj importOfficeUsersFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
+        List<ExcelParamBean> paramBeanList = new ArrayList<>();
+        ExcelParamBean bean0 = new ExcelParamBean(0, "name", "^[\\u4e00-\\u9fa5\\s]{2,8}$", "姓名长度在2-8个字符", Boolean.FALSE, null);
+        ExcelParamBean bean1 = new ExcelParamBean(1, "idCard", "^(\\d{18}$|^\\d{17}(\\d|X|x))$", "身份证格式有误", Boolean.TRUE, "表格存在身份证号重复");
+        ExcelParamBean bean2 = new ExcelParamBean(2, "phoneNumber","^(\\+\\d+)?1[34578]\\d{9}$", "手机号格式有误", Boolean.TRUE, "表格存在手机号重复");
+        ExcelParamBean bean3 = new ExcelParamBean(3, "drivingLicense","^\\S{1,}$", "不能为空", Boolean.FALSE, null);
+        ExcelParamBean bean4 = new ExcelParamBean(4, "serviceNumber","^\\S{1,20}$", "不能为空，且最大长度为20位", Boolean.FALSE, null);
+        ExcelParamBean bean5 = new ExcelParamBean(5, "plateNumber","^\\S{1,8}$", "不能为空，且最大长度为8位", Boolean.FALSE, null);
+        ExcelParamBean bean6 = new ExcelParamBean(6, "vehicleType","^\\S{1,20}$", "不能为空，且最大长度为8位", Boolean.FALSE, null);
+        ExcelParamBean bean7 = new ExcelParamBean(7, "vehicleRegisterTime","^\\S{1,20}$", "不能为空，且最大长度为8位", Boolean.FALSE, null);
+        ExcelParamBean bean8 = new ExcelParamBean(8, "company","^\\S{1,20}$", "不能为空，且最大长度为8位", Boolean.FALSE, null);
+
+        Map<ExcelParamBean, List<CellPropertyBean>> map = ExcelUtils.importExcel(file.getInputStream(), paramBeanList);
+
+        Set<Integer> skipSet = new HashSet<>();//忽略跳过行数
+        List<ErrorCellBean> errorCellBeanList = ExcelUtils.filter(map, skipSet);//过滤表格中的内容
+
+        if (CollectionUtils.isNotEmpty(errorCellBeanList)) {
+            StringBuilder sb = new StringBuilder();
+            errorCellBeanList.forEach(e->sb.append(e.getErrorMessage()).append(":").append(e.getCellValue()).append(";坐标：").append(RandomUtils.letters[e.getColIndex()+35]).append(e.getRowIndex()).append("  <br/>"));
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,sb.toString());
+        }
+
+        List<Map<String, Object>> rightList = ExcelUtils.importExcel(file.getInputStream(), paramBeanList, skipSet);
+
+        List<ErrorCellBean> errorCellBeanList1 = userService.importOfficeDriversFromExcel(rightList);
+        if (CollectionUtils.isNotEmpty(errorCellBeanList1)) {
+            StringBuilder sb = new StringBuilder();
+            errorCellBeanList1.forEach(e->sb.append(e.getErrorMessage()).append(":").append(e.getCellValue()).append(";坐标：").append(RandomUtils.letters[e.getColIndex()+35]).append(e.getRowIndex()).append("  <br/>"));
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,sb.toString());
+        }
+        return ResponseObj.success();
+    }
+
+    public static void main(String[] args) throws ParseException {
+        String now = "2016年11月08日";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINESE);
+        Date date = format.parse(now);
+        System.out.println(date);
     }
 }

@@ -275,4 +275,9 @@ public class UserServiceImpl implements UserService {
         phoneCodeList.forEach(e->redisHelper.set(CacheKey.VERIFY_CODE_KEY+e.get("phoneNumber"),e.get("originPassword")));
         return errorCellBeanList;
     }
+
+    @Override
+    public List<ErrorCellBean> importOfficeDriversFromExcel(List<Map<String, Object>> list) {
+        return null;
+    }
 }

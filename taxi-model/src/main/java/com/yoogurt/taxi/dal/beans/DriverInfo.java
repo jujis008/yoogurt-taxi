@@ -1,9 +1,12 @@
 package com.yoogurt.taxi.dal.beans;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -12,19 +15,23 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "driver_info")
-public class DriverInfo extends SuperModel{
+public class DriverInfo{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @Column(name = "user_id")
+    @JsonIgnore
     private Long userId;
 
+    @JsonIgnore
     private String mobile;
 
     /**
      * 类型：20-USER_APP_AGENT,30-USER_APP_OFFICE
      */
+    @JsonIgnore
     private Integer type;
 
     /**
@@ -35,6 +42,7 @@ public class DriverInfo extends SuperModel{
     /**
      * 出生年月：xxxx年xx月
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date birthday;
 
     /**
@@ -84,5 +92,41 @@ public class DriverInfo extends SuperModel{
      * 是否认证
      */
     @Column(name = "is_authentication")
+    @JsonIgnore
     private Boolean isAuthentication;
+
+    /**
+     * 是否删除
+     */
+    @Column(name = "is_deleted")
+    @JsonIgnore
+    private Boolean isDeleted;
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "gmt_create")
+    @JsonIgnore
+    private Date gmtCreate;
+
+    /**
+     * 创建人ID
+     */
+    @Column(name = "creator")
+    @JsonIgnore
+    private Long creator;
+
+    /**
+     * 最后修改时间
+     */
+    @Column(name = "gmt_modify")
+    @JsonIgnore
+    private Date gmtModify;
+
+    /**
+     * 最后修改人ID
+     */
+    @Column(name = "modifier")
+    @JsonIgnore
+    private Long modifier;
 }

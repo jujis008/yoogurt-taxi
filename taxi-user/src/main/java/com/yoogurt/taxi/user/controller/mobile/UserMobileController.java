@@ -13,6 +13,7 @@ import com.yoogurt.taxi.dal.beans.UserAddress;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.model.user.UserSessionModel;
 import com.yoogurt.taxi.user.Form.*;
 import com.yoogurt.taxi.user.service.*;
 import lombok.extern.slf4j.Slf4j;
@@ -21,157 +22,235 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/mobile/user")
-public class UserMobileController extends BaseController{
+public class UserMobileController extends BaseController {
 
     @Autowired
-    private LoginService    loginService;
+    private LoginService loginService;
     @Autowired
-    private UserService     userService;
+    private UserService userService;
     @Autowired
-    private DriverService   driverService;
+    private DriverService driverService;
     @Autowired
-    private RedisHelper     redisHelper;
+    private RedisHelper redisHelper;
     @Autowired
-    private UserAddressService  userAddressService;
+    private UserAddressService userAddressService;
     @Autowired
-    private CarService  carService;
-
-//    @RequestMapping(value = "/i/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
-//    public ResponseObj login(@RequestBody LoginForm loginForm) {
-//        if (StringUtils.isBlank(loginForm.getUsername())) {
-//            return ResponseObj.fail(StatusCode.PARAM_BLANK.getStatus(),"请填写用户名");
-//        }
-//        if (StringUtils.isBlank(loginForm.getPassword())) {
-//            return ResponseObj.fail(StatusCode.PARAM_BLANK.getStatus(),"请填写密码");
-//        }
-//        return loginService.login(loginForm.getUsername(),loginForm.getPassword(), UserType.USER_WEB);
-//    }
+    private CarService carService;
 
     @RequestMapping(value = "/i/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj agentLogin(@RequestBody LoginForm loginForm) {
         if (StringUtils.isBlank(loginForm.getUsername())) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK.getStatus(),"请填写用户名");
+            return ResponseObj.fail(StatusCode.PARAM_BLANK.getStatus(), "请填写用户名");
         }
         if (StringUtils.isBlank(loginForm.getPassword())) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK.getStatus(),"请填写密码");
+            return ResponseObj.fail(StatusCode.PARAM_BLANK.getStatus(), "请填写密码");
         }
         UserType userType = UserType.getEnumsByCode(getUserType());
         if (userType == null) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"请标识请求来源");
+            return ResponseObj.fail(StatusCode.PARAM_BLANK, "请标识请求来源");
         }
-        return loginService.login(loginForm.getUsername(),loginForm.getPassword(), userType);
+        return loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
+    }
+
+    /**
+     * 查看用户信息
+     * @return
+     */
+    @RequestMapping(value = "/info", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getUserInfo() {
+        UserInfo userInfo = userService.getUserByUserId(getUserId());
+        if (userInfo == null) {
+            return ResponseObj.fail(StatusCode.NOT_LOGIN);
+        }
+        UserSessionModel userSessionModel = new UserSessionModel();
+        BeanUtilsExtends.copyProperties(userSessionModel, userInfo);
+        return ResponseObj.success(userSessionModel);
+    }
+
+    /**
+     * 查看用户激活流程状态
+     *
+     * @return
+     */
+    @RequestMapping(value = "/activeStatus", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj activeStatus() {
+        Long userId = getUserId();
+        UserInfo userInfo = userService.getUserByUserId(userId);
+        if (userInfo.getStatus() != UserStatus.UN_ACTIVE.getCode()) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户非未激活状态");
+        }
+        Object o = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId);
+        if (o == null) {
+            return ResponseObj.success(1);
+        }
+        return ResponseObj.success(o);
+    }
+
+    @RequestMapping(value = "/AuthenticationStatus", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj AuthenticationStatus() {
+        Long userId = getUserId();
+        UserType userType = UserType.getEnumsByCode(getUserType());
+        Map<String, Object> map = new HashMap<>();
+        DriverInfo driverInfo = driverService.getDriverByUserId(userId);
+        map.put("driverAuthenticated", driverInfo.getIsAuthentication());
+        if (userType == UserType.USER_APP_OFFICE) {
+            List<CarInfo> carByUsers = carService.getCarByUserId(userId);
+            if (CollectionUtils.isNotEmpty(carByUsers)) {
+                map.put("carAuthenticated", carByUsers.get(0).getIsAuthentication());
+            }
+        }
+        return ResponseObj.success(map);
+    }
+
+    /**
+     * 获取司机身份资料
+     *
+     * @return
+     */
+    @RequestMapping(value = "/driverIdentity", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj driverIdentity() {
+        DriverInfo driverInfo = driverService.getDriverByUserId(getUserId());
+        if (driverInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED);
+        }
+        return ResponseObj.success(driverInfo);
+    }
+
+    /**
+     * 车辆资料
+     *
+     * @return
+     */
+    @RequestMapping(value = "/carIdentity", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj carIdentity() {
+        List<CarInfo> carInfos = carService.getCarByUserId(getUserId());
+        if (CollectionUtils.isEmpty(carInfos)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED);
+        }
+        return ResponseObj.success(carInfos.get(0));
     }
 
     /**
      * 激活账户
+     *
      * @param activeAccountForm
      * @param bindingResult
      * @return
      */
     @RequestMapping(value = "/activateAccount", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
-    public ResponseObj activateAccount(@Valid ActiveAccountForm activeAccountForm, BindingResult bindingResult) {
+    public ResponseObj activateAccount(@RequestBody @Valid ActiveAccountForm activeAccountForm, BindingResult bindingResult) {
         Long userId = getUserId();
-        Object o = redisHelper.get(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId);
-        if(o!=null && Integer.parseInt(o.toString())>5){
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"您今日已连续5次激活失败，系统已锁定您的账户，如需帮助，请联系客服");
-        }
-        if(bindingResult.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID.getStatus(),bindingResult.getAllErrors().get(0).getDefaultMessage());
-        }
-
-        Integer userType = getUserType();
-        if(!UserType.getEnumsByCode(userType).isAppUser()) {
-            return ResponseObj.fail(StatusCode.NO_AUTHORITY.getStatus(),StatusCode.NO_AUTHORITY.getDetail());
-        }
         UserInfo userInfo = userService.getUserByUserId(userId);
-        if(userInfo == null) {
+        if (userInfo == null) {
             redisSetting(userId);//设置用户激活失败次数、时间
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
         }
+        if (UserStatus.getEnumsByCode(userInfo.getStatus()) != UserStatus.UN_ACTIVE) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "用户不是未激活状态");
+        }
+        Object o = redisHelper.get(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId);
+        if (o != null && Integer.parseInt(o.toString()) > 5) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "您今日已连续5次激活失败，系统已锁定您的账户，如需帮助，请联系客服");
+        }
+        if (bindingResult.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID.getStatus(), bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
+
+        Integer userType = getUserType();
+        if (!UserType.getEnumsByCode(userType).isAppUser()) {
+            return ResponseObj.fail(StatusCode.NO_AUTHORITY.getStatus(), StatusCode.NO_AUTHORITY.getDetail());
+        }
         if (!userInfo.getName().equals(activeAccountForm.getName())) {
             redisSetting(userId);//设置用户激活重试次数、时间
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
         }
         DriverInfo driverInfo = driverService.getDriverByUserId(userInfo.getUserId());
         if (driverInfo == null) {
             redisSetting(userId);//设置用户激活重试次数、时间
-            redisHelper.incrBy(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY+getUserId(),1);
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
+            redisHelper.incrBy(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + getUserId(), 1);
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
         }
         if (!driverInfo.getIdCard().equals(activeAccountForm.getIdCard())) {
             redisSetting(userId);//设置用户激活重试次数、时间
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
         }
-        redisHelper.del(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY+userId);
-        redisHelper.set(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY+userId,"1",3*24*60*60);
+        redisHelper.del(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId);
+        redisHelper.set(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId, "2", 3 * 24 * 60 * 60);
         return ResponseObj.success();
     }
 
-    public void redisSetting(Long userId){
-        if (redisHelper.get(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY+userId) == null){
-            redisHelper.set(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY+userId, 1, DateUtil.getSurplusSeconds().intValue());
+    public void redisSetting(Long userId) {
+        if (redisHelper.get(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId) == null) {
+            redisHelper.set(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId, "1", DateUtil.getSurplusSeconds().intValue());
         } else {
-            redisHelper.incrBy(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY+userId,1);
+            redisHelper.incrBy(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId, 1);
         }
     }
 
     /**
      * 激活账户-设置登录密码
-     * @param oldPassword
-     * @param newPassword
+     *
      * @return
      */
     @RequestMapping(value = "/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
-    public ResponseObj activeLoginPassword(String oldPassword,String newPassword) {
-        if (StringUtils.isBlank(oldPassword)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"请输入默认密码");
-        }
-        if (StringUtils.isBlank(newPassword)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"请输入新密码");
-        }
-        if (oldPassword.equals(newPassword)) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"默认密码不能作为新密码");
+    public ResponseObj activeLoginPassword(@RequestBody @Valid ModifyPasswordForm form) {
+        if (form.getNewPassword().equals(form.getOldPassword())) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "默认密码不能作为新密码");
         }
         Long userId = getUserId();
+        UserInfo userInfo = userService.getUserByUserId(userId);
+        if (UserStatus.getEnumsByCode(userInfo.getStatus()) != UserStatus.UN_ACTIVE) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "用户不是未激活状态");
+        }
         Object object = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId);
         if (object == null) {//redis缓存已经过期，但是app那边存的脏数据
             return ResponseObj.fail(StatusCode.NOT_LOGIN);
         }
-        if (!object.equals("1")) {
+        if (!object.equals("2")) {
             return ResponseObj.fail(StatusCode.SYS_ERROR);
         }
-        ResponseObj responseObj = userService.modifyLoginPassword(userId, oldPassword, newPassword);
-        if (responseObj.getStatus()==ResponseObj.success().getStatus()) {
-            redisHelper.set(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId,"2");
+        ResponseObj responseObj = userService.modifyLoginPassword(userId, form.getOldPassword(), form.getNewPassword());
+        if (responseObj.getStatus() == ResponseObj.success().getStatus()) {
+            redisHelper.set(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId, "3");
         }
         return responseObj;
     }
 
     /**
      * 激活账户-设置交易密码
+     *
      * @param password
      * @return
      */
     @RequestMapping(value = "/payPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
-    public ResponseObj activePayPassword(String password) {
+    public ResponseObj activePayPassword(@RequestBody String password) {
         if (StringUtils.isBlank(password)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"请输入交易密码");
+            return ResponseObj.fail(StatusCode.PARAM_BLANK, "请输入交易密码");
         }
         Long userId = getUserId();
+        UserInfo userInfo = userService.getUserByUserId(userId);
+        if (UserStatus.getEnumsByCode(userInfo.getStatus()) != UserStatus.UN_ACTIVE) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "用户不是未激活状态");
+        }
         Object object = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId);
         if (object == null) {//redis缓存已经过期，但是app那边存的脏数据
             return ResponseObj.fail(StatusCode.NOT_LOGIN);
         }
-        if (!object.equals("2")) {
+        if (!object.equals("3")) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
         ResponseObj responseObj = userService.payPwdSetting(userId, password);
@@ -180,142 +259,130 @@ public class UserMobileController extends BaseController{
 
     /**
      * 司机身份认证
+     *
      * @param form
      * @param result
      * @return
      */
     @RequestMapping(value = "/driverIdentity", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
-    public ResponseObj authenticateIdentity(@Valid DriverIdentityForm form,BindingResult result) throws InvocationTargetException, IllegalAccessException {
+    public ResponseObj authenticateIdentity(@RequestBody @Valid DriverIdentityForm form, BindingResult result) throws InvocationTargetException, IllegalAccessException {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         Long userId = getUserId();
         DriverInfo driverInfo = driverService.getDriverByUserId(userId);
         if (driverInfo.getIsAuthentication()) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"已认证，无需再次认证");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "已认证，无需再次认证");
         }
         driverInfo.setIsAuthentication(Boolean.TRUE);
-        BeanUtils.copyProperties(driverInfo,form);
+        BeanUtils.copyProperties(driverInfo, form);
         return driverService.saveDriverInfo(driverInfo);
     }
 
     /**
      * 车辆认证
+     *
      * @param form
      * @param result
      * @return
      */
     @RequestMapping(value = "/carIdentity", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
-    public ResponseObj authenticateCar(@Valid CarIdentityForm form,BindingResult result) {
+    public ResponseObj authenticateCar(@RequestBody @Valid CarIdentityForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         Long userId = getUserId();
+        if (getUserType() != UserType.USER_APP_OFFICE.getCode()) {
+            return ResponseObj.fail(StatusCode.NO_AUTHORITY);
+        }
         List<CarInfo> carList = carService.getCarByUserId(userId);
         if (CollectionUtils.isEmpty(carList)) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"车辆信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "车辆信息不存在");
         }
         CarInfo carInfo = carList.get(0);
         if (carInfo.getIsAuthentication()) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"已认证，无需再验证");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "已认证，无需再验证");
         }
         carInfo.setIsAuthentication(Boolean.TRUE);
-        BeanUtilsExtends.copyProperties(carInfo,form);
+        BeanUtilsExtends.copyProperties(carInfo, form);
         return carService.saveCarInfo(carInfo);
     }
 
     /**
      * 上传头像
+     *
      * @param avatar
      * @return
      */
-    @RequestMapping(value = "/avatar",method = RequestMethod.PATCH,produces = {"application/json;charset=UTF-8"})
-    public ResponseObj uploadAvatar(String avatar) {
+    @RequestMapping(value = "/avatar", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
+    public ResponseObj uploadAvatar(@RequestBody String avatar) {
         if (StringUtils.isBlank(avatar)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"请上传头像");
+            return ResponseObj.fail(StatusCode.PARAM_BLANK, "请上传头像");
         }
-        return userService.modifyHeadPicture(getUserId(),avatar);
+        return userService.modifyHeadPicture(getUserId(), avatar);
     }
 
     /**
      * 修改交易密码
-     * @param oldPassword
-     * @param newPassword
+     *
      * @return
      */
-    @RequestMapping(value = "/modifyPayPassword",method = RequestMethod.PATCH,produces = {"application/json;charset=UTF-8"})
-    public ResponseObj modifyPayPassword(String oldPassword,String newPassword) {
-        if (StringUtils.isBlank(oldPassword)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"请输入原交易密码");
-        }
-        if (StringUtils.isBlank(newPassword)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"请输入新交易密码");
-        }
-        return userService.modifyPayPwd(getUserId(),oldPassword,newPassword);
+    @RequestMapping(value = "/modifyPayPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
+    public ResponseObj modifyPayPassword(@RequestBody @Valid ModifyPasswordForm form) {
+        return userService.modifyPayPwd(getUserId(), form.getOldPassword(), form.getNewPassword());
     }
 
     /**
      * 重置交易密码
-     * @param username
-     * @param phoneCode
-     * @param password
+     *
      * @return
      */
-    @RequestMapping(value = "/resetPayPassword",method = RequestMethod.PATCH,produces = {"application/json;charset=UTF-8"})
-    public ResponseObj resetPayPassword(String username,String phoneCode,String password) {
-        if (StringUtils.equals(username,getUserName())) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"输入手机号和绑定手机号不符");
+    @RequestMapping(value = "/resetPayPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
+    public ResponseObj resetPayPassword(@RequestBody @Valid ModifyBindPhoneForm form) {
+        if (StringUtils.equals(form.getPhoneNumber(), getUserName())) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "输入手机号和绑定手机号不符");
         }
         UserType userType = UserType.getEnumsByCode(getUserType());
-        return userService.resetPayPwd(username,phoneCode,userType, password);
+        return userService.resetPayPwd(form.getPhoneNumber(), form.getPhoneCode(), userType, form.getPassword());
     }
 
     /**
      * 修改绑定手机号
-     * @param password
-     * @param phoneCode
-     * @param phoneNumber
+     *
      * @return
      */
-    @RequestMapping(value = "/modifyBindPhone",method = RequestMethod.PATCH,produces = {"application/json;charset=UTF-8"})
-    public ResponseObj modifyBindPhone(String password, String phoneCode, String phoneNumber) {
+    @RequestMapping(value = "/modifyBindPhone", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
+    public ResponseObj modifyBindPhone(@RequestBody @Valid ModifyBindPhoneForm form) {
         Long userId = getUserId();
-        if(StringUtils.isBlank(password)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"密码不能为空");
-        }
-        if (StringUtils.isBlank(phoneCode)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"验证码不能为空");
-        }
-        if (StringUtils.isBlank(phoneNumber)) {
-            return ResponseObj.fail(StatusCode.PARAM_BLANK,"手机号不能为空");
-        }
-        return userService.modifyUserName(userId,password,phoneCode,phoneNumber);
+        return userService.modifyUserName(userId, form.getPassword(), form.getPhoneCode(), form.getPhoneNumber());
     }
 
     /**
      * 新增/编辑常用地址
+     *
      * @param form
      * @param result
      * @return
      */
-    @RequestMapping(value = "/saveAddress",method = RequestMethod.POST,produces = {"application/json;charset=UTF-8"})
-    public ResponseObj saveAddress(@Valid UserAddressForm form, BindingResult result) {
+    @RequestMapping(value = "/saveAddress", method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
+    public ResponseObj saveAddress(@RequestBody @Valid UserAddressForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         UserAddress userAddress = new UserAddress();
-        BeanUtilsExtends.copyProperties(userAddress,form);
+        BeanUtilsExtends.copyProperties(userAddress, form);
         userAddress.setUserId(getUserId());
         return userAddressService.saveUserAddress(userAddress);
     }
 
     /**
      * 用户地址列表
+     *
      * @param keywords
      * @return
      */
-    @RequestMapping(value = "/addresses",method = RequestMethod.GET,produces = {"application/json;charset=UTF-8"})
-    public ResponseObj addressList(String keywords) {
-        return userAddressService.getUserAddressListByUserId(getUserId(),keywords);
+    @RequestMapping(value = "/addresses", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
+    public ResponseObj addressList(@RequestBody String keywords) {
+        return userAddressService.getUserAddressListByUserId(getUserId(), keywords);
     }
 }

@@ -14,7 +14,8 @@ public class CarIdentityForm {
     private String energyType;
     @NotBlank(message = "发动机号不能为空")
     private String engineNumber;
-    @Length(max = 6,min = 6)
+    @Length(max = 6,min = 6,message = "车架后长度为6位")
+    @NotBlank(message = "请填写车架号")
     private String vin;
     @NotBlank(message = "请上传车前照")
     private String carPicture;
