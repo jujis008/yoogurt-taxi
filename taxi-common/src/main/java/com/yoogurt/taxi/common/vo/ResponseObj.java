@@ -80,7 +80,13 @@ public class ResponseObj implements Serializable {
     }
 
     public static ResponseObj fail(StatusCode statusCode) {
-        return new ResponseBuilder().status(statusCode.getStatus()).message(statusCode.getDetail()).build();
+        int status = StatusCode.BIZ_FAILED.getStatus();
+        String message = StatusCode.BIZ_FAILED.getDetail();
+        if (statusCode != null) {
+            status = statusCode.getStatus();
+            message = statusCode.getDetail();
+        }
+        return fail(status, message);
     }
 
     public static ResponseObj fail(int status, String message) {
@@ -89,6 +95,12 @@ public class ResponseObj implements Serializable {
             message = StatusCode.BIZ_FAILED.getDetail();
         }
         return builder.message(message).build();
+    }
+
+    public static ResponseObj fail(StatusCode status, String message, Map<String, Object> extras) {
+        ResponseObj obj = fail(status, message);
+        obj.setExtras(extras);
+        return obj;
     }
 
     /**
