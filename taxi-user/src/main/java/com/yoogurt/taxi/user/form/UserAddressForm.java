@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.user.Form;
+package com.yoogurt.taxi.user.form;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +15,8 @@ public class UserAddressForm {
     @NotNull(message = "纬度不能为空")
     private Double lat;
 
+    @NotBlank(message = "地区不能为空")
+    private String area;
     /**
      * 国标地区编码
      */

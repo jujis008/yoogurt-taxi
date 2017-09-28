@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     private PagerFactory webPagerFactory;
 
     @Autowired
-    private CarDao  carDao;
+    private CarDao carDao;
 
     @Override
     public UserInfo getUserByUserId(Long id) {
@@ -65,9 +65,9 @@ public class UserServiceImpl implements UserService {
     public UserInfo getUserByUsernameAndType(String username, Integer userType) {
         Example example = new Example(UserInfo.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("username",username).andEqualTo("type",userType);
+        criteria.andEqualTo("username", username).andEqualTo("type", userType);
         List<UserInfo> userInfoList = userDao.selectByExample(example);
-        if(CollectionUtils.isEmpty(userInfoList)) {
+        if (CollectionUtils.isEmpty(userInfoList)) {
             return null;
         }
         return userInfoList.get(0);
@@ -76,11 +76,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseObj modifyLoginPassword(Long userId, String oldPassword, String newPassword) {
         UserInfo user = userDao.selectById(userId);
-        if(user == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"用户不存在");
+        if (user == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "用户不存在");
         }
-        if(!Encipher.matches(oldPassword, user.getLoginPassword())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"旧密码错误");
+        if (!Encipher.matches(oldPassword, user.getLoginPassword())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "旧密码错误");
         }
         user.setLoginPassword(Encipher.encrypt(newPassword));
         userDao.updateById(user);
@@ -90,8 +90,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseObj modifyHeadPicture(Long userId, String avatar) {
         UserInfo user = userDao.selectById(userId);
-        if(user == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"用户不存在");
+        if (user == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "用户不存在");
         }
         user.setAvatar(avatar);
         userDao.updateById(user);
@@ -100,18 +100,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseObj resetLoginPwd(String username, String phoneCode, UserType userType, String newPassword) {
-        Object cachePhoneCode = redisHelper.get(CacheKey.VERIFY_CODE_KEY+username);
-        if(cachePhoneCode == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"验证码过期，请重新获取");
+        Object cachePhoneCode = redisHelper.get(CacheKey.VERIFY_CODE_KEY + username);
+        if (cachePhoneCode == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码过期，请重新获取");
         }
-        if(!cachePhoneCode.equals(phoneCode)) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"验证码错误");
+        if (!cachePhoneCode.equals(phoneCode)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码错误");
         }
         Example example = new Example(UserInfo.class);
-        example.createCriteria().andEqualTo("username",username);
-        example.createCriteria().andEqualTo("type",userType.getCode());
+        example.createCriteria().andEqualTo("username", username);
+        example.createCriteria().andEqualTo("type", userType.getCode());
         List<UserInfo> userList = userDao.selectByExample(example);
-        if(userList.size() == 0) {
+        if (userList.size() == 0) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "账号有误");
         }
         UserInfo user = userList.get(0);
@@ -131,8 +131,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseObj payPwdSetting(Long userId, String payPassword) {
         UserInfo user = userDao.selectById(userId);
-        if (Encipher.matches(payPassword,user.getLoginPassword())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"交易密码不能和登录密码相同");
+        if (Encipher.matches(payPassword, user.getLoginPassword())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "交易密码不能和登录密码相同");
         }
         user.setPayPassword(Encipher.encrypt(payPassword));
         userDao.updateById(user);
@@ -144,11 +144,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseObj modifyPayPwd(Long userId, String oldPassword, String newPassword) {
         UserInfo user = userDao.selectById(userId);
-        if(!Encipher.matches(oldPassword, user.getPayPassword())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"旧密码错误");
+        if (!Encipher.matches(oldPassword, user.getPayPassword())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "旧密码错误");
         }
-        if (Encipher.matches(newPassword,user.getLoginPassword())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"交易密码不能和登录密码相同");
+        if (Encipher.matches(newPassword, user.getLoginPassword())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "交易密码不能和登录密码相同");
         }
         user.setPayPassword(Encipher.encrypt(newPassword));
         userDao.updateById(user);
@@ -157,18 +157,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseObj resetPayPwd(String username, String phoneCode, UserType userType, String password) {
-        Object cachePhoneCode = redisHelper.get(CacheKey.VERIFY_CODE_KEY+username);
-        if(cachePhoneCode == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"验证码过期，请重新获取");
+        Object cachePhoneCode = redisHelper.get(CacheKey.VERIFY_CODE_KEY + username);
+        if (cachePhoneCode == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码过期，请重新获取");
         }
-        if(!cachePhoneCode.equals(phoneCode)) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"验证码错误");
+        if (!cachePhoneCode.equals(phoneCode)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码错误");
         }
         Example example = new Example(UserInfo.class);
-        example.createCriteria().andEqualTo("username",username);
-        example.createCriteria().andEqualTo("type",userType.getCode());
+        example.createCriteria().andEqualTo("username", username);
+        example.createCriteria().andEqualTo("type", userType.getCode());
         List<UserInfo> userList = userDao.selectByExample(example);
-        if(userList.size() == 0) {
+        if (userList.size() == 0) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "账号有误");
         }
         UserInfo user = userList.get(0);
@@ -181,17 +181,17 @@ public class UserServiceImpl implements UserService {
     public ResponseObj modifyUserName(Long userId, String password, String phoneCode, String phoneNumber) {
         UserInfo user = userDao.selectById(userId);
         if (user == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"账号异常");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "账号异常");
         }
-        if(!Encipher.matches(password, user.getLoginPassword())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"密码有误");
+        if (!Encipher.matches(password, user.getLoginPassword())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "密码有误");
         }
-        Object cachePhoneCode = redisHelper.get(CacheKey.VERIFY_CODE_KEY+phoneNumber);
-        if(cachePhoneCode == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"验证码过期，请重新获取");
+        Object cachePhoneCode = redisHelper.get(CacheKey.VERIFY_CODE_KEY + phoneNumber);
+        if (cachePhoneCode == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码过期，请重新获取");
         }
-        if(!cachePhoneCode.equals(phoneCode)) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"验证码错误");
+        if (!cachePhoneCode.equals(phoneCode)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码错误");
         }
         user.setUsername(phoneNumber);
         userDao.updateById(user);
@@ -208,8 +208,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseObj removeUser(Long userId) {
         UserInfo user = userDao.selectById(userId);
-        user.setIsDeleted(Boolean.TRUE);
-        userDao.updateById(user);
+        if (user != null) {
+            user.setIsDeleted(Boolean.TRUE);
+            userDao.updateById(user);
+        }
+        return ResponseObj.success();
+    }
+
+    @Override
+    public ResponseObj InsertUser(UserInfo userInfo) {
+        userDao.insert(userInfo);
+        return ResponseObj.success();
+    }
+
+    @Override
+    public ResponseObj modifyUser(UserInfo userInfo) {
+        userDao.updateById(userInfo);
         return ResponseObj.success();
     }
 
@@ -224,19 +238,19 @@ public class UserServiceImpl implements UserService {
     public List<ErrorCellBean> importAgentDriversFromExcel(List<Map<String, Object>> list) {
         List<UserInfo> userInfoList = new ArrayList<>();
         List<DriverInfo> driverInfoList = new ArrayList<>();
-        List<Map<String,Object>> phoneCodeList = new ArrayList<>();
+        List<Map<String, Object>> phoneCodeList = new ArrayList<>();
         Example example = new Example(UserInfo.class);
-        example.createCriteria().andEqualTo("type",UserType.USER_APP_AGENT.getCode());
+        example.createCriteria().andEqualTo("type", UserType.USER_APP_AGENT.getCode());
         List<UserInfo> dbUserInfoList = userDao.selectByExample(example);
         List<String> dbUsernameList = new ArrayList<>();
-        dbUserInfoList.forEach(e->dbUsernameList.add(e.getUsername()));
+        dbUserInfoList.forEach(e -> dbUsernameList.add(e.getUsername()));
         List<ErrorCellBean> errorCellBeanList = new ArrayList<>();
-        for (Map<String,Object> map1:list) {
-            Map<String,Object> map = new HashMap<>();
+        for (Map<String, Object> map1 : list) {
+            Map<String, Object> map = new HashMap<>();
             String phoneNumber = map1.get("phoneNumber").toString();
             String originPassword = RandomUtils.getRandNum(6);
-            map.put("phoneNumber",phoneNumber);
-            map.put("originPassword",originPassword);
+            map.put("phoneNumber", phoneNumber);
+            map.put("originPassword", originPassword);
             UserInfo userInfo = new UserInfo();
             Long userId = RandomUtils.getPrimaryKey();
             userInfo.setUserId(userId);
@@ -255,6 +269,7 @@ public class UserServiceImpl implements UserService {
             userInfoList.add(userInfo);
 
             DriverInfo driverInfo = new DriverInfo();
+            Long driverId = RandomUtils.getPrimaryKey();
             driverInfo.setIdCard(map1.get("idCard").toString());
             driverInfo.setDrivingLicense(map1.get("drivingLicense").toString());
             driverInfo.setUserId(userId);
@@ -264,15 +279,16 @@ public class UserServiceImpl implements UserService {
             driverInfo.setIsDeleted(Boolean.FALSE);
             driverInfo.setGmtModify(new Date());
             driverInfo.setModifier(0L);
+            driverInfo.setId(driverId);
             driverInfo.setGmtCreate(new Date());
             driverInfo.setCreator(0L);
             driverInfoList.add(driverInfo);
 
             if (dbUsernameList.contains(phoneNumber)) {
-                errorCellBeanList.add(new ErrorCellBean("账号已存在",phoneNumber,list.indexOf(map1)+2,0));
+                errorCellBeanList.add(new ErrorCellBean("账号已存在", phoneNumber, list.indexOf(map1) + 2, 0));
             }
             if (!driverInfo.getIdCard().equals(driverInfo.getDrivingLicense())) {
-                errorCellBeanList.add(new ErrorCellBean("身份证号和驾驶证号不一致",map1.get("idCard").toString(),list.indexOf(map1)+2,0));
+                errorCellBeanList.add(new ErrorCellBean("身份证号和驾驶证号不一致", map1.get("idCard").toString(), list.indexOf(map1) + 2, 0));
             }
         }
         if (!CollectionUtils.isEmpty(errorCellBeanList)) {
@@ -280,7 +296,7 @@ public class UserServiceImpl implements UserService {
         }
         userDao.batchInsert(userInfoList);
         driverDao.batchInsert(driverInfoList);
-        phoneCodeList.forEach(e->redisHelper.set(CacheKey.VERIFY_CODE_KEY+e.get("phoneNumber"),e.get("originPassword")));
+        phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
         return errorCellBeanList;
     }
 
@@ -289,19 +305,19 @@ public class UserServiceImpl implements UserService {
         List<UserInfo> userInfoList = new ArrayList<>();
         List<DriverInfo> driverInfoList = new ArrayList<>();
         List<CarInfo> carInfoList = new ArrayList<>();
-        List<Map<String,Object>> phoneCodeList = new ArrayList<>();
+        List<Map<String, Object>> phoneCodeList = new ArrayList<>();
         Example example = new Example(UserInfo.class);
-        example.createCriteria().andEqualTo("type",UserType.USER_APP_OFFICE.getCode());
+        example.createCriteria().andEqualTo("type", UserType.USER_APP_OFFICE.getCode());
         List<UserInfo> dbUserInfoList = userDao.selectByExample(example);
         List<String> dbUsernameList = new ArrayList<>();
-        dbUserInfoList.forEach(e->dbUsernameList.add(e.getUsername()));
+        dbUserInfoList.forEach(e -> dbUsernameList.add(e.getUsername()));
         List<ErrorCellBean> errorCellBeanList = new ArrayList<>();
-        for (Map<String,Object> map1:list) {
-            Map<String,Object> map = new HashMap<>();
+        for (Map<String, Object> map1 : list) {
+            Map<String, Object> map = new HashMap<>();
             String phoneNumber = map1.get("phoneNumber").toString();
             String originPassword = RandomUtils.getRandNum(6);
-            map.put("phoneNumber",phoneNumber);
-            map.put("originPassword",originPassword);
+            map.put("phoneNumber", phoneNumber);
+            map.put("originPassword", originPassword);
             UserInfo userInfo = new UserInfo();
             Long userId = RandomUtils.getPrimaryKey();
             userInfo.setUserId(userId);
@@ -338,7 +354,7 @@ public class UserServiceImpl implements UserService {
             CarInfo carInfo = new CarInfo();
             carInfo.setIsAuthentication(Boolean.FALSE);
             carInfo.setVehicleType(map1.get("vehicleType").toString());
-            carInfo.setVehicleRegisterTime(DateUtil.strToDate(map1.get("vehicleRegisterTime").toString(),"yyyy-MM-dd"));
+            carInfo.setVehicleRegisterTime(DateUtil.strToDate(map1.get("vehicleRegisterTime").toString(), "yyyy-MM-dd"));
             carInfo.setUserId(userId);
             carInfo.setPlateNumber(map1.get("plateNumber").toString());
             carInfo.setCompany(map1.get("company").toString());
@@ -351,10 +367,10 @@ public class UserServiceImpl implements UserService {
             carInfoList.add(carInfo);
 
             if (dbUsernameList.contains(phoneNumber)) {
-                errorCellBeanList.add(new ErrorCellBean("账号已存在",phoneNumber,list.indexOf(map1)+2,1));
+                errorCellBeanList.add(new ErrorCellBean("账号已存在", phoneNumber, list.indexOf(map1) + 2, 1));
             }
             if (!driverInfo.getIdCard().equals(driverInfo.getDrivingLicense())) {
-                errorCellBeanList.add(new ErrorCellBean("身份证号和驾驶证号不一致",map1.get("idCard").toString(),list.indexOf(map1)+2,1));
+                errorCellBeanList.add(new ErrorCellBean("身份证号和驾驶证号不一致", map1.get("idCard").toString(), list.indexOf(map1) + 2, 1));
             }
         }
         if (!CollectionUtils.isEmpty(errorCellBeanList)) {
@@ -363,7 +379,7 @@ public class UserServiceImpl implements UserService {
         userDao.batchInsert(userInfoList);
         driverDao.batchInsert(driverInfoList);
         carDao.batchInsert(carInfoList);
-        phoneCodeList.forEach(e->redisHelper.set(CacheKey.VERIFY_CODE_KEY+e.get("phoneNumber"),e.get("originPassword")));
+        phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
         return errorCellBeanList;
     }
 }

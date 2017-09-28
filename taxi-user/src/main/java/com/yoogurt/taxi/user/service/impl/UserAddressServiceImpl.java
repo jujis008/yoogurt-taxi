@@ -20,7 +20,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     @Override
     public ResponseObj getUserAddressListByUserId(Long userId, String keywords) {
         Example example = new Example(UserAddress.class);
-        example.setOrderByClause("is_primary,gmt_modify desc");
+        example.setOrderByClause("is_primary desc,gmt_modify desc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("userId", userId);
         if (StringUtils.isNotBlank(keywords)) {
@@ -39,6 +39,7 @@ public class UserAddressServiceImpl implements UserAddressService {
             if (CollectionUtils.isNotEmpty(userAddresses)) {
                 UserAddress dbUserAddress = userAddresses.get(0);
                 dbUserAddress.setIsPrimary(Boolean.FALSE);
+                userAddresses.forEach(e->userAddressDao.updateByIdSelective(e));
             }
         }
         if (userAddress.getId() == null) {
@@ -55,7 +56,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         if (userAddress == null) {
             return ResponseObj.success();
         }
-        userAddress.setIsDeleted(Boolean.TRUE);
+        userAddressDao.deleteById(id);
         return ResponseObj.success();
     }
 

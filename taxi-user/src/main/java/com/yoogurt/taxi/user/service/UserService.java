@@ -109,6 +109,10 @@ public interface UserService {
      */
     ResponseObj removeUser(Long userId);
 
+    ResponseObj InsertUser(UserInfo userInfo);
+
+    ResponseObj modifyUser(UserInfo userInfo);
+
     /**
      * 根据条件，分页查询用户数据（web）
      * @param condition

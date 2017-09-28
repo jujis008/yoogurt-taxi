@@ -4,38 +4,32 @@ import com.yoogurt.taxi.common.ExcelHelper.CellPropertyBean;
 import com.yoogurt.taxi.common.ExcelHelper.ErrorCellBean;
 import com.yoogurt.taxi.common.ExcelHelper.ExcelParamBean;
 import com.yoogurt.taxi.common.ExcelHelper.ExcelUtils;
+import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.DriverInfo;
-import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.beans.*;
+import com.yoogurt.taxi.dal.condition.user.DriverWLCondition;
+import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
 import com.yoogurt.taxi.dal.enums.UserFrom;
-import com.yoogurt.taxi.dal.enums.UserGender;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
-import com.yoogurt.taxi.user.Form.LoginForm;
-import com.yoogurt.taxi.user.service.LoginService;
-import com.yoogurt.taxi.user.service.UserService;
-import jdk.internal.util.xml.impl.Input;
+import com.yoogurt.taxi.dal.model.user.OfficeDriverDetailModel;
+import com.yoogurt.taxi.dal.model.user.RoleWLModel;
+import com.yoogurt.taxi.user.form.*;
+import com.yoogurt.taxi.user.service.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import javax.validation.Valid;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -46,16 +40,37 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/web/user")
-public class UserWebController {
+public class UserWebController extends BaseController{
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private LoginService loginService;
+    @Autowired
+    private DriverService   driverService;
+    @Autowired
+    private CarService carService;
+    @Autowired
+    private UserRoleService userRoleService;
+    @Autowired
+    private RoleAuthorityService    roleAuthorityService;
+    @Autowired
+    private AuthorityInfoService    authorityInfoService;
+    @Autowired
+    private RoleInfoService roleInfoService;
 
     @RequestMapping("/tt")
     public String tt() {
         return "tt";
     }
 
+    /**
+     * 代理司机导入
+     * @param file
+     * @return
+     * @throws IOException
+     * @throws InvalidFormatException
+     */
     @RequestMapping(value = "/import/agentDrivers",method = RequestMethod.POST,produces = {"application/json;UTF-8"})
     public ResponseObj importAgentUserFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
         List<ExcelParamBean> paramBeanList = new ArrayList<>();
@@ -88,6 +103,13 @@ public class UserWebController {
         return ResponseObj.success();
     }
 
+    /**
+     * 正式司机导入
+     * @param file
+     * @return
+     * @throws IOException
+     * @throws InvalidFormatException
+     */
     @RequestMapping(value = "/import/officeDrivers",method = RequestMethod.POST,produces = {"application/json;UTF-8"})
     public ResponseObj importOfficeUsersFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
         List<ExcelParamBean> paramBeanList = new ArrayList<>();
@@ -129,6 +151,184 @@ public class UserWebController {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,sb.toString());
         }
         return ResponseObj.success();
+    }
+
+    /**
+     *web端登录
+     * @param loginForm
+     * @return
+     */
+    @RequestMapping(value = "/i/login",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    public ResponseObj login(@RequestBody LoginForm loginForm) {
+        if (StringUtils.isBlank(loginForm.getUsername())) {
+            return ResponseObj.fail(StatusCode.PARAM_BLANK,"登录账号不能为空");
+        }
+        if (StringUtils.isBlank(loginForm.getPassword())) {
+            return ResponseObj.fail(StatusCode.PARAM_BLANK,"密码不能为空");
+        }
+        UserType userType = UserType.getEnumsByCode(getUserType());
+        if (!userType.isWebUser()) {
+            return ResponseObj.fail(StatusCode.NO_AUTHORITY);
+        }
+        ResponseObj result = loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
+        return result;
+    }
+
+    /**
+     * 获取司机分页列表
+     * @param driverWLCondition
+     * @return
+     */
+    @RequestMapping(value = "/driver/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    public ResponseObj getOfficeDriverList(DriverWLCondition driverWLCondition) {
+        driverWLCondition.setUserType(UserType.USER_APP_OFFICE.getCode());
+        return driverService.getDriverWebList(driverWLCondition);
+    }
+
+    /**
+     * 获取司机详情
+     * @param driverId
+     * @return
+     */
+    @RequestMapping(value = "/driver/detail/driverId/{driverId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    public ResponseObj getOfficeDriverDetail(@PathVariable(name = "driverId") Long driverId) {
+        DriverInfo driverInfo = driverService.getDriverInfo(driverId);
+        List<CarInfo> carInfoList = carService.getCarByDriverId(driverId);
+        UserInfo userInfo = userService.getUserByUserId(driverInfo.getUserId());
+        OfficeDriverDetailModel model = new OfficeDriverDetailModel();
+        Map<String,Object> map = new HashMap<>();
+        if (userInfo != null) {
+            BeanUtilsExtends.copyProperties(model,userInfo);
+        }
+        if (driverInfo != null) {
+            BeanUtilsExtends.copyProperties(model,driverInfo);
+        }
+        if (CollectionUtils.isNotEmpty(carInfoList)) {
+            BeanUtilsExtends.copyProperties(model,carInfoList.get(0));
+        }
+        return ResponseObj.success(map);
+    }
+
+    /**
+     * 重置密码
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/loginPassword",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
+    public ResponseObj resetPassword(@RequestBody Long userId) {
+        String newPassword = RandomUtils.getRandNum(6);
+
+        return userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
+    }
+
+    /**
+     * 获取用户列表
+     * @param condition
+     * @return
+     */
+    @RequestMapping(value = "/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    public ResponseObj getUserWebList(UserWLCondition condition) {
+        return ResponseObj.success(userService.getUserWebList(condition));
+    }
+
+    /**
+     * 删除后台用户
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "/userId/{userId}",method = RequestMethod.DELETE,produces = {"application/json;charset=utf-8"})
+    public ResponseObj removeUser(@PathVariable(name = "userId") Long userId) {
+        return userService.removeUser(userId);
+    }
+
+    /**
+     * 新增/编辑后台用户
+     * @param form
+     * @param result
+     * @return
+     */
+    @RequestMapping(value = "/",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    public ResponseObj saveUser(@RequestBody @Valid UserForm form, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+        }
+        UserInfo userInfo = new UserInfo();
+        BeanUtilsExtends.copyProperties(userInfo,form);
+        userInfo.setType(UserType.USER_WEB.getCode());
+        userInfo.setUserFrom(UserFrom.WEB.getCode());
+        userInfo.setStatus(UserStatus.AUTHENTICATED.getCode());
+        if (userInfo.getUserId() == null) {
+            userInfo.setUserId(RandomUtils.getPrimaryKey());
+            return userService.InsertUser(userInfo);
+        } else {
+            return userService.modifyUser(userInfo);
+        }
+    }
+
+    /**
+     * 获取角色列表
+     * @return
+     */
+    @RequestMapping(value = "/role/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    public ResponseObj getRoleList() {
+        List<RoleWLModel> roleWebList = roleInfoService.getRoleWebList();
+        return ResponseObj.success(roleWebList);
+    }
+
+    /**
+     * 对角色进行授权
+     * @param form
+     * @param result
+     * @return
+     */
+    @RequestMapping(value = "/grantAuthority",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    public ResponseObj grantAuthority(@RequestBody @Valid RoleAuthorityForm form, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+        }
+        return roleAuthorityService.saveRoleAuthorityInfo(form.getRoleId(),form.getAuthorityList());
+    }
+
+    /**
+     * 新增/编辑角色
+     * @param form
+     * @param result
+     * @return
+     */
+    @RequestMapping(value = "/role",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    public ResponseObj newRole(@RequestBody @Valid RoleForm form, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.PARAM_BLANK,result.getAllErrors().get(0).getDefaultMessage());
+        }
+        RoleInfo roleInfo = new RoleInfo();
+        BeanUtilsExtends.copyProperties(roleInfo,form);
+        return roleInfoService.saveRoleInfo(roleInfo);
+    }
+
+    /**
+     * 删除角色
+     * @param roleId
+     * @return
+     */
+    @RequestMapping(value = "/role/roleId/{roleId}",method = RequestMethod.DELETE,produces = {"application/json;charset=utf-8"})
+    public ResponseObj removeRole(@PathVariable(name = "roleId") Long roleId) {
+        return roleInfoService.removeRole(roleId);
+    }
+
+    /**
+     * 新增权限接口
+     * @param form
+     * @param result
+     * @return
+     */
+    @RequestMapping(value = "/new/authority",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    public ResponseObj saveAuthority(@RequestBody @Valid AuthorityForm form,BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+        }
+        AuthorityInfo authorityInfo = new AuthorityInfo();
+        BeanUtilsExtends.copyProperties(authorityInfo,form);
+        return authorityInfoService.saveAuthorityInfo(authorityInfo);
     }
 
 }

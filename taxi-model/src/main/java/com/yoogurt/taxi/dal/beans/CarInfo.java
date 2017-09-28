@@ -3,12 +3,12 @@ package com.yoogurt.taxi.dal.beans;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.dal.annotation.Domain;
-import com.yoogurt.taxi.dal.common.SuperModel;
+import com.yoogurt.taxi.dal.enums.CarEnergyType;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 
 @Domain
@@ -18,18 +18,15 @@ import java.util.Date;
 public class CarInfo{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     /**
      * 用户id
      */
     @Column(name = "user_id")
-    @JsonIgnore
     private Long userId;
 
     @Column(name = "driver_id")
-    @JsonIgnore
     private Long driverId;
 
     /**
@@ -120,7 +117,6 @@ public class CarInfo{
      * 创建时间
      */
     @Column(name = "gmt_create")
-    @JsonIgnore
     private Date gmtCreate;
 
     /**
@@ -134,7 +130,6 @@ public class CarInfo{
      * 最后修改时间
      */
     @Column(name = "gmt_modify")
-    @JsonIgnore
     private Date gmtModify;
 
     /**

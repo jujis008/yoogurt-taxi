@@ -6,9 +6,12 @@ import com.yoogurt.taxi.dal.model.user.AuthorityModel;
 import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
 import com.yoogurt.taxi.user.dao.RoleAuthorityDao;
 import com.yoogurt.taxi.user.service.RoleAuthorityService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,11 +28,25 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
 
     @Override
     public ResponseObj saveRoleAuthorityInfo(Long roleId, List<Long> authorityIdList) {
-        for (Long authorityId:authorityIdList) {
+        List<Long> authoritys = roleAuthorityDao.getAuthorityIdListByRoleId(roleId);
+        List<Long> retainList = new ArrayList<>();
+        retainList.addAll(authorityIdList);
+        retainList.retainAll(authoritys);
+        List<Long> removeList = new ArrayList<>();
+        removeList.addAll(authoritys);
+        removeList.removeAll(retainList);
+        List<Long> newList = new ArrayList<>();
+        newList.addAll(authorityIdList);
+        newList.removeAll(authoritys);
+        for (Long authorityId:newList) {
             RoleAuthorityInfo roleAuthorityInfo = new RoleAuthorityInfo();
             roleAuthorityInfo.setAuthorityId(authorityId);
             roleAuthorityInfo.setRoleId(roleId);
             roleAuthorityDao.insert(roleAuthorityInfo);
+        }
+        for (Long authorityId:removeList) {
+            Example example = new Example(RoleAuthorityInfo.class);
+            roleAuthorityDao.deleteByExample(example);
         }
         return ResponseObj.success();
     }

@@ -4,6 +4,7 @@ import com.yoogurt.taxi.dal.enums.UserStatus;
 
 public class DriverWLModel {
     private Long id;
+    private Long userId;
     private String username;
     private String name;
     private String idCard;
@@ -17,6 +18,14 @@ public class DriverWLModel {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {

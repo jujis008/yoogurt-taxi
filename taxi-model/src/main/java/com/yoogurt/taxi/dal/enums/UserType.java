@@ -36,6 +36,16 @@ public enum UserType {
         }
     }
 
+    public Boolean isWebUser () {
+        switch (this) {
+            case SUPER_ADMIN:
+            case USER_WEB:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     UserType(Integer code, String name) {
         this.code = code;
         this.name = name;

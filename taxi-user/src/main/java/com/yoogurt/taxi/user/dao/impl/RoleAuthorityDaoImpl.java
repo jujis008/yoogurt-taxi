@@ -28,4 +28,9 @@ public class RoleAuthorityDaoImpl extends BaseDao<RoleAuthorityInfoMapper, RoleA
     public List<GroupAuthorityLModel> getAuthorityListByRoleId(Long roleId) {
         return roleAuthorityInfoMapper.getAuthorityListByRoleId(roleId);
     }
+
+    @Override
+    public List<Long> getAuthorityIdListByRoleId(Long roleId) {
+        return roleAuthorityInfoMapper.getAuthorityIdListByRoleId(roleId);
+    }
 }

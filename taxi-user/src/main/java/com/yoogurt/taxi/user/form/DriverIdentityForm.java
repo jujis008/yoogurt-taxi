@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.user.Form;
+package com.yoogurt.taxi.user.form;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,7 +6,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Pattern;
-import java.util.Date;
 
 
 @Getter
@@ -15,7 +14,7 @@ public class DriverIdentityForm {
     @Pattern(regexp = "10|20",message = "未指定性别")
     private String gender;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date birthday;
+    private String birthday;
     @NotBlank(message = "户籍不能为空")
     private String household;
     @NotBlank(message = "请上传身份证图片")

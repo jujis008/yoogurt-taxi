@@ -13,6 +13,15 @@ public enum UserGender {
         this.name = name;
     }
 
+    public static UserGender getEnumsByCode(Integer code) {
+        for (UserGender gender:UserGender.values()) {
+            if (gender.code.equals(code)) {
+                return gender;
+            }
+        }
+        return null;
+    }
+
     public Integer getCode() {
         return code;
     }

@@ -30,6 +30,7 @@
     </resultMap>
     <resultMap id="DriverWLModelMap" type="com.yoogurt.taxi.dal.model.user.DriverWLModel">
         <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="id_card" jdbcType="VARCHAR" property="idCard"/>
@@ -41,6 +42,7 @@
             parameterType="com.yoogurt.taxi.dal.condition.user.DriverWLCondition">
         SELECT
         t1.id,
+        t1.user_id,
         t3.plate_number,
         t2.username,
         t2.name,
@@ -64,6 +66,7 @@
             AND t1.type=#{userType}
             AND t1.is_deleted=0
         </where>
+        ORDER BY t1.gmt_modify DESC
     </select>
     <insert id="batchInsert" parameterType="java.util.List">
         INSERT INTO driver_info(id,id_card,driving_license,user_id,

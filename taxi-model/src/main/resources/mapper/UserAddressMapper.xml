@@ -10,6 +10,7 @@
     <result column="lng" jdbcType="DOUBLE" property="lng" />
     <result column="lat" jdbcType="DOUBLE" property="lat" />
     <result column="adcode" jdbcType="VARCHAR" property="adcode" />
+    <result column="area" jdbcType="VARCHAR" property="area" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="is_primary" jdbcType="BIT" property="isPrimary" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />

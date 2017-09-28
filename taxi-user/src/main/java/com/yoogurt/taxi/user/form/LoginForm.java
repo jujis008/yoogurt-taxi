@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.user.Form;
+package com.yoogurt.taxi.user.form;
 
 import lombok.Getter;
 import lombok.Setter;

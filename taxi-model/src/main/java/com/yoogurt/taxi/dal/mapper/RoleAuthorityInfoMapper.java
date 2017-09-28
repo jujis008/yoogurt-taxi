@@ -11,4 +11,5 @@ public interface RoleAuthorityInfoMapper extends Mapper<RoleAuthorityInfo> {
 
     List<AuthorityModel> getAuthoritiesByRoleId(Long roleId);
     List<GroupAuthorityLModel> getAuthorityListByRoleId(Long roleId);
+    List<Long> getAuthorityIdListByRoleId(Long roleId);
 }

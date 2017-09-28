@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.dal.model.user;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserSessionModel {
     /**
      * 账户
@@ -16,6 +18,10 @@ public class UserSessionModel {
      * 用户状态
      */
     private Integer status;
+
+    private Boolean driverAuthenticated;
+
+    private Boolean carAuthenticated;
     /**
      * 姓名
      */

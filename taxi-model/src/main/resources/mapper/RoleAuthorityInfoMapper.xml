@@ -32,7 +32,7 @@
         </collection>
     </resultMap>
 
-    <select id="getAuthoritiesByRoleId" parameterType="long" resultMap="AuthorityModel">
+    <select id="getAuthoritiesByRoleId" parameterType="java.lang.Long" resultMap="AuthorityModel">
         SELECT rau.authority_id, rau.role_id, r.role_name, au.authority_name, au.authority_group, au.uri, au.associated_control
         FROM role_authority_info AS rau
         LEFT JOIN authority_info AS au ON (au.id=rau.authority_id)
@@ -49,6 +49,10 @@
         FROM role_authority_info t1
         LEFT JOIN authority_info t2 ON t1.authority_id=t2.id
         WHERE t1.is_deleted=0 AND t2.is_deleted=0 AND t1.role_id=#{roleId}
+    </select>
+
+    <select id="getAuthorityIdListByRoleId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT id from role_authority_info WHERE role_id=#{roleId}
     </select>
 
 </mapper>

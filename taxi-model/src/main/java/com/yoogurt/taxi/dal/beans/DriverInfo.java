@@ -3,10 +3,8 @@ package com.yoogurt.taxi.dal.beans;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.dal.annotation.Domain;
-import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -102,7 +100,6 @@ public class DriverInfo{
      * 创建时间
      */
     @Column(name = "gmt_create")
-    @JsonIgnore
     private Date gmtCreate;
 
     /**
@@ -116,7 +113,6 @@ public class DriverInfo{
      * 最后修改时间
      */
     @Column(name = "gmt_modify")
-    @JsonIgnore
     private Date gmtModify;
 
     /**

@@ -13,4 +13,6 @@ public interface RoleAuthorityDao extends IDao<RoleAuthorityInfoMapper, RoleAuth
     List<AuthorityModel> getAuthoritiesByRoleId(Long roleId);
 
     List<GroupAuthorityLModel> getAuthorityListByRoleId(Long roleId);
+
+    List<Long> getAuthorityIdListByRoleId(Long roleId);
 }

@@ -1,11 +1,13 @@
 package com.yoogurt.taxi.user.controller.mobile;
 
+import com.yoogurt.taxi.common.vo.EnumModel;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.DateUtil;
+import com.yoogurt.taxi.common.utils.ReflectUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.CarInfo;
 import com.yoogurt.taxi.dal.beans.DriverInfo;
@@ -14,7 +16,7 @@ import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.user.UserSessionModel;
-import com.yoogurt.taxi.user.Form.*;
+import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
@@ -22,16 +24,11 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -68,6 +65,7 @@ public class UserMobileController extends BaseController {
 
     /**
      * 查看用户信息
+     *
      * @return
      */
     @RequestMapping(value = "/info", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
@@ -76,8 +74,18 @@ public class UserMobileController extends BaseController {
         if (userInfo == null) {
             return ResponseObj.fail(StatusCode.NOT_LOGIN);
         }
+        Long userId = getUserId();
+        UserType userType = UserType.getEnumsByCode(getUserType());
+        DriverInfo driverInfo = driverService.getDriverByUserId(userInfo.getUserId());
         UserSessionModel userSessionModel = new UserSessionModel();
         BeanUtilsExtends.copyProperties(userSessionModel, userInfo);
+        userSessionModel.setDriverAuthenticated(driverInfo.getIsAuthentication());
+        if (userType == UserType.USER_APP_OFFICE) {
+            List<CarInfo> carByUsers = carService.getCarByUserId(userId);
+            if (CollectionUtils.isNotEmpty(carByUsers)) {
+                userSessionModel.setCarAuthenticated(carByUsers.get(0).getIsAuthentication());
+            }
+        }
         return ResponseObj.success(userSessionModel);
     }
 
@@ -100,21 +108,21 @@ public class UserMobileController extends BaseController {
         return ResponseObj.success(o);
     }
 
-    @RequestMapping(value = "/AuthenticationStatus", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj AuthenticationStatus() {
-        Long userId = getUserId();
-        UserType userType = UserType.getEnumsByCode(getUserType());
-        Map<String, Object> map = new HashMap<>();
-        DriverInfo driverInfo = driverService.getDriverByUserId(userId);
-        map.put("driverAuthenticated", driverInfo.getIsAuthentication());
-        if (userType == UserType.USER_APP_OFFICE) {
-            List<CarInfo> carByUsers = carService.getCarByUserId(userId);
-            if (CollectionUtils.isNotEmpty(carByUsers)) {
-                map.put("carAuthenticated", carByUsers.get(0).getIsAuthentication());
-            }
-        }
-        return ResponseObj.success(map);
-    }
+//    @RequestMapping(value = "/authenticationStatus", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+//    public ResponseObj AuthenticationStatus() {
+//        Long userId = getUserId();
+//        UserType userType = UserType.getEnumsByCode(getUserType());
+//        Map<String, Object> map = new HashMap<>();
+//        DriverInfo driverInfo = driverService.getDriverByUserId(userId);
+//        map.put("driverAuthenticated", driverInfo.getIsAuthentication());
+//        if (userType == UserType.USER_APP_OFFICE) {
+//            List<CarInfo> carByUsers = carService.getCarByUserId(userId);
+//            if (CollectionUtils.isNotEmpty(carByUsers)) {
+//                map.put("carAuthenticated", carByUsers.get(0).getIsAuthentication());
+//            }
+//        }
+//        return ResponseObj.success(map);
+//    }
 
     /**
      * 获取司机身份资料
@@ -128,6 +136,12 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
         return ResponseObj.success(driverInfo);
+    }
+
+    @RequestMapping(value = "/i/getSelectShow/className/{className}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getSelectShow(@PathVariable(name = "className") String className) {
+        List<EnumModel> enumModels = ReflectUtils.toSelectShow(className);
+        return ResponseObj.success(enumModels);
     }
 
     /**
@@ -207,7 +221,10 @@ public class UserMobileController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
-    public ResponseObj activeLoginPassword(@RequestBody @Valid ModifyPasswordForm form) {
+    public ResponseObj activeLoginPassword(@RequestBody @Valid ModifyPasswordForm form,BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+        }
         if (form.getNewPassword().equals(form.getOldPassword())) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "默认密码不能作为新密码");
         }
@@ -228,6 +245,24 @@ public class UserMobileController extends BaseController {
             redisHelper.set(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId, "3");
         }
         return responseObj;
+    }
+
+    /**
+     * 修改密码
+     * @param form
+     * @param result
+     * @return
+     */
+    @RequestMapping(value = "/loginPassword/modify", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
+    public ResponseObj modifyLoginPassword(@RequestBody @Valid ModifyPasswordForm form,BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+        }
+        if (form.getNewPassword().equals(form.getOldPassword())) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "新旧密码不能相同");
+        }
+        Long userId = getUserId();
+        return userService.modifyLoginPassword(userId,form.getOldPassword(),form.getNewPassword());
     }
 
     /**
@@ -276,7 +311,8 @@ public class UserMobileController extends BaseController {
         }
         driverInfo.setIsAuthentication(Boolean.TRUE);
         BeanUtils.copyProperties(driverInfo, form);
-        return driverService.saveDriverInfo(driverInfo);
+        driverService.saveDriverInfo(driverInfo);
+        return ResponseObj.success();
     }
 
     /**
@@ -305,7 +341,8 @@ public class UserMobileController extends BaseController {
         }
         carInfo.setIsAuthentication(Boolean.TRUE);
         BeanUtilsExtends.copyProperties(carInfo, form);
-        return carService.saveCarInfo(carInfo);
+        carService.saveCarInfo(carInfo);
+        return ResponseObj.success();
     }
 
     /**
@@ -382,7 +419,12 @@ public class UserMobileController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/addresses", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
-    public ResponseObj addressList(@RequestBody String keywords) {
+    public ResponseObj addressList(String keywords) {
         return userAddressService.getUserAddressListByUserId(getUserId(), keywords);
+    }
+
+    @RequestMapping(value = "/address/id/{id}", method = RequestMethod.DELETE, produces = {"application/json;charset=UTF-8"})
+    public ResponseObj removeAddress(@PathVariable Long id) {
+        return userAddressService.removeUserAddress(id);
     }
 }
