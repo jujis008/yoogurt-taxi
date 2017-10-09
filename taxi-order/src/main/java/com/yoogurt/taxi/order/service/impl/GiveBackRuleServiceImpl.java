@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.dal.beans.OrderGiveBackRule;
 import com.yoogurt.taxi.order.dao.GiveBackRuleDao;
 import com.yoogurt.taxi.order.service.GiveBackRuleService;
@@ -47,5 +48,13 @@ public class GiveBackRuleServiceImpl implements GiveBackRuleService {
         rule.setIsDeleted(Boolean.FALSE);
         //一个时刻只会允许一条还车违约规则生效
         return giveBackRuleDao.selectOne(rule);
+    }
+
+    @Override
+    public Money calculate(OrderGiveBackRule rule, int minutes) {
+        if(rule == null) return null;
+        Money money = new Money(rule.getPrice());
+        money.multiplyBy(Math.floor((double) minutes / rule.getTime()));
+        return money;
     }
 }

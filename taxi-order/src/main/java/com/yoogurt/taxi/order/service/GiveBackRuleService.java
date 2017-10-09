@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.order.service;
 
 
+import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.dal.beans.OrderGiveBackRule;
 
 public interface GiveBackRuleService {
@@ -10,4 +11,7 @@ public interface GiveBackRuleService {
 	OrderGiveBackRule getRuleInfo(int time, String unit);
 
 	OrderGiveBackRule getRuleInfo();
+
+    Money calculate(OrderGiveBackRule rule, int minutes);
+
 }
