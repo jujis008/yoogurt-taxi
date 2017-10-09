@@ -119,16 +119,11 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         }
         //根据订单状态生成对应的model，此时对象的属性还未注入
         OrderModel model = getOrderModel(status);
-        //将主订单信息拷贝到model中
-        BeanUtils.copyProperties(orderInfo, model);
         //根据名称，获取service
         //这里需要子订单的各个service继承OrderBizService接口
         OrderBizService service = (OrderBizService) context.getBean(model.getServiceName());
-        //此步骤是获取子订单信息
-        OrderModel m = service.info(orderId);
-        //将子订单信息拷贝到model中
-        BeanUtils.copyProperties(m, model);
-        return model;
+        //此步骤是获取订单信息，包含了主订单和子订单相关信息
+        return service.info(orderId);
     }
 
     /**
