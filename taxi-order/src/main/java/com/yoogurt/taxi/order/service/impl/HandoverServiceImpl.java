@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Service
+@Service("handoverService")
 public class HandoverServiceImpl implements HandoverService {
 
     @Autowired
