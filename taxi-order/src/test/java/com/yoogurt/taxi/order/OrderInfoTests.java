@@ -40,10 +40,16 @@ public class OrderInfoTests {
     @Test
     public void placeFormTest() {
         PlaceOrderForm orderForm = new PlaceOrderForm();
-        orderForm.setRentId(17092615020308202L);
+        orderForm.setRentId(17092620025316058L);
         orderForm.setUserId(8888L);
         orderForm.setUserType(20);
         ResponseObj obj = orderInfoService.placeOrder(orderForm);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
+    }
+
+    @Test
+    public void orderDetailsTest() {
+        OrderModel orderDetails = orderInfoService.getOrderDetails(17092615073534929L);
+        Assert.assertNotNull("订单信息不存在！", orderDetails);
     }
 }
