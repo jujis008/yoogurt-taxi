@@ -10,6 +10,7 @@
     <result column="end" jdbcType="INTEGER" property="end" />
     <result column="unit" jdbcType="VARCHAR" property="unit" />
     <result column="allow_cancel" jdbcType="BIT" property="allowCancel" />
+    <result column="disobey" jdbcType="BIT" property="disobey" />
     <result column="percent" jdbcType="DECIMAL" property="percent" />
     <result column="pay_channel" jdbcType="VARCHAR" property="payChannel" />
   </resultMap>

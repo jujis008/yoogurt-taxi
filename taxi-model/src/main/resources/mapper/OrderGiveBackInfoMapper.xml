@@ -11,6 +11,7 @@
     <result column="lng" jdbcType="DOUBLE" property="lng" />
     <result column="lat" jdbcType="DOUBLE" property="lat" />
     <result column="is_disobey" jdbcType="BIT" property="isDisobey" />
+    <result column="fine_money" jdbcType="DECIMAL" property="fineMoney" />
     <result column="time" jdbcType="INTEGER" property="time" />
     <result column="unit" jdbcType="VARCHAR" property="unit" />
   </resultMap>
