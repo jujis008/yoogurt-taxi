@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-@Service
+@Service("orderInfoService")
 public class OrderInfoServiceImpl implements OrderInfoService {
 
     @Autowired

@@ -20,5 +20,5 @@ public class PickUpForm extends OrderForm {
 	 * 如果车辆状态不正常，可以上传车辆图片
 	 */
 	@Size(max = 4, message = "最多只能上传4张图片")
-	private String pictures;
+	private String[] pictures;
 }
