@@ -47,7 +47,7 @@ public class PickUpServiceImpl implements PickUpService {
             orderInfoService.modifyStatus(orderId, status.next());
             String[] pictures = pickupForm.getPictures();
             if (pictures.length > 1) {//添加图片资源
-                List<CommonResource> resources = assembleResources(pickUpInfo.getOrderId().toString(), pictures);
+                List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_pick_up_info", pictures);
                 resourceService.addResources(resources);
             }
             return (PickUpOrderModel) info(orderId);
@@ -75,19 +75,5 @@ public class PickUpServiceImpl implements PickUpService {
         model.setPickUpTime(pickUpInfo.getGmtCreate());
 
         return model;
-    }
-
-    private List<CommonResource> assembleResources(String linkId, String[] pictures) {
-        List<CommonResource> resources = Lists.newArrayList();
-        if(StringUtils.isBlank(linkId) || pictures == null || pictures.length == 0) return resources;
-        for (String picture : pictures) {
-            CommonResource resource = new CommonResource();
-            resource.setLinkId(linkId);
-            resource.setTableName("order_pick_up_info");
-            resource.setUrl(picture);
-            resource.setResourceName(picture.substring(picture.lastIndexOf("/") + 1));
-            resources.add(resource);
-        }
-        return resources;
     }
 }
