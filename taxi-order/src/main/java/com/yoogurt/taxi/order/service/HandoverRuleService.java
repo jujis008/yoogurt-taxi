@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.order.service;
 
 
+import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
 
 public interface HandoverRuleService {
@@ -20,4 +21,9 @@ public interface HandoverRuleService {
 	 * 一个时刻只会允许一条交车违约规则生效。
 	 */
 	OrderHandoverRule getRuleInfo();
+
+	/**
+	 * 计算罚款金额。
+	 */
+	Money calculate(OrderHandoverRule rule, int time);
 }

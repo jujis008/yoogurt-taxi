@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
 import com.yoogurt.taxi.order.dao.HandoverRuleDao;
 import com.yoogurt.taxi.order.service.HandoverRuleService;
@@ -68,6 +69,19 @@ public class HandoverRuleServiceImpl implements HandoverRuleService {
         probe.setIsDeleted(Boolean.FALSE);
         //一个时刻只会允许一条交车违约规则生效
         return handoverRuleDao.selectOne(probe);
+    }
+
+    /**
+     * 计算罚款金额。
+     * @param rule 违约对应的规则
+     * @param time 超出交车的时长
+     */
+    @Override
+    public Money calculate(OrderHandoverRule rule, int time) {
+        if(rule == null) return null;
+        Money money = new Money(rule.getPrice());
+        money.multiplyBy(Math.floor((double) time / rule.getTime()));
+        return money;
     }
 
 
