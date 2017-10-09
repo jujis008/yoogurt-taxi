@@ -10,6 +10,9 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class GiveBackForm extends OrderForm{
 
+	@NotNull(message = "请指定租单")
+	private Long orderId;
+
 	@NotBlank(message = "请指定还车地址")
 	private String realGiveBackAddress;
 
