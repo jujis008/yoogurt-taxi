@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Domain
 @Getter
@@ -28,6 +29,12 @@ public class OrderGiveBackInfo extends SuperModel{
     private Double lng;
 
     private Double lat;
+
+    /**
+     * 违约罚款
+     */
+    @Column(name = "fine_money")
+    private BigDecimal fineMoney;
 
     /**
      * 0-否，1-是
