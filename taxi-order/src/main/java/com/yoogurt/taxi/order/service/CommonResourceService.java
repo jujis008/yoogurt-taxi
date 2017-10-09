@@ -12,4 +12,5 @@ public interface CommonResourceService {
 
 	int removeResources(String linkId, String tableName);
 
+	List<CommonResource> assembleResources(String linkId, String tableName, String... pictures);
 }
