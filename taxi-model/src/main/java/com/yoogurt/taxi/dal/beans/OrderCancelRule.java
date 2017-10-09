@@ -34,10 +34,16 @@ public class OrderCancelRule extends SuperModel{
     private String unit;
 
     /**
-     * 0-否，1-是
+     * 此时段是否可取消：0-否，1-是
      */
     @Column(name = "allow_cancel")
     private Boolean allowCancel;
+
+    /**
+     * 此时段是否违约：0-否，1-是
+     */
+    @Column(name = "disobey")
+    private Boolean disobey;
 
     /**
      * 扣除违约金的百分比，存放小数，不带%

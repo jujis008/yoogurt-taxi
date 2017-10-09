@@ -1,7 +1,9 @@
 package com.yoogurt.taxi.order;
 
+import com.yoogurt.taxi.dal.beans.OrderCancelRule;
 import com.yoogurt.taxi.dal.beans.OrderGiveBackRule;
 import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
+import com.yoogurt.taxi.order.service.CancelRuleService;
 import com.yoogurt.taxi.order.service.GiveBackRuleService;
 import com.yoogurt.taxi.order.service.HandoverRuleService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,9 @@ public class DisobeyRuleTests {
 
     @Autowired
     private GiveBackRuleService giveBackRuleService;
+
+    @Autowired
+    private CancelRuleService cancelRuleService;
 
     @Test
     public void ruleInfoTest() {
@@ -54,4 +59,18 @@ public class DisobeyRuleTests {
     }
 
 
+    @Test
+    public void cancelRuleIntroductionTest() {
+
+        String introduction = cancelRuleService.getIntroduction();
+        Assert.assertNotNull("取消订单违约规则说明不能为空", introduction);
+        log.info(introduction);
+    }
+
+    @Test
+    public void cancelRuleInfoTest() {
+
+        OrderCancelRule cancelRule = cancelRuleService.getRuleInfo(1, "HOURS");
+        Assert.assertNotNull("取消订单违约规则不能为空", cancelRule);
+    }
 }
