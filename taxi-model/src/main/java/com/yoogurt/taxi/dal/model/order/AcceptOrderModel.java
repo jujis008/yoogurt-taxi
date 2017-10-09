@@ -13,6 +13,6 @@ public class AcceptOrderModel extends OrderModel {
 
 	@Override
 	public String getServiceName() {
-		return "com.yoogurt.taxi.order.service.AcceptService";
+		return "acceptService";
 	}
 }

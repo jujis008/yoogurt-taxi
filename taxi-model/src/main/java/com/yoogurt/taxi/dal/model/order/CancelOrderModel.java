@@ -15,6 +15,6 @@ public class CancelOrderModel extends DisobeyOrderModel {
 
 	@Override
 	public String getServiceName() {
-		return "com.yoogurt.taxi.order.service.CancelService";
+		return "cancelService";
 	}
 }

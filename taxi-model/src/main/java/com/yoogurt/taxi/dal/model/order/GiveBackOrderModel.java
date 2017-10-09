@@ -15,6 +15,6 @@ public class GiveBackOrderModel extends DisobeyOrderModel {
 
 	@Override
 	public String getServiceName() {
-		return "com.yoogurt.taxi.order.service.GiveBackService";
+		return "giveBackService";
 	}
 }
