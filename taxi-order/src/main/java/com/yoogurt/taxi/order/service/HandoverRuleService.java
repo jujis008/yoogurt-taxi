@@ -13,6 +13,11 @@ public interface HandoverRuleService {
 	/**
 	 * 根据交车超时时间，获取违约规则，返回null表示没有违约
 	 */
-	OrderHandoverRule getRuleInfo(int time);
+	OrderHandoverRule getRuleInfo(int time, String unit);
 
+	/**
+	 * 获取一条交车违约规则。
+	 * 一个时刻只会允许一条交车违约规则生效。
+	 */
+	OrderHandoverRule getRuleInfo();
 }
