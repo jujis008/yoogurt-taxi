@@ -53,6 +53,7 @@ public class HandoverServiceImpl implements HandoverService {
         handoverInfo.setRuleId(0L);
         handoverInfo.setUnit("MINUTES");
         handoverInfo.setFineMoney(new BigDecimal(0));
+        handoverInfo.setIsDisobey(Boolean.FALSE);
         handoverInfo.setTime(0);
         //超过了交车时间，需要计算违约金
         Date now = new Date();
