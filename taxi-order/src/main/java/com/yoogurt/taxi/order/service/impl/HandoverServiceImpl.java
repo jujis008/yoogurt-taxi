@@ -42,7 +42,7 @@ public class HandoverServiceImpl implements HandoverService {
         Long orderId = handoverForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
-        //订单状态不是 【带交车】
+        //订单状态不是 【待交车】
         if(!OrderStatus.HAND_OVER.equals(status)) return null;
 
         OrderHandoverInfo handoverInfo = new OrderHandoverInfo();
