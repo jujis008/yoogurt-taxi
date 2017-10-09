@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.dal.model.order;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,8 +21,10 @@ public class RentInfoModel {
 
 	private String plateNumber;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 	private Date handoverTime;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 	private Date giveBackTime;
 
 	private BigDecimal price;

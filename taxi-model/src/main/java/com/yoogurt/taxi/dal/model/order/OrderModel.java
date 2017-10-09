@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.dal.model.order;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,8 +15,10 @@ public class OrderModel {
 
 	private Long rentId;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 	private Date handoverTime;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 	private Date giveBackTime;
 
 	private String address;
@@ -49,6 +52,7 @@ public class OrderModel {
 	/**
 	 * 接单时间
 	 */
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 	private Date orderTime;
 
 	private Integer status;
