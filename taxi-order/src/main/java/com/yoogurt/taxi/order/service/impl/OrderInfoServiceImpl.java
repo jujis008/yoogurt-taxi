@@ -17,9 +17,10 @@ import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
-import com.yoogurt.taxi.dal.model.order.OrderModel;
+import com.yoogurt.taxi.dal.model.order.*;
 import com.yoogurt.taxi.order.dao.OrderDao;
 import com.yoogurt.taxi.order.form.PlaceOrderForm;
+import com.yoogurt.taxi.order.service.OrderBizService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
@@ -27,16 +28,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
 @Service
 public class OrderInfoServiceImpl implements OrderInfoService {
+
+    @Autowired
+    private ApplicationContext context;
 
     @Autowired
     private RentInfoService rentInfoService;
@@ -61,7 +65,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             //更改租单状态 --> 已接单
             rentInfoService.modifyStatus(orderForm.getRentId(), RentStatus.RENT);
             OrderModel model = new OrderModel();
-            BeanUtils.copyProperties(obj, model);
+            BeanUtils.copyProperties(obj.getBody(), model);
             return ResponseObj.success(model);
         }
         return obj;
@@ -79,11 +83,65 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     }
 
     @Override
-    public OrderModel getOrderInfo(Long orderId) {
-        OrderInfo orderInfo = orderDao.selectById(orderId);
+    public OrderInfo getOrderInfo(Long orderId) {
+        return orderDao.selectById(orderId);
+    }
+
+
+    @Override
+    public OrderModel info(Long orderId) {
         OrderModel model = new OrderModel();
-        BeanUtils.copyProperties(orderInfo, model);
+        OrderInfo orderInfo = getOrderInfo(orderId);
+        if (orderInfo != null) {
+            BeanUtils.copyProperties(orderInfo, model);
+        }
         return model;
+    }
+
+    /**
+     * 订单详情接口
+     *
+     * @param orderId 订单id
+     * @return 订单详细信息
+     */
+    @Override
+    public OrderModel getOrderDetails(Long orderId) {
+        OrderInfo orderInfo = getOrderInfo(orderId);
+        if (orderInfo == null) return null;
+        OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
+        //根据订单状态生成对应的model，此时对象的属性还未注入
+        OrderModel model = getOrderModel(status);
+        //将主订单信息拷贝到model中
+        BeanUtils.copyProperties(orderInfo, model);
+        //待交车的订单，只有主订单信息
+        if (status.equals(OrderStatus.HAND_OVER)) return model;
+        //根据名称，获取service
+        //这里需要子订单的各个service继承OrderBizService接口
+        OrderBizService service = (OrderBizService) context.getBean(model.getServiceName());
+        //此步骤是获取子订单信息
+        OrderModel m = service.info(orderId);
+        //将子订单信息拷贝到model中
+        BeanUtils.copyProperties(m, model);
+        return model;
+    }
+
+    /**
+     * 修改订单状态
+     *
+     * @param orderId 订单id
+     * @param status  修改后的订单状态
+     * @return true-修改成功，false-修改失败
+     */
+    @Override
+    public boolean modifyStatus(Long orderId, OrderStatus status) {
+        if(orderId == null || orderId <= 0 || status == null) return false;
+        OrderInfo orderInfo = getOrderInfo(orderId);
+        if(orderInfo == null) return false;
+        if(status.getCode().equals(orderInfo.getStatus())) return true; //与原租单状态相同，直接返回true
+        if(status.getCode() < orderInfo.getStatus()) return false; //不允许状态回退
+
+        orderInfo.setStatus(status.getCode());
+        return orderDao.updateByIdSelective(orderInfo) == 1;
     }
 
     /**
@@ -222,4 +280,27 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         }
     }
 
+    /**
+     * 根据订单状态生成对应的Model
+     * @param status 订单状态
+     * @return OrderModel
+     */
+    private OrderModel getOrderModel(OrderStatus status) {
+        if(status == null) return null;
+
+        switch (status) {
+            case PICK_UP:
+                return new HandoverOrderModel();
+            case GIVE_BACK:
+                return new PickUpOrderModel();
+            case ACCEPT:
+                return new GiveBackOrderModel();
+            case FINISH:
+                return new AcceptOrderModel();
+            case CANCELED:
+                return new CancelOrderModel();
+            default:
+                return null;
+        }
+    }
 }
