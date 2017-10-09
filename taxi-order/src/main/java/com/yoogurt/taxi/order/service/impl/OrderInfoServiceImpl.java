@@ -94,6 +94,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         OrderInfo orderInfo = getOrderInfo(orderId);
         if (orderInfo != null) {
             BeanUtils.copyProperties(orderInfo, model);
+            model.setOrderTime(orderInfo.getGmtCreate());
         }
         return model;
     }
@@ -109,12 +110,17 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         OrderInfo orderInfo = getOrderInfo(orderId);
         if (orderInfo == null) return null;
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
+        //待交车的订单，只有主订单信息
+        if (status.equals(OrderStatus.HAND_OVER)) {
+            OrderModel model = new OrderModel();
+            BeanUtils.copyProperties(orderInfo, model);
+            model.setOrderTime(orderInfo.getGmtCreate());
+            return model;
+        }
         //根据订单状态生成对应的model，此时对象的属性还未注入
         OrderModel model = getOrderModel(status);
         //将主订单信息拷贝到model中
         BeanUtils.copyProperties(orderInfo, model);
-        //待交车的订单，只有主订单信息
-        if (status.equals(OrderStatus.HAND_OVER)) return model;
         //根据名称，获取service
         //这里需要子订单的各个service继承OrderBizService接口
         OrderBizService service = (OrderBizService) context.getBean(model.getServiceName());
