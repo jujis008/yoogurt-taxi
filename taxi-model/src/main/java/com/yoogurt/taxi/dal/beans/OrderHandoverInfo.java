@@ -34,7 +34,7 @@ public class OrderHandoverInfo extends SuperModel{
     private Double lat;
 
     /**
-     * 取消违约罚款
+     * 违约罚款
      */
     @Column(name = "fine_money")
     private BigDecimal fineMoney;
