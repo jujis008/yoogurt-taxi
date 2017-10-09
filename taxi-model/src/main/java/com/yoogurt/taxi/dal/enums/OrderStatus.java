@@ -27,6 +27,29 @@ public enum OrderStatus {
         return null;
     }
 
+    /**
+     * 获取下一个订单状态
+     * @return 下一个订单状态
+     */
+    public OrderStatus next() {
+        switch (this) {
+            case HAND_OVER:
+                return OrderStatus.PICK_UP;
+            case PICK_UP:
+                return OrderStatus.GIVE_BACK;
+            case GIVE_BACK:
+                return OrderStatus.ACCEPT;
+            case ACCEPT:
+                return OrderStatus.FINISH;
+            case FINISH:
+                return OrderStatus.FINISH;
+            case CANCELED:
+                return OrderStatus.CANCELED;
+            default:
+                return null;
+        }
+    }
+
     OrderStatus(Integer code, String name) {
         this.code = code;
         this.name = name;
