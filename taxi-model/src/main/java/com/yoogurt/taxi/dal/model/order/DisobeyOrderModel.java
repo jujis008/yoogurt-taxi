@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class DisobeyOrderModel extends OrderModel {
+public abstract class DisobeyOrderModel extends OrderModel {
 
 	private Long ruleId;
 
@@ -20,4 +20,5 @@ public class DisobeyOrderModel extends OrderModel {
 
 	private Boolean isDisobey;
 
+	public abstract String getServiceName();
 }

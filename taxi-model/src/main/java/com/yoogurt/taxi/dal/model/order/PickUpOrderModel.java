@@ -11,4 +11,8 @@ public class PickUpOrderModel extends OrderModel {
 
 	private String description;
 
+	@Override
+	public String getServiceName() {
+		return "com.yoogurt.taxi.order.service.PickUpService";
+	}
 }

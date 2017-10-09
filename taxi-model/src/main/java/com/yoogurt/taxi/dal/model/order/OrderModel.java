@@ -57,4 +57,7 @@ public class OrderModel {
 
 	private Boolean isPaid;
 
+	public String getServiceName() {
+		return "com.yoogurt.taxi.order.service.OrderInfoService";
+	}
 }

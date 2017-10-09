@@ -17,4 +17,8 @@ public class HandoverOrderModel extends DisobeyOrderModel {
 
 	private Double handoverLat;
 
+	@Override
+	public String getServiceName() {
+		return "com.yoogurt.taxi.order.service.HandoverService";
+	}
 }

@@ -13,4 +13,8 @@ public class GiveBackOrderModel extends DisobeyOrderModel {
 
 	private Double giveBackLat;
 
+	@Override
+	public String getServiceName() {
+		return "com.yoogurt.taxi.order.service.GiveBackService";
+	}
 }
