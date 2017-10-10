@@ -17,7 +17,7 @@ public class GiveBackOrderModel extends DisobeyOrderModel {
 	private Double giveBackLat;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
-	private Date giveBackTime;
+	private Date realGiveBackTime;
 
 	@Override
 	public String getServiceName() {
