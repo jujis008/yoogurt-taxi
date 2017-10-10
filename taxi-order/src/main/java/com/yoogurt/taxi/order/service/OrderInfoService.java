@@ -44,4 +44,12 @@ public interface OrderInfoService extends OrderBizService {
 	 * @return true-修改成功，false-修改失败
 	 */
 	boolean modifyStatus(Long orderId, OrderStatus status);
+
+	/**
+	 * 保存订单信息
+	 * @param orderInfo 订单信息
+	 * @param add 是否插入
+	 * @return 保存后的订单信息
+	 */
+	OrderInfo saveOrderInfo(OrderInfo orderInfo, boolean add);
 }

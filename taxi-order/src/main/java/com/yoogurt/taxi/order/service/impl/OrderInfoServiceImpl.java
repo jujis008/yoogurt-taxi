@@ -142,7 +142,25 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         if(status.getCode() < orderInfo.getStatus()) return false; //不允许状态回退
 
         orderInfo.setStatus(status.getCode());
-        return orderDao.updateByIdSelective(orderInfo) == 1;
+        return saveOrderInfo(orderInfo, false) != null;
+    }
+
+    /**
+     * 保存订单信息，有订单ID则更新，否则插入
+     *
+     * @param orderInfo 订单信息
+     * @param add 是否插入
+     * @return 保存后的订单信息
+     */
+    @Override
+    public OrderInfo saveOrderInfo(OrderInfo orderInfo, boolean add) {
+        if(orderInfo == null) return null;
+        if (add) {
+            if(orderDao.insertSelective(orderInfo) != 1) return null;
+        } else {
+            if(orderDao.updateByIdSelective(orderInfo) != 1) return null;
+        }
+        return orderInfo;
     }
 
     /**
