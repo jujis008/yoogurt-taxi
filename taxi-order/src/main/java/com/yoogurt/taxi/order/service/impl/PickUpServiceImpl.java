@@ -37,6 +37,7 @@ public class PickUpServiceImpl implements PickUpService {
     public PickUpOrderModel doPickUp(PickUpForm pickupForm) {
         Long orderId = pickupForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        if(orderInfo == null) return null;
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待取车】
         if(!OrderStatus.PICK_UP.equals(status)) return null;

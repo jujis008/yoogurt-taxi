@@ -20,7 +20,7 @@ public class OrderPickUpInfo extends SuperModel{
     private Long orderId;
 
     /**
-     * 0-异常，1-正常
+     * 车辆状态：false-异常，true-正常
      */
     @Column(name = "car_status")
     private Boolean carStatus;

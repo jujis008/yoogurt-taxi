@@ -21,8 +21,9 @@ public class PickUpTests {
     @Test
     public void doPickUpTest() {
         PickUpForm form = new PickUpForm();
-        form.setOrderId(17092615020308202L);
+        form.setOrderId(17092615073534929L);
         form.setCarStatus(Boolean.FALSE);
+        form.setDescription("胎气不足");
         form.setPictures(new String[]{"http://yoogurt.aliyun-hz.com/xxxx/zzzz/test.jpg", "http://yoogurt.aliyun-hz.com/xxxx/zzzz/test2.jpg"});
         PickUpOrderModel model = pickUpService.doPickUp(form);
         Assert.assertNotNull("取车失败！", model);
