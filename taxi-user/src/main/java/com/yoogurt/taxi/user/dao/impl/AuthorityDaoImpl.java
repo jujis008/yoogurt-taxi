@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.user.dao.impl;
 
 import com.github.pagehelper.Page;
-import com.yoogurt.taxi.common.dao.BaseDao;
+import com.yoogurt.taxi.common.dao.impl.BaseDao;
 import com.yoogurt.taxi.dal.beans.AuthorityInfo;
 import com.yoogurt.taxi.dal.condition.user.AuthorityWLCondition;
 import com.yoogurt.taxi.dal.mapper.AuthorityInfoMapper;

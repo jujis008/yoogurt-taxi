@@ -1,5 +1,6 @@
-package com.yoogurt.taxi.common.dao;
+package com.yoogurt.taxi.common.dao.impl;
 
+import com.yoogurt.taxi.common.dao.IDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.entity.Example;

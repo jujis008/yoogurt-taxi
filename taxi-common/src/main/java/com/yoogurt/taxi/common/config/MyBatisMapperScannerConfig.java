@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.dal.config;
+package com.yoogurt.taxi.common.config;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ public class MyBatisMapperScannerConfig {
         Properties properties = new Properties();
         properties.setProperty("notEmpty", "false");
         properties.setProperty("IDENTITY", "MYSQL");
-        properties.setProperty("mappers", "tk.mybatis.mapper.common.Mapper,tk.mybatis.mapper.common.MySqlMapper");
+        properties.setProperty("mappers", "tk.mybatis.mapper.common.Mapper,tk.mybatis.mapper.common.MySqlMapper,com.yoogurt.taxi.common.mapper.SuperMapper");
         mapperScannerConfigurer.setProperties(properties);
         return mapperScannerConfigurer;
     }

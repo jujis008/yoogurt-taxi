@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.user.dao.impl;
 
-import com.yoogurt.taxi.common.dao.BaseDao;
+import com.yoogurt.taxi.common.dao.impl.BaseDao;
 import com.yoogurt.taxi.dal.beans.UserAddress;
 import com.yoogurt.taxi.dal.mapper.UserAddressMapper;
 import com.yoogurt.taxi.user.dao.UserAddressDao;

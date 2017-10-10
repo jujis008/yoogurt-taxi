@@ -1,8 +1,7 @@
 package com.yoogurt.taxi.user.dao.impl;
 
 import com.github.pagehelper.Page;
-import com.yoogurt.taxi.common.dao.BaseDao;
-import com.yoogurt.taxi.common.dao.BatchDao;
+import com.yoogurt.taxi.common.dao.impl.BatchDao;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
 import com.yoogurt.taxi.dal.mapper.UserInfoMapper;
@@ -14,7 +13,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class UserDaoImpl extends BaseDao<UserInfoMapper, UserInfo> implements UserDao {
+public class UserDaoImpl extends BatchDao<UserInfoMapper, UserInfo> implements UserDao {
+
     @Autowired
     private UserInfoMapper userInfoMapper;
 

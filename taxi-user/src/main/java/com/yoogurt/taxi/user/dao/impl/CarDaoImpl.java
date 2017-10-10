@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.user.dao.impl;
 
-import com.yoogurt.taxi.common.dao.BaseDao;
+import com.yoogurt.taxi.common.dao.impl.BaseDao;
 import com.yoogurt.taxi.dal.beans.CarInfo;
 import com.yoogurt.taxi.dal.mapper.CarInfoMapper;
 import com.yoogurt.taxi.user.dao.CarDao;
