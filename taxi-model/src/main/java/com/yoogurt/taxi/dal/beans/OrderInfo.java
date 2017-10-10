@@ -49,6 +49,9 @@ public class OrderInfo extends SuperModel{
 
     private Double lat;
 
+    /**
+     * 单价
+     */
     private BigDecimal price;
 
     @Column(name = "car_id")
@@ -87,6 +90,11 @@ public class OrderInfo extends SuperModel{
 
     @Column(name = "official_driver_phone")
     private String officialDriverPhone;
+
+    /**
+     * 订单总金额
+     */
+    private BigDecimal amount;
 
     /**
      * 0-否，1-是
