@@ -38,6 +38,9 @@ public class OrderCancelInfo extends SuperModel {
     @Column(name = "fine_money")
     private BigDecimal fineMoney;
 
+    /**
+     * 取消原因
+     */
     private String reason;
 
     /**

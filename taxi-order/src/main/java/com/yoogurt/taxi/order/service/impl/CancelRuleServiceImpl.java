@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.dal.beans.OrderCancelRule;
 import com.yoogurt.taxi.order.dao.CancelRuleDao;
 import com.yoogurt.taxi.order.service.CancelRuleService;
@@ -75,6 +76,13 @@ public class CancelRuleServiceImpl implements CancelRuleService {
         ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
         ex.setOrderByClause("start ASC"); //按照时段下限由小到大排序
         return ruleDao.selectByExample(ex);
+    }
+
+    @Override
+    public Money calculate(OrderCancelRule rule, BigDecimal orderAmount) {
+
+        Money money = new Money(orderAmount);
+        return money.multiplyBy(rule.getPercent());
     }
 
     /**

@@ -1,7 +1,9 @@
 package com.yoogurt.taxi.order.service;
 
+import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.dal.beans.OrderCancelRule;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface CancelRuleService {
@@ -15,4 +17,5 @@ public interface CancelRuleService {
 
 	List<OrderCancelRule> getRules();
 
+	Money calculate(OrderCancelRule rule, BigDecimal orderAmount);
 }
