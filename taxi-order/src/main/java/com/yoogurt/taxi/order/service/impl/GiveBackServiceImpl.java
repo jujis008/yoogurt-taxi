@@ -87,7 +87,10 @@ public class GiveBackServiceImpl implements GiveBackService {
         OrderGiveBackInfo giveBackInfo = getGiveBackInfo(orderId);
         BeanUtils.copyProperties(giveBackInfo, model);
         //实际还车时间
-        model.setGiveBackTime(giveBackInfo.getGmtCreate());
+        model.setRealGiveBackTime(giveBackInfo.getGmtCreate());
+        model.setGiveBackLat(giveBackInfo.getLat());
+        model.setGiveBackLng(giveBackInfo.getLng());
+
         return model;
     }
 }
