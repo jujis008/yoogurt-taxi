@@ -41,10 +41,25 @@ public enum OrderStatus {
                 return OrderStatus.ACCEPT;
             case ACCEPT:
                 return OrderStatus.FINISH;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * 获取上一个订单状态
+     * @return 上一个订单状态
+     */
+    public OrderStatus previous() {
+        switch (this) {
+            case PICK_UP:
+                return OrderStatus.HAND_OVER;
+            case GIVE_BACK:
+                return OrderStatus.PICK_UP;
+            case ACCEPT:
+                return OrderStatus.GIVE_BACK;
             case FINISH:
-                return OrderStatus.FINISH;
-            case CANCELED:
-                return OrderStatus.CANCELED;
+                return OrderStatus.ACCEPT;
             default:
                 return null;
         }
