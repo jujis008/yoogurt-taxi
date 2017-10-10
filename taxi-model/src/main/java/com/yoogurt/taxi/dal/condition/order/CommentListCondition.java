@@ -7,4 +7,8 @@ import lombok.Setter;
 @Setter
 public class CommentListCondition {
 
+    private Long orderId;
+
+    private Long driverId;
+
 }
