@@ -17,6 +17,7 @@
         <result column="lng" jdbcType="DOUBLE" property="lng"/>
         <result column="lat" jdbcType="DOUBLE" property="lat"/>
         <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
         <result column="car_id" jdbcType="BIGINT" property="carId"/>
         <result column="plate_number" jdbcType="VARCHAR" property="plateNumber"/>
         <result column="vin" jdbcType="VARCHAR" property="vin"/>
@@ -45,6 +46,7 @@
         <result column="lng" jdbcType="DOUBLE" property="lng"/>
         <result column="lat" jdbcType="DOUBLE" property="lat"/>
         <result column="price" jdbcType="DECIMAL" property="price"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
         <result column="car_id" jdbcType="BIGINT" property="carId"/>
         <result column="plate_number" jdbcType="VARCHAR" property="plateNumber"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
@@ -58,7 +60,7 @@
 
     <select id="getOrderList" parameterType="map" resultMap="OrderModel">
         SELECT order_id, rent_id, agent_driver_id, agent_driver_name, agent_driver_phone, handover_time, give_back_time,
-            address, lng, lat, price, car_id, plate_number, official_driver_id, official_driver_name, official_driver_phone,
+            address, lng, lat, price, amount, car_id, plate_number, official_driver_id, official_driver_name, official_driver_phone,
             is_commented, is_paid, status
         FROM order_info
         WHERE is_deleted=0
