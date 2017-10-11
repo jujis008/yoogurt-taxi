@@ -8,16 +8,43 @@ import lombok.Getter;
 @Getter
 public enum ResponsibleParty {
 
-    OFFICIAL(10, "正式司机"),
-    AGENT(20, "代理司机"),
-    NONE(30, "无责"),
+    OFFICIAL(10, 30, "正式司机"),
+    AGENT(20, 20, "代理司机"),
+    NONE(30, 0, "无责"),
     ;
 
     private Integer code;
+
+    private Integer userType;
+
     private String name;
 
-    ResponsibleParty(Integer code, String name) {
+    ResponsibleParty(Integer code, Integer userType, String name) {
         this.code = code;
+        this.userType = userType;
         this.name = name;
     }
+
+    public static ResponsibleParty getEnumsByType(Integer userType) {
+        if(userType != null && userType > 0) {
+            for (ResponsibleParty enums : ResponsibleParty.values()) {
+                if (userType.equals(enums.getUserType())) {
+                    return enums;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static ResponsibleParty getEnumsByCode(Integer code) {
+        if(code != null && code > 0) {
+            for (ResponsibleParty enums : ResponsibleParty.values()) {
+                if (code.equals(enums.getCode())) {
+                    return enums;
+                }
+            }
+        }
+        return null;
+    }
+
 }
