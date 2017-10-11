@@ -6,6 +6,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.order.form.RentCancelForm;
 import com.yoogurt.taxi.order.form.RentForm;
 import com.yoogurt.taxi.order.service.RentInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -81,5 +80,18 @@ public class RentMobileController extends BaseController {
             return ResponseObj.success(rentInfo);
         }
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "找不到租单信息");
+    }
+
+    @RequestMapping(value = "/rent/cancel", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
+    public ResponseObj cancel(@Valid @RequestBody RentCancelForm cancelForm, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
+        }
+        cancelForm.setUserId(super.getUserId());
+        RentInfo rentInfo = rentInfoService.cancel(cancelForm);
+        if (rentInfo != null) {
+            return ResponseObj.success(rentInfo);
+        }
+        return ResponseObj.fail(StatusCode.BIZ_FAILED, "取消租单出现问题，请稍后再试");
     }
 }
