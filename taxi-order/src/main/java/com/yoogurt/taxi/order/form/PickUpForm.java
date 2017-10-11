@@ -11,9 +11,6 @@ import javax.validation.constraints.Size;
 @Setter
 public class PickUpForm extends OrderForm {
 
-	@NotNull(message = "请指定租单")
-	private Long orderId;
-
 	/**
 	 * false-异常，true-正常
 	 */
