@@ -50,6 +50,11 @@ public class OrderModel {
 	private String officialDriverPhone;
 
 	/**
+	 * 订单总金额
+	 */
+	private BigDecimal amount;
+
+	/**
 	 * 接单时间
 	 */
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
