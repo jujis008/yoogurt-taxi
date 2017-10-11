@@ -10,9 +10,6 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class HandoverForm extends OrderForm {
 
-	@NotNull(message = "请指定租单")
-	private Long orderId;
-
 	@NotBlank(message = "请指定交车地址")
 	private String realHandoverAddress;
 

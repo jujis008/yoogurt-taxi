@@ -11,9 +11,6 @@ import javax.validation.constraints.Size;
 @Setter
 public class AcceptForm extends OrderForm{
 
-	@NotNull(message = "请指定租单")
-	private Long orderId;
-
 	@NotNull(message = "请指定车辆状态")
 	private Boolean carStatus;
 

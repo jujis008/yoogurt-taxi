@@ -11,9 +11,6 @@ import javax.validation.constraints.Size;
 @Setter
 public class CommentForm extends OrderForm {
 
-	@NotNull(message = "请指定租单")
-	private Long orderId;
-
 	@NotNull(message = "请指定评价的司机")
 	private Long driverId;
 
