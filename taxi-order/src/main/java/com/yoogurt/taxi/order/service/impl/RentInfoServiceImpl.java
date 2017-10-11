@@ -19,6 +19,7 @@ import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.dao.RentDao;
+import com.yoogurt.taxi.order.form.RentCancelForm;
 import com.yoogurt.taxi.order.form.RentForm;
 import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
@@ -92,6 +93,19 @@ public class RentInfoServiceImpl implements RentInfoService {
             rentDao.insertSelective((RentInfo) obj.getBody());
         }
         return obj;
+    }
+
+    @Override
+    public RentInfo cancel(RentCancelForm cancelForm) {
+
+        RentInfo rentInfo = getRentInfo(cancelForm.getRentId(), cancelForm.getUserId());
+        if(rentInfo == null) return null;
+        if (!RentStatus.WAITING.getCode().equals(rentInfo.getStatus())) return null;
+        rentInfo.setStatus(RentStatus.CANCELED.getCode());
+        if (modifyStatus(cancelForm.getRentId(), RentStatus.CANCELED)) {
+            return rentInfo;
+        }
+        return null;
     }
 
     @Override
