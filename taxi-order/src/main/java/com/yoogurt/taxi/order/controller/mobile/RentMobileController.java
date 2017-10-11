@@ -14,6 +14,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -59,7 +61,11 @@ public class RentMobileController extends BaseController {
 
         if(result.hasErrors()) return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         rentForm.setUserId(getUserId());
-        return rentInfoService.addRentInfo(rentForm);
+        ResponseObj obj = rentInfoService.addRentInfo(rentForm);
+        Map<String, Object> extras = new HashMap<>();
+        extras.put("timestamp", System.currentTimeMillis());
+        obj.setExtras(extras);
+        return obj;
     }
 
     /**
