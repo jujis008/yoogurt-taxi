@@ -1,5 +1,8 @@
 package com.yoogurt.taxi.dal.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum UserFrom {
     IMPORT(10,"导入"),
     APP(20,"app注册"),
@@ -14,19 +17,4 @@ public enum UserFrom {
         this.name = name;
     }
 
-    public Integer getCode() {
-        return code;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
