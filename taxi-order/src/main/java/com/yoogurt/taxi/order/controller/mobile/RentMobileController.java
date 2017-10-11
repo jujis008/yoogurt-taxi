@@ -62,9 +62,9 @@ public class RentMobileController extends BaseController {
         if(result.hasErrors()) return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         rentForm.setUserId(getUserId());
         ResponseObj obj = rentInfoService.addRentInfo(rentForm);
-        Map<String, Object> extras = new HashMap<>();
-        extras.put("timestamp", System.currentTimeMillis());
-        obj.setExtras(extras);
+        if (obj.getExtras() != null) {
+            obj.getExtras().put("timestamp", System.currentTimeMillis());
+        }
         return obj;
     }
 
