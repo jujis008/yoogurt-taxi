@@ -32,7 +32,7 @@ public class GiveBackServiceImpl implements GiveBackService {
     @Override
     public GiveBackOrderModel doGiveBack(GiveBackForm giveBackForm) {
         Long orderId = giveBackForm.getOrderId();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, giveBackForm.getUserId());
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待还车】
         if(!OrderStatus.GIVE_BACK.equals(status)) return null;
@@ -66,7 +66,7 @@ public class GiveBackServiceImpl implements GiveBackService {
         if (giveBackDao.insertSelective(giveBackInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
-            return (GiveBackOrderModel) info(orderId);
+            return (GiveBackOrderModel) info(orderId, giveBackForm.getUserId());
         }
         return null;
     }
@@ -77,9 +77,11 @@ public class GiveBackServiceImpl implements GiveBackService {
     }
 
     @Override
-    public OrderModel info(Long orderId) {
+    public OrderModel info(Long orderId, Long userId) {
         GiveBackOrderModel model = new GiveBackOrderModel();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
+        if(orderInfo == null) return null;
+
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
         model.setOrderTime(orderInfo.getGmtCreate());

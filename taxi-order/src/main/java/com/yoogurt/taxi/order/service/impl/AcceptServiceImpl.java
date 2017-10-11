@@ -32,7 +32,8 @@ public class AcceptServiceImpl implements AcceptService {
     @Override
     public AcceptOrderModel doAccept(AcceptForm acceptForm) {
         Long orderId = acceptForm.getOrderId();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, acceptForm.getUserId());
+        if(orderInfo == null) return null;
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待收车】
         if(!OrderStatus.ACCEPT.equals(status)) return null;
@@ -46,7 +47,7 @@ public class AcceptServiceImpl implements AcceptService {
                 List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_accept_info", pictures);
                 resourceService.addResources(resources);
             }
-            return (AcceptOrderModel) info(orderId);
+            return (AcceptOrderModel) info(orderId, acceptForm.getUserId());
         }
         return null;
     }
@@ -57,9 +58,10 @@ public class AcceptServiceImpl implements AcceptService {
     }
 
     @Override
-    public OrderModel info(Long orderId) {
+    public OrderModel info(Long orderId, Long userId) {
         AcceptOrderModel model = new AcceptOrderModel();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
+        if(orderInfo == null) return null;
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
         model.setOrderTime(orderInfo.getGmtCreate());

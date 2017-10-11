@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -49,7 +50,7 @@ public class OrderInfoTests {
 
     @Test
     public void orderDetailsTest() {
-        OrderModel orderDetails = orderInfoService.getOrderDetails(17092615073534929L);
-        Assert.assertNotNull("订单信息不存在！", orderDetails);
+        Map<String, Object> map = orderInfoService.getOrderDetails(17092615073534929L, 8888L);
+        Assert.assertNotNull("订单信息不存在！", map);
     }
 }

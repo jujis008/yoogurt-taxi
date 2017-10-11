@@ -40,7 +40,7 @@ public class HandoverServiceImpl implements HandoverService {
     @Override
     public HandoverOrderModel doHandover(HandoverForm handoverForm) {
         Long orderId = handoverForm.getOrderId();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, handoverForm.getUserId());
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待交车】
         if(!OrderStatus.HAND_OVER.equals(status)) return null;
@@ -77,15 +77,17 @@ public class HandoverServiceImpl implements HandoverService {
         if (handoverDao.insertSelective(handoverInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
-            return (HandoverOrderModel) info(orderId);
+            return (HandoverOrderModel) info(orderId, handoverForm.getUserId());
         }
         return null;
     }
 
     @Override
-    public OrderModel info(Long orderId) {
+    public OrderModel info(Long orderId, Long userId) {
         HandoverOrderModel model = new HandoverOrderModel();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
+        if(orderInfo == null) return null;
+
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
         model.setOrderTime(orderInfo.getGmtCreate());

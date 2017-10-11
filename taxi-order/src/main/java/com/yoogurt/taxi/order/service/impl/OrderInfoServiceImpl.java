@@ -1,11 +1,13 @@
 package com.yoogurt.taxi.order.service.impl;
 
 import com.github.pagehelper.Page;
+import com.google.common.collect.Maps;
 import com.yoogurt.taxi.common.bo.DateTimeSection;
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.utils.BeanRefUtils;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -26,6 +28,7 @@ import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -34,6 +37,8 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Slf4j
 @Service("orderInfoService")
@@ -61,11 +66,13 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     @Override
     public ResponseObj placeOrder(PlaceOrderForm orderForm) {
         ResponseObj obj = buildOrderInfo(orderForm);
-        if (obj.isSuccess() && orderDao.insertSelective((OrderInfo) obj.getBody()) == 1) {
+        OrderInfo orderInfo = (OrderInfo) obj.getBody();
+        if (obj.isSuccess() && orderDao.insertSelective(orderInfo) == 1) {
             //更改租单状态 --> 已接单
             rentInfoService.modifyStatus(orderForm.getRentId(), RentStatus.RENT);
             OrderModel model = new OrderModel();
-            BeanUtils.copyProperties(obj.getBody(), model);
+            BeanUtils.copyProperties(orderInfo, model);
+            model.setOrderTime(orderInfo.getGmtCreate());
             return ResponseObj.success(model);
         }
         return obj;
@@ -83,15 +90,21 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     }
 
     @Override
-    public OrderInfo getOrderInfo(Long orderId) {
-        return orderDao.selectById(orderId);
+    public OrderInfo getOrderInfo(Long orderId, Long userId) {
+        OrderInfo orderInfo = orderDao.selectById(orderId);
+        if(orderInfo == null) return null;
+        //用户id不符合
+        if (userId != null && !userId.equals(orderInfo.getAgentUserId()) && !userId.equals(orderInfo.getOfficialUserId())) {
+            return null;
+        }
+        return orderInfo;
     }
 
 
     @Override
-    public OrderModel info(Long orderId) {
+    public OrderModel info(Long orderId, Long userId) {
         OrderModel model = new OrderModel();
-        OrderInfo orderInfo = getOrderInfo(orderId);
+        OrderInfo orderInfo = getOrderInfo(orderId, userId);
         if (orderInfo != null) {
             BeanUtils.copyProperties(orderInfo, model);
             model.setOrderTime(orderInfo.getGmtCreate());
@@ -100,30 +113,48 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     }
 
     /**
-     * 订单详情接口
-     *
+     * 订单详情接口。
+     * 需要获取当前状态以及之前的所有状态下的子订单信息。
      * @param orderId 订单id
-     * @return 订单详细信息
+     * @param userId 用户id
+     * @return 订单详细信息。
+     * <p>
+     *     key: baseOrderModel表示订单的基本信息，对应的value是一个由OrderModel转换成的Map对象；
+     *     key：各个子状态model的类名(simpleName)，首字母小写，对应的value是一个由子Model转换成的Map对象；
+     * </p>
      */
     @Override
-    public OrderModel getOrderDetails(Long orderId) {
-        OrderInfo orderInfo = getOrderInfo(orderId);
+    public Map<String, Object> getOrderDetails(Long orderId, Long userId) {
+        OrderInfo orderInfo = getOrderInfo(orderId, userId);
         if (orderInfo == null) return null;
-        OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
-        //待交车的订单，只有主订单信息
-        if (status.equals(OrderStatus.HAND_OVER)) {
-            OrderModel model = new OrderModel();
-            BeanUtils.copyProperties(orderInfo, model);
-            model.setOrderTime(orderInfo.getGmtCreate());
-            return model;
+        Map<String, Object> result = Maps.newHashMap();
+
+        //构造主订单的信息
+        OrderModel orderModel = new OrderModel();
+        BeanUtils.copyProperties(orderInfo, orderModel);
+        orderModel.setOrderTime(orderInfo.getGmtCreate());
+        result.put("baseOrderModel", BeanRefUtils.toMap(orderModel, true));
+
+        //向上追溯，将之前的订单流转信息记录下来
+        OrderStatus previous = OrderStatus.getEnumsByCode(orderInfo.getStatus()).previous();
+        while (previous != null) {
+
+            //根据订单状态生成对应的model，此时对象的属性还未注入
+            OrderModel model = getOrderModel(previous);
+            previous = previous.previous();
+            if(model == null) continue;
+            //根据名称，获取service
+            //这里需要子订单的各个service继承OrderBizService接口
+            OrderBizService service = (OrderBizService) context.getBean(model.getServiceName());
+            OrderModel info = service.info(orderId, userId);
+            String name = info.getClass().getSimpleName();
+            String firstLetter = StringUtils.left(name, 1);
+            //类名，第一个字母转换成小写，作为返回结果的key
+            String key = name.replaceFirst(firstLetter, firstLetter.toLowerCase(Locale.ENGLISH));
+            result.put(key, BeanRefUtils.toMap(info, false));
         }
-        //根据订单状态生成对应的model，此时对象的属性还未注入
-        OrderModel model = getOrderModel(status);
-        //根据名称，获取service
-        //这里需要子订单的各个service继承OrderBizService接口
-        OrderBizService service = (OrderBizService) context.getBean(model.getServiceName());
         //此步骤是获取订单信息，包含了主订单和子订单相关信息
-        return service.info(orderId);
+        return result;
     }
 
     /**
@@ -136,7 +167,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     @Override
     public boolean modifyStatus(Long orderId, OrderStatus status) {
         if(orderId == null || orderId <= 0 || status == null) return false;
-        OrderInfo orderInfo = getOrderInfo(orderId);
+        OrderInfo orderInfo = getOrderInfo(orderId, null);
         if(orderInfo == null) return false;
         if(status.getCode().equals(orderInfo.getStatus())) return true; //与原租单状态相同，直接返回true
         if(status.getCode() < orderInfo.getStatus()) return false; //不允许状态回退
@@ -261,6 +292,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         order.setLng(rent.getLng());
         order.setLat(rent.getLat());
         order.setPrice(rent.getPrice());
+        order.setAmount(rent.getPrice());
     }
 
     private void buildCarInfo(OrderInfo order, RentInfo rent) {
@@ -309,12 +341,10 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
         switch (status) {
             case PICK_UP:
-                return new HandoverOrderModel();
-            case GIVE_BACK:
                 return new PickUpOrderModel();
-            case ACCEPT:
+            case GIVE_BACK:
                 return new GiveBackOrderModel();
-            case FINISH:
+            case ACCEPT:
                 return new AcceptOrderModel();
             case CANCELED:
                 return new CancelOrderModel();

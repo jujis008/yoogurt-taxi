@@ -30,7 +30,7 @@ public class CommentServiceImpl implements CommentService {
     public OrderCommentInfo doComment(CommentForm commentForm) {
 
         Long orderId = commentForm.getOrderId();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, commentForm.getUserId());
         if(orderInfo.getIsCommented()) return null;
         OrderCommentInfo comment = new OrderCommentInfo();
         BeanUtils.copyProperties(commentForm, comment);

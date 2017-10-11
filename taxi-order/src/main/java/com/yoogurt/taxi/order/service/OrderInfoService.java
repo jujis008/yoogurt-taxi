@@ -9,6 +9,8 @@ import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.form.PlaceOrderForm;
 
+import java.util.Map;
+
 public interface OrderInfoService extends OrderBizService {
 
 	/**
@@ -26,16 +28,18 @@ public interface OrderInfoService extends OrderBizService {
 	/**
 	 * 获取订单基本信息
 	 * @param orderId 订单id
-	 * @return 订单基本信息
+	 * @param userId 用户ID，传入不为空时，表示要验证订单的所有者
+	 * @return 订单基本信息，返回null表示订单不存在
 	 */
-	OrderInfo getOrderInfo(Long orderId);
+	OrderInfo getOrderInfo(Long orderId, Long userId);
 
 	/**
 	 * 订单详情接口
 	 * @param orderId 订单id
+	 * @param userId
 	 * @return 订单详细信息
 	 */
-	OrderModel getOrderDetails(Long orderId);
+	Map<String, Object> getOrderDetails(Long orderId, Long userId);
 
 	/**
 	 * 修改订单状态

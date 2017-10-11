@@ -1,6 +1,5 @@
 package com.yoogurt.taxi.order.service.impl;
 
-import com.google.common.collect.Lists;
 import com.yoogurt.taxi.dal.beans.CommonResource;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.OrderPickUpInfo;
@@ -12,7 +11,6 @@ import com.yoogurt.taxi.order.form.PickUpForm;
 import com.yoogurt.taxi.order.service.CommonResourceService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.PickUpService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +34,7 @@ public class PickUpServiceImpl implements PickUpService {
     @Override
     public PickUpOrderModel doPickUp(PickUpForm pickupForm) {
         Long orderId = pickupForm.getOrderId();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, pickupForm.getUserId());
         if(orderInfo == null) return null;
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待取车】
@@ -51,7 +49,7 @@ public class PickUpServiceImpl implements PickUpService {
                 List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_pick_up_info", pictures);
                 resourceService.addResources(resources);
             }
-            return (PickUpOrderModel) info(orderId);
+            return (PickUpOrderModel) info(orderId, pickupForm.getUserId());
         }
 
         return null;
@@ -63,10 +61,11 @@ public class PickUpServiceImpl implements PickUpService {
     }
 
     @Override
-    public OrderModel info(Long orderId) {
+    public OrderModel info(Long orderId, Long userId) {
 
         PickUpOrderModel model = new PickUpOrderModel();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
+        if(orderInfo == null) return null;
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
         model.setOrderTime(orderInfo.getGmtCreate());
