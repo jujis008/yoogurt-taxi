@@ -23,6 +23,9 @@ public class OrderTrafficViolationInfo extends SuperModel{
     @Column(name = "order_id")
     private Long orderId;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @Column(name = "driver_id")
     private Long driverId;
 
