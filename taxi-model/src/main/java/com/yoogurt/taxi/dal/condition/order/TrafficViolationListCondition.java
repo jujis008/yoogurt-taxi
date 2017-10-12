@@ -7,4 +7,13 @@ import lombok.Setter;
 @Setter
 public class TrafficViolationListCondition {
 
+    private Long orderId;
+
+    private Long userId;
+
+    private String plateNumber;
+
+    private String vin;
+
+    private Integer status;
 }
