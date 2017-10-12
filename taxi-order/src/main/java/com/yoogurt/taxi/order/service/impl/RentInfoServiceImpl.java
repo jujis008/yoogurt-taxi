@@ -223,6 +223,7 @@ public class RentInfoServiceImpl implements RentInfoService {
 
     private void buildCarInfo(RentInfo rent, CarInfo car) {
         rent.setCarId(car.getId());
+        rent.setCompany(car.getCompany());
         rent.setPlateNumber(car.getPlateNumber());
         rent.setEnergyType(car.getEnergyType());
         rent.setVehicleType(car.getVehicleType());

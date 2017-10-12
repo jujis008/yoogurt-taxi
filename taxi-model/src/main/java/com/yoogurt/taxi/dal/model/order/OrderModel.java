@@ -21,6 +21,8 @@ public class OrderModel {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 	private Date giveBackTime;
 
+	private String company;
+
 	private String address;
 
 	private Double lng;

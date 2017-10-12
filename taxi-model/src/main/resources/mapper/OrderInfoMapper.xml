@@ -13,6 +13,7 @@
         <result column="agent_driver_phone" jdbcType="VARCHAR" property="agentDriverPhone"/>
         <result column="handover_time" jdbcType="TIMESTAMP" property="handoverTime"/>
         <result column="give_back_time" jdbcType="TIMESTAMP" property="giveBackTime"/>
+        <result column="company" jdbcType="VARCHAR" property="company"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="lng" jdbcType="DOUBLE" property="lng"/>
         <result column="lat" jdbcType="DOUBLE" property="lat"/>
@@ -42,6 +43,7 @@
         <result column="agent_driver_phone" jdbcType="VARCHAR" property="agentDriverPhone"/>
         <result column="handover_time" jdbcType="TIMESTAMP" property="handoverTime"/>
         <result column="give_back_time" jdbcType="TIMESTAMP" property="giveBackTime"/>
+        <result column="company" jdbcType="VARCHAR" property="company"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="lng" jdbcType="DOUBLE" property="lng"/>
         <result column="lat" jdbcType="DOUBLE" property="lat"/>
@@ -60,7 +62,8 @@
 
     <select id="getOrderList" parameterType="map" resultMap="OrderModel">
         SELECT order_id, rent_id, agent_driver_id, agent_driver_name, agent_driver_phone, handover_time, give_back_time,
-            address, lng, lat, price, amount, car_id, plate_number, official_driver_id, official_driver_name, official_driver_phone,
+            compnay, address, lng, lat, price, amount, car_id, plate_number,
+            official_driver_id, official_driver_name, official_driver_phone,
             is_commented, is_paid, status
         FROM order_info
         WHERE is_deleted=0

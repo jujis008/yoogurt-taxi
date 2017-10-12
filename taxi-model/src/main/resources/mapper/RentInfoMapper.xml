@@ -14,6 +14,7 @@
         <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
         <result column="handover_time" jdbcType="TIMESTAMP" property="handoverTime"/>
         <result column="give_back_time" jdbcType="TIMESTAMP" property="giveBackTime"/>
+        <result column="company" jdbcType="VARCHAR" property="company"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="lng" jdbcType="DOUBLE" property="lng"/>
         <result column="lat" jdbcType="DOUBLE" property="lat"/>
@@ -38,6 +39,7 @@
         <result column="car_thumb" jdbcType="VARCHAR" property="carThumb"/>
         <result column="handover_time" jdbcType="TIMESTAMP" property="handoverTime"/>
         <result column="give_back_time" jdbcType="TIMESTAMP" property="giveBackTime"/>
+        <result column="company" jdbcType="VARCHAR" property="company"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="lng" jdbcType="DOUBLE" property="lng"/>
         <result column="lat" jdbcType="DOUBLE" property="lat"/>

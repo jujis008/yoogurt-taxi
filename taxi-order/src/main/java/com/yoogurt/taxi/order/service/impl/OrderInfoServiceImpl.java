@@ -20,10 +20,7 @@ import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.*;
 import com.yoogurt.taxi.order.dao.OrderDao;
 import com.yoogurt.taxi.order.form.PlaceOrderForm;
-import com.yoogurt.taxi.order.service.DisobeyService;
-import com.yoogurt.taxi.order.service.OrderBizService;
-import com.yoogurt.taxi.order.service.OrderInfoService;
-import com.yoogurt.taxi.order.service.RentInfoService;
+import com.yoogurt.taxi.order.service.*;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -163,7 +160,6 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null);
         result.put("disobeys", disobeyList);
 
-        //此步骤是获取订单信息，包含了主订单和子订单相关信息
         return result;
     }
 
@@ -307,6 +303,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     private void buildCarInfo(OrderInfo order, RentInfo rent) {
         order.setCarId(rent.getCarId());
+        order.setCompany(rent.getCompany());
         order.setPlateNumber(rent.getPlateNumber());
         order.setVehicleType(rent.getVehicleType());
         order.setCarThumb(rent.getCarThumb());

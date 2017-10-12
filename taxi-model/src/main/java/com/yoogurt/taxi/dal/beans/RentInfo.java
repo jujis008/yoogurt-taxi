@@ -63,6 +63,8 @@ public class RentInfo extends SuperModel{
     @Column(name = "plate_number")
     private String plateNumber;
 
+    private String company;
+
     /**
      * 10（GASOLINE）-汽油，GAS-天然气，20（POWER）-电能，30（HYBRID）-混合，40（OTHER）-其它
      */

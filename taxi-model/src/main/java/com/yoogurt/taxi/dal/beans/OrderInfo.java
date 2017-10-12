@@ -43,6 +43,8 @@ public class OrderInfo extends SuperModel{
     @Column(name = "give_back_time")
     private Date giveBackTime;
 
+    private String company;
+
     private String address;
 
     private Double lng;

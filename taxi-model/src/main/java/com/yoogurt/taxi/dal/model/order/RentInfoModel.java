@@ -21,6 +21,8 @@ public class RentInfoModel {
 
 	private String plateNumber;
 
+	private String company;
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 	private Date handoverTime;
 
@@ -44,5 +46,7 @@ public class RentInfoModel {
 	private Integer score;
 
 	private Integer status;
+
+	private String remark;
 
 }
