@@ -1,10 +1,28 @@
 package com.yoogurt.taxi.dal.condition.order;
 
+import com.yoogurt.taxi.common.condition.PeriodWithPageableCondition;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class DisobeyListCondition {
+@NoArgsConstructor
+@AllArgsConstructor
+public class DisobeyListCondition extends PeriodWithPageableCondition {
 
+    private Long orderId;
+
+    private Long driverId;
+
+    private Integer userType;
+
+    private Integer disobeyType;
+
+    private String driverName;
+
+    private String mobile;
+
+    private boolean fromApp;
 }

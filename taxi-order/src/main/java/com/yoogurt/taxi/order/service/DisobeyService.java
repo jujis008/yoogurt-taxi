@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.order.service;
 
 
+import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
@@ -15,7 +16,9 @@ public interface DisobeyService {
 	/**
 	 * 获取违约记录
 	 */
-	List<OrderDisobeyInfo> getDisobeyList(DisobeyListCondition condition);
+	Pager<OrderDisobeyInfo> getDisobeyList(DisobeyListCondition condition);
+
+	List<OrderDisobeyInfo> getDisobeyList(Long orderId, Long driverId, DisobeyType... types);
 
 	OrderDisobeyInfo getDisobeyInfo(Long id);
 

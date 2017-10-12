@@ -11,10 +11,8 @@ import com.yoogurt.taxi.common.utils.BeanRefUtils;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
-import com.yoogurt.taxi.dal.beans.DriverInfo;
-import com.yoogurt.taxi.dal.beans.OrderInfo;
-import com.yoogurt.taxi.dal.beans.RentInfo;
-import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.beans.*;
+import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.RentStatus;
@@ -22,6 +20,7 @@ import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.*;
 import com.yoogurt.taxi.order.dao.OrderDao;
 import com.yoogurt.taxi.order.form.PlaceOrderForm;
+import com.yoogurt.taxi.order.service.DisobeyService;
 import com.yoogurt.taxi.order.service.OrderBizService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.RentInfoService;
@@ -55,6 +54,9 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     @Autowired
     private OrderDao orderDao;
+
+    @Autowired
+    private DisobeyService disobeyService;
 
     @Autowired
     private PagerFactory appPagerFactory;
@@ -121,6 +123,8 @@ public class OrderInfoServiceImpl implements OrderInfoService {
      * <p>
      *     key: baseOrderModel表示订单的基本信息，对应的value是一个由OrderModel转换成的Map对象；
      *     key：各个子状态model的类名(simpleName)，首字母小写，对应的value是一个由子Model转换成的Map对象；
+     *     key: disobeys表示违约记录，对应的value是一个数组；
+     *     key: trafficViolations表示违章记录
      * </p>
      */
     @Override
@@ -153,6 +157,12 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             String key = name.replaceFirst(firstLetter, firstLetter.toLowerCase(Locale.ENGLISH));
             result.put(key, BeanRefUtils.toMap(info, false));
         }
+        //违约记录
+        DisobeyListCondition condition = new DisobeyListCondition();
+        condition.setOrderId(orderId);
+        List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null);
+        result.put("disobeys", disobeyList);
+
         //此步骤是获取订单信息，包含了主订单和子订单相关信息
         return result;
     }

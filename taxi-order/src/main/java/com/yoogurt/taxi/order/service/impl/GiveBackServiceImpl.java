@@ -1,20 +1,26 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderGiveBackInfo;
 import com.yoogurt.taxi.dal.beans.OrderGiveBackRule;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
+import com.yoogurt.taxi.dal.enums.DisobeyType;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.GiveBackOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.GiveBackDao;
 import com.yoogurt.taxi.order.form.GiveBackForm;
+import com.yoogurt.taxi.order.service.DisobeyService;
 import com.yoogurt.taxi.order.service.GiveBackRuleService;
 import com.yoogurt.taxi.order.service.GiveBackService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Service("giveBackService")
@@ -29,6 +35,11 @@ public class GiveBackServiceImpl implements GiveBackService {
     @Autowired
     private GiveBackRuleService ruleService;
 
+    @Autowired
+    private DisobeyService disobeyService;
+
+
+    @Transactional
     @Override
     public GiveBackOrderModel doGiveBack(GiveBackForm giveBackForm) {
         Long orderId = giveBackForm.getOrderId();
@@ -58,7 +69,14 @@ public class GiveBackServiceImpl implements GiveBackService {
                 giveBackInfo.setUnit(unit);
                 giveBackInfo.setTime(minutes);
                 //计算违约金
-                giveBackInfo.setFineMoney(ruleService.calculate(rule, minutes).getAmount());
+                BigDecimal fineMoney = ruleService.calculate(rule, minutes).getAmount();
+                giveBackInfo.setFineMoney(fineMoney);
+                //违约记录
+                String description = "还车超时" + minutes + "分钟，缴纳违约金￥" + fineMoney.doubleValue();
+                OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
+                        orderInfo, UserType.USER_APP_AGENT, DisobeyType.AGENT_DRIVER_HANDOVER_TIMEOUT,
+                        rule.getRuleId(), fineMoney, description);
+                disobeyService.addDisobey(disobey);
             } else {
                 giveBackInfo.setTime(minutes);
             }

@@ -2,22 +2,20 @@ package com.yoogurt.taxi.order.service.impl;
 
 import com.yoogurt.taxi.dal.beans.OrderCancelInfo;
 import com.yoogurt.taxi.dal.beans.OrderCancelRule;
+import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
-import com.yoogurt.taxi.dal.enums.OrderStatus;
-import com.yoogurt.taxi.dal.enums.RentStatus;
-import com.yoogurt.taxi.dal.enums.ResponsibleParty;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.order.CancelOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.CancelDao;
 import com.yoogurt.taxi.order.form.CancelForm;
-import com.yoogurt.taxi.order.service.CancelRuleService;
-import com.yoogurt.taxi.order.service.CancelService;
-import com.yoogurt.taxi.order.service.OrderInfoService;
-import com.yoogurt.taxi.order.service.RentInfoService;
+import com.yoogurt.taxi.order.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Service("cancelService")
@@ -35,6 +33,10 @@ public class CancelServiceImpl implements CancelService {
     @Autowired
     private CancelRuleService ruleService;
 
+    @Autowired
+    private DisobeyService disobeyService;
+
+    @Transactional
     @Override
     public CancelOrderModel doCancel(CancelForm cancelForm) {
         Long orderId = cancelForm.getOrderId();
@@ -45,12 +47,13 @@ public class CancelServiceImpl implements CancelService {
 
         OrderCancelInfo cancelInfo = new OrderCancelInfo();
         BeanUtils.copyProperties(cancelForm, cancelInfo);
+        ResponsibleParty responsibleParty = ResponsibleParty.getEnumsByCode(cancelForm.getResponsibleParty());
         //默认时间单位
         String unit = "HOURS";
 
         cancelInfo.setRuleId(0L);
         cancelInfo.setUnit(unit);
-        cancelInfo.setIsDisobey(!ResponsibleParty.NONE.getCode().equals(cancelForm.getResponsibleParty()));
+        cancelInfo.setIsDisobey(!ResponsibleParty.NONE.equals(responsibleParty));
         cancelInfo.setTime(0);
 
         //App端提交的取消申请
@@ -67,7 +70,15 @@ public class CancelServiceImpl implements CancelService {
                 cancelInfo.setUnit(unit);
                 cancelInfo.setTime(hours);
                 //计算违约金
-                cancelInfo.setFineMoney(ruleService.calculate(rule, orderInfo.getAmount()).getAmount());
+                BigDecimal fineMoney = ruleService.calculate(rule, orderInfo.getAmount()).getAmount();
+                cancelInfo.setFineMoney(fineMoney);
+
+                //违约记录
+                String description = "距离交车时间" + hours + "个小时取消订单，缴纳违约金￥" + fineMoney.doubleValue();
+                OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
+                        orderInfo, UserType.getEnumsByCode(responsibleParty.getUserType()), DisobeyType.CANCEL_ORDER,
+                        rule.getRuleId(), fineMoney, description);
+                disobeyService.addDisobey(disobey);
             } else {
                 cancelInfo.setTime(hours);
             }

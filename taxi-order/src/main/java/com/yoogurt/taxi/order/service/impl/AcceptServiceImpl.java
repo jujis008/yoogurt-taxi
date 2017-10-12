@@ -14,6 +14,7 @@ import com.yoogurt.taxi.order.service.OrderInfoService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class AcceptServiceImpl implements AcceptService {
     @Autowired
     private CommonResourceService resourceService;
 
+    @Transactional
     @Override
     public AcceptOrderModel doAccept(AcceptForm acceptForm) {
         Long orderId = acceptForm.getOrderId();
