@@ -2,8 +2,10 @@ package com.yoogurt.taxi.order.service;
 
 
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
+import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
-import com.yoogurt.taxi.order.form.DisobeyForm;
+import com.yoogurt.taxi.dal.enums.DisobeyType;
+import com.yoogurt.taxi.dal.enums.UserType;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,16 +24,12 @@ public interface DisobeyService {
 	/**
 	 * 构造一个违约记录
 	 */
-	OrderDisobeyInfo buildDisobeyInfo(DisobeyForm disobeyForm);
+	OrderDisobeyInfo buildDisobeyInfo(OrderInfo orderInfo, UserType userType, DisobeyType disobeyType, Long ruleId, BigDecimal fineMoney, String description);
 
-	/**
-	 * 计算应付违约金
-	 */
-	BigDecimal getFineMoney(DisobeyForm disobeyForm);
 
 	/**
 	 * 更改违约处理状态
 	 */
-	Boolean modifyStatus(int status);
+	OrderDisobeyInfo modifyStatus(Long id, boolean status);
 
 }

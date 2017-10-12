@@ -1,13 +1,17 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderHandoverInfo;
 import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
+import com.yoogurt.taxi.dal.enums.DisobeyType;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.HandoverOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.HandoverDao;
 import com.yoogurt.taxi.order.form.HandoverForm;
+import com.yoogurt.taxi.order.service.DisobeyService;
 import com.yoogurt.taxi.order.service.HandoverRuleService;
 import com.yoogurt.taxi.order.service.HandoverService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
@@ -31,8 +35,12 @@ public class HandoverServiceImpl implements HandoverService {
     @Autowired
     private HandoverRuleService ruleService;
 
+    @Autowired
+    private DisobeyService disobeyService;
+
     /**
      * 正式司机确认交车
+     *
      * @param handoverForm 交车信息
      * @return 交车相关信息
      */
@@ -43,7 +51,7 @@ public class HandoverServiceImpl implements HandoverService {
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, handoverForm.getUserId());
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待交车】
-        if(!OrderStatus.HAND_OVER.equals(status)) return null;
+        if (!OrderStatus.HAND_OVER.equals(status)) return null;
 
         OrderHandoverInfo handoverInfo = new OrderHandoverInfo();
         handoverInfo.setOrderId(orderId);
@@ -69,7 +77,13 @@ public class HandoverServiceImpl implements HandoverService {
                 handoverInfo.setUnit(unit);
                 handoverInfo.setTime(minutes);
                 //计算违约金
-                handoverInfo.setFineMoney(ruleService.calculate(rule, minutes).getAmount());
+                BigDecimal fineMoney = ruleService.calculate(rule, minutes).getAmount();
+                handoverInfo.setFineMoney(fineMoney);
+                String description = "交车超时" + minutes + "分钟，缴纳违约金￥" + fineMoney.doubleValue();
+                OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
+                        orderInfo, UserType.USER_APP_OFFICE, DisobeyType.OFFICIAL_DRIVER_HANDOVER_TIMEOUT,
+                        rule.getRuleId(), fineMoney, description);
+                disobeyService.addDisobey(disobey);
             } else {
                 handoverInfo.setTime(minutes);
             }
@@ -86,7 +100,7 @@ public class HandoverServiceImpl implements HandoverService {
     public OrderModel info(Long orderId, Long userId) {
         HandoverOrderModel model = new HandoverOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
 
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
@@ -107,4 +121,5 @@ public class HandoverServiceImpl implements HandoverService {
     public OrderHandoverInfo getHandoverInfo(Long orderId) {
         return handoverDao.selectById(orderId);
     }
+
 }

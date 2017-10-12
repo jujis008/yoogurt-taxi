@@ -69,4 +69,12 @@ public class OrderDisobeyInfo extends SuperModel{
      * 0-未处理，1-已处理
      */
     private Boolean status;
+
+    public OrderDisobeyInfo() {
+    }
+
+    public OrderDisobeyInfo(Long orderId) {
+        this.orderId = orderId;
+    }
+
 }
