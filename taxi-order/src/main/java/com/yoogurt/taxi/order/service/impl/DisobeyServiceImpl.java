@@ -51,16 +51,16 @@ public class DisobeyServiceImpl implements DisobeyService {
     }
 
     @Override
-    public List<OrderDisobeyInfo> getDisobeyList(Long orderId, Long driverId, DisobeyType... types) {
+    public List<OrderDisobeyInfo> getDisobeyList(Long orderId, Long userId, DisobeyType... types) {
         List<OrderDisobeyInfo> disobeyInfoList = Lists.newArrayList();
-        if(orderId == null && driverId == null && (types == null || types.length == 0)) return disobeyInfoList;
+        if(orderId == null && userId == null && (types == null || types.length == 0)) return disobeyInfoList;
         Example ex = new Example(OrderDisobeyInfo.class);
         Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
         if (orderId != null) {
             criteria.andEqualTo("orderId", orderId);
         }
-        if (driverId != null) {
-            criteria.andEqualTo("driverId", driverId);
+        if (userId != null) {
+            criteria.andEqualTo("userId", userId);
         }
         if (types != null && types.length > 0) {
             criteria.andIn("type", Arrays.asList(types));
@@ -146,6 +146,10 @@ public class DisobeyServiceImpl implements DisobeyService {
         Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
         if (condition.getOrderId() != null) {
             criteria.andEqualTo("orderId", condition.getOrderId());
+        }
+
+        if (condition.getUserId() != null) {
+            criteria.andEqualTo("userId", condition.getUserId());
         }
 
         if (condition.getDriverId() != null) {

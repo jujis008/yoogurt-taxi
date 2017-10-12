@@ -14,6 +14,8 @@ public class DisobeyListCondition extends PeriodWithPageableCondition {
 
     private Long orderId;
 
+    private Long userId;
+
     private Long driverId;
 
     private Integer userType;
