@@ -13,5 +13,10 @@
     <result column="disobey" jdbcType="BIT" property="disobey" />
     <result column="percent" jdbcType="DECIMAL" property="percent" />
     <result column="pay_channel" jdbcType="VARCHAR" property="payChannel" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+    <result column="creator" jdbcType="BIGINT" property="creator"/>
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+    <result column="modifier" jdbcType="BIGINT" property="modifier"/>
   </resultMap>
 </mapper>

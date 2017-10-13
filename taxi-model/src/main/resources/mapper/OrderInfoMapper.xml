@@ -33,6 +33,11 @@
         <result column="is_commented" jdbcType="BIT" property="isCommented"/>
         <result column="is_paid" jdbcType="BIT" property="isPaid"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="creator" jdbcType="BIGINT" property="creator"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="modifier" jdbcType="BIGINT" property="modifier"/>
     </resultMap>
     <resultMap id="OrderModel" type="com.yoogurt.taxi.dal.model.order.OrderModel">
         <id column="order_id" jdbcType="BIGINT" property="orderId"/>
@@ -58,13 +63,14 @@
         <result column="official_driver_phone" jdbcType="VARCHAR" property="officialDriverPhone"/>
         <result column="is_commented" jdbcType="BIT" property="isCommented"/>
         <result column="is_paid" jdbcType="BIT" property="isPaid"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="orderTime"/>
     </resultMap>
 
     <select id="getOrderList" parameterType="map" resultMap="OrderModel">
-        SELECT order_id, rent_id, agent_driver_id, agent_driver_name, agent_driver_phone, handover_time, give_back_time,
-            compnay, address, lng, lat, price, amount, car_id, plate_number,
-            official_driver_id, official_driver_name, official_driver_phone,
-            is_commented, is_paid, status
+        SELECT order_id, rent_id, agent_user_id, agent_driver_id, agent_driver_name, agent_driver_phone,
+            handover_time, give_back_time, company, address, lng, lat, price, amount, car_id, plate_number,
+            official_user_id, official_driver_id, official_driver_name, official_driver_phone,
+            is_commented, is_paid, status, gmt_create
         FROM order_info
         WHERE is_deleted=0
 

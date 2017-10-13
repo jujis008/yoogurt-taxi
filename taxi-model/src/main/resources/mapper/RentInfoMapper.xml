@@ -27,6 +27,11 @@
         <result column="car_thumb" jdbcType="VARCHAR" property="carThumb"/>
         <result column="vin" jdbcType="VARCHAR" property="vin"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="creator" jdbcType="BIGINT" property="creator"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+        <result column="modifier" jdbcType="BIGINT" property="modifier"/>
     </resultMap>
 
     <resultMap id="RentPOIModel" type="com.yoogurt.taxi.dal.model.order.RentInfoModel">
