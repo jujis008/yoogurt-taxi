@@ -72,8 +72,7 @@
             official_user_id, official_driver_id, official_driver_name, official_driver_phone,
             is_commented, is_paid, status, gmt_create
         FROM order_info
-        WHERE is_deleted=0
-
+        WHERE is_deleted=0 AND status != 60
         <if test="orderId != null and orderId > 0">
             AND order_id=#{orderId}
         </if>

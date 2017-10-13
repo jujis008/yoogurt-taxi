@@ -43,6 +43,7 @@ public class RentMobileController extends BaseController {
     public ResponseObj getRentList(RentPOICondition condition) {
 
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        condition.setStatus(RentStatus.WAITING.getCode());
         return ResponseObj.success(rentInfoService.getRentList(condition));
     }
 
@@ -56,6 +57,7 @@ public class RentMobileController extends BaseController {
 
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         condition.setFromApp(true);
+        condition.setStatus(RentStatus.WAITING.getCode());
         return ResponseObj.success(rentInfoService.getRentListByPage(condition));
     }
 
