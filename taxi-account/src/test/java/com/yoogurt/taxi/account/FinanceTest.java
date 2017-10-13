@@ -3,13 +3,14 @@ package com.yoogurt.taxi.account;
 import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
-import com.yoogurt.taxi.common.vo.RestResult;
+import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.DestinationType;
 import com.yoogurt.taxi.dal.enums.Payment;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ public class FinanceTest {
         UserInfo userInfo = restUserService.getUserInfoById(userId).getBody();
         //充值
         AccountUpdateCondition condition = new AccountUpdateCondition();
+        condition.setUserId(userId);
         condition.setBillType(BillType.CHARGE);
         condition.setBillId(17092815834356415L);
         condition.setDestinationType(DestinationType.DEPOSIT);
@@ -43,6 +45,7 @@ public class FinanceTest {
         condition.setPayeePhone(userInfo.getUsername());
         condition.setPayment(Payment.ALIPAY);
         condition.setTransactionNo("123123213213");
-        financeAccountService.updateAccount(condition);
+        ResponseObj obj = financeAccountService.updateAccount(condition);
+        Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }
 }
