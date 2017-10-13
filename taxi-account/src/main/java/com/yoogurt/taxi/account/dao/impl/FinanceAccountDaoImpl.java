@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class FinanceAccountDaoImpl extends BaseDao<FinanceAccountMapper,FinanceAccount> implements FinanceAccountDao {
-    @Autowired
+    /*@Autowired
     private FinanceAccountMapper financeAccountMapper;
     @Override
     public int saveOrUpdate(FinanceAccount account) {
         return financeAccountMapper.saveOrUpdate(account);
-    }
+    }*/
 }

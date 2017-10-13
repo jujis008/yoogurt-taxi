@@ -9,5 +9,5 @@ public interface FinanceRecordService {
     int remove(Long id);
     int delete(Long id);
     FinanceRecord get(Long id);
-    List<FinanceRecord> getBillRecord(Long billId,Long billNo);
+    List<FinanceRecord> getBillRecord(Long userId, Long billId, Long billNo);
 }

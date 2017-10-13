@@ -3,9 +3,12 @@ package com.yoogurt.taxi.account.service.impl;
 import com.yoogurt.taxi.account.dao.FinanceBillDao;
 import com.yoogurt.taxi.account.service.FinanceBillService;
 import com.yoogurt.taxi.account.service.FinanceRecordService;
+import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
+import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.FinanceRecord;
 import com.yoogurt.taxi.dal.beans.UserInfo;
@@ -13,6 +16,7 @@ import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.RecordListAppCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.Payment;
+import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +28,11 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     private FinanceBillDao financeBillDao;
     @Autowired
     private FinanceRecordService financeRecordService;
+    @Autowired
+    private RestUserService restUserService;
     @Override
-    public ResponseObj getFinanceBillListApp(RecordListAppCondition condition) {
-        return null;
+    public Pager<FinanceBillListModel> getFinanceBillListApp(RecordListAppCondition condition) {
+        return financeBillDao.getFinanceBillListApp(condition);
     }
 
     @Override
@@ -35,21 +41,30 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     }
 
     @Override
-    public ResponseObj save(FinanceBill bill) {
+    public int save(FinanceBill bill) {
         if (bill.getId() != null) {
-            financeBillDao.updateById(bill);
+            return financeBillDao.updateById(bill);
         }
-        financeBillDao.insert(bill);
-        return ResponseObj.success(bill);
+        return financeBillDao.insert(bill);
     }
 
     @Override
-    public ResponseObj updateStatus(Long id, BillStatus status) {
-        return null;
+    public int updateStatus(Long id, BillStatus status) {
+        FinanceBill financeBill = get(id);
+        if (financeBill == null) {
+            return 0;
+        }
+        financeBill.setStatus(status.getCode());
+        return financeBillDao.updateById(financeBill);
     }
 
     @Override
-    public void insertBill(Money money, AccountUpdateCondition condition, Payment payment, UserInfo userInfo, BillStatus billStatus) {
+    public ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus) {
+        RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(condition.getUserId());
+        if (!userInfoRestResult.isSuccess()) {
+            return ResponseObj.fail(userInfoRestResult.getStatus(),userInfoRestResult.getMessage());
+        }
+        UserInfo userInfo = userInfoRestResult.getBody();
         FinanceBill financeBill = new FinanceBill();
         financeBill.setAmount(money.getAmount());
         Long billNo = RandomUtils.getPrimaryKey();
@@ -81,5 +96,6 @@ public class FinanceBillServiceImpl implements FinanceBillService {
 
         FinanceRecord financeRecord = new FinanceRecord(financeBill.getId(), financeBill.getBillNo(), billStatus.getCode(), null);
         financeRecordService.save(financeRecord);
+        return ResponseObj.success();
     }
 }

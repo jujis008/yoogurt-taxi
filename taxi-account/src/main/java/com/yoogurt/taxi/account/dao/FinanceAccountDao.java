@@ -5,5 +5,6 @@ import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.mapper.FinanceAccountMapper;
 
 public interface FinanceAccountDao extends IDao<FinanceAccountMapper,FinanceAccount> {
-    int saveOrUpdate(FinanceAccount account);
+
+//    int saveOrUpdate(FinanceAccount account);
 }

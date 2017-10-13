@@ -18,7 +18,7 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
-  
+  <!--
   <insert id="saveOrUpdate" parameterType="com.yoogurt.taxi.dal.beans.FinanceAccount">
     INSERT INTO finance_account(user_id,account_no,
       balance,frozen_balance,receivable_deposit,
@@ -37,4 +37,5 @@
       received_deposit=#{receivedDeposit},
       frozen_deposit=#{frozenDeposit}
   </insert>
+  -->
 </mapper>
