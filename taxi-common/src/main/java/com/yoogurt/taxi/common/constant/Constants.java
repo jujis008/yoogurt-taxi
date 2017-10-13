@@ -17,6 +17,12 @@ public final class Constants {
      * 重置密码试错次数的间隔时间，单位：秒
      */
     public static final int PASSWORD_RETRY_INTERVAL_SECONDS = 1800;
+
+    /**
+     * 最大间隔天数
+     */
+    public static final int MAX_INTERVAL_DAYS = 20;
+
     /**
      * 验证码有效时间3*60s
      */
