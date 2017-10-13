@@ -10,32 +10,32 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccountUpdateCondition {
-    /**账户所有者*/
+    /**账户所有者（必穿）*/
     private Long userId;
-    /**变动金额*/
+    /**变动金额（必穿）*/
     private Money money;
-    /**账单类型*/
+    /**账单类型（必穿）*/
     private BillType billType;
-    /**目的账户类型*/
+    /**目的账户类型（必传）*/
     private DestinationType destinationType;
-    /**支付方式（资金来源账户类型）*/
+    /**支付方式（必传）*/
     private Payment payment;
-    /**存入账号（提现时需求参数）*/
+    /**存入账号（必传）*/
     private String payeeAccount;
-
+    /**收款人姓名（必传）*/
     private String payeeName;
-
+    /**收款人手机号（必传）*/
     private String payeePhone;
-
+    /**付款人账号（必传）*/
     private String draweeAccount;
-
+    /**付款人姓名（必传）*/
     private String draweeName;
-
+    /**付款人手机号（必传）*/
     private String draweePhone;
-
+    /**账单id(充值必传)*/
     private Long billId;
-
+    /**交易流水号（充值必传）*/
     private String transactionNo;
-
+    /**交易对象id（罚款，补偿，订单收入）*/
     private Long contextId;
 }

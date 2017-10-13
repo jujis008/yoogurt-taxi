@@ -31,4 +31,16 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
+
+  <select id="getFinanceBillListApp" parameterType="com.yoogurt.taxi.dal.condition.account.RecordListAppCondition"
+          resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListModel">
+      SELECT id,bill_no,context_id,
+          amount,type,`status`,gmt_update
+      FROM finance_bill
+      WHERE
+          user_id=#{userId}
+      <if test="type != null">
+          AND type=#{type}
+      </if>
+  </select>
 </mapper>

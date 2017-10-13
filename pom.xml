@@ -66,6 +66,7 @@
         <common.collection.version>3.2.2</common.collection.version>
         <common.fileupload.version>1.3.2</common.fileupload.version>
 
+        <httpclient.version>4.5.2</httpclient.version>
         <docx.version>1.1.7</docx.version>
 
         <protobuf.version>2.5.0</protobuf.version>
@@ -379,6 +380,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${common.lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.dx.ss.lib</groupId>

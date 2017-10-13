@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.notification.service.Impl;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.utils.DateUtil;
 import com.yoogurt.taxi.common.utils.EncryptUtil;
 import com.yoogurt.taxi.dal.model.ucpaas.TemplateSms;
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,22 +43,19 @@ public class SmsServiceImpl implements SmsService {
                 append("/Accounts/").append(accountSid).append("/Messages")
                 .append("/templateSMS")
                 .append("?sig=").append(signature).toString();
-        Gson gson = new Gson();
         Map<String,Object> map = new HashMap<>();
         map.put("templateSMS",templateSms);
-        String body = gson.toJson(map);
-        response = post("application/json", accountSid, timestamp, url, client, encryptUtil, body);
-        HttpEntity entity = response.getEntity();
         try {
+            ObjectMapper m = new ObjectMapper();
+            m.setDateFormat(DateFormat.getDateTimeInstance());
+            String body = m.writeValueAsString(map);
+            response = post("application/json", accountSid, timestamp, url, client, encryptUtil, body);
+            HttpEntity entity = response.getEntity();
             if (entity != null) {
                 result = EntityUtils.toString(entity, "UTF-8");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             EntityUtils.consume(entity);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;

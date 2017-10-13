@@ -1,8 +1,6 @@
 package com.yoogurt.taxi.account.service.impl;
 
 import com.yoogurt.taxi.account.dao.FinanceAccountDao;
-import com.yoogurt.taxi.account.dao.FinanceBillDao;
-import com.yoogurt.taxi.account.dao.FinanceRecordDao;
 import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.FinanceBillService;
 import com.yoogurt.taxi.account.service.FinanceRecordService;
@@ -26,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @Service
 public class FinanceAccountServiceImpl implements FinanceAccountService {
@@ -44,19 +44,25 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
     }
 
     @Override
-    public ResponseObj newAccount(Long accountNo, Money balance, Money frozenBalance, Money frozenDeposit, Money receivableDeposit, Money receivedDeposit, Long userId) {
+    public ResponseObj createAccount(Long accountNo, Money receivableDeposit, Long userId) {
         FinanceAccount financeAccount = new FinanceAccount();
         financeAccount.setAccountNo(accountNo);
-        financeAccount.setBalance(balance.getAmount());
-        financeAccount.setFrozenBalance(frozenBalance.getAmount());
-        financeAccount.setFrozenDeposit(frozenDeposit.getAmount());
-        financeAccount.setReceivableDeposit(receivableDeposit.getAmount());
-        financeAccount.setReceivedDeposit(receivedDeposit.getAmount());
+        financeAccount.setBalance(new BigDecimal(0));
+        financeAccount.setFrozenBalance(new BigDecimal(0));
+        financeAccount.setFrozenDeposit(new BigDecimal(0));
+        financeAccount.setReceivableDeposit(Constants.receivableDeposit);
+        financeAccount.setReceivedDeposit(new BigDecimal(0));
         financeAccount.setUserId(userId);
         financeAccountDao.insert(financeAccount);//创建默认资金数账户
         return ResponseObj.success(financeAccount);
     }
 
+    /**
+     * 更新账户，具体功能有：1.充值（提现申请），2.提现（回调，即将冻结金额扣除，账户不动）
+     * 3.罚款，4.补偿，5.订单收入
+     * @param condition
+     * @return
+     */
     @Override
     public ResponseObj updateAccount(AccountUpdateCondition condition) {
 
@@ -75,7 +81,8 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
             BillType billType = condition.getBillType();
             if (financeAccount == null) {//账户不存在
                 //创建账户
-                newAccount(RandomUtils.getPrimaryKey(), new Money(0), new Money(0), new Money(0), new Money(0), new Money(0), userId);
+                //TODO
+                createAccount(RandomUtils.getPrimaryKey(), new Money(0), userId);
             }
             Payment payment = condition.getPayment();
             //判断账户的有效性
@@ -99,41 +106,36 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     }
                     /**1.更新账户*/
                     financeAccountDao.updateById(financeAccount);
-                    financeBillService.insertBill(money, condition, payment, userInfo, BillStatus.PENDING);
+                    financeBillService.insertBill(money, condition, payment, BillStatus.PENDING);
                     return ResponseObj.success(financeAccount);
                 case CHARGE://充值(回调时使用)
                     if (condition.getDestinationType() != DestinationType.DEPOSIT) {//目前只支持押金充值
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "目前只支持押金充值");
                     }
-                    if (financeAccount == null) {
-                        financeAccount = new FinanceAccount();
-                        financeAccount.setAccountNo(RandomUtils.getPrimaryKey());
-                        financeAccount.setBalance(new Money(0).getAmount());
-                        financeAccount.setFrozenBalance(new Money(0).getAmount());
-                        financeAccount.setFrozenDeposit(new Money(0).getAmount());
-                        financeAccount.setReceivableDeposit(Constants.receivableDeposit);
-                        financeAccount.setReceivedDeposit(money.getAmount());
-                        financeAccount.setUserId(userId);
-                    } else {
-                        financeAccount.setReceivedDeposit(new Money(financeAccount.getReceivedDeposit()).add(money).getAmount());
-                    }
+                    financeAccount.setReceivedDeposit(new Money(financeAccount.getReceivedDeposit()).add(money).getAmount());
                     /**更新或插入账户*/
-                    financeAccountDao.saveOrUpdate(financeAccount);
-                    FinanceBill financeBill1 = financeBillService.get(condition.getBillId());
-                    financeBill1.setTransactionNo(condition.getTransactionNo());
-                    financeBill1.setStatus(BillStatus.SUCCESS.getCode());
+                    financeAccountDao.updateById(financeAccount);
+                    FinanceBill financeBill = financeBillService.get(condition.getBillId());
+                    if (financeBill == null) {
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录不存在");
+                    }
+                    if (!financeBill.getAmount().equals(money.getAmount())) {
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录异常");
+                    }
+                    financeBill.setTransactionNo(condition.getTransactionNo());
+                    financeBill.setStatus(BillStatus.SUCCESS.getCode());
                     /**更新账单状态*/
-                    financeBillService.save(financeBill1);
+                    financeBillService.save(financeBill);
 
                     /**3.插入账单记录*/
-                    FinanceRecord financeRecord = new FinanceRecord(financeBill1.getId(), financeBill1.getBillNo(), BillStatus.SUCCESS.getCode(), null);
+                    FinanceRecord financeRecord = new FinanceRecord(financeBill.getId(), financeBill.getBillNo(), BillStatus.SUCCESS.getCode(), null);
                     financeRecordService.save(financeRecord);
                     return ResponseObj.success(financeAccount);
                 case FINE_IN://补偿,余额增加
                     this.addBalance(financeAccount, money);
                     /**更新或插入账户*/
-                    financeAccountDao.saveOrUpdate(financeAccount);
-                    financeBillService.insertBill(money, condition, Payment.BALANCE, userInfo, BillStatus.SUCCESS);
+                    financeAccountDao.updateById(financeAccount);
+                    financeBillService.insertBill(money, condition, Payment.BALANCE, BillStatus.SUCCESS);
                     return ResponseObj.success(financeAccount);
                 case FINE_OUT://罚款
                     Money balance = new Money(financeAccount.getBalance());//余额
@@ -142,19 +144,19 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                         financeAccount.setBalance(balance.subtract(money).getAmount());
                         financeAccountDao.updateById(financeAccount);
 
-                        financeBillService.insertBill(money, condition, Payment.BALANCE, userInfo, BillStatus.SUCCESS);
+                        financeBillService.insertBill(money, condition, Payment.BALANCE, BillStatus.SUCCESS);
                     } else {
                         financeAccount.setBalance(new Money(0).getAmount());//余额扣光
                         financeAccount.setReceivedDeposit(deposit.add(balance).subtract(money).getAmount());
                         financeAccountDao.updateById(financeAccount);
 
-                        financeBillService.insertBill(balance, condition, Payment.BALANCE, userInfo, BillStatus.SUCCESS);
-                        financeBillService.insertBill(money.subtract(balance), condition, Payment.DEPOSIT, userInfo, BillStatus.SUCCESS);
+                        financeBillService.insertBill(balance, condition, Payment.BALANCE, BillStatus.SUCCESS);
+                        financeBillService.insertBill(money.subtract(balance), condition, Payment.DEPOSIT, BillStatus.SUCCESS);
                     }
                     return ResponseObj.success(financeAccount);
                 case INCOME://订单收入,余额增加
                     this.addBalance(financeAccount, money);
-                    financeBillService.insertBill(money, condition, Payment.ALIPAY, userInfo, BillStatus.SUCCESS);
+                    financeBillService.insertBill(money, condition, Payment.ALIPAY, BillStatus.SUCCESS);
                     return ResponseObj.success(financeAccount);
                 default:
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "交易类型不存在");
@@ -187,6 +189,6 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
     private void addBalance(FinanceAccount financeAccount, Money money) {
         financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
         /**更新或插入账户*/
-        financeAccountDao.saveOrUpdate(financeAccount);
+        financeAccountDao.updateById(financeAccount);
     }
 }

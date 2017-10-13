@@ -139,12 +139,6 @@ public class UserMobileController extends BaseController {
         return ResponseObj.success(driverInfo);
     }
 
-    @RequestMapping(value = "/i/getSelectShow/className/{className}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getSelectShow(@PathVariable(name = "className") String className) {
-        List<Map<String, Object>> enumModels = ReflectUtils.enums(className);
-        return ResponseObj.success(enumModels);
-    }
-
     /**
      * 车辆资料
      *

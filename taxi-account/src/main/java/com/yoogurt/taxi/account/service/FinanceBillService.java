@@ -1,13 +1,14 @@
 package com.yoogurt.taxi.account.service;
 
 import com.yoogurt.taxi.common.bo.Money;
+import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
-import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.RecordListAppCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.Payment;
+import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
 
 public interface FinanceBillService {
     /**
@@ -15,7 +16,7 @@ public interface FinanceBillService {
      * @param condition
      * @return
      */
-    ResponseObj getFinanceBillListApp(RecordListAppCondition condition);
+    Pager<FinanceBillListModel> getFinanceBillListApp(RecordListAppCondition condition);
 
     /**
      * 获取financeBill对象
@@ -29,7 +30,7 @@ public interface FinanceBillService {
      * @param bill
      * @return
      */
-    ResponseObj save(FinanceBill bill);
+    int save(FinanceBill bill);
 
     /**
      * 修改账单状态
@@ -37,7 +38,7 @@ public interface FinanceBillService {
      * @param status
      * @return
      */
-    ResponseObj updateStatus(Long id, BillStatus status);
+    int updateStatus(Long id, BillStatus status);
 
-    void insertBill(Money money, AccountUpdateCondition condition, Payment payment, UserInfo userInfo, BillStatus billStatus);
+    ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus);
 }
