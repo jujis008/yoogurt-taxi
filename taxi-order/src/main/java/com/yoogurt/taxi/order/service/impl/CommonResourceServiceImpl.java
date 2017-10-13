@@ -19,7 +19,7 @@ public class CommonResourceServiceImpl implements CommonResourceService {
     private ResourceDao resourceDao;
 
     @Override
-    public List getResources(String linkId, String tableName) {
+    public List<CommonResource> getResources(String linkId, String tableName) {
         CommonResource probe = new CommonResource();
         probe.setIsDeleted(Boolean.FALSE);
         probe.setLinkId(linkId);

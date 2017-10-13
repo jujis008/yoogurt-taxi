@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CommonResourceService {
 
-	List getResources(String linkId, String tableName);
+	List<CommonResource> getResources(String linkId, String tableName);
 
 	int addResources(List<CommonResource> resources);
 
