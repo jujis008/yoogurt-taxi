@@ -1,11 +1,12 @@
 package com.yoogurt.taxi.dal.condition.order;
 
+import com.yoogurt.taxi.common.condition.PeriodWithPageableCondition;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class TrafficViolationListCondition {
+public class TrafficViolationListCondition extends PeriodWithPageableCondition {
 
     private Long orderId;
 
@@ -16,4 +17,6 @@ public class TrafficViolationListCondition {
     private String vin;
 
     private Integer status;
+
+    private boolean fromApp;
 }
