@@ -52,7 +52,7 @@
     </select>
 
     <select id="getAuthorityIdListByRoleId" parameterType="java.lang.Long" resultType="java.lang.Long">
-        SELECT id from role_authority_info WHERE role_id=#{roleId}
+        SELECT authority_id from role_authority_info WHERE role_id=#{roleId}
     </select>
 
 </mapper>

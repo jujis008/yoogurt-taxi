@@ -17,7 +17,15 @@
 	<name>taxi-notification</name>
 	<description>taxi-notification module</description>
 
+	<repositories>
+		<repository>
+			<id>getui-nexus</id>
+			<url>http://mvn.gt.igexin.com/nexus/content/repositories/releases/</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
+
 		<dependency>
 			<groupId>com.yoogurt.taxi.model</groupId>
 			<artifactId>taxi-model</artifactId>

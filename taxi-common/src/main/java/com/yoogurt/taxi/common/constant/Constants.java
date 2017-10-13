@@ -1,5 +1,9 @@
 package com.yoogurt.taxi.common.constant;
 
+import com.yoogurt.taxi.common.bo.Money;
+
+import java.math.BigDecimal;
+
 /**
  * Description:
  * 常量
@@ -98,4 +102,17 @@ public final class Constants {
 
     /** ico后缀 */
     public static final String GIF_FILE_SUFFIX        = "gif";
+
+    /** 应收押金 */
+    public static final BigDecimal receivableDeposit = new Money("3000").getAmount();
+
+    /** 公司对公账户 */
+    public static final String comanyFinanceAccount = "0000000000000";
+
+    /** 公司对公账户名称 */
+    public static final String companyName = "邮鸽公司";
+
+    /** 公司对公账户联系方式 */
+    public static final String companyPhone = "05718888888";
+
 }

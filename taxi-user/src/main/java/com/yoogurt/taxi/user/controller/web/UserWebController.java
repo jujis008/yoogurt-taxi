@@ -4,18 +4,22 @@ import com.yoogurt.taxi.common.ExcelHelper.CellPropertyBean;
 import com.yoogurt.taxi.common.ExcelHelper.ErrorCellBean;
 import com.yoogurt.taxi.common.ExcelHelper.ExcelParamBean;
 import com.yoogurt.taxi.common.ExcelHelper.ExcelUtils;
+import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
+import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.*;
+import com.yoogurt.taxi.dal.condition.user.AuthorityWLCondition;
 import com.yoogurt.taxi.dal.condition.user.DriverWLCondition;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
 import com.yoogurt.taxi.dal.enums.UserFrom;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
-import com.yoogurt.taxi.dal.model.user.OfficeDriverDetailModel;
+import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
 import com.yoogurt.taxi.dal.model.user.RoleWLModel;
 import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.service.*;
@@ -27,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import sun.security.util.Password;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -58,6 +63,8 @@ public class UserWebController extends BaseController{
     private AuthorityInfoService    authorityInfoService;
     @Autowired
     private RoleInfoService roleInfoService;
+    @Autowired
+    private RedisHelper redisHelper;
 
     @RequestMapping("/tt")
     public String tt() {
@@ -180,8 +187,10 @@ public class UserWebController extends BaseController{
      * @return
      */
     @RequestMapping(value = "/driver/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
-    public ResponseObj getOfficeDriverList(DriverWLCondition driverWLCondition) {
-        driverWLCondition.setUserType(UserType.USER_APP_OFFICE.getCode());
+    public ResponseObj getDriverList(@Valid DriverWLCondition driverWLCondition,BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+        }
         return driverService.getDriverWebList(driverWLCondition);
     }
 
@@ -195,16 +204,15 @@ public class UserWebController extends BaseController{
         DriverInfo driverInfo = driverService.getDriverInfo(driverId);
         List<CarInfo> carInfoList = carService.getCarByDriverId(driverId);
         UserInfo userInfo = userService.getUserByUserId(driverInfo.getUserId());
-        OfficeDriverDetailModel model = new OfficeDriverDetailModel();
         Map<String,Object> map = new HashMap<>();
         if (userInfo != null) {
-            BeanUtilsExtends.copyProperties(model,userInfo);
+            map.put("userInfo",userInfo);
         }
         if (driverInfo != null) {
-            BeanUtilsExtends.copyProperties(model,driverInfo);
+            map.put("driverInfo",driverInfo);
         }
         if (CollectionUtils.isNotEmpty(carInfoList)) {
-            BeanUtilsExtends.copyProperties(model,carInfoList.get(0));
+            map.put("carInfo",carInfoList.get(0));
         }
         return ResponseObj.success(map);
     }
@@ -217,8 +225,10 @@ public class UserWebController extends BaseController{
     @RequestMapping(value = "/loginPassword",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
     public ResponseObj resetPassword(@RequestBody Long userId) {
         String newPassword = RandomUtils.getRandNum(6);
-
-        return userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
+        UserInfo userInfo = userService.getUserByUserId(userId);
+        userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
+        redisHelper.set(CacheKey.VERIFY_CODE_KEY+userInfo.getUsername(), newPassword,5*60);
+        return ResponseObj.success();
     }
 
     /**
@@ -252,17 +262,10 @@ public class UserWebController extends BaseController{
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
-        UserInfo userInfo = new UserInfo();
-        BeanUtilsExtends.copyProperties(userInfo,form);
-        userInfo.setType(UserType.USER_WEB.getCode());
-        userInfo.setUserFrom(UserFrom.WEB.getCode());
-        userInfo.setStatus(UserStatus.AUTHENTICATED.getCode());
-        if (userInfo.getUserId() == null) {
-            userInfo.setUserId(RandomUtils.getPrimaryKey());
-            return userService.InsertUser(userInfo);
-        } else {
-            return userService.modifyUser(userInfo);
+        if(userService.getUserByUsernameAndType(form.getUsername(),UserType.USER_WEB.getCode())!=null) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,"账号已存在");
         }
+        return userService.saveUser(form);
     }
 
     /**
@@ -316,12 +319,42 @@ public class UserWebController extends BaseController{
     }
 
     /**
+     * 权限列表
+     * @param condition
+     * @return
+     */
+    @RequestMapping(value = "/authority/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    public ResponseObj getAuthorityList(AuthorityWLCondition condition) {
+        return ResponseObj.success(authorityInfoService.getAuthorityWebList(condition));
+    }
+
+    /**
+     * 获取权限详情
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/authority/id/{id}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    public ResponseObj getAuthorityDetail(@PathVariable(name = "id") Long id) {
+        return ResponseObj.success(authorityInfoService.getAuthorityById(id));
+    }
+
+    /**
+     * 删除权限接口
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/authority/id/{id}",method = RequestMethod.DELETE,produces = {"application/json;charset=utf-8"})
+    public ResponseObj removeAuthority(@PathVariable Long id) {
+        return authorityInfoService.removeAuthorityById(id);
+    }
+
+    /**
      * 新增权限接口
      * @param form
      * @param result
      * @return
      */
-    @RequestMapping(value = "/new/authority",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/authority",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
     public ResponseObj saveAuthority(@RequestBody @Valid AuthorityForm form,BindingResult result) {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
@@ -329,6 +362,16 @@ public class UserWebController extends BaseController{
         AuthorityInfo authorityInfo = new AuthorityInfo();
         BeanUtilsExtends.copyProperties(authorityInfo,form);
         return authorityInfoService.saveAuthorityInfo(authorityInfo);
+    }
+
+    /**
+     * 分组权限接口
+     * @return
+     */
+    @RequestMapping(value = "/authority/group",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    public ResponseObj getAuthorityListGroup() {
+        List<GroupAuthorityLModel> allAuthorities = authorityInfoService.getAllAuthorities();
+        return ResponseObj.success(allAuthorities);
     }
 
 }

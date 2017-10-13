@@ -1,7 +1,11 @@
 package com.yoogurt.taxi.user.form;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
+@Getter
+@Setter
 public class AuthorityForm {
     private Long id;
     @NotBlank(message = "权限名不能为空")

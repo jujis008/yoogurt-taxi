@@ -8,6 +8,7 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.DateUtil;
 import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
@@ -15,6 +16,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.CarInfo;
 import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.beans.UserRoleInfo;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
 import com.yoogurt.taxi.dal.enums.UserFrom;
 import com.yoogurt.taxi.dal.enums.UserGender;
@@ -24,8 +26,10 @@ import com.yoogurt.taxi.dal.model.user.UserWLModel;
 import com.yoogurt.taxi.user.dao.CarDao;
 import com.yoogurt.taxi.user.dao.DriverDao;
 import com.yoogurt.taxi.user.dao.UserDao;
-import com.yoogurt.taxi.user.service.DriverService;
+import com.yoogurt.taxi.user.dao.UserRoleDao;
+import com.yoogurt.taxi.user.form.UserForm;
 import com.yoogurt.taxi.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +37,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @Service
-@Transactional
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -55,6 +58,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private CarDao carDao;
+
+    @Autowired
+    private UserRoleDao userRoleDao;
 
     @Override
     public UserInfo getUserByUserId(Long id) {
@@ -228,12 +234,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResponseObj saveUser(UserForm form) {
+        UserInfo userInfo = new UserInfo();
+        BeanUtilsExtends.copyProperties(userInfo,form);
+        userInfo.setType(UserType.USER_WEB.getCode());
+        userInfo.setUserFrom(UserFrom.WEB.getCode());
+        userInfo.setLoginPassword(Encipher.encrypt(DigestUtils.md5Hex(form.getLoginPassword())));
+        userInfo.setStatus(UserStatus.AUTHENTICATED.getCode());
+        if (userInfo.getUserId() == null) {
+            userInfo.setUserId(RandomUtils.getPrimaryKey());
+            userDao.insert(userInfo);
+        } else {
+            userDao.updateById(userInfo);
+        }
+        UserRoleInfo userRoleInfo = new UserRoleInfo();
+        userRoleInfo.setUserId(userInfo.getUserId());
+        userRoleInfo.setRoleId(form.getRoleId());
+        userRoleDao.insert(userRoleInfo);
+        return ResponseObj.success();
+    }
+
+    @Override
     public Pager<UserWLModel> getUserWebList(UserWLCondition condition) {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
         Page<UserWLModel> userWebListPage = userDao.getUserWebListPage(condition);
         return webPagerFactory.generatePager(userWebListPage);
     }
 
+    @Transactional
     @Override
     public List<ErrorCellBean> importAgentDriversFromExcel(List<Map<String, Object>> list) {
         List<UserInfo> userInfoList = new ArrayList<>();
@@ -294,9 +322,18 @@ public class UserServiceImpl implements UserService {
         if (!CollectionUtils.isEmpty(errorCellBeanList)) {
             return errorCellBeanList;
         }
-        userDao.batchInsert(userInfoList);
-        driverDao.batchInsert(driverInfoList);
-        phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+
+            int result = 0;
+            result += userDao.insertList(userInfoList);
+            result += driverDao.insertList(driverInfoList);
+            phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
+
+            return result;
+        });
+        future.thenAccept(result -> {
+            log.info("IMPORT{}", "导入条数：" + result);
+        });
         return errorCellBeanList;
     }
 
@@ -376,8 +413,8 @@ public class UserServiceImpl implements UserService {
         if (!CollectionUtils.isEmpty(errorCellBeanList)) {
             return errorCellBeanList;
         }
-        userDao.batchInsert(userInfoList);
-        driverDao.batchInsert(driverInfoList);
+        userDao.insertList(userInfoList);
+        driverDao.insertList(driverInfoList);
         carDao.batchInsert(carInfoList);
         phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
         return errorCellBeanList;

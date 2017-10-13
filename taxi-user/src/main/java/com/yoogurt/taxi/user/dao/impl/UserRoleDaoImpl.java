@@ -4,8 +4,8 @@ import com.yoogurt.taxi.common.dao.impl.BaseDao;
 import com.yoogurt.taxi.dal.beans.UserRoleInfo;
 import com.yoogurt.taxi.dal.mapper.UserRoleInfoMapper;
 import com.yoogurt.taxi.user.dao.UserRoleDao;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
+@Repository
 public class UserRoleDaoImpl extends BaseDao<UserRoleInfoMapper, UserRoleInfo> implements UserRoleDao {
 }

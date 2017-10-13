@@ -95,6 +95,8 @@ public class ShiroRealm extends AuthorizingRealm{
             String from = token.getFrom();
             String username = token.getUsername();
 
+//            Integer userType = token.getUserType();
+
             Object o = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
             if (o == null || StringUtils.isBlank(token.getToken())) return null;
             SessionUser user = (SessionUser) o;
@@ -108,6 +110,7 @@ public class ShiroRealm extends AuthorizingRealm{
             principals.add(userId, "UserId");
             principals.add(username, "UserName");
             principals.add(from, "From");
+//            principals.add(userType, "userType");
             principals.add(user, "UserInfo");
             //userId和username拼接，MD5加密，作为shiro中的临时密码
             String credentials = DigestUtils.md5DigestAsHex((userId + username).getBytes());

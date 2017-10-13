@@ -28,6 +28,9 @@ public class OfficeDriverDetailModel extends AgentDriverDetailModel{
 
     public void setEnergyType(Integer energyType) {
         this.energyType = energyType;
-        this.energyTypeName = CarEnergyType.getEnumsByCode(energyType).getName();
+        CarEnergyType carEnergyType = CarEnergyType.getEnumsByCode(energyType);
+        if (carEnergyType != null) {
+            this.energyTypeName = carEnergyType.getName();
+        }
     }
 }

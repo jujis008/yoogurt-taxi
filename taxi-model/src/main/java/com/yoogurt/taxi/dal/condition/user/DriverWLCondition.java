@@ -4,6 +4,8 @@ import com.yoogurt.taxi.common.condition.PageableCondition;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Pattern;
+
 @Getter
 @Setter
 public class DriverWLCondition extends PageableCondition{
@@ -11,5 +13,6 @@ public class DriverWLCondition extends PageableCondition{
     private String username;
     private String idCard;
     private Integer userStatus;
-    private Integer userType;
+    @Pattern(regexp = "20|30",message = "司机身份标识有误")
+    private String userType;
 }

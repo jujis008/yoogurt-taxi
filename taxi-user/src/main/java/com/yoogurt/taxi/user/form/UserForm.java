@@ -17,7 +17,7 @@ public class UserForm {
     @NotNull(message = "请选择角色")
     private Long roleId;
     @NotNull(message = "请输入工号")
-    private String employeeNumber;
+    private String employeeNo;
     @NotNull(message = "请输入姓名")
     private String name;
     @NotNull(message = "请输入密码")

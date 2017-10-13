@@ -21,5 +21,4 @@ public interface UserDao extends IBatchDao<UserInfoMapper, UserInfo> {
 
     Page<UserWLModel> getUserWebListPage(UserWLCondition condition);
 
-    int batchInsert(List<UserInfo> list);
 }

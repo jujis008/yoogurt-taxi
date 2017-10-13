@@ -1,0 +1,5 @@
+oss:
+  appUser:
+    accessKeyId: LTAIKzIDr4ZiHqXW
+    accessKeySecret: YpZY8NRWXYB7XZYKo3G0EjsvDp1Ce8
+    roleArn: acs:ram::1997004053898270:role/appuser

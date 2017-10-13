@@ -39,7 +39,10 @@
         <table tableName="order_cancel_rule">
             <generatedKey column="rule_id" sqlStatement="Mysql" identity="true"/>
         </table>-->
-        <table tableName="order_comment_info">
+        <!--<table tableName="order_comment_info">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
+        </table>-->
+        <table tableName="finance_record">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
         <!--<table tableName="order_disobey_info">

@@ -9,6 +9,7 @@ import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.user.UserWLModel;
+import com.yoogurt.taxi.user.form.UserForm;
 
 import java.text.ParseException;
 import java.util.List;
@@ -18,7 +19,7 @@ public interface UserService {
 
     /**
      * 根据用户主键id获取用户信息
-     * @param id
+     * @param id 主键
      * @return
      */
     UserInfo getUserByUserId(Long id);
@@ -112,6 +113,8 @@ public interface UserService {
     ResponseObj InsertUser(UserInfo userInfo);
 
     ResponseObj modifyUser(UserInfo userInfo);
+
+    ResponseObj saveUser(UserForm form);
 
     /**
      * 根据条件，分页查询用户数据（web）

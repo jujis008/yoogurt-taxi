@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.jnlp.IntegrationService;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DriverServiceTest {
@@ -36,7 +38,7 @@ public class DriverServiceTest {
         Integer userStatus = UserStatus.AUTHENTICATED.getCode();
         condition.setUserStatus(userStatus);
         Integer userType = UserType.USER_APP_AGENT.getCode();
-        condition.setUserType(userType);
+        condition.setUserType(String.valueOf(userType));
         ResponseObj driverWebList = driverService.getDriverWebList(condition);
         System.out.println(driverWebList);
     }

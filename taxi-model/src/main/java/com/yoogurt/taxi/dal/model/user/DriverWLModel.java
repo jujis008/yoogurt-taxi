@@ -1,7 +1,11 @@
 package com.yoogurt.taxi.dal.model.user;
 
 import com.yoogurt.taxi.dal.enums.UserStatus;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class DriverWLModel {
     private Long id;
     private Long userId;
@@ -12,68 +16,11 @@ public class DriverWLModel {
     private Integer status;
     private String statusName;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getIdCard() {
-        return idCard;
-    }
-
-    public void setIdCard(String idCard) {
-        this.idCard = idCard;
-    }
-
-    public String getPlateNumber() {
-        return plateNumber;
-    }
-
-    public void setPlateNumber(String plateNumber) {
-        this.plateNumber = plateNumber;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
     public void setStatus(Integer status) {
         this.status = status;
-        this.statusName = UserStatus.getEnumsByCode(status).getName();
-    }
-
-    public String getStatusName() {
-        return statusName;
-    }
-
-    public void setStatusName(String statusName) {
-        this.statusName = statusName;
+        UserStatus userStatus = UserStatus.getEnumsByCode(status);
+        if (userStatus != null) {
+            this.statusName = userStatus.getName();
+        }
     }
 }

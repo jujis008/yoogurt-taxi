@@ -24,7 +24,7 @@ public class AuthorityInfoServiceImpl implements AuthorityInfoService{
 
     @Override
     public ResponseObj saveAuthorityInfo(AuthorityInfo authorityInfo) {
-        if (authorityInfo == null) {
+        if (authorityInfo.getId() == null) {
             authorityDao.insert(authorityInfo);
         } else {
             authorityDao.updateByIdSelective(authorityInfo);

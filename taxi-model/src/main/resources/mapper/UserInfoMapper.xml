@@ -50,14 +50,15 @@
             t1.username LIKE concat('%',#{username},'%')
         </if>
         <if test="employeeNo != null and employeeNo != ''">
-            t1.employee_no LIKE concat('%',#{employeeNo},'%')
+            AND t1.employee_no LIKE concat('%',#{employeeNo},'%')
         </if>
         <if test="name != null and name != ''">
-            t1.employee_no LIKE concat('%',#{name},'%')
+            AND t1.employee_no LIKE concat('%',#{name},'%')
         </if>
         <if test="roleId != null">
-            t2.id = #{roleId}
+            AND t2.id = #{roleId}
         </if>
+        AND t1.type=10 AND t1.is_deleted=0
     </where>
     ORDER BY t1.gmt_create DESC
     </select>

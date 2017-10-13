@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -140,7 +141,7 @@ public class UserMobileController extends BaseController {
 
     @RequestMapping(value = "/i/getSelectShow/className/{className}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getSelectShow(@PathVariable(name = "className") String className) {
-        List<EnumModel> enumModels = ReflectUtils.toSelectShow(className);
+        List<Map<String, Object>> enumModels = ReflectUtils.enums(className);
         return ResponseObj.success(enumModels);
     }
 
@@ -268,12 +269,12 @@ public class UserMobileController extends BaseController {
     /**
      * 激活账户-设置交易密码
      *
-     * @param password
+     * @param form
      * @return
      */
     @RequestMapping(value = "/payPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
-    public ResponseObj activePayPassword(@RequestBody String password) {
-        if (StringUtils.isBlank(password)) {
+    public ResponseObj activePayPassword(@RequestBody UserPatchForm form) {
+        if (StringUtils.isBlank(form.getPassword())) {
             return ResponseObj.fail(StatusCode.PARAM_BLANK, "请输入交易密码");
         }
         Long userId = getUserId();
@@ -288,7 +289,7 @@ public class UserMobileController extends BaseController {
         if (!object.equals("3")) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
-        ResponseObj responseObj = userService.payPwdSetting(userId, password);
+        ResponseObj responseObj = userService.payPwdSetting(userId, form.getPassword());
         return responseObj;
     }
 
@@ -306,11 +307,12 @@ public class UserMobileController extends BaseController {
         }
         Long userId = getUserId();
         DriverInfo driverInfo = driverService.getDriverByUserId(userId);
-        if (driverInfo.getIsAuthentication()) {
+        UserInfo userInfo = userService.getUserByUserId(userId);
+        if (userInfo.getStatus().equals(UserStatus.AUTHENTICATED.getCode())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "已认证，无需再次认证");
         }
         driverInfo.setIsAuthentication(Boolean.TRUE);
-        BeanUtils.copyProperties(driverInfo, form);
+        BeanUtilsExtends.copyProperties(driverInfo, form);
         driverService.saveDriverInfo(driverInfo);
         return ResponseObj.success();
     }
@@ -336,8 +338,9 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "车辆信息不存在");
         }
         CarInfo carInfo = carList.get(0);
-        if (carInfo.getIsAuthentication()) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "已认证，无需再验证");
+        UserInfo userInfo = userService.getUserByUserId(userId);
+        if (userInfo.getStatus() == UserStatus.AUTHENTICATED.getCode()) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "已认证，无需再次认证");
         }
         carInfo.setIsAuthentication(Boolean.TRUE);
         BeanUtilsExtends.copyProperties(carInfo, form);
@@ -348,15 +351,15 @@ public class UserMobileController extends BaseController {
     /**
      * 上传头像
      *
-     * @param avatar
+     * @param form
      * @return
      */
     @RequestMapping(value = "/avatar", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
-    public ResponseObj uploadAvatar(@RequestBody String avatar) {
-        if (StringUtils.isBlank(avatar)) {
+    public ResponseObj uploadAvatar(@RequestBody UserPatchForm form) {
+         if (StringUtils.isBlank(form.getAvatar())) {
             return ResponseObj.fail(StatusCode.PARAM_BLANK, "请上传头像");
         }
-        return userService.modifyHeadPicture(getUserId(), avatar);
+        return userService.modifyHeadPicture(getUserId(), form.getAvatar());
     }
 
     /**

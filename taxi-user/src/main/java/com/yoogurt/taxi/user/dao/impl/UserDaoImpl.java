@@ -23,8 +23,4 @@ public class UserDaoImpl extends BatchDao<UserInfoMapper, UserInfo> implements U
         return userInfoMapper.getUserWebListPage(condition);
     }
 
-    @Override
-    public int batchInsert(List<UserInfo> list) {
-        return userInfoMapper.batchInsert(list);
-    }
 }

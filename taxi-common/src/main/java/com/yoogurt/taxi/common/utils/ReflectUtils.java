@@ -2,21 +2,29 @@ package com.yoogurt.taxi.common.utils;
 
 import com.yoogurt.taxi.common.vo.EnumModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class ReflectUtils {
 
+    private static final String BASE_PACKAGE = "com.yoogurt.taxi.dal.enums";
+
     public static List<EnumModel> toSelectShow(String className) {
-        String packagePath = "com.yoogurt.taxi.dal.enums";
-        String fullClassName = packagePath+"."+ className;
+        String fullClassName = BASE_PACKAGE + "." + className;
 
         try {
             Class<Enum<?>> enumClass = ((Class<Enum<?>>) Class.forName(fullClassName));
+
+            //1.获取所有的属性
+            //2.根据属性获取getter方法
+            //3.依次调用getter方法，注入值
 
             // 无参方法名
             Method method = enumClass.getMethod("values");
@@ -50,6 +58,43 @@ public class ReflectUtils {
 
     }
 
+    public static List<Map<String, Object>> enums(String simpleName) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        String fullClassName = BASE_PACKAGE + "." + simpleName;
+        try {
+
+            Class<Enum<?>> clz = (Class<Enum<?>>) Class.forName(fullClassName);
+            Method valuesMethod = clz.getMethod("values");
+            Enum<?>[] values = (Enum<?>[]) valuesMethod.invoke(null);
+            Field[] fields = clz.getDeclaredFields();
+            for (Enum<?> value : values) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("property",value.name());
+                for (Field field : fields) {
+                    if(field.getType().equals(value.getClass()) || field.getName().equalsIgnoreCase("$VALUES")) continue;
+                    String fieldName = field.getName();
+                    String first = StringUtils.left(fieldName, 1);
+                    if (StringUtils.isBlank(first)) continue;
+                    Method method = clz.getMethod("get" + fieldName.replaceFirst(first, first.toUpperCase()));
+                    if (method == null) continue;
+                    map.put(fieldName, method.invoke(value));
+                }
+                list.add(map);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+        //1.获取所有的属性
+        //2.根据属性获取getter方法
+        //3.依次调用getter方法，注入值
+    }
+
+    public static void main(String[] args) {
+        List<Map<String, Object>> enums = enums("UserType");
+        toSelectShow("UserType");
+    }
 
     public static Object getProperty(Object obj, String name) {
         if (obj != null) {
