@@ -41,8 +41,13 @@ public class OrderInfoTests {
     @Test
     public void placeFormTest() {
         PlaceOrderForm orderForm = new PlaceOrderForm();
-        orderForm.setRentId(17092620025316058L);
-        orderForm.setUserId(8888L);
+        //代理司机发单，正式司机接单
+//        orderForm.setRentId(17101313391940434L);
+//        orderForm.setUserId(17092815473528528L);
+//        orderForm.setUserType(30);
+        //正式司机发单，代理司机接单
+        orderForm.setRentId(17101310122941084L);
+        orderForm.setUserId(17092815473528528L);
         orderForm.setUserType(20);
         ResponseObj obj = orderInfoService.placeOrder(orderForm);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());

@@ -237,6 +237,10 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             log.warn("租单信息不存在");
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "租单信息不存在");
         }
+        if (rentInfo.getUserType().equals(orderForm.getUserType())) {
+            log.warn("接单人和发单人两者的用户类型不能一样");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "接单人和发单人两者的用户类型不能一样");
+        }
         if (RentStatus.CANCELED.getCode().equals(rentInfo.getStatus())) {
             log.warn("该租单已取消，无法接单");
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单已取消，无法接单");
@@ -267,12 +271,26 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     private ResponseObj buildOrderInfo(PlaceOrderForm orderForm) {
         RentInfo rentInfo = rentInfoService.getRentInfo(orderForm.getRentId(), null);
+        //校验是否满足下单条件
         ResponseObj validateResult = isAllowOrder(rentInfo, orderForm);
         //下单校验未通过
         if(!validateResult.isSuccess()) return validateResult;
-
+        Long userId = orderForm.getUserId();
+        //租单信息不包含车辆，说明是代理司机发布的求租信息
+        if (rentInfo.getCarId() == null) {
+            RestResult<List<CarInfo>> carResult = userService.getCarInfoByUserId(userId);
+            if (!carResult.isSuccess()) {
+                log.warn("[REST]{}", carResult.getMessage());
+                return ResponseObj.fail(StatusCode.BIZ_FAILED, carResult.getMessage());
+            } else if (CollectionUtils.isEmpty(carResult.getBody())) {
+                log.warn("[REST]{}", "找不到出租车辆信息");
+                return ResponseObj.fail(StatusCode.BIZ_FAILED, "找不到出租车辆信息");
+            }
+            CarInfo carInfo = carResult.getBody().get(0);
+            buildCarInfo(rentInfo, carInfo);
+        }
         OrderInfo order = new OrderInfo(RandomUtils.getPrimaryKey());
-        RestResult<UserInfo> userResult = userService.getUserInfoById(orderForm.getUserId());
+        RestResult<UserInfo> userResult = userService.getUserInfoById(userId);
         if (!userResult.isSuccess()) {
             log.warn("[REST]{}", userResult.getMessage());
             return ResponseObj.fail(StatusCode.BIZ_FAILED, userResult.getMessage());
@@ -284,14 +302,10 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, driverResult.getMessage());
         }
         DriverInfo driverInfo = driverResult.getBody();
-        if (!rentInfo.getUserType().equals(userInfo.getType())) {
-            buildDriverInfo(order, rentInfo, driverInfo, userInfo);
-            buildRentInfo(order, rentInfo);
-            buildCarInfo(order, rentInfo);
-            return ResponseObj.success(order);
-        }
-        log.warn("接单人和发单人两者的用户类型不能一样");
-        return ResponseObj.fail(StatusCode.BIZ_FAILED, "接单人和发单人两者的用户类型不能一样");
+        buildDriverInfo(order, rentInfo, driverInfo, userInfo);
+        buildCarInfo(order, rentInfo);
+        buildRentInfo(order, rentInfo);
+        return ResponseObj.success(order);
     }
 
     private void buildRentInfo(OrderInfo order, RentInfo rent) {
@@ -314,6 +328,16 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         order.setEnergyType(rent.getEnergyType());
         order.setVin(rent.getVin());
         order.setRemark(rent.getRemark());
+    }
+
+    private void buildCarInfo(RentInfo rent, CarInfo car) {
+        rent.setCarId(car.getId());
+        rent.setCompany(car.getCompany());
+        rent.setPlateNumber(car.getPlateNumber());
+        rent.setVehicleType(car.getVehicleType());
+        rent.setEnergyType(car.getEnergyType());
+        rent.setCarThumb(car.getCarPicture());
+        rent.setVin(car.getVin());
     }
 
     private void buildDriverInfo(OrderInfo order, RentInfo rent, DriverInfo driver, UserInfo user) {
