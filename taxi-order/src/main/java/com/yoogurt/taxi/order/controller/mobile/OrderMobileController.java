@@ -4,18 +4,23 @@ import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
+import com.yoogurt.taxi.dal.enums.OrderStatus;
+import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.ResponsibleParty;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.*;
 import com.yoogurt.taxi.order.form.*;
 import com.yoogurt.taxi.order.service.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -40,10 +45,15 @@ public class OrderMobileController extends BaseController {
     @Autowired
     private CancelService cancelService;
 
+    @Autowired
+    private RentInfoService rentInfoService;
+
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getOrderList(OrderListCondition condition) {
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
-        condition.setUserId(super.getUserId());
+        SessionUser user = super.getUser();
+        condition.setUserId(user.getUserId());
+        condition.setUserType(user.getType());
         condition.setFromApp(true);
         return ResponseObj.success(orderInfoService.getOrderList(condition));
     }
@@ -58,7 +68,6 @@ public class OrderMobileController extends BaseController {
         orderForm.setUserType(user.getType());
         return orderInfoService.placeOrder(orderForm);
     }
-
 
     @RequestMapping(value = "/info/{orderId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getOrderDetails(@PathVariable(name = "orderId") Long orderId) {
@@ -151,5 +160,26 @@ public class OrderMobileController extends BaseController {
             return ResponseObj.success(model, extras);
         }
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "取消订单出现问题，请稍后再试");
+    }
+
+    @RequestMapping(value = "/cancel/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getCancelOrders() {
+        OrderListCondition condition = new OrderListCondition();
+        condition.setUserId(super.getUserId());
+        condition.setStatus(OrderStatus.CANCELED.getCode());
+        SessionUser user = super.getUser();
+        List<RentInfo> rentInfoList = rentInfoService.getRentInfoList(user.getUserId(), null, null, RentStatus.CANCELED.getCode(), RentStatus.TIMEOUT.getCode());
+        List<CancelModel> cancelList = orderInfoService.getCancelOrders(null, user.getUserId(), user.getType());
+        rentInfoList.forEach(rent -> {
+            CancelModel model = new CancelModel();
+            BeanUtils.copyProperties(rent, model);
+            model.setOrderId(rent.getRentId());
+            model.setCancelTime(rent.getGmtModify());
+            model.setReason("发布人取消订单");
+            model.setOrderTime(rent.getGmtCreate());
+            model.setAmount(rent.getPrice());
+            cancelList.add(model);
+        });
+        return ResponseObj.success(cancelList);
     }
 }

@@ -78,6 +78,15 @@
             AND order_id=#{orderId}
         </if>
 
+        <if test="userId != null and userType != null">
+            <if test="userType == 20">
+                AND agent_user_id=#{userId}
+            </if>
+            <if test="userType == 30">
+                AND official_user_id=#{userId}
+            </if>
+        </if>
+
         <if test="driverName != null and driverName != ''">
             AND (agent_driver_name=#{driverName} OR official_driver_name=#{driverName})
         </if>
@@ -98,5 +107,33 @@
             <![CDATA[ AND give_back_time <= #{endTime} ]]>
         </if>
         ORDER BY gmt_modify DESC, gmt_create DESC
+    </select>
+
+    <resultMap id="CancelModel" extends="OrderModel" type="com.yoogurt.taxi.dal.model.order.CancelModel">
+        <result column="reason" jdbcType="VARCHAR" property="reason"/>
+        <result column="cancel_time" jdbcType="INTEGER" property="cancelTime"/>
+    </resultMap>
+
+    <select id="getCancelOrders" parameterType="map" resultMap="CancelModel">
+        SELECT o.order_id, rent_id, agent_user_id, agent_driver_id, agent_driver_name, agent_driver_phone,
+            handover_time, give_back_time, company, address, lng, lat, price, amount, car_id, plate_number,
+            official_user_id, official_driver_id, official_driver_name, official_driver_phone,
+            is_commented, is_paid, status, o.gmt_create, c.reason, c.gmt_create AS cancel_time
+        FROM order_info AS o LEFT JOIN order_cancel_info AS c ON (c.order_id=o.order_id)
+        WHERE o.is_deleted=0 AND o.status=60
+
+        <if test="orderId != null and orderId > 0">
+            AND o.order_id=#{orderId}
+        </if>
+
+        <if test="userId != null and userType != null">
+            <if test="userType == 20">
+                AND agent_user_id=#{userId}
+            </if>
+            <if test="userType == 30">
+                AND official_user_id=#{userId}
+            </if>
+        </if>
+        ORDER BY o.gmt_create DESC
     </select>
 </mapper>

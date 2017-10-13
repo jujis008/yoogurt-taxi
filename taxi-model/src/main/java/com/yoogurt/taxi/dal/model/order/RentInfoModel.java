@@ -41,9 +41,9 @@ public class RentInfoModel {
 
 	private Double lat;
 
-	private Integer orderCount;
+	private int orderCount;
 
-	private Integer score;
+	private int score;
 
 	private Integer status;
 

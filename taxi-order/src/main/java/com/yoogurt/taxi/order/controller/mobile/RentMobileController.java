@@ -1,12 +1,15 @@
 package com.yoogurt.taxi.order.controller.mobile;
 
+import com.github.pagehelper.Page;
 import com.yoogurt.taxi.common.condition.PageableCondition;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.order.form.RentCancelForm;
 import com.yoogurt.taxi.order.form.RentForm;
 import com.yoogurt.taxi.order.service.RentInfoService;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -26,6 +30,9 @@ public class RentMobileController extends BaseController {
 
     @Autowired
     private RentInfoService rentInfoService;
+
+    @Autowired
+    private PagerFactory appPagerFactory;
 
     /**
      * 地图POI检索
@@ -61,12 +68,8 @@ public class RentMobileController extends BaseController {
     public ResponseObj getRentList(PageableCondition condition) {
 
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
-        RentListCondition c = new RentListCondition();
-        c.setUserId(super.getUserId());
-        c.setFromApp(true);
-        c.setPageSize(condition.getPageSize());
-        c.setPageNum(condition.getPageNum());
-        return ResponseObj.success(rentInfoService.getRentListByPage(c));
+        List<RentInfo> rents = rentInfoService.getRentInfoList(super.getUserId(), condition.getPageNum(), condition.getPageSize(), RentStatus.WAITING.getCode());
+        return ResponseObj.success(appPagerFactory.generatePager((Page<RentInfo>) rents));
     }
 
     /**

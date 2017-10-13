@@ -35,6 +35,11 @@ public class OrderListCondition extends PeriodWithPageableCondition {
     private Integer status;
 
     /**
+     * 用户类型
+     */
+    private Integer userType;
+
+    /**
      * 是否来自于App端的请求
      */
     private boolean fromApp;

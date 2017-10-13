@@ -1,12 +1,14 @@
 package com.yoogurt.taxi.dal.condition.order;
 
 import com.yoogurt.taxi.common.condition.SortWithPageableCondition;
+import com.yoogurt.taxi.dal.enums.RentStatus;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 列表形式展现租单信息，将地图上的检索条件带入进来。
@@ -47,6 +49,7 @@ public class RentListCondition extends SortWithPageableCondition {
 
     /**
      * 要匹配的租单状态。
+     *
      * @see com.yoogurt.taxi.dal.enums.OrderStatus
      */
     private Integer status;
@@ -73,6 +76,9 @@ public class RentListCondition extends SortWithPageableCondition {
      * 是否是来自App端的请求
      */
     private boolean fromApp;
+
+    private List<Integer> rentStatus;
+
 
     public RentListCondition() {
     }

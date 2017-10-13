@@ -82,16 +82,30 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
         Page<OrderModel> orders = orderDao.getOrderList(condition);
 
-        if(!condition.isFromApp()){
+        if (!condition.isFromApp()) {
             return webPagerFactory.generatePager(orders);
         }
         return appPagerFactory.generatePager(orders);
     }
 
+    /**
+     * 获取取消订单列表
+     *
+     * @param orderId  订单ID
+     * @param userId   用户ID
+     * @param userType 用户类型
+     * @return 取消订单列表
+     */
+    @Override
+    public List<CancelModel> getCancelOrders(Long orderId, Long userId, Integer userType) {
+
+        return orderDao.getCancelOrders(orderId, userId, userType);
+    }
+
     @Override
     public OrderInfo getOrderInfo(Long orderId, Long userId) {
         OrderInfo orderInfo = orderDao.selectById(orderId);
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
         //用户id不符合
         if (userId != null && !userId.equals(orderInfo.getAgentUserId()) && !userId.equals(orderInfo.getOfficialUserId())) {
             return null;
@@ -114,14 +128,15 @@ public class OrderInfoServiceImpl implements OrderInfoService {
     /**
      * 订单详情接口。
      * 需要获取当前状态以及之前的所有状态下的子订单信息。
+     *
      * @param orderId 订单id
-     * @param userId 用户id
+     * @param userId  用户id
      * @return 订单详细信息。
      * <p>
-     *     key: baseOrderModel表示订单的基本信息，对应的value是一个由OrderModel转换成的Map对象；
-     *     key：各个子状态model的类名(simpleName)，首字母小写，对应的value是一个由子Model转换成的Map对象；
-     *     key: disobeys表示违约记录，对应的value是一个数组；
-     *     key: trafficViolations表示违章记录
+     * key: baseOrderModel表示订单的基本信息，对应的value是一个由OrderModel转换成的Map对象；
+     * key：各个子状态model的类名(simpleName)，首字母小写，对应的value是一个由子Model转换成的Map对象；
+     * key: disobeys表示违约记录，对应的value是一个数组；
+     * key: trafficViolations表示违章记录
      * </p>
      */
     @Override
@@ -143,7 +158,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             //根据订单状态生成对应的model，此时对象的属性还未注入
             OrderModel model = getOrderModel(previous);
             previous = previous.previous();
-            if(model == null) continue;
+            if (model == null) continue;
             //根据名称，获取service
             //这里需要子订单的各个service继承OrderBizService接口
             OrderBizService service = (OrderBizService) context.getBean(model.getServiceName());
@@ -172,11 +187,11 @@ public class OrderInfoServiceImpl implements OrderInfoService {
      */
     @Override
     public boolean modifyStatus(Long orderId, OrderStatus status) {
-        if(orderId == null || orderId <= 0 || status == null) return false;
+        if (orderId == null || orderId <= 0 || status == null) return false;
         OrderInfo orderInfo = getOrderInfo(orderId, null);
-        if(orderInfo == null) return false;
-        if(status.getCode().equals(orderInfo.getStatus())) return true; //与原租单状态相同，直接返回true
-        if(status.getCode() < orderInfo.getStatus()) return false; //不允许状态回退
+        if (orderInfo == null) return false;
+        if (status.getCode().equals(orderInfo.getStatus())) return true; //与原租单状态相同，直接返回true
+        if (status.getCode() < orderInfo.getStatus()) return false; //不允许状态回退
 
         orderInfo.setStatus(status.getCode());
         return saveOrderInfo(orderInfo, false) != null;
@@ -186,35 +201,37 @@ public class OrderInfoServiceImpl implements OrderInfoService {
      * 保存订单信息，有订单ID则更新，否则插入
      *
      * @param orderInfo 订单信息
-     * @param add 是否插入
+     * @param add       是否插入
      * @return 保存后的订单信息
      */
     @Override
     public OrderInfo saveOrderInfo(OrderInfo orderInfo, boolean add) {
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
         if (add) {
-            if(orderDao.insertSelective(orderInfo) != 1) return null;
+            if (orderDao.insertSelective(orderInfo) != 1) return null;
         } else {
-            if(orderDao.updateByIdSelective(orderInfo) != 1) return null;
+            if (orderDao.updateByIdSelective(orderInfo) != 1) return null;
         }
         return orderInfo;
     }
 
     /**
      * 指定用户id和订单状态，获取相应的订单列表，并按交车时间升序排列。
-     * @param orderForm 用户id
-     * @param status 订单状态，可以传入多个
+     * @param userId   用户id
+     * @param userType 用户类型
+     * @param status   订单状态，可以传入多个
      * @return 租单列表
      */
-    private List<OrderInfo> getOrderList(PlaceOrderForm orderForm, Integer... status) {
+    @Override
+    public List<OrderInfo> getOrderList(Long userId, Integer userType, Integer... status) {
         Example ex = new Example(OrderInfo.class);
         Example.Criteria criteria = ex.createCriteria()
                 .andIn("status", Arrays.asList(status))
                 .andEqualTo("isDeleted", Boolean.FALSE);
-        if (UserType.USER_APP_AGENT.getCode().equals(orderForm.getUserType())) {
-            criteria.andEqualTo("agentUserId", orderForm.getUserId());
+        if (UserType.USER_APP_AGENT.getCode().equals(userType)) {
+            criteria.andEqualTo("agentUserId", userId);
         } else {
-            criteria.andEqualTo("officialUserId", orderForm.getUserId());
+            criteria.andEqualTo("officialUserId", userId);
         }
         ex.setOrderByClause("handover_time ASC");
         return orderDao.selectByExample(ex);
@@ -226,7 +243,8 @@ public class OrderInfoServiceImpl implements OrderInfoService {
      * 2、押金余额：充足
      * 3、未完成订单数量不超过上限
      * 4、交易时间不重叠
-     * @param rentInfo 租单信息
+     *
+     * @param rentInfo  租单信息
      * @param orderForm 下单用户ID
      * @return 校验结果
      */
@@ -254,8 +272,8 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
         DateTimeSection section = new DateTimeSection(rentInfo.getHandoverTime(), rentInfo.getGiveBackTime());
         //3. 未完成订单数量不超过上限
-        List<OrderInfo> orderList = getOrderList(orderForm, OrderStatus.HAND_OVER.getCode(), OrderStatus.PICK_UP.getCode(), OrderStatus.GIVE_BACK.getCode(), OrderStatus.ACCEPT.getCode());
-        if(CollectionUtils.size(orderList) >= Constants.MAX_RENT_COUNT)
+        List<OrderInfo> orderList = getOrderList(orderForm.getUserId(), orderForm.getUserType(), OrderStatus.HAND_OVER.getCode(), OrderStatus.PICK_UP.getCode(), OrderStatus.GIVE_BACK.getCode(), OrderStatus.ACCEPT.getCode());
+        if (CollectionUtils.size(orderList) >= Constants.MAX_RENT_COUNT)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "最多发布" + Constants.MAX_RENT_COUNT + "笔租单");
 
         //4. 交易时间不重叠
@@ -274,7 +292,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         //校验是否满足下单条件
         ResponseObj validateResult = isAllowOrder(rentInfo, orderForm);
         //下单校验未通过
-        if(!validateResult.isSuccess()) return validateResult;
+        if (!validateResult.isSuccess()) return validateResult;
         Long userId = orderForm.getUserId();
         //租单信息不包含车辆，说明是代理司机发布的求租信息
         if (rentInfo.getCarId() == null) {
@@ -368,11 +386,12 @@ public class OrderInfoServiceImpl implements OrderInfoService {
 
     /**
      * 根据订单状态生成对应的Model
+     *
      * @param status 订单状态
      * @return OrderModel
      */
     private OrderModel getOrderModel(OrderStatus status) {
-        if(status == null) return null;
+        if (status == null) return null;
 
         switch (status) {
             case PICK_UP:

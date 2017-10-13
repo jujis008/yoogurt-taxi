@@ -1,8 +1,8 @@
 package com.yoogurt.taxi.order.service.impl;
 
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.bo.DateTimeSection;
-import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
@@ -61,14 +61,26 @@ public class RentInfoServiceImpl implements RentInfoService {
     public Pager<RentInfoModel> getRentListByPage(RentListCondition condition) {
 
         Page<RentInfoModel> page = rentDao.getRentListByPage(condition);
-        if(!condition.isFromApp()){
+        if (!condition.isFromApp()) {
             return webPagerFactory.generatePager(page);
         }
         return appPagerFactory.generatePager(page);
     }
 
+    @Override
+    public List<RentInfo> getRentInfoList(Long userId, Integer pageNum, Integer pageSize, Integer... status) {
+        Example ex = new Example(RentInfo.class);
+        ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE).andEqualTo("userId", userId).andIn("status", Arrays.asList(status));
+        if (pageNum != null && pageSize != null) {
+            PageHelper.startPage(pageNum, pageSize, "gmt_create DESC");
+        }
+        return rentDao.selectByExample(ex);
+    }
+
+
     /**
      * 获取租单信息
+     *
      * @param rentId 租单信息ID
      * @param userId 发单人ID
      * @return 租单信息
@@ -77,8 +89,8 @@ public class RentInfoServiceImpl implements RentInfoService {
     public RentInfo getRentInfo(Long rentId, Long userId) {
         if (rentId != null && rentId > 0) {
             RentInfo rentInfo = rentDao.selectById(rentId);
-            if(rentInfo == null) return null;
-            if(userId != null && !userId.equals(rentInfo.getUserId())) return null;
+            if (rentInfo == null) return null;
+            if (userId != null && !userId.equals(rentInfo.getUserId())) return null;
             return rentInfo;
         }
         return null;
@@ -100,7 +112,7 @@ public class RentInfoServiceImpl implements RentInfoService {
     public RentInfo cancel(RentCancelForm cancelForm) {
 
         RentInfo rentInfo = getRentInfo(cancelForm.getRentId(), cancelForm.getUserId());
-        if(rentInfo == null) return null;
+        if (rentInfo == null) return null;
         if (!RentStatus.WAITING.getCode().equals(rentInfo.getStatus())) return null;
         rentInfo.setStatus(RentStatus.CANCELED.getCode());
         if (modifyStatus(cancelForm.getRentId(), RentStatus.CANCELED)) {
@@ -111,11 +123,11 @@ public class RentInfoServiceImpl implements RentInfoService {
 
     @Override
     public boolean modifyStatus(Long rentId, RentStatus status) {
-        if(rentId == null || rentId <= 0 || status == null) return false;
+        if (rentId == null || rentId <= 0 || status == null) return false;
         RentInfo rentInfo = getRentInfo(rentId, null);
-        if(rentInfo == null) return false;
-        if(status.getCode().equals(rentInfo.getStatus())) return true; //与原租单状态相同，直接返回true
-        if(status.getCode() < rentInfo.getStatus()) return false; //不允许状态回退
+        if (rentInfo == null) return false;
+        if (status.getCode().equals(rentInfo.getStatus())) return true; //与原租单状态相同，直接返回true
+        if (status.getCode() < rentInfo.getStatus()) return false; //不允许状态回退
 
         rentInfo.setStatus(status.getCode());
         return rentDao.updateByIdSelective(rentInfo) == 1;
@@ -123,6 +135,7 @@ public class RentInfoServiceImpl implements RentInfoService {
 
     /**
      * 指定用户id和租单状态，获取相应的租单列表，并按交车时间升序排列。
+     *
      * @param userId 用户id
      * @param status 租单状态，可以传入多个
      * @return 租单列表
@@ -143,6 +156,7 @@ public class RentInfoServiceImpl implements RentInfoService {
      * 1、押金余额：充足；
      * 2、不能超过未完成订单数量上限；
      * 3、订单时间不能重叠。
+     *
      * @return 校验结果
      */
     private ResponseObj isAllowPublish(RentForm rentForm) {
@@ -151,19 +165,18 @@ public class RentInfoServiceImpl implements RentInfoService {
         if (rentForm.getHandoverTime().getTime() - new Date().getTime() < Constants.MIN_PUBLISH_INTERVAL_HOURS * 3600000)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与发单时间至少间隔" + Constants.MIN_PUBLISH_INTERVAL_HOURS + "小时");
 
-        if(rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_WORKING_HOURS * 3600000)
+        if (rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_WORKING_HOURS * 3600000)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与还车时间至少间隔" + Constants.MIN_WORKING_HOURS + "小时");
 
         //TODO 1. 押金校验
 
 
-
         List<RentInfo> rentList = getRentList(userId, RentStatus.WAITING.getCode(), RentStatus.RENT.getCode());
-        if(CollectionUtils.isEmpty(rentList)) //未发布过租单，直接返回成功
+        if (CollectionUtils.isEmpty(rentList)) //未发布过租单，直接返回成功
             return ResponseObj.success();
 
         //2. 订单数量上限校验
-        if(rentList.size() >= Constants.MAX_RENT_COUNT)
+        if (rentList.size() >= Constants.MAX_RENT_COUNT)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "最多发布" + Constants.MAX_RENT_COUNT + "笔租单");
 
         DateTimeSection section = new DateTimeSection(rentForm.getHandoverTime(), rentForm.getGiveBackTime());
@@ -182,7 +195,7 @@ public class RentInfoServiceImpl implements RentInfoService {
     private ResponseObj buildRentInfo(RentForm rentForm) {
         ResponseObj validateResult = isAllowPublish(rentForm);
         //校验不成功，直接返回校验结果
-        if(!validateResult.isSuccess()) return validateResult;
+        if (!validateResult.isSuccess()) return validateResult;
 
         RentInfo rentInfo = new RentInfo(RandomUtils.getPrimaryKey());
         BeanUtils.copyProperties(rentForm, rentInfo);
@@ -200,7 +213,7 @@ public class RentInfoServiceImpl implements RentInfoService {
         DriverInfo driverInfo = driverResult.getBody();
         rentInfo.setDriverId(driverInfo.getId());
         UserInfo user = userResult.getBody();
-        if(user != null) {
+        if (user != null) {
             //如果是正式司机，需要注入车辆相关信息
             if (user.getType().equals(UserType.USER_APP_OFFICE.getCode())) {
                 RestResult<List<CarInfo>> carInfo = userService.getCarInfoByUserId(userId);
