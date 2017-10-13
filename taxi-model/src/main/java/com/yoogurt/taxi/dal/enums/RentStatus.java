@@ -32,5 +32,14 @@ public enum RentStatus {
         this.code = code;
         this.name = name;
     }
+
+    public boolean isAllowOrder() {
+        switch (this) {
+            case WAITING:
+                return true;
+            default:
+                return false;
+        }
+    }
 }
 

@@ -1,10 +1,13 @@
 package com.yoogurt.taxi.order.service.impl;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderCommentInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.CommentListCondition;
+import com.yoogurt.taxi.dal.enums.OrderStatus;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.dao.CommentDao;
 import com.yoogurt.taxi.order.form.CommentForm;
 import com.yoogurt.taxi.order.service.CommentService;
@@ -27,35 +30,45 @@ public class CommentServiceImpl implements CommentService {
     private OrderInfoService orderInfoService;
 
     @Override
-    public OrderCommentInfo doComment(CommentForm commentForm) {
+    public ResponseObj doComment(CommentForm commentForm) {
 
         Long orderId = commentForm.getOrderId();
+        //检查订单是否存在
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, commentForm.getUserId());
-        if(orderInfo.getIsCommented()) return null;
+        if(orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
+        if (!OrderStatus.FINISH.getCode().equals(orderInfo.getStatus())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "请结束订单后再提交评价");
+        }
+        //不能对自己评价
+        if (!isAllowed(orderInfo, commentForm)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "评论对象有误");
+        }
+        //检查该用户有没有提交评论
+        CommentListCondition condition = new CommentListCondition();
+        condition.setOrderId(commentForm.getOrderId());
+        condition.setUserId(commentForm.getUserId());
+        if(getComments(condition).size() > 0) return ResponseObj.fail(StatusCode.BIZ_FAILED, "该订单已评论");
+        //构造评论信息
         OrderCommentInfo comment = new OrderCommentInfo();
         BeanUtils.copyProperties(commentForm, comment);
         comment.setTagId(StringUtils.join(commentForm.getTagId(), ","));
         comment.setTagName(StringUtils.join(commentForm.getTagName(), ","));
-        if (commentDao.insert(comment) == 1) {
-            orderInfo.setIsCommented(true);
-            orderInfoService.saveOrderInfo(orderInfo, false);
-            return comment;
-        }
-        return null;
+        return commentDao.insert(comment) == 1 ? ResponseObj.success(comment) : ResponseObj.fail();
     }
 
     @Override
     public List<OrderCommentInfo> getComments(CommentListCondition condition) {
 
-        List<OrderCommentInfo> commentList = Lists.newArrayList();
         Example ex = new Example(OrderCommentInfo.class);
         Example.Criteria criteria = ex.createCriteria();
+        if (condition.getUserId() != null) {
+            criteria.andEqualTo("userId", condition.getUserId());
+        }
+        if (condition.getOrderId() != null) {
+            criteria.andEqualTo("orderId", condition.getOrderId());
+        }
         if (condition.getDriverId() != null) {
             criteria.andEqualTo("driverId", condition.getDriverId());
-        } else if (condition.getOrderId() != null) {
-            criteria.andEqualTo("orderId", condition.getOrderId());
-        } else { //没有查询条件，返回空列表
-            return commentList;
         }
         criteria.andEqualTo("isDeleted", Boolean.FALSE);
         return commentDao.selectByExample(ex);
@@ -71,4 +84,11 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.updateByExampleSelective(probe, ex);
     }
 
+
+    private boolean isAllowed(OrderInfo orderInfo, CommentForm commentForm) {
+        Long driverId = commentForm.getDriverId();
+        Integer userType = commentForm.getUserType();
+        return UserType.USER_APP_OFFICE.getCode().equals(userType) && orderInfo.getAgentDriverId().equals(driverId)
+                || UserType.USER_APP_AGENT.getCode().equals(userType) && orderInfo.getOfficialDriverId().equals(driverId);
+    }
 }

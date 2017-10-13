@@ -9,7 +9,7 @@ import lombok.Setter;
 public class OrderListCondition extends PeriodWithPageableCondition {
 
     /**
-     *
+     * 用户ID
      */
     private Long userId;
 

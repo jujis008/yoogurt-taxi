@@ -15,6 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -77,7 +79,9 @@ public class RentMobileController extends BaseController {
 
         RentInfo rentInfo = rentInfoService.getRentInfo(rentId, getUserId());
         if(rentInfo != null) {
-            return ResponseObj.success(rentInfo);
+            Map<String, Object> extras = new HashMap<>();
+            extras.put("timestamp", System.currentTimeMillis());
+            return ResponseObj.success(rentInfo, extras);
         }
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "找不到租单信息");
     }

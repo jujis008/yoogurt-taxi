@@ -26,4 +26,5 @@ public class CommentForm extends OrderForm {
 	@Length(max = 128, message = "备注信息最多128个字")
 	private String remark;
 
+	private Integer userType;
 }

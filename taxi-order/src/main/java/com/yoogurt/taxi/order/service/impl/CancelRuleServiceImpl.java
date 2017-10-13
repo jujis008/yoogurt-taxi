@@ -23,7 +23,7 @@ public class CancelRuleServiceImpl implements CancelRuleService {
     public String getIntroduction() {
         List<OrderCancelRule> ruleList = getRules();
         if(CollectionUtils.isEmpty(ruleList)) return StringUtils.EMPTY;
-        StringBuilder introduction = new StringBuilder("\n取消订单规则说明：\n");
+        StringBuilder introduction = new StringBuilder("取消订单规则说明：\n");
         ruleList.forEach((OrderCancelRule rule) -> {
             String unit = getCNTimeUnit(rule.getUnit());
             introduction.append("距离交车时间");

@@ -237,9 +237,13 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             log.warn("租单信息不存在");
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "租单信息不存在");
         }
+        if (RentStatus.CANCELED.getCode().equals(rentInfo.getStatus())) {
+            log.warn("该租单已取消，无法接单");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单已取消，无法接单");
+        }
         if (!RentStatus.WAITING.getCode().equals(rentInfo.getStatus())) {
-            log.warn("该租单信息已被他人接单");
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单信息已被他人接单");
+            log.warn("该租单信息已被他人接走");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单信息已被他人接走");
         }
         //TODO 2. 押金余额 "extras": {"redirect": "charge"}
 

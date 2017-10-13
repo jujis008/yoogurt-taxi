@@ -7,7 +7,9 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="driver_id" jdbcType="BIGINT" property="driverId" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
     <result column="score" jdbcType="INTEGER" property="score" />
     <result column="tag_id" jdbcType="VARCHAR" property="tagId" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
@@ -17,10 +19,5 @@
     <result column="creator" jdbcType="BIGINT" property="creator" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
-    <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
-    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-    <result column="creator" jdbcType="BIGINT" property="creator"/>
-    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-    <result column="modifier" jdbcType="BIGINT" property="modifier"/>
   </resultMap>
 </mapper>

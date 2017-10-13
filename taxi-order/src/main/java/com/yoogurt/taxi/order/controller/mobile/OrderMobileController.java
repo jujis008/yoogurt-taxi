@@ -1,8 +1,10 @@
 package com.yoogurt.taxi.order.controller.mobile;
 
+import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
 import com.yoogurt.taxi.dal.enums.ResponsibleParty;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.*;
@@ -38,15 +40,22 @@ public class OrderMobileController extends BaseController {
     @Autowired
     private CancelService cancelService;
 
-
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getOrderList(OrderListCondition condition) {
+        if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        condition.setUserId(super.getUserId());
+        condition.setFromApp(true);
+        return ResponseObj.success(orderInfoService.getOrderList(condition));
+    }
 
     @RequestMapping(value = "/", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj placeOrder(@Valid @RequestBody PlaceOrderForm orderForm, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        orderForm.setUserId(super.getUserId());
-        orderForm.setUserType(super.getUserType());
+        SessionUser user = super.getUser();
+        orderForm.setUserId(user.getUserId());
+        orderForm.setUserType(user.getType());
         return orderInfoService.placeOrder(orderForm);
     }
 
@@ -62,7 +71,7 @@ public class OrderMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUserType())) {
+        if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUser().getType())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有正式司机才能进行交车操作");
         }
         HandoverOrderModel model = handoverService.doHandover(form);
@@ -79,7 +88,7 @@ public class OrderMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        if (!UserType.USER_APP_AGENT.getCode().equals(super.getUserType())) {
+        if (!UserType.USER_APP_AGENT.getCode().equals(super.getUser().getType())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有代理司机才能进行取车操作");
         }
         PickUpOrderModel model = pickUpService.doPickUp(form);
@@ -96,7 +105,7 @@ public class OrderMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        if (!UserType.USER_APP_AGENT.getCode().equals(super.getUserType())) {
+        if (!UserType.USER_APP_AGENT.getCode().equals(super.getUser().getType())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有代理司机才能进行还车操作");
         }
         GiveBackOrderModel model = giveBackService.doGiveBack(form);
@@ -113,7 +122,7 @@ public class OrderMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUserType())) {
+        if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUser().getType())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有正式司机才能进行收车操作");
         }
         AcceptOrderModel model = acceptService.doAccept(form);
@@ -131,8 +140,9 @@ public class OrderMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         form.setFromApp(true);
-        form.setResponsibleParty(ResponsibleParty.getEnumsByType(super.getUserType()).getCode());
-        form.setReason(UserType.USER_APP_OFFICE.getCode().equals(super.getUserType()) ? "正式司机手动取消" : "代理司机手动取消");
+        SessionUser user = super.getUser();
+        form.setResponsibleParty(ResponsibleParty.getEnumsByType(user.getType()).getCode());
+        form.setReason(UserType.USER_APP_OFFICE.getCode().equals(user.getType()) ? "正式司机手动取消" : "代理司机手动取消");
 
         CancelOrderModel model = cancelService.doCancel(form);
         if (model != null) {

@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.order;
 
+import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderCommentInfo;
 import com.yoogurt.taxi.order.form.CommentForm;
 import com.yoogurt.taxi.order.service.CommentService;
@@ -22,13 +23,15 @@ public class CommentTests {
     @Test
     public void doCommentTest() {
         CommentForm commentForm = new CommentForm();
-        commentForm.setDriverId(17092815473439032L);
         commentForm.setOrderId(17092615073534929L);
+        commentForm.setDriverId(17092815464697333L);
+        commentForm.setUserId(17092815473269469L);
+        commentForm.setUserType(30);
         commentForm.setScore(5);
         commentForm.setTagId(new String[]{"1", "2"});
         commentForm.setTagName(new String[]{"驾驶平稳", "准时送达"});
         commentForm.setRemark("xxx");
-        OrderCommentInfo comment = commentService.doComment(commentForm);
-        Assert.assertNotNull("评论失败！", comment);
+        ResponseObj o = commentService.doComment(commentForm);
+        Assert.assertTrue(o.getMessage(), o.isSuccess());
     }
 }

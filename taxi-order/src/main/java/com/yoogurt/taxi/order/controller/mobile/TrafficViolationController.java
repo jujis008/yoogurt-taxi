@@ -1,10 +1,14 @@
 package com.yoogurt.taxi.order.controller.mobile;
 
+import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderTrafficViolationInfo;
 import com.yoogurt.taxi.dal.condition.order.TrafficViolationListCondition;
+import com.yoogurt.taxi.dal.enums.TrafficStatus;
+import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.order.form.TrafficHandleForm;
 import com.yoogurt.taxi.order.form.TrafficViolationForm;
 import com.yoogurt.taxi.order.service.TrafficViolationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +41,29 @@ public class TrafficViolationController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        form.setUserId(super.getUserId());
+        SessionUser user = super.getUser();
+        if (!UserType.USER_APP_OFFICE.getCode().equals(user.getType())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "您目前无法录入违章记录");
+        }
+        form.setUserId(user.getUserId());
         ResponseObj obj = trafficViolationService.buildTrafficViolation(form);
         if(!obj.isSuccess()) return obj;
         OrderTrafficViolationInfo traffic = trafficViolationService.addTrafficViolation((OrderTrafficViolationInfo) obj.getBody());
         if(traffic != null) return ResponseObj.success(traffic);
         return ResponseObj.fail();
+    }
+
+
+    @RequestMapping(value = "/trafficViolation", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
+    public ResponseObj trafficHandle(@Valid @RequestBody TrafficHandleForm disobeyForm, BindingResult result) {
+
+        if(result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
+        }
+        if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUser().getType())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "您目前无法处理此违章");
+        }
+        OrderTrafficViolationInfo info = trafficViolationService.modifyStatus(disobeyForm.getId(), TrafficStatus.NORMAL);
+        return info != null ? ResponseObj.success(info) : ResponseObj.fail();
     }
 }
