@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.order.controller.mobile;
 
+import com.yoogurt.taxi.common.condition.PageableCondition;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -49,6 +50,23 @@ public class RentMobileController extends BaseController {
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         condition.setFromApp(true);
         return ResponseObj.success(rentInfoService.getRentListByPage(condition));
+    }
+
+    /**
+     * 我发布的租单列表
+     * @param condition 分页条件
+     * @return ResponseObj
+     */
+    @RequestMapping(value = "/rents", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getRentList(PageableCondition condition) {
+
+        if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        RentListCondition c = new RentListCondition();
+        c.setUserId(super.getUserId());
+        c.setFromApp(true);
+        c.setPageSize(condition.getPageSize());
+        c.setPageNum(condition.getPageNum());
+        return ResponseObj.success(rentInfoService.getRentListByPage(c));
     }
 
     /**
