@@ -14,8 +14,8 @@ import javax.persistence.*;
 @Table(name = "order_statistic")
 public class OrderStatistic extends SuperModel{
     @Id
-    @Column(name = "driver_id")
-    private Long driverId;
+    @Column(name = "user_id")
+    private Long userId;
 
     /**
      * 交易量
