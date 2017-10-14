@@ -24,12 +24,12 @@ public class CommentTests {
     public void doCommentTest() {
         CommentForm commentForm = new CommentForm();
         commentForm.setOrderId(17092615073534929L);
-        commentForm.setDriverId(17092815464697333L);
-        commentForm.setUserId(17092815473269469L);
-        commentForm.setUserType(30);
+        commentForm.setDriverId(17092815473439032L);
+        commentForm.setUserId(8888L);
+        commentForm.setUserType(20);
         commentForm.setScore(5);
-        commentForm.setTagId(new String[]{"1", "2"});
-        commentForm.setTagName(new String[]{"驾驶平稳", "准时送达"});
+        commentForm.setTagId(new Long[]{1L, 2L});
+        commentForm.setTagName(new String[]{"驾驶平稳", "爱护车辆"});
         commentForm.setRemark("xxx");
         ResponseObj o = commentService.doComment(commentForm);
         Assert.assertTrue(o.getMessage(), o.isSuccess());

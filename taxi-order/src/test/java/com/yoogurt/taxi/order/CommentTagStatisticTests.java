@@ -24,11 +24,7 @@ public class CommentTagStatisticTests {
 
     @Test
     public void recordTest() {
-        CommentForm form = new CommentForm();
-        form.setUserId(8888L);
-        form.setTagId(new String[]{"1", "2"});
-        form.setTagName(new String[]{"驾驶平稳", "爱护车辆"});
-        statisticService.record(form);
+        statisticService.record(8888L, new Long[]{1L, 2L}, new String[]{"驾驶平稳", "爱护车辆"});
     }
 
     @Test

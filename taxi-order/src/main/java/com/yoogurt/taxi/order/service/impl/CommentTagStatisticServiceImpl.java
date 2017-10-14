@@ -2,7 +2,6 @@ package com.yoogurt.taxi.order.service.impl;
 
 import com.yoogurt.taxi.dal.beans.CommentTagStatistic;
 import com.yoogurt.taxi.order.dao.CommentTagStatisticDao;
-import com.yoogurt.taxi.order.form.CommentForm;
 import com.yoogurt.taxi.order.service.CommentTagStatisticService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +20,13 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
     /**
      * 记录本次评价标签的使用情况
      *
-     * @param commentForm 评价表单信息
+     * @param userId 被评价的用户id
+     * @param tagIds 一组评价标签id
+     * @param tagNames 一组评价标签名称
      */
     @Override
-    public void record(CommentForm commentForm) {
-        List<CommentTagStatistic> statistics = buildStatistic(commentForm.getUserId(), commentForm.getTagId(), commentForm.getTagName());
+    public void record(Long userId, Long[] tagIds, String[] tagNames) {
+        List<CommentTagStatistic> statistics = buildStatistic(userId, tagIds, tagNames);
         if (CollectionUtils.isNotEmpty(statistics)) {
             statistics.forEach(statistic -> statisticDao.saveStatistic(statistic));
         }
@@ -45,7 +46,7 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
         return statisticDao.selectByExample(ex);
     }
 
-    private List<CommentTagStatistic> buildStatistic(Long userId, String[] tagIds, String[] tagNames) {
+    private List<CommentTagStatistic> buildStatistic(Long userId, Long[] tagIds, String[] tagNames) {
         List<CommentTagStatistic> statistics = new ArrayList<>();
         if(userId == null || tagIds == null || tagIds.length == 0 || tagNames == null || tagNames.length == 0) return statistics;
         //长度不对应
@@ -53,7 +54,7 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
         for (int i = 0, len = tagIds.length; i < len; i++) {
 
             CommentTagStatistic statistic = new CommentTagStatistic(userId);
-            statistic.setTagId(Long.valueOf(tagIds[i]));
+            statistic.setTagId(tagIds[i]);
             statistic.setTagName(tagNames[i]);
             statistic.setCounter(1);
             statistics.add(statistic);

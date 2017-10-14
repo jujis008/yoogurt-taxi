@@ -11,6 +11,7 @@ import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.dao.CommentDao;
 import com.yoogurt.taxi.order.form.CommentForm;
 import com.yoogurt.taxi.order.service.CommentService;
+import com.yoogurt.taxi.order.service.CommentTagStatisticService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +29,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private OrderInfoService orderInfoService;
+
+    @Autowired
+    private CommentTagStatisticService statisticService;
 
     @Override
     public ResponseObj doComment(CommentForm commentForm) {
@@ -53,7 +57,13 @@ public class CommentServiceImpl implements CommentService {
         BeanUtils.copyProperties(commentForm, comment);
         comment.setTagId(StringUtils.join(commentForm.getTagId(), ","));
         comment.setTagName(StringUtils.join(commentForm.getTagName(), ","));
-        return commentDao.insert(comment) == 1 ? ResponseObj.success(comment) : ResponseObj.fail();
+        if (commentDao.insert(comment) == 1) {
+            Long toCommentUseId = UserType.USER_APP_OFFICE.getCode().equals(commentForm.getUserType()) ? orderInfo.getAgentUserId() : orderInfo.getOfficialUserId();
+            //记录标签使用情况
+            statisticService.record(toCommentUseId, commentForm.getTagId(), commentForm.getTagName());
+            return ResponseObj.success(comment);
+        }
+        return ResponseObj.fail();
     }
 
     @Override
