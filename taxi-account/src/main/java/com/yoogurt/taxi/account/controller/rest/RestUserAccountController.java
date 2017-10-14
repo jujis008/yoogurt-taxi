@@ -25,11 +25,13 @@ public class RestUserAccountController {
     public RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") Long userId) {
         FinanceAccount financeAccount = financeAccountService.get(userId);
         if (financeAccount == null) {
-            return RestResult.fail(StatusCode.REST_FAIL, "账户信息不存在");
             ResponseObj responseObj = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), new Money(Constants.receivableDeposit), userId);
-            return RestResult.of(responseObj);
+            if (responseObj.isSuccess()) {
+                financeAccount = (FinanceAccount) responseObj.getBody();
+            }
         }
-        return RestResult.success(financeAccount);
+        if(financeAccount != null) return RestResult.success(financeAccount);
+        return RestResult.fail(StatusCode.BIZ_FAILED, "账户信息不存在");
     }
 
 //    @RequestMapping(value = "/userId/{userId}",method = RequestMethod.POST)
