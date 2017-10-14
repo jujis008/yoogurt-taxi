@@ -24,6 +24,7 @@ import java.util.Set;
 /**
  * Description:
  * 针对/web/**形式的过滤器，主要是对uri的鉴权。
+ *
  * @author Eric Lau
  * @Date 2017/9/5.
  */
@@ -43,14 +44,13 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
         // 获取当前用户的URL
         String currentUrl = getPathWithinApplication(request);
         AntPathMatcher matcher = new AntPathMatcher();
-        if (matcher.match(IGNORE_PATTERN,currentUrl)) {
+        if (matcher.match(IGNORE_PATTERN, currentUrl)) {
             return true;
         }
         Collection<SessionUser> userInfoList = subject.getPrincipals().fromRealm("UserInfo");
-        for (SessionUser userInfo1:userInfoList) {
-            if (UserType.getEnumsByCode(userInfo1.getType()) == UserType.SUPER_ADMIN) {
-                return true;
-            }
+        SessionUser user = userInfoList.iterator().next();
+        if (UserType.SUPER_ADMIN.getCode().equals(user.getType())) {
+            return true;
         }
         //判断当前用户是有该uri的访问权限
         if (!subject.isPermitted(currentUrl)) {
@@ -62,7 +62,8 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
 
     /**
      * isAccessAllowed(request, response)==false触发此方法。
-     * @param request request
+     *
+     * @param request  request
      * @param response response
      * @return always false
      * @throws Exception Exception
@@ -78,7 +79,8 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
 
     /**
      * 如果没有权限，抛出无权限访问异常，前端处理
-     * @param request request
+     *
+     * @param request  request
      * @param response response
      * @throws IOException IOException
      */
