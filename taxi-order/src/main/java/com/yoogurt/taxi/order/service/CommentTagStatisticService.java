@@ -18,7 +18,7 @@ public interface CommentTagStatisticService {
     /**
      * 获取司机评价标签统计信息
      * @param userId 用户id
-     * @return 标签使用统计信息
+     * @return 标签使用统计信息，如果没有统计信息，会返回空列表。
      */
     List<CommentTagStatistic> getStatistic(Long userId);
 }
