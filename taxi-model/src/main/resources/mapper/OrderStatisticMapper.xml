@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="driver_id" jdbcType="BIGINT" property="driverId" />
+    <id column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="order_count" jdbcType="INTEGER" property="orderCount" />
     <result column="score" jdbcType="DECIMAL" property="score" />
     <result column="traffic_violation_count" jdbcType="INTEGER" property="trafficViolationCount" />
@@ -16,4 +16,28 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     <result column="modifier" jdbcType="BIGINT" property="modifier"/>
   </resultMap>
+
+  <insert id="saveStatistic" parameterType="com.yoogurt.taxi.dal.beans.OrderStatistic">
+    INSERT INTO order_statistic(user_id, order_count, score, traffic_violation_count, disobey_count, is_deleted, gmt_create, creator, gmt_modify, modifier)
+    VALUES (#{userId}, #{orderCount}, #{score}, #{trafficViolationCount}, ${disobeyCount}, #{isDeleted}, #{gmtCreate}, #{creator}, #{gmtModify}, #{modifier})
+    ON DUPLICATE KEY UPDATE
+    <if test="orderCount != null and orderCount > 0">
+      order_count=order_count+#{orderCount},
+    </if>
+
+    <if test="score != null and score > 0">
+      score=#{score},
+    </if>
+
+    <if test="trafficViolationCount != null and trafficViolationCount > 0">
+      traffic_violation_count=traffic_violation_count+#{trafficViolationCount},
+    </if>
+
+    <if test="disobeyCount != null and disobeyCount > 0">
+      disobey_count=disobey_count+#{disobeyCount},
+    </if>
+
+    gmt_modify=NOW(), modifier=#{modifier}
+  </insert>
+
 </mapper>
