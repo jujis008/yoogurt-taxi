@@ -49,12 +49,12 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     }
 
     @Override
-    public int updateStatus(Long id, BillStatus status) {
+    public int updateStatus(Long id, BillStatus billStatus) {
         FinanceBill financeBill = get(id);
         if (financeBill == null) {
             return 0;
         }
-        financeBill.setStatus(status.getCode());
+        financeBill.setBillStatus(billStatus.getCode());
         return financeBillDao.updateById(financeBill);
     }
 
@@ -88,14 +88,18 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         financeBill.setPayeeName(condition.getPayeeName());
         financeBill.setPayeePhone(condition.getPayeePhone());
 
-        financeBill.setStatus(billStatus.getCode());
-        financeBill.setType(condition.getBillType().getCode());
+        financeBill.setBillStatus(billStatus.getCode());
+        financeBill.setBillType(condition.getBillType().getCode());
+        financeBill.setTradeType(condition.getTradeType().getCode());
 
         /**2.插入账单*/
         financeBillDao.insert(financeBill);
 
-        FinanceRecord financeRecord = new FinanceRecord(financeBill.getId(), financeBill.getBillNo(), billStatus.getCode(), null);
+        FinanceRecord financeRecord = new FinanceRecord();
+        financeRecord.setStatus(billStatus.getCode());
+        financeRecord.setBillNo(financeBill.getBillNo());
+        financeRecord.setBillId(financeBill.getId());
         financeRecordService.save(financeRecord);
-        return ResponseObj.success();
+        return ResponseObj.success(billNo);
     }
 }

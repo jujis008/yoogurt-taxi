@@ -16,13 +16,11 @@ import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.FinanceRecord;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.enums.BillStatus;
-import com.yoogurt.taxi.dal.enums.BillType;
-import com.yoogurt.taxi.dal.enums.DestinationType;
-import com.yoogurt.taxi.dal.enums.Payment;
+import com.yoogurt.taxi.dal.enums.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -63,6 +61,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
      * @param condition
      * @return
      */
+    @Transactional
     @Override
     public ResponseObj updateAccount(AccountUpdateCondition condition) {
 
@@ -78,19 +77,18 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         UserInfo userInfo = userInfoRestResult.getBody();
         synchronized (userId.toString().intern()) {
             FinanceAccount financeAccount = financeAccountDao.selectById(userId);
-            BillType billType = condition.getBillType();
+            TradeType tradeType = condition.getTradeType();
             if (financeAccount == null) {//账户不存在
                 //创建账户
-                //TODO
                 createAccount(RandomUtils.getPrimaryKey(), new Money(0), userId);
             }
             Payment payment = condition.getPayment();
             //判断账户的有效性
-            ResponseObj responseObj = this.validateAccount(financeAccount, billType, money, payment);
+            ResponseObj responseObj = this.validateAccount(financeAccount, tradeType, money, payment);
             if (!responseObj.isSuccess()) {
                 return responseObj;
             }
-            switch (billType) {
+            switch (tradeType) {
                 case WITHDRAW://提现(提现申请时，提现回调另做)
                     if (payment == Payment.BALANCE) {//余额提现
                         Money balance = new Money(financeAccount.getBalance());
@@ -119,16 +117,22 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     if (financeBill == null) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录不存在");
                     }
+                    if (financeBill.getBillStatus() != BillStatus.PENDING.getCode()) {
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"该充值记录已处理");
+                    }
                     if (!financeBill.getAmount().equals(money.getAmount())) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录异常");
                     }
                     financeBill.setTransactionNo(condition.getTransactionNo());
-                    financeBill.setStatus(BillStatus.SUCCESS.getCode());
+                    financeBill.setBillStatus(BillStatus.SUCCESS.getCode());
                     /**更新账单状态*/
                     financeBillService.save(financeBill);
 
                     /**3.插入账单记录*/
-                    FinanceRecord financeRecord = new FinanceRecord(financeBill.getId(), financeBill.getBillNo(), BillStatus.SUCCESS.getCode(), null);
+                    FinanceRecord financeRecord = new FinanceRecord();
+                    financeRecord.setBillId(financeBill.getId());
+                    financeRecord.setBillNo(financeBill.getBillNo());
+                    financeRecord.setStatus(BillStatus.SUCCESS.getCode());
                     financeRecordService.save(financeRecord);
                     return ResponseObj.success(financeAccount);
                 case FINE_IN://补偿,余额增加
@@ -164,13 +168,13 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         }
     }
 
-    private ResponseObj validateAccount(FinanceAccount financeAccount, BillType billType, Money money, Payment payment) {
-        if (!billType.isAdd()) {//扣除资金
+    private ResponseObj validateAccount(FinanceAccount financeAccount, TradeType tradeType, Money money, Payment payment) {
+        if (!tradeType.isAdd()) {//扣除资金
             //扣除资金额大于账户总资金(罚款)
             if (money.greaterThan(new Money(financeAccount.getBalance()).add(new Money(financeAccount.getReceivedDeposit())))) {
                 return ResponseObj.fail(StatusCode.BIZ_FAILED, "账户资金不足");
             }
-            if (billType == BillType.WITHDRAW) {//提现
+            if (tradeType == TradeType.WITHDRAW) {//提现
                 if (payment == Payment.BALANCE) {//余额提现
                     if (money.greaterThan(new Money(financeAccount.getBalance()))) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "余额提现，余额不足");

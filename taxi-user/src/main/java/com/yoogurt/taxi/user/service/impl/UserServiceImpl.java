@@ -2,7 +2,7 @@ package com.yoogurt.taxi.user.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yoogurt.taxi.common.ExcelHelper.ErrorCellBean;
+import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;

@@ -2,7 +2,7 @@ package com.yoogurt.taxi.dal.model.account;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yoogurt.taxi.dal.enums.BillStatus;
-import com.yoogurt.taxi.dal.enums.BillType;
+import com.yoogurt.taxi.dal.enums.TradeType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,7 +25,7 @@ public class FinanceBillListModel {
 
     public void setType(Integer type) {
         this.type = type;
-        this.typeName = BillType.getEnumsBycode(type).getName();
+        this.typeName = TradeType.getEnumsBycode(type).getName();
     }
 
     public void setStatus(Integer status) {

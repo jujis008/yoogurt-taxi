@@ -4,6 +4,7 @@ import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.DestinationType;
 import com.yoogurt.taxi.dal.enums.Payment;
+import com.yoogurt.taxi.dal.enums.TradeType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,8 @@ public class AccountUpdateCondition {
     private Money money;
     /**账单类型（必穿）*/
     private BillType billType;
+    /**交易类型（必穿）*/
+    private TradeType tradeType;
     /**目的账户类型（必传）*/
     private DestinationType destinationType;
     /**支付方式（必传）*/

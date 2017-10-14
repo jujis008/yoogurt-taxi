@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.common.ExcelHelper;
+package com.yoogurt.taxi.common.helper.excel;
 
 public class CellPropertyBean {
     private String cellValue;

@@ -1,11 +1,11 @@
 package com.yoogurt.taxi.dal.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum BillType {
-    CHARGE(10,"充值"),
-    WITHDRAW(20,"提现"),
-    FINE_OUT(30,"罚款"),
-    FINE_IN(40,"补偿"),
-    INCOME(50,"收入"),
+    DEPOSIT(10,"押金"),
+    BALANCE(20,"余额"),
     ;
 
     private Integer code;
@@ -16,39 +16,12 @@ public enum BillType {
         this.name = name;
     }
 
-    public static BillType getEnumsBycode(Integer code) {
+    public static BillType getEnumsByCode(Integer code) {
         for (BillType enums:BillType.values()) {
             if (enums.code.equals(code)) {
                 return enums;
             }
         }
         return null;
-    }
-
-    public boolean isAdd() {
-        switch (this) {
-            case CHARGE:
-            case INCOME:
-            case FINE_IN:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

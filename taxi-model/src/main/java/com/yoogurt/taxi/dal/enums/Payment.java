@@ -32,4 +32,15 @@ public enum Payment {
         return null;
     }
 
+    public boolean isChargeType() {
+        switch (this) {
+            case ALIPAY:
+            case WEIXIN:
+            case BANK:
+                return true;
+            default:
+                return false;
+        }
+    }
+
 }
