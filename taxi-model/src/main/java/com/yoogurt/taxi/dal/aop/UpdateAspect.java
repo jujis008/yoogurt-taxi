@@ -10,6 +10,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import java.util.List;
  */
 @Slf4j
 @Aspect
+@Order(2)
 @Component
 public class UpdateAspect {
 
@@ -30,6 +32,7 @@ public class UpdateAspect {
 
     @Before("execution(* com.yoogurt.taxi.dal.mapper..*..*update*(..))" +
         "||execution(* com.yoogurt.taxi.dal.mapper..*..*edit*(..))" +
+        "||execution(* com.yoogurt.taxi.dal.mapper..*..*save*(..))" +
         "||execution(* com.yoogurt.taxi.dal.mapper..*..*delete*(..))")
     public void before(JoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();

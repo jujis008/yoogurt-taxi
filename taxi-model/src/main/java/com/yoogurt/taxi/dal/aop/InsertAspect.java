@@ -10,6 +10,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -21,13 +22,16 @@ import java.util.List;
  */
 @Slf4j
 @Aspect
+@Order(1)
 @Component
 public class InsertAspect {
 
     @Autowired
     private TokenHelper tokenHelper;
 
-    @Before("execution(* com.yoogurt.taxi.dal.mapper..*..insert*(..)) || execution(* com.yoogurt.taxi.dal.mapper..*..add*(..)) ")
+    @Before("execution(* com.yoogurt.taxi.dal.mapper..*..insert*(..)) || " +
+            "execution(* com.yoogurt.taxi.dal.mapper..*..add*(..)) " +
+            "|| execution(* com.yoogurt.taxi.dal.mapper..*..save*(..)) ")
     public void before(JoinPoint joinPoint) throws Throwable {
 
         Object[] args = joinPoint.getArgs();
