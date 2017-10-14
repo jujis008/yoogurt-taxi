@@ -27,57 +27,18 @@
         <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}"
                              type="XMLMAPPER"/>
 
-        <!--<table tableName="common_resource">
+        <table tableName="message">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
-        <table tableName="order_accept_info">
-            <generatedKey column="order_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="order_cancel_info">
-            <generatedKey column="order_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="order_cancel_rule">
-            <generatedKey column="rule_id" sqlStatement="Mysql" identity="true"/>
-        </table>-->
-        <!--<table tableName="order_comment_info">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-        </table>-->
-        <table tableName="finance_bill">
+        <table tableName="message_read">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
-        <!--<table tableName="order_disobey_info">
+        <table tableName="message_remove">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
-        <table tableName="order_give_back_info">
-            <generatedKey column="order_id" sqlStatement="Mysql"/>
+        <table tableName="push_device">
+            <generatedKey column="client_id" sqlStatement="Mysql"/>
         </table>
-        <table tableName="order_give_back_rule">
-            <generatedKey column="rule_id" sqlStatement="Mysql" identity="true"/>
-        </table>
-        <table tableName="order_handover_info">
-            <generatedKey column="order_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="order_handover_rule">
-            <generatedKey column="rule_id" sqlStatement="Mysql" identity="true"/>
-        </table>
-        <table tableName="order_Info">
-            <generatedKey column="order_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="order_payment">
-            <generatedKey column="pay_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="order_pick_up_info">
-            <generatedKey column="order_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="order_statistic">
-            <generatedKey column="driver_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="order_traffic_violation_info">
-            <generatedKey column="order_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="rent_info">
-            <generatedKey column="rent_id" sqlStatement="Mysql"/>
-        </table>-->
 
     </context>
 </generatorConfiguration>
