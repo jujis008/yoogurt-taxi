@@ -2,7 +2,9 @@ package com.yoogurt.taxi.dal.beans;
 
 import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -10,11 +12,13 @@ import javax.persistence.*;
 @Domain
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "comment_tag_statistic")
 public class CommentTagStatistic extends SuperModel {
     @Id
-    @Column(name = "driver_id")
-    private Long driverId;
+    @Column(name = "user_id")
+    private Long userId;
 
     @Id
     @Column(name = "tag_id")
@@ -25,4 +29,7 @@ public class CommentTagStatistic extends SuperModel {
 
     private Integer counter;
 
+    public CommentTagStatistic(Long userId) {
+        this.userId = userId;
+    }
 }
