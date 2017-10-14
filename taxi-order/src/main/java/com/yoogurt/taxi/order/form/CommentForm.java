@@ -18,7 +18,7 @@ public class CommentForm extends OrderForm {
 	private Integer score;
 
 	@Size(max = 3, message = "最多选3个评价标签")
-	private String[] tagId;
+	private Long[] tagId;
 
 	@Size(max = 3, message = "最多选3个评价标签")
 	private String[] tagName;
