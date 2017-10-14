@@ -22,11 +22,12 @@ import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/mobile/account")
@@ -39,7 +40,7 @@ public class UserAccountController extends BaseController{
     private RestUserService restUserService;
 
     @RequestMapping(value = "/bill/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
-    public ResponseObj getListApp(@Validated RecordListAppCondition condition, BindingResult result) {
+    public ResponseObj getListApp(@Valid RecordListAppCondition condition, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
@@ -55,7 +56,7 @@ public class UserAccountController extends BaseController{
      * @return
      */
     @RequestMapping(value = "/charge",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
-    public ResponseObj chargeDeposit(@RequestBody @Validated ChargeDepositForm form, BindingResult result) {
+    public ResponseObj chargeDeposit(@RequestBody @Valid ChargeDepositForm form, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
@@ -95,7 +96,7 @@ public class UserAccountController extends BaseController{
      * @return
      */
     @RequestMapping(value = "/withdraw",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
-    public ResponseObj withdraw(@RequestBody @Validated WithdrawForm form, BindingResult result) {
+    public ResponseObj withdraw(@RequestBody @Valid WithdrawForm form, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
