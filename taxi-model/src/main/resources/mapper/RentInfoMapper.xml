@@ -109,7 +109,7 @@
         address, lng, lat, price, order_count, traffic_violation_count, disobey_count, score, status, remark,
         HOUR(give_back_time - handover_time) AS rent_time
         FROM rent_info AS r
-        LEFT JOIN order_statistic AS o ON (r.driver_id=o.driver_id)
+        LEFT JOIN order_statistic AS o ON (r.driver_id=o.user_id)
         WHERE r.is_deleted=0
         <if test="userId != null and userId > 0">
             AND r.user_id=#{userId}
