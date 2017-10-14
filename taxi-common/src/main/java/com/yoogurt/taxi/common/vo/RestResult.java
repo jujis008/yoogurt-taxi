@@ -105,7 +105,8 @@ public class RestResult<T> implements Serializable {
         RestResult<T> result = new RestResult<>();
         result.setStatus(obj.getStatus());
         result.setMessage(obj.getMessage());
-        result.setBody((T) obj.getBody());
+        Object body = obj.getBody();
+        if (body != null) result.setBody((T) body);
         result.setExtras(obj.getExtras());
         return result;
     }
@@ -113,7 +114,7 @@ public class RestResult<T> implements Serializable {
     /**
      * 将ResponseObj对象转换成JSON字符串。
      * 基于Jackson对象序列化技术。
-     * @return
+     * @return JSON String
      */
     public String toJSON() {
         try {
