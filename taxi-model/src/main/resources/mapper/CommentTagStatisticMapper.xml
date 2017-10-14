@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="driver_id" jdbcType="BIGINT" property="driverId" />
+    <id column="user_id" jdbcType="BIGINT" property="userId" />
     <id column="tag_id" jdbcType="BIGINT" property="tagId" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
     <result column="counter" jdbcType="INTEGER" property="counter" />
@@ -15,4 +15,11 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     <result column="modifier" jdbcType="BIGINT" property="modifier"/>
   </resultMap>
+
+  <insert id="saveStatistic" parameterType="com.yoogurt.taxi.dal.beans.CommentTagStatistic">
+    INSERT INTO comment_tag_statistic(user_id, tag_id, tag_name, counter, is_deleted, gmt_create, creator, gmt_modify, modifier)
+    VALUES (#{userId}, #{tagId}, #{tagName}, #{counter}, #{isDeleted},#{gmtCreate}, #{creator}, #{gmtModify}, #{modifier})
+    ON DUPLICATE KEY UPDATE
+      counter=counter+#{counter}, gmt_modify=NOW(), modifier=#{modifier}
+  </insert>
 </mapper>
