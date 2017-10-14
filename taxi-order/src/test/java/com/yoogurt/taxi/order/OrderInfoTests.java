@@ -46,8 +46,8 @@ public class OrderInfoTests {
 //        orderForm.setUserId(17092815473528528L);
 //        orderForm.setUserType(30);
         //正式司机发单，代理司机接单
-        orderForm.setRentId(17101310122941084L);
-        orderForm.setUserId(17092815473528528L);
+        orderForm.setRentId(17101318472433600L);
+        orderForm.setUserId(8888L);
         orderForm.setUserType(20);
         ResponseObj obj = orderInfoService.placeOrder(orderForm);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
