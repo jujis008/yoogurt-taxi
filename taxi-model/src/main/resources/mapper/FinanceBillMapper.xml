@@ -34,8 +34,8 @@
   </resultMap>
     <select id="getFinanceBillListApp" parameterType="com.yoogurt.taxi.dal.condition.account.RecordListAppCondition"
             resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListModel">
-        SELECT id,bill_no,context_id,
-        amount,trade_type,`status`,gmt_update
+        SELECT id,bill_no AS billNo,context_id AS contextId,
+        amount,trade_type AS tradeType,bill_status AS billStatus,gmt_create AS gmtCreate
         FROM finance_bill
         WHERE
         user_id=#{userId}

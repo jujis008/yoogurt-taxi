@@ -21,7 +21,7 @@ public class FinanceBillDaoImpl extends BaseDao<FinanceBillMapper,FinanceBill> i
     private AppPagerFactory appPagerFactory;
     @Override
     public Pager<FinanceBillListModel> getFinanceBillListApp(RecordListAppCondition condition) {
-        PageHelper.startPage(condition.getPageNum(),condition.getPageSize()).setOrderBy(" gmt_update desc");
+        PageHelper.startPage(condition.getPageNum(),condition.getPageSize()).setOrderBy(" gmt_modify desc");
         Page<FinanceBillListModel> financeBillListApp = financeBillMapper.getFinanceBillListApp(condition);
         return appPagerFactory.generatePager(financeBillListApp);
     }
