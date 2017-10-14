@@ -13,14 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/rest/account")
 public class RestUserAccountController {
+
     @Autowired
     private FinanceAccountService financeAccountService;
 
-    @RequestMapping(value = "/userId/{userId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/userId/{userId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") Long userId) {
         FinanceAccount financeAccount = financeAccountService.get(userId);
         if (financeAccount == null) {
-            return RestResult.fail(StatusCode.REST_FAIL,"找不到对象信息");
+            return RestResult.fail(StatusCode.REST_FAIL, "账户信息不存在");
         }
         return RestResult.success(financeAccount);
     }
