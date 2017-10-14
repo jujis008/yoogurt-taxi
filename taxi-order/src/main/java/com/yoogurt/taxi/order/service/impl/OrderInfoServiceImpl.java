@@ -16,6 +16,7 @@ import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.RentStatus;
+import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.*;
 import com.yoogurt.taxi.order.dao.OrderDao;
@@ -31,14 +32,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service("orderInfoService")
-public class OrderInfoServiceImpl implements OrderInfoService {
+public class OrderInfoServiceImpl extends AbstractOrderBizService implements OrderInfoService {
 
     @Autowired
     private ApplicationContext context;
@@ -267,12 +265,14 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             log.warn("该租单信息已被他人接走");
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单信息已被他人接走");
         }
+        Long userId = orderForm.getUserId();
         //TODO 2. 押金余额 "extras": {"redirect": "charge"}
-
+        ResponseObj obj = super.isAllowed(userId);
+        if (!obj.isSuccess()) return obj;
 
         DateTimeSection section = new DateTimeSection(rentInfo.getHandoverTime(), rentInfo.getGiveBackTime());
         //3. 未完成订单数量不超过上限
-        List<OrderInfo> orderList = getOrderList(orderForm.getUserId(), orderForm.getUserType(), OrderStatus.HAND_OVER.getCode(), OrderStatus.PICK_UP.getCode(), OrderStatus.GIVE_BACK.getCode(), OrderStatus.ACCEPT.getCode());
+        List<OrderInfo> orderList = getOrderList(userId, orderForm.getUserType(), OrderStatus.HAND_OVER.getCode(), OrderStatus.PICK_UP.getCode(), OrderStatus.GIVE_BACK.getCode(), OrderStatus.ACCEPT.getCode());
         if (CollectionUtils.size(orderList) >= Constants.MAX_RENT_COUNT)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "最多发布" + Constants.MAX_RENT_COUNT + "笔租单");
 
@@ -294,6 +294,24 @@ public class OrderInfoServiceImpl implements OrderInfoService {
         //下单校验未通过
         if (!validateResult.isSuccess()) return validateResult;
         Long userId = orderForm.getUserId();
+        //用户信息
+        RestResult<UserInfo> userResult = userService.getUserInfoById(userId);
+        if (!userResult.isSuccess()) {
+            log.warn("[REST]{}", userResult.getMessage());
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, userResult.getMessage());
+        }
+        UserInfo userInfo = userResult.getBody();
+        //用户认证状态
+        if (!UserStatus.AUTHENTICATED.getCode().equals(userInfo.getStatus())) {
+            log.warn("[REST]{}", "该司机未认证或者已冻结");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "该司机未认证或者已冻结");
+        }
+        //司机信息
+        RestResult<DriverInfo> driverResult = userService.getDriverInfoByUserId(userInfo.getUserId());
+        if (!driverResult.isSuccess()) {
+            log.warn("[REST]{}", driverResult.getMessage());
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, driverResult.getMessage());
+        }
         //租单信息不包含车辆，说明是代理司机发布的求租信息
         if (rentInfo.getCarId() == null) {
             RestResult<List<CarInfo>> carResult = userService.getCarInfoByUserId(userId);
@@ -308,19 +326,7 @@ public class OrderInfoServiceImpl implements OrderInfoService {
             buildCarInfo(rentInfo, carInfo);
         }
         OrderInfo order = new OrderInfo(RandomUtils.getPrimaryKey());
-        RestResult<UserInfo> userResult = userService.getUserInfoById(userId);
-        if (!userResult.isSuccess()) {
-            log.warn("[REST]{}", userResult.getMessage());
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, userResult.getMessage());
-        }
-        UserInfo userInfo = userResult.getBody();
-        RestResult<DriverInfo> driverResult = userService.getDriverInfoByUserId(userInfo.getUserId());
-        if (!driverResult.isSuccess()) {
-            log.warn("[REST]{}", driverResult.getMessage());
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, driverResult.getMessage());
-        }
-        DriverInfo driverInfo = driverResult.getBody();
-        buildDriverInfo(order, rentInfo, driverInfo, userInfo);
+        buildDriverInfo(order, rentInfo, driverResult.getBody(), userInfo);
         buildCarInfo(order, rentInfo);
         buildRentInfo(order, rentInfo);
         return ResponseObj.success(order);

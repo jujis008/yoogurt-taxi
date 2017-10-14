@@ -94,6 +94,22 @@ public class RestResult<T> implements Serializable {
         return result;
     }
 
+
+    /**
+     * 将RestResult转换成ResponseObj
+     * @param obj restResult
+     * @param <T> REST泛型
+     * @return ResponseObj
+     */
+    public static <T> RestResult<T> of(ResponseObj obj) {
+        RestResult<T> result = new RestResult<>();
+        result.setStatus(obj.getStatus());
+        result.setMessage(obj.getMessage());
+        result.setBody((T) obj.getBody());
+        result.setExtras(obj.getExtras());
+        return result;
+    }
+
     /**
      * 将ResponseObj对象转换成JSON字符串。
      * 基于Jackson对象序列化技术。

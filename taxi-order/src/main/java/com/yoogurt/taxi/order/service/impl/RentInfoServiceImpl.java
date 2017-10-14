@@ -17,7 +17,9 @@ import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
 import com.yoogurt.taxi.dal.enums.RentStatus;
+import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.dao.RentDao;
 import com.yoogurt.taxi.order.form.RentCancelForm;
@@ -37,7 +39,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class RentInfoServiceImpl implements RentInfoService {
+public class RentInfoServiceImpl extends AbstractOrderBizService implements RentInfoService {
 
     @Autowired
     private PagerFactory webPagerFactory;
@@ -133,6 +135,14 @@ public class RentInfoServiceImpl implements RentInfoService {
         return rentDao.updateByIdSelective(rentInfo) == 1;
     }
 
+    @Override
+    public OrderModel info(Long orderId, Long userId) {
+        RentInfo rentInfo = getRentInfo(orderId, userId);
+        OrderModel model = new OrderModel();
+        BeanUtils.copyProperties(rentInfo, model);
+        return model;
+    }
+
     /**
      * 指定用户id和租单状态，获取相应的租单列表，并按交车时间升序排列。
      *
@@ -168,8 +178,9 @@ public class RentInfoServiceImpl implements RentInfoService {
         if (rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_WORKING_HOURS * 3600000)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与还车时间至少间隔" + Constants.MIN_WORKING_HOURS + "小时");
 
-        //TODO 1. 押金校验
-
+        //TODO 1. 押金校验 "extras": {"redirect": "charge"}
+        ResponseObj obj = super.isAllowed(userId);
+        if (!obj.isSuccess()) return obj;
 
         List<RentInfo> rentList = getRentList(userId, RentStatus.WAITING.getCode(), RentStatus.RENT.getCode());
         if (CollectionUtils.isEmpty(rentList)) //未发布过租单，直接返回成功
@@ -200,11 +211,19 @@ public class RentInfoServiceImpl implements RentInfoService {
         RentInfo rentInfo = new RentInfo(RandomUtils.getPrimaryKey());
         BeanUtils.copyProperties(rentForm, rentInfo);
         Long userId = rentForm.getUserId();
+        //用户信息
         RestResult<UserInfo> userResult = userService.getUserInfoById(userId);
         if (!userResult.isSuccess()) {
             log.warn("[REST]{}", userResult.getMessage());
             return ResponseObj.of(userResult);
         }
+        UserInfo user = userResult.getBody();
+        //用户认证状态
+        if (!UserStatus.AUTHENTICATED.getCode().equals(user.getStatus())) {
+            log.warn("[REST]{}", "该司机未认证或者已冻结");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "该司机未认证或者已冻结");
+        }
+        //司机信息
         RestResult<DriverInfo> driverResult = userService.getDriverInfoByUserId(userId);
         if (!driverResult.isSuccess()) {
             log.warn("[REST]{}", driverResult.getMessage());
@@ -212,27 +231,24 @@ public class RentInfoServiceImpl implements RentInfoService {
         }
         DriverInfo driverInfo = driverResult.getBody();
         rentInfo.setDriverId(driverInfo.getId());
-        UserInfo user = userResult.getBody();
-        if (user != null) {
-            //如果是正式司机，需要注入车辆相关信息
-            if (user.getType().equals(UserType.USER_APP_OFFICE.getCode())) {
-                RestResult<List<CarInfo>> carInfo = userService.getCarInfoByUserId(userId);
-                if (!carInfo.isSuccess()) {
-                    log.warn("[REST]{}", userResult.getMessage());
-                    return ResponseObj.of(userResult);
-                }
-                List<CarInfo> carList = carInfo.getBody();
-                if (CollectionUtils.isEmpty(carList)) {
-                    log.info("正式司机的车辆信息未录入");
-                    return ResponseObj.fail(StatusCode.BIZ_FAILED, "正式司机的车辆信息未录入");
-                }
-                buildCarInfo(rentInfo, carList.get(0));
+
+        //如果是正式司机，需要注入车辆相关信息
+        if (user.getType().equals(UserType.USER_APP_OFFICE.getCode())) {
+            RestResult<List<CarInfo>> carInfo = userService.getCarInfoByUserId(userId);
+            if (!carInfo.isSuccess()) {
+                log.warn("[REST]{}", userResult.getMessage());
+                return ResponseObj.of(userResult);
             }
-            //注入用户信息
-            buildUserInfo(rentInfo, user);
-            return ResponseObj.success(rentInfo);
+            List<CarInfo> carList = carInfo.getBody();
+            if (CollectionUtils.isEmpty(carList)) {
+                log.info("正式司机的车辆信息未录入");
+                return ResponseObj.fail(StatusCode.BIZ_FAILED, "正式司机的车辆信息未录入");
+            }
+            buildCarInfo(rentInfo, carList.get(0));
         }
-        return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户不存在");
+        //注入用户信息
+        buildUserInfo(rentInfo, user);
+        return ResponseObj.success(rentInfo);
     }
 
     private void buildCarInfo(RentInfo rent, CarInfo car) {

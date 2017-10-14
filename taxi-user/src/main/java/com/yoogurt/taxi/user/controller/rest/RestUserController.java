@@ -70,7 +70,7 @@ public class RestUserController extends BaseController {
     public RestResult<UserInfo> userInfo(@PathVariable(name = "userId") Long userId) {
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (userInfo == null) {
-            return RestResult.fail(StatusCode.BIZ_FAILED,"对象不存在");
+            return RestResult.fail(StatusCode.BIZ_FAILED,"用户信息不存在");
         }
         return RestResult.success(userInfo);
     }
@@ -79,7 +79,7 @@ public class RestUserController extends BaseController {
     public RestResult<CarInfo> carInfo(@PathVariable(name = "id") Long id) {
         CarInfo carInfo = carService.getCarInfo(id);
         if (carInfo == null) {
-            return RestResult.fail(StatusCode.BIZ_FAILED,"对象不存在");
+            return RestResult.fail(StatusCode.BIZ_FAILED,"找不到车辆信息");
         }
         return RestResult.success(carInfo);
     }
