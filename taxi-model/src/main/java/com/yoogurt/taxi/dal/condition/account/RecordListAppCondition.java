@@ -4,9 +4,11 @@ import com.yoogurt.taxi.common.condition.PageableCondition;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 public class RecordListAppCondition extends PageableCondition {
     private Long userId;
-    private Integer type;
+    private Integer billType;
 }

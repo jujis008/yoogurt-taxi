@@ -14,8 +14,9 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="user_type" jdbcType="INTEGER" property="userType" />
-    <result column="status" jdbcType="INTEGER" property="status" />
-    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="bill_status" jdbcType="INTEGER" property="billStatus" />
+    <result column="bill_type" jdbcType="INTEGER" property="billType" />
+    <result column="trade_type" jdbcType="INTEGER" property="tradeType" />
     <result column="destination_type" jdbcType="INTEGER" property="destinationType" />
     <result column="payee_account" jdbcType="VARCHAR" property="payeeAccount" />
     <result column="payee_name" jdbcType="VARCHAR" property="payeeName" />
@@ -31,16 +32,13 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
-
-  <select id="getFinanceBillListApp" parameterType="com.yoogurt.taxi.dal.condition.account.RecordListAppCondition"
-          resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListModel">
-      SELECT id,bill_no,context_id,
-          amount,type,`status`,gmt_update
-      FROM finance_bill
-      WHERE
-          user_id=#{userId}
-      <if test="type != null">
-          AND type=#{type}
-      </if>
-  </select>
+    <select id="getFinanceBillListApp" parameterType="com.yoogurt.taxi.dal.condition.account.RecordListAppCondition"
+            resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListModel">
+        SELECT id,bill_no,context_id,
+        amount,trade_type,`status`,gmt_update
+        FROM finance_bill
+        WHERE
+        user_id=#{userId}
+        AND bill_type=#{billType}
+    </select>
 </mapper>

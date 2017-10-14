@@ -42,7 +42,7 @@
         <!--<table tableName="order_comment_info">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>-->
-        <table tableName="finance_record">
+        <table tableName="finance_bill">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
         <!--<table tableName="order_disobey_info">

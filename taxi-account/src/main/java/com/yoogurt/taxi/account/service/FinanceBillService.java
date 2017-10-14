@@ -35,10 +35,10 @@ public interface FinanceBillService {
     /**
      * 修改账单状态
      * @param id
-     * @param status
+     * @param billStatus
      * @return
      */
-    int updateStatus(Long id, BillStatus status);
+    int updateStatus(Long id, BillStatus billStatus);
 
     ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus);
 }

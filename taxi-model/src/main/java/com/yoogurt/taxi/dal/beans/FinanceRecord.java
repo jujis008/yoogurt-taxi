@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.dal.beans;
 
+import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Table(name = "finance_record")
+@Domain
 @Getter
 @Setter
 public class FinanceRecord extends SuperModel{
@@ -37,10 +39,4 @@ public class FinanceRecord extends SuperModel{
      */
     private String remark;
 
-    public FinanceRecord(Long billId, Long billNo, Integer status, String remark) {
-        this.billId = billId;
-        this.billNo = billNo;
-        this.status = status;
-        this.remark = remark;
-    }
 }

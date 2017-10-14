@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.dal.beans;
 
+import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +10,9 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Table(name = "finance_bill")
-@Getter
+@Domain
 @Setter
+@Getter
 public class FinanceBill extends SuperModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,12 +54,20 @@ public class FinanceBill extends SuperModel{
     /**
      * 账单状态：10-待处理，20-处理中，30-处理成功，40-失败，50拒绝
      */
-    private Integer status;
+    @Column(name = "bill_status")
+    private Integer billStatus;
 
     /**
-     * 账单类型：10-充值，20-提现，30-赔偿，40-补偿，50-订单收入
+     * 账单类型：10-押金，20-余额
      */
-    private Integer type;
+    @Column(name = "bill_type")
+    private Integer billType;
+
+    /**
+     * 交易类型：10-充值，20-提现，30-罚款，40-补偿，50-订单收入
+     */
+    @Column(name = "trade_type")
+    private Integer tradeType;
 
     /**
      * 资金去向：1-押金，2-余额，3-支付宝，4-微信，5-银行，6-其它
