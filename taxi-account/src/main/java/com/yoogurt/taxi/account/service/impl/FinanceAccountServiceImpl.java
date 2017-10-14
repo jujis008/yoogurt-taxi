@@ -42,7 +42,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
     }
 
     @Override
-    public ResponseObj createAccount(Long accountNo, Money receivableDeposit, Long userId) {
+    public FinanceAccount createAccount(Long accountNo, Money receivableDeposit, Long userId) {
         FinanceAccount financeAccount = new FinanceAccount();
         financeAccount.setAccountNo(accountNo);
         financeAccount.setBalance(new BigDecimal(0));
@@ -52,7 +52,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         financeAccount.setReceivedDeposit(new BigDecimal(0));
         financeAccount.setUserId(userId);
         financeAccountDao.insert(financeAccount);//创建默认资金数账户
-        return ResponseObj.success(financeAccount);
+        return financeAccount;
     }
 
     /**
@@ -74,7 +74,6 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         if (!userInfoRestResult.isSuccess()) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户不存在");
         }
-        UserInfo userInfo = userInfoRestResult.getBody();
         synchronized (userId.toString().intern()) {
             FinanceAccount financeAccount = financeAccountDao.selectById(userId);
             TradeType tradeType = condition.getTradeType();
@@ -90,29 +89,31 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
             }
             switch (tradeType) {
                 case WITHDRAW://提现(提现申请时，提现回调另做)
+                    BillType billType = null;
                     if (payment == Payment.BALANCE) {//余额提现
                         Money balance = new Money(financeAccount.getBalance());
                         Money frozenBalance = new Money(financeAccount.getFrozenBalance());
                         financeAccount.setFrozenBalance(frozenBalance.add(money).getAmount());
                         financeAccount.setBalance(balance.subtract(money).getAmount());
-                    }
-                    if (payment == Payment.DEPOSIT) {
+                        billType = BillType.BALANCE;
+                    } else if (payment == Payment.DEPOSIT) {
                         Money receivedDeposit = new Money(financeAccount.getReceivedDeposit());
                         Money frozenDeposit = new Money(financeAccount.getFrozenDeposit());
                         financeAccount.setFrozenDeposit(frozenDeposit.add(money).getAmount());
                         financeAccount.setReceivedDeposit(receivedDeposit.subtract(money).getAmount());
+                        billType = BillType.DEPOSIT;
+                    } else {
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"不支持的提现类型");
                     }
                     /**1.更新账户*/
                     financeAccountDao.updateById(financeAccount);
-                    financeBillService.insertBill(money, condition, payment, BillStatus.PENDING);
+                    financeBillService.insertBill(money, condition, payment, BillStatus.PENDING, billType);
                     return ResponseObj.success(financeAccount);
                 case CHARGE://充值(回调时使用)
                     if (condition.getDestinationType() != DestinationType.DEPOSIT) {//目前只支持押金充值
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "目前只支持押金充值");
                     }
                     financeAccount.setReceivedDeposit(new Money(financeAccount.getReceivedDeposit()).add(money).getAmount());
-                    /**更新或插入账户*/
-                    financeAccountDao.updateById(financeAccount);
                     FinanceBill financeBill = financeBillService.get(condition.getBillId());
                     if (financeBill == null) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录不存在");
@@ -123,8 +124,15 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     if (!financeBill.getAmount().equals(money.getAmount())) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录异常");
                     }
+                    financeBill.setBillType(BillType.DEPOSIT.getCode());
+                    financeBill.setDraweePhone(condition.getDraweePhone());
+                    financeBill.setDraweeName(condition.getDraweeName());
+                    financeBill.setDraweeAccount(condition.getDraweeAccount());
+                    financeBill.setPayment(condition.getPayment().getCode());
                     financeBill.setTransactionNo(condition.getTransactionNo());
                     financeBill.setBillStatus(BillStatus.SUCCESS.getCode());
+                    /**更新账户*/
+                    financeAccountDao.updateById(financeAccount);
                     /**更新账单状态*/
                     financeBillService.save(financeBill);
 
@@ -136,10 +144,10 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     financeRecordService.save(financeRecord);
                     return ResponseObj.success(financeAccount);
                 case FINE_IN://补偿,余额增加
-                    this.addBalance(financeAccount, money);
-                    /**更新或插入账户*/
+                    financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
+                    /**更新账户*/
                     financeAccountDao.updateById(financeAccount);
-                    financeBillService.insertBill(money, condition, Payment.BALANCE, BillStatus.SUCCESS);
+                    financeBillService.insertBill(money, condition, Payment.BALANCE, BillStatus.SUCCESS, BillType.BALANCE);
                     return ResponseObj.success(financeAccount);
                 case FINE_OUT://罚款
                     Money balance = new Money(financeAccount.getBalance());//余额
@@ -147,20 +155,23 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     if (!money.greaterThan(balance)) {//余额充足，从余额里扣
                         financeAccount.setBalance(balance.subtract(money).getAmount());
                         financeAccountDao.updateById(financeAccount);
-
-                        financeBillService.insertBill(money, condition, Payment.BALANCE, BillStatus.SUCCESS);
+                        financeBillService.insertBill(money, condition, Payment.BALANCE, BillStatus.SUCCESS, BillType.BALANCE);
                     } else {
                         financeAccount.setBalance(new Money(0).getAmount());//余额扣光
                         financeAccount.setReceivedDeposit(deposit.add(balance).subtract(money).getAmount());
                         financeAccountDao.updateById(financeAccount);
 
-                        financeBillService.insertBill(balance, condition, Payment.BALANCE, BillStatus.SUCCESS);
-                        financeBillService.insertBill(money.subtract(balance), condition, Payment.DEPOSIT, BillStatus.SUCCESS);
+                        if (!balance.equals(new Money(0))){//余额没钱，不用插入记录，全部从押金扣
+                            financeBillService.insertBill(balance, condition, Payment.BALANCE, BillStatus.SUCCESS, BillType.BALANCE);
+                        }
+                        financeBillService.insertBill(money.subtract(balance), condition, Payment.DEPOSIT, BillStatus.SUCCESS, BillType.DEPOSIT);
                     }
                     return ResponseObj.success(financeAccount);
                 case INCOME://订单收入,余额增加
-                    this.addBalance(financeAccount, money);
-                    financeBillService.insertBill(money, condition, Payment.ALIPAY, BillStatus.SUCCESS);
+                    financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
+                    /**更新或插入账户*/
+                    financeAccountDao.updateById(financeAccount);
+                    financeBillService.insertBill(money, condition, Payment.ALIPAY, BillStatus.SUCCESS, BillType.BALANCE);
                     return ResponseObj.success(financeAccount);
                 default:
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "交易类型不存在");
@@ -190,9 +201,9 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         return ResponseObj.success();
     }
 
-    private void addBalance(FinanceAccount financeAccount, Money money) {
-        financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
-        /**更新或插入账户*/
-        financeAccountDao.updateById(financeAccount);
-    }
+//    private void addBalance(FinanceAccount financeAccount, Money money) {
+//        financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
+//        /**更新或插入账户*/
+//        financeAccountDao.updateById(financeAccount);
+//    }
 }

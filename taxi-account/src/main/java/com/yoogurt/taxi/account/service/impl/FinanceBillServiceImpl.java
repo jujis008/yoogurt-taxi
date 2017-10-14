@@ -15,6 +15,7 @@ import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.RecordListAppCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
+import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.Payment;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +60,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     }
 
     @Override
-    public ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus) {
+    public ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus, BillType billType) {
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(condition.getUserId());
         if (!userInfoRestResult.isSuccess()) {
             return ResponseObj.fail(userInfoRestResult.getStatus(),userInfoRestResult.getMessage());
@@ -89,7 +90,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         financeBill.setPayeePhone(condition.getPayeePhone());
 
         financeBill.setBillStatus(billStatus.getCode());
-        financeBill.setBillType(condition.getBillType().getCode());
+        financeBill.setBillType(billType.getCode());
         financeBill.setTradeType(condition.getTradeType().getCode());
 
         /**2.插入账单*/

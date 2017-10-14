@@ -7,7 +7,7 @@ import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 
 public interface FinanceAccountService {
     FinanceAccount get(Long userId);
-    ResponseObj createAccount(Long accountNo, Money receivableDeposit, Long userId);
+    FinanceAccount createAccount(Long accountNo, Money receivableDeposit, Long userId);
 
     /**
      * 更新账户，具体功能有：1.充值（提现申请），2.提现（回调，即将冻结金额扣除，账户不动）

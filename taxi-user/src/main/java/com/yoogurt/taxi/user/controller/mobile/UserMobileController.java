@@ -61,6 +61,9 @@ public class UserMobileController extends BaseController {
         if (userType == null) {
             return ResponseObj.fail(StatusCode.PARAM_BLANK, "请标识请求来源");
         }
+        if (!userType.isAppUser()) {
+            return ResponseObj.fail(StatusCode.NO_AUTHORITY);
+        }
         return loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
     }
 

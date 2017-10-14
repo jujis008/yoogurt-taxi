@@ -7,6 +7,7 @@ import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.RecordListAppCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
+import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.Payment;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
 
@@ -40,5 +41,5 @@ public interface FinanceBillService {
      */
     int updateStatus(Long id, BillStatus billStatus);
 
-    ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus);
+    ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus, BillType billType);
 }

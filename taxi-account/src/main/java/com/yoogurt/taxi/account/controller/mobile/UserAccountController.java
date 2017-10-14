@@ -74,7 +74,6 @@ public class UserAccountController extends BaseController{
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值方式有误");
         }
         AccountUpdateCondition condition = new AccountUpdateCondition();
-        condition.setBillType(BillType.DEPOSIT);
         condition.setDestinationType(DestinationType.DEPOSIT);
         condition.setPayeeAccount(financeAccount.getAccountNo().toString());
         condition.setPayeeName(userInfo.getName());
@@ -82,7 +81,7 @@ public class UserAccountController extends BaseController{
         condition.setPayment(payment);
         condition.setUserId(userId);
         condition.setTradeType(TradeType.CHARGE);
-        ResponseObj responseObj = financeBillService.insertBill(new Money(form.getChargeMoney()), condition, payment, BillStatus.PENDING);
+        ResponseObj responseObj = financeBillService.insertBill(new Money(form.getChargeMoney()), condition, payment, BillStatus.PENDING, BillType.DEPOSIT);
         if (!responseObj.isSuccess()) {
             return responseObj;
         }
@@ -133,12 +132,6 @@ public class UserAccountController extends BaseController{
         condition.setDraweeAccount(financeAccount.getAccountNo().toString());
         condition.setDraweeName(userInfo.getName());
         condition.setDestinationType(destinationType);
-        if (payment == Payment.DEPOSIT) {
-            condition.setBillType(BillType.DEPOSIT);
-        }
-        if (payment == Payment.BALANCE) {
-            condition.setBillType(BillType.BALANCE);
-        }
         return financeAccountService.updateAccount(condition);
     }
 }

@@ -29,24 +29,21 @@ public class FinanceTest {
 
     @Test
     public void test() {
-        Long userId = 17092815464356415L;
+        Long userId = 17092815464198161L;
         FinanceAccount financeAccount = financeAccountService.get(userId);
         UserInfo userInfo = restUserService.getUserInfoById(userId).getBody();
         /**充值*/
         AccountUpdateCondition condition = new AccountUpdateCondition();
-//        condition.setTradeType(TradeType.CHARGE);
-//        condition.setBillId(17092815834356415L);
-//        condition.setDestinationType(DestinationType.DEPOSIT);
-//        condition.setDraweeAccount("17364517747");
-//        condition.setDraweeName("吴德友");
-//        condition.setDraweePhone("17364517747");
-//        condition.setMoney(new Money("3000"));
-//        condition.setPayeeAccount(financeAccount.getAccountNo().toString());
-//        condition.setPayeeName(userInfo.getName());
-//        condition.setPayeePhone(userInfo.getUsername());
-//        condition.setPayment(Payment.ALIPAY);
-//        condition.setTransactionNo("123123213213");
-//        condition.setUserId(userId);
+        condition.setTradeType(TradeType.CHARGE);
+        condition.setDestinationType(DestinationType.DEPOSIT);
+        condition.setBillId(17092815834356426L);
+        condition.setDraweeAccount("17364517747");
+        condition.setDraweeName("吴德友");
+        condition.setDraweePhone("17364517747");
+        condition.setMoney(new Money("3000"));
+        condition.setPayment(Payment.ALIPAY);
+        condition.setTransactionNo("123123213213");
+        condition.setUserId(userId);
 //        /**提现*/
 //        condition.setTradeType(TradeType.WITHDRAW);
 //        condition.setBillId(17092815834356415L);
@@ -61,20 +58,20 @@ public class FinanceTest {
 //        condition.setPayment(Payment.DEPOSIT);
 //        condition.setTransactionNo("123123213213");
 //        condition.setUserId(userId);
-        /**罚款*/
-        condition.setTradeType(TradeType.FINE_OUT);
-        condition.setBillId(17092815834356415L);
-        condition.setContextId(1709281583475315L);
-        condition.setDestinationType(DestinationType.BALANCE);
-        condition.setDraweeAccount(financeAccount.getAccountNo().toString());
-        condition.setDraweeName(userInfo.getName());
-        condition.setDraweePhone(userInfo.getUsername());
-        condition.setMoney(new Money("500"));
-        condition.setPayeeAccount("17364517747");
-        condition.setPayeeName("吴德友");
-        condition.setPayeePhone("17364517747");
-        condition.setPayment(Payment.BALANCE);
-        condition.setUserId(userId);
+//        /**罚款*/
+//        condition.setTradeType(TradeType.FINE_OUT);
+//        condition.setBillId(17092815834356415L);
+//        condition.setContextId(1709281583475315L);
+//        condition.setDestinationType(DestinationType.BALANCE);
+//        condition.setDraweeAccount(financeAccount.getAccountNo().toString());
+//        condition.setDraweeName(userInfo.getName());
+//        condition.setDraweePhone(userInfo.getUsername());
+//        condition.setMoney(new Money("500"));
+//        condition.setPayeeAccount("17364517747");
+//        condition.setPayeeName("吴德友");
+//        condition.setPayeePhone("17364517747");
+//        condition.setPayment(Payment.BALANCE);
+//        condition.setUserId(userId);
         ResponseObj responseObj = financeAccountService.updateAccount(condition);
         log.info(responseObj.toJSON());
 
