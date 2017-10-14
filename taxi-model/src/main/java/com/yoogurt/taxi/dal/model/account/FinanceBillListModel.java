@@ -16,20 +16,20 @@ public class FinanceBillListModel {
     private Long billNo;
     private Long contextId;
     private BigDecimal amount;
-    private Integer type;
-    private String typeName;
-    private Integer status;
-    private String statusName;
+    private Integer tradeType;
+    private String tradeTypeName;
+    private Integer billStatus;
+    private String billStatusName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
     private Date gmtCreate;
 
-    public void setType(Integer type) {
-        this.type = type;
-        this.typeName = TradeType.getEnumsBycode(type).getName();
+    public void setTradeType(Integer type) {
+        this.tradeType = type;
+        this.tradeTypeName = TradeType.getEnumsBycode(type).getName();
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
-        this.statusName = BillStatus.getEnumsByCode(status).getName();
+    public void setBillStatus(Integer status) {
+        this.billStatus = status;
+        this.billStatusName = BillStatus.getEnumsByCode(status).getName();
     }
 }

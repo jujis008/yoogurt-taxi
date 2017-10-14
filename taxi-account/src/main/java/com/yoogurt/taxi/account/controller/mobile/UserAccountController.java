@@ -60,7 +60,6 @@ public class UserAccountController extends BaseController{
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
         Long userId = getUserId();
-        Long billId = RandomUtils.getPrimaryKey();
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
         if (!userInfoRestResult.isSuccess()) {
             return ResponseObj.fail(userInfoRestResult.getStatus(),userInfoRestResult.getMessage());
@@ -83,7 +82,6 @@ public class UserAccountController extends BaseController{
         condition.setPayment(payment);
         condition.setUserId(userId);
         condition.setTradeType(TradeType.CHARGE);
-        condition.setBillId(billId);
         ResponseObj responseObj = financeBillService.insertBill(new Money(form.getChargeMoney()), condition, payment, BillStatus.PENDING);
         if (!responseObj.isSuccess()) {
             return responseObj;
