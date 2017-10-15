@@ -23,11 +23,10 @@ public class CommentTests {
     @Test
     public void doCommentTest() {
         CommentForm commentForm = new CommentForm();
-        commentForm.setOrderId(17092615073534929L);
-        commentForm.setDriverId(17092815473439032L);
-        commentForm.setUserId(8888L);
-        commentForm.setUserType(20);
-        commentForm.setScore(5);
+        commentForm.setOrderId(17101411085522846L);
+        commentForm.setUserId(17092815464356415L);
+        commentForm.setUserType(30);
+        commentForm.setScore(3);
         commentForm.setTagId(new Long[]{1L, 2L});
         commentForm.setTagName(new String[]{"驾驶平稳", "爱护车辆"});
         commentForm.setRemark("xxx");

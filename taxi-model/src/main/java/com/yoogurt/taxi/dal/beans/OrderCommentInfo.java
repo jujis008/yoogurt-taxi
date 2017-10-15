@@ -22,14 +22,17 @@ public class OrderCommentInfo extends SuperModel {
     @Column(name = "order_id")
     private Long orderId;
 
-    @Column(name = "user_id")
-    private Long userId;
+    /**
+     * 发起评价的用户ID
+     */
+    @Column(name = "from_user_id")
+    private Long fromUserId;
 
-    @Column(name = "user_type")
-    private Integer userType;
-
-    @Column(name = "driver_id")
-    private Long driverId;
+    /**
+     * 被评价的用户的ID
+     */
+    @Column(name = "to_user_id")
+    private Long toUserId;
 
     /**
      * 评分，整数，1-5

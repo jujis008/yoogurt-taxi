@@ -26,7 +26,6 @@ public class OrderCommentController extends BaseController {
 
     @RequestMapping(value = "/comments", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getComments(CommentListCondition condition) {
-        condition.setUserId(super.getUserId());
         return ResponseObj.success(commentService.getComments(condition));
     }
 

@@ -11,9 +11,6 @@ import javax.validation.constraints.Size;
 @Setter
 public class CommentForm extends OrderForm {
 
-	@NotNull(message = "请指定评价的司机")
-	private Long driverId;
-
 	@NotNull(message = "请指定评分")
 	private Integer score;
 
@@ -26,5 +23,8 @@ public class CommentForm extends OrderForm {
 	@Length(max = 128, message = "备注信息最多128个字")
 	private String remark;
 
+	/**
+	 * 提交评价的用户类型
+	 */
 	private Integer userType;
 }

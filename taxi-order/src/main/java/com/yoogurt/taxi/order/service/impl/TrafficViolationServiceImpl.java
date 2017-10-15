@@ -14,9 +14,11 @@ import com.yoogurt.taxi.dal.condition.order.TrafficViolationListCondition;
 import com.yoogurt.taxi.dal.enums.TrafficStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.dao.TrafficViolationDao;
+import com.yoogurt.taxi.order.form.OrderStatisticForm;
 import com.yoogurt.taxi.order.form.TrafficViolationForm;
 import com.yoogurt.taxi.order.service.AcceptService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
+import com.yoogurt.taxi.order.service.OrderStatisticService;
 import com.yoogurt.taxi.order.service.TrafficViolationService;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -37,6 +39,9 @@ public class TrafficViolationServiceImpl implements TrafficViolationService {
 
     @Autowired
     private AcceptService acceptService;
+
+    @Autowired
+    private OrderStatisticService statisticService;
 
     @Autowired
     private PagerFactory appPagerFactory;
@@ -64,7 +69,10 @@ public class TrafficViolationServiceImpl implements TrafficViolationService {
     @Override
     public OrderTrafficViolationInfo addTrafficViolation(OrderTrafficViolationInfo trafficViolation) {
         if (trafficViolation == null) return null;
-        if (trafficViolationDao.insertSelective(trafficViolation) == 1) return trafficViolation;
+        if (trafficViolationDao.insertSelective(trafficViolation) == 1) {
+            statisticService.record(OrderStatisticForm.builder().userId(trafficViolation.getUserId()).disobeyCount(1).build());
+            return trafficViolation;
+        }
         return null;
     }
 

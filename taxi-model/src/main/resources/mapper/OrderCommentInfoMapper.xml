@@ -7,9 +7,8 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="order_id" jdbcType="BIGINT" property="orderId" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="driver_id" jdbcType="BIGINT" property="driverId" />
-    <result column="user_type" jdbcType="INTEGER" property="userType" />
+    <result column="from_user_id" jdbcType="BIGINT" property="fromUserId" />
+    <result column="to_user_id" jdbcType="BIGINT" property="toUserId" />
     <result column="score" jdbcType="INTEGER" property="score" />
     <result column="tag_id" jdbcType="VARCHAR" property="tagId" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
@@ -20,4 +19,10 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
+
+  <select id="getAvgScore" parameterType="map" resultType="double">
+    SELECT ROUND(AVG(score), 2) FROM order_comment_info
+    WHERE to_user_id=#{userId}
+    GROUP BY to_user_id
+  </select>
 </mapper>

@@ -11,7 +11,9 @@ import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
 import com.yoogurt.taxi.dal.enums.DisobeyType;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.dao.DisobeyDao;
+import com.yoogurt.taxi.order.form.OrderStatisticForm;
 import com.yoogurt.taxi.order.service.DisobeyService;
+import com.yoogurt.taxi.order.service.OrderStatisticService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class DisobeyServiceImpl implements DisobeyService {
 
     @Autowired
     private DisobeyDao disobeyDao;
+
+    @Autowired
+    private OrderStatisticService statisticService;
 
     @Autowired
     private PagerFactory appPagerFactory;
@@ -78,7 +83,7 @@ public class DisobeyServiceImpl implements DisobeyService {
     public OrderDisobeyInfo addDisobey(OrderDisobeyInfo disobey) {
         if (disobey == null) return null;
         if (disobeyDao.insertSelective(disobey) == 1) {
-
+            statisticService.record(OrderStatisticForm.builder().userId(disobey.getUserId()).disobeyCount(1).build());
             return disobey;
         }
         return null;

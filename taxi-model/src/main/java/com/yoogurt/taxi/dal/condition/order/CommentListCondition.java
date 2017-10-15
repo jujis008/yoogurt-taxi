@@ -13,7 +13,7 @@ public class CommentListCondition {
 
     private Long orderId;
 
-    private Long driverId;
+    private Long fromUserId;
 
-    private Long userId;
+    private Long toUserId;
 }

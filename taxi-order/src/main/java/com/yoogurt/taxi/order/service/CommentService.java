@@ -16,4 +16,5 @@ public interface CommentService {
 
 	int removeComments(String commentIds);
 
+	Double getAvgScore(Long userId);
 }
