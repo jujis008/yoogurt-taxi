@@ -167,12 +167,13 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             String key = name.replaceFirst(firstLetter, firstLetter.toLowerCase(Locale.ENGLISH));
             result.put(key, BeanRefUtils.toMap(info, false));
         }
+        /*
         //违约记录
         DisobeyListCondition condition = new DisobeyListCondition();
         condition.setOrderId(orderId);
         List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null);
         result.put("disobeys", disobeyList);
-
+        */
         return result;
     }
 
