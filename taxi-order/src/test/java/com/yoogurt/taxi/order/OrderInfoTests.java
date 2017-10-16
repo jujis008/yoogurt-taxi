@@ -55,7 +55,7 @@ public class OrderInfoTests {
 
     @Test
     public void orderDetailsTest() {
-        Map<String, Object> map = orderInfoService.getOrderDetails(17092615073534929L, 8888L);
+        Map<String, Object> map = orderInfoService.getOrderDetails(17101612521636710L, 17092815525312730L);
         Assert.assertNotNull("订单信息不存在！", map);
     }
 }
