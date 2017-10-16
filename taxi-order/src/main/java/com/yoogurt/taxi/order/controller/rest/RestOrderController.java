@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.order.controller.rest;
 
-import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.CommentTagStatistic;
 import com.yoogurt.taxi.dal.beans.OrderStatistic;
 import com.yoogurt.taxi.order.service.CommentTagStatisticService;
@@ -26,7 +26,7 @@ public class RestOrderController {
     private CommentTagStatisticService commentTagStatisticService;
 
     @RequestMapping(value = "/statistics/userId/{userId}",method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj statistics(@PathVariable(name = "userId") Long userId) {
+    public RestResult<Map<String, Object>> statistics(@PathVariable(name = "userId") Long userId) {
 
         //订单统计信息
         OrderStatistic orderStatistics = orderStatisticService.getOrderStatistics(userId);
@@ -36,6 +36,6 @@ public class RestOrderController {
         Map<String, Object> result = new HashMap<>();
         result.put("order", orderStatistics);
         result.put("comment", commentTagStatistics);
-        return ResponseObj.success(result);
+        return RestResult.success(result);
     }
 }
