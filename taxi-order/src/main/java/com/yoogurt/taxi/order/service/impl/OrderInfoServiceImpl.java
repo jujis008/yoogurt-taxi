@@ -400,6 +400,8 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         if (status == null) return null;
 
         switch (status) {
+            case HAND_OVER:
+                return new HandoverOrderModel();
             case PICK_UP:
                 return new PickUpOrderModel();
             case GIVE_BACK:
