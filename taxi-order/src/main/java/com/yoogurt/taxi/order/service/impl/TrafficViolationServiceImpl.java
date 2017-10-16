@@ -87,7 +87,7 @@ public class TrafficViolationServiceImpl implements TrafficViolationService {
         BeanUtils.copyProperties(form, traffic);
         OrderInfo orderInfo = orderInfoService.getOrderInfo(form.getOrderId(), form.getUserId());
         if (orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
-        if(OrderStatus.FINISH.getCode().equals(orderInfo.getStatus())) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单未完成，不能添加违章记录");
+        if(!OrderStatus.FINISH.getCode().equals(orderInfo.getStatus())) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单未完成，不能添加违章记录");
         //只有代理才能违章
         traffic.setUserId(orderInfo.getAgentUserId());
         traffic.setUserType(UserType.USER_APP_AGENT.getCode());
