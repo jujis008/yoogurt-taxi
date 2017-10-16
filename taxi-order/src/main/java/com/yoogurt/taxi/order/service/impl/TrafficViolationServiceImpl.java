@@ -11,6 +11,7 @@ import com.yoogurt.taxi.dal.beans.OrderAcceptInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.OrderTrafficViolationInfo;
 import com.yoogurt.taxi.dal.condition.order.TrafficViolationListCondition;
+import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.TrafficStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.dao.TrafficViolationDao;
@@ -86,13 +87,16 @@ public class TrafficViolationServiceImpl implements TrafficViolationService {
         BeanUtils.copyProperties(form, traffic);
         OrderInfo orderInfo = orderInfoService.getOrderInfo(form.getOrderId(), form.getUserId());
         if (orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
+        if(OrderStatus.FINISH.getCode().equals(orderInfo.getStatus())) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单未完成，不能添加违章记录");
+        //只有代理才能违章
+        traffic.setUserId(orderInfo.getAgentUserId());
+        traffic.setUserType(UserType.USER_APP_AGENT.getCode());
         traffic.setCarId(orderInfo.getCarId());
         traffic.setPlateNumber(orderInfo.getPlateNumber());
         traffic.setVin(orderInfo.getVin());
         traffic.setDriverId(orderInfo.getAgentDriverId());
         traffic.setDriverName(orderInfo.getAgentDriverName());
         traffic.setMobile(orderInfo.getAgentDriverPhone());
-        traffic.setUserType(UserType.USER_APP_AGENT.getCode());
         traffic.setStatus(TrafficStatus.PENDING.getCode());
         return ResponseObj.success(traffic);
     }

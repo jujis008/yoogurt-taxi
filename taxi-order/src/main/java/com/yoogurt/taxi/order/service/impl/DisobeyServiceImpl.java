@@ -93,7 +93,7 @@ public class DisobeyServiceImpl implements DisobeyService {
      * 构造一个违约记录
      *
      * @param orderInfo   订单信息
-     * @param userType    用户类型
+     * @param userType    用户类型，如果是无责，userType为0，指向超级管理员
      * @param disobeyType 违约类型
      * @param ruleId      违约规则id
      * @param fineMoney   违约金
@@ -103,11 +103,18 @@ public class DisobeyServiceImpl implements DisobeyService {
     @Override
     public OrderDisobeyInfo buildDisobeyInfo(OrderInfo orderInfo, UserType userType, DisobeyType disobeyType, Long ruleId, BigDecimal fineMoney, String description) {
         OrderDisobeyInfo disobey = new OrderDisobeyInfo(orderInfo.getOrderId());
+        if (userType.equals(UserType.USER_APP_OFFICE)) {
+            disobey.setUserId(orderInfo.getOfficialUserId());
+        } else if (userType.equals(UserType.USER_APP_AGENT)) {
+            disobey.setUserId(orderInfo.getAgentUserId());
+        } else {
+            disobey.setUserId(0L);
+        }
         disobey.setRuleId(ruleId);
         disobey.setFineMoney(fineMoney);
         disobey.setHappenTime(new Date());
         disobey.setStatus(Boolean.FALSE);
-        disobey.setUserType(userType != null ? userType.getCode() : 0);
+        disobey.setUserType(userType.getCode());
         disobey.setType(disobeyType.getCode());
         disobey.setDescription(description);
         //注入司机信息
