@@ -13,7 +13,7 @@ import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.FinanceRecord;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.condition.account.RecordListAppCondition;
+import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.Payment;
@@ -32,7 +32,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     @Autowired
     private RestUserService restUserService;
     @Override
-    public Pager<FinanceBillListModel> getFinanceBillListApp(RecordListAppCondition condition) {
+    public Pager<FinanceBillListModel> getFinanceBillListApp(AccountListAppCondition condition) {
         return financeBillDao.getFinanceBillListApp(condition);
     }
 

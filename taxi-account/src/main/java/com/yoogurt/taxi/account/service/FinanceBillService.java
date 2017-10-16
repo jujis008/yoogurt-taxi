@@ -5,7 +5,7 @@ import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.condition.account.RecordListAppCondition;
+import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.Payment;
@@ -17,7 +17,7 @@ public interface FinanceBillService {
      * @param condition
      * @return
      */
-    Pager<FinanceBillListModel> getFinanceBillListApp(RecordListAppCondition condition);
+    Pager<FinanceBillListModel> getFinanceBillListApp(AccountListAppCondition condition);
 
     /**
      * 获取financeBill对象

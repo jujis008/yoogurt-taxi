@@ -18,6 +18,13 @@ public class FinanceAccount extends SuperModel{
     @Column(name = "user_id")
     private Long userId;
 
+    private String name;
+
+    private String username;
+
+    @Column(name = "user_type")
+    private Integer userType;
+
     /**
      * 账号
      */

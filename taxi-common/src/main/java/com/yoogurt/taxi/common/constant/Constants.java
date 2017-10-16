@@ -103,8 +103,11 @@ public final class Constants {
     /** ico后缀 */
     public static final String GIF_FILE_SUFFIX        = "gif";
 
-    /** 应收押金 */
-    public static final BigDecimal receivableDeposit = new Money("3000").getAmount();
+    /** 代理司机应收押金 */
+    public static final BigDecimal AGENT_RECEIVABLEDEPOSIT = new Money("3000").getAmount();
+
+    /** 正式司机应收押金 */
+    public static final BigDecimal OFFICE_RECEIVABLEDEPOSIT = new Money("1000").getAmount();
 
     /** 公司对公账户 */
     public static final String comanyFinanceAccount = "0000000000000";

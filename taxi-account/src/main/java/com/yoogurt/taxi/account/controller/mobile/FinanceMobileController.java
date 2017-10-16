@@ -17,7 +17,7 @@ import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.condition.account.RecordListAppCondition;
+import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/mobile/account")
-public class UserAccountController extends BaseController{
+public class FinanceMobileController extends BaseController{
     @Autowired
     private FinanceAccountService financeAccountService;
     @Autowired
@@ -40,7 +40,7 @@ public class UserAccountController extends BaseController{
     private RestUserService restUserService;
 
     @RequestMapping(value = "/bill/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
-    public ResponseObj getListApp(@Valid RecordListAppCondition condition, BindingResult result) {
+    public ResponseObj getListApp(@Valid AccountListAppCondition condition, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
@@ -67,7 +67,15 @@ public class UserAccountController extends BaseController{
         }
         FinanceAccount financeAccount = financeAccountService.get(userId);
         if (financeAccount == null) {
-            financeAccountService.createAccount(RandomUtils.getPrimaryKey(), new Money(Constants.receivableDeposit),userId);
+            Money receivableDeposit = new Money(0);
+            UserInfo userInfo = userInfoRestResult.getBody();
+            if (UserType.USER_APP_OFFICE.getCode() == userInfo.getType()) {
+                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLEDEPOSIT);
+            }
+            if (UserType.USER_APP_AGENT.getCode() == userInfo.getType()) {
+                receivableDeposit = new Money(Constants.AGENT_RECEIVABLEDEPOSIT);
+            }
+            financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit,userId);
         }
         UserInfo userInfo = userInfoRestResult.getBody();
         Payment payment = Payment.getEnumsBycode(form.getChargeType());

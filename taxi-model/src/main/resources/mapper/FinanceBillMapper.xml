@@ -32,7 +32,7 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
-    <select id="getFinanceBillListApp" parameterType="com.yoogurt.taxi.dal.condition.account.RecordListAppCondition"
+    <select id="getFinanceBillListApp" parameterType="com.yoogurt.taxi.dal.condition.account.AccountListAppCondition"
             resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListModel">
         SELECT id,bill_no AS billNo,context_id AS contextId,
         amount,trade_type AS tradeType,bill_status AS billStatus,gmt_create AS gmtCreate

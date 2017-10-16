@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class RecordListAppCondition extends PageableCondition {
+public class AccountListAppCondition extends PageableCondition {
     private Long userId;
     private Integer billType;
 }

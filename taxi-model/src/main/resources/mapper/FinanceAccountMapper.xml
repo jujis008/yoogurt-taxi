@@ -6,6 +6,9 @@
       WARNING - @mbg.generated
     -->
     <id column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="user_type" jdbcType="INTEGER" property="userType" />
     <result column="account_no" jdbcType="BIGINT" property="accountNo" />
     <result column="balance" jdbcType="DECIMAL" property="balance" />
     <result column="frozen_balance" jdbcType="DECIMAL" property="frozenBalance" />
@@ -18,24 +21,5 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
-  <!--
-  <insert id="saveOrUpdate" parameterType="com.yoogurt.taxi.dal.beans.FinanceAccount">
-    INSERT INTO finance_account(user_id,account_no,
-      balance,frozen_balance,receivable_deposit,
-      received_deposit,frozen_deposit,is_deleted,
-      gmt_create,creator,gmt_modify,modifier
-      )
-    VALUES (#{userId},#{accountNo},#{balance},
-      #{frozenBalance},#{receivableDeposit},#{receivedDeposit},
-      #{frozenDeposit},#{isDeleted},#{gmtCreate},
-      #{creator},#{gmtModify},#{modifier}
-      )
-    ON DUPLICATE KEY UPDATE
-      balance=#{balance},
-      frozen_balance=#{frozenBalance},
-      receivable_deposit=#{receivableDeposit},
-      received_deposit=#{receivedDeposit},
-      frozen_deposit=#{frozenDeposit}
-  </insert>
-  -->
+  <!--<select id=""-->
 </mapper>

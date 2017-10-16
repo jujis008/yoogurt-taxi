@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.account.controller.rest;
 
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
@@ -33,7 +34,19 @@ public class RestUserAccountController {
     public RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") Long userId) {
         FinanceAccount financeAccount = financeAccountService.get(userId);
         if (financeAccount == null) {
-            financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), new Money(Constants.receivableDeposit), userId);
+            RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
+            if (!userInfoRestResult.isSuccess()) {
+                return RestResult.fail(StatusCode.BIZ_FAILED,"用户信息不存在");
+            }
+            Money receivableDeposit = new Money(0);
+            UserInfo userInfo = userInfoRestResult.getBody();
+            if (UserType.USER_APP_OFFICE.getCode() == userInfo.getType()) {
+                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLEDEPOSIT);
+            }
+            if (UserType.USER_APP_AGENT.getCode() == userInfo.getType()) {
+                receivableDeposit = new Money(Constants.AGENT_RECEIVABLEDEPOSIT);
+            }
+            financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, userId);
         }
         if(financeAccount != null) return RestResult.success(financeAccount);
         return RestResult.fail(StatusCode.BIZ_FAILED, "账户信息不存在");
@@ -63,7 +76,19 @@ public class RestUserAccountController {
         FinanceAccount fineOutFinanceAccount = financeAccountService.get(voObject.getOutUserId());
 
         if (fineOutFinanceAccount == null) {
-            fineOutFinanceAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), new Money(Constants.receivableDeposit), voObject.getOutUserId());
+            RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(voObject.getUserId());
+            if (!userInfoRestResult.isSuccess()) {
+                return RestResult.fail(StatusCode.BIZ_FAILED,"用户信息不存在");
+            }
+            Money receivableDeposit = new Money(0);
+            UserInfo userInfo = userInfoRestResult.getBody();
+            if (UserType.USER_APP_OFFICE.getCode() == userInfo.getType()) {
+                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLEDEPOSIT);
+            }
+            if (UserType.USER_APP_AGENT.getCode() == userInfo.getType()) {
+                receivableDeposit = new Money(Constants.AGENT_RECEIVABLEDEPOSIT);
+            }
+            fineOutFinanceAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, voObject.getOutUserId());
         }
 
         UserInfo userInfo = fineInUserInfoRestResult.getBody();

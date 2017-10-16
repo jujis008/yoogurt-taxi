@@ -43,13 +43,21 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
 
     @Override
     public FinanceAccount createAccount(Long accountNo, Money receivableDeposit, Long userId) {
+        RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
+        if (!userInfoRestResult.isSuccess()) {
+            return null;
+        }
+        UserInfo userInfo = userInfoRestResult.getBody();
         FinanceAccount financeAccount = new FinanceAccount();
         financeAccount.setAccountNo(accountNo);
         financeAccount.setBalance(new BigDecimal(0));
         financeAccount.setFrozenBalance(new BigDecimal(0));
         financeAccount.setFrozenDeposit(new BigDecimal(0));
-        financeAccount.setReceivableDeposit(Constants.receivableDeposit);
+        financeAccount.setReceivableDeposit(receivableDeposit.getAmount());
         financeAccount.setReceivedDeposit(new BigDecimal(0));
+        financeAccount.setName(userInfo.getName());
+        financeAccount.setUsername(userInfo.getUsername());
+        financeAccount.setUserType(userInfo.getType());
         financeAccount.setUserId(userId);
         financeAccountDao.insert(financeAccount);//创建默认资金数账户
         return financeAccount;
