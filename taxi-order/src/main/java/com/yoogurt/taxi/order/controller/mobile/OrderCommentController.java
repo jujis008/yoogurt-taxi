@@ -4,10 +4,10 @@ import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.OrderCommentInfo;
 import com.yoogurt.taxi.dal.condition.order.CommentListCondition;
 import com.yoogurt.taxi.order.form.CommentForm;
 import com.yoogurt.taxi.order.service.CommentService;
+import com.yoogurt.taxi.order.service.CommentTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +23,14 @@ public class OrderCommentController extends BaseController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private CommentTagService commentTagService;
+
+    @RequestMapping(value = "/comment/tags", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getCommentTags() {
+        return ResponseObj.success(commentTagService.getTags());
+    }
 
     @RequestMapping(value = "/comments", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getComments(CommentListCondition condition) {
