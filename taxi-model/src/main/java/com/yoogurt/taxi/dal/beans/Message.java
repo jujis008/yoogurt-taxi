@@ -44,5 +44,5 @@ public class Message extends SuperModel {
      * 接收者userId（系统消息为空）
      */
     @Column(name = "to_user_id")
-    private String toUserId;
+    private Long toUserId;
 }

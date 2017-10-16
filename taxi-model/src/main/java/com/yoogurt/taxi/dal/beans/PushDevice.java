@@ -2,7 +2,9 @@ package com.yoogurt.taxi.dal.beans;
 
 import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
@@ -11,6 +13,8 @@ import javax.persistence.*;
 @Domain
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "push_device")
 public class PushDevice extends SuperModel {
     /**
@@ -49,4 +53,7 @@ public class PushDevice extends SuperModel {
      */
     private Integer status;
 
+    public PushDevice(String clientId) {
+        this.clientId = clientId;
+    }
 }
