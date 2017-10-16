@@ -41,9 +41,13 @@ public class RentInfoModel {
 
 	private Double lat;
 
+	private int trafficViolationCount;
+
+	private int disobeyCount;
+
 	private int orderCount;
 
-	private int score;
+	private BigDecimal score;
 
 	private Integer status;
 
