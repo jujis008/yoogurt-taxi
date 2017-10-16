@@ -1,9 +1,13 @@
 package com.yoogurt.taxi.account.service;
 
 import com.yoogurt.taxi.common.bo.Money;
+import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
+import com.yoogurt.taxi.dal.condition.account.AccountListWebCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
+import com.yoogurt.taxi.dal.enums.BillStatus;
+import com.yoogurt.taxi.dal.model.account.FinanceAccountListModel;
 
 public interface FinanceAccountService {
     FinanceAccount get(Long userId);
@@ -17,4 +21,7 @@ public interface FinanceAccountService {
      */
     ResponseObj updateAccount(AccountUpdateCondition condition);
 
+    Pager<FinanceAccountListModel> getListWeb(AccountListWebCondition condition);
+
+    ResponseObj handleWithdraw(Long billId, BillStatus billStatus);
 }

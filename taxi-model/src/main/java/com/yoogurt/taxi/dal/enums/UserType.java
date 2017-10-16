@@ -3,8 +3,8 @@ package com.yoogurt.taxi.dal.enums;
 public enum UserType {
     SUPER_ADMIN(0,"超级管理员"),
     USER_WEB(10,"后端用户"),
-    USER_APP_AGENT(20,"代理端用户"),
-    USER_APP_OFFICE(30,"正式端用户"),
+    USER_APP_AGENT(20,"正式司机"),
+    USER_APP_OFFICE(30,"代理司机"),
     ;
 
     private Integer code;

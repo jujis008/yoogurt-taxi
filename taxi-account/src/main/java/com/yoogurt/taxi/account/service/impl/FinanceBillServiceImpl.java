@@ -6,6 +6,7 @@ import com.yoogurt.taxi.account.service.FinanceRecordService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -14,10 +15,16 @@ import com.yoogurt.taxi.dal.beans.FinanceRecord;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
+import com.yoogurt.taxi.dal.condition.account.BillListWebCondition;
+import com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.Payment;
-import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
+import com.yoogurt.taxi.dal.enums.TradeType;
+import com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel;
+import com.yoogurt.taxi.dal.model.account.FinanceBillListWebModel;
+import com.yoogurt.taxi.dal.model.account.WithdrawBillDetailModel;
+import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +39,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     @Autowired
     private RestUserService restUserService;
     @Override
-    public Pager<FinanceBillListModel> getFinanceBillListApp(AccountListAppCondition condition) {
+    public Pager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition) {
         return financeBillDao.getFinanceBillListApp(condition);
     }
 
@@ -56,6 +63,12 @@ public class FinanceBillServiceImpl implements FinanceBillService {
             return 0;
         }
         financeBill.setBillStatus(billStatus.getCode());
+        FinanceRecord record = new FinanceRecord();
+        record.setStatus(billStatus.getCode());
+        record.setBillNo(financeBill.getBillNo());
+        record.setBillId(financeBill.getId());
+        record.setRemark("后台操作更改");
+        financeRecordService.save(record);
         return financeBillDao.updateById(financeBill);
     }
 
@@ -88,6 +101,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         financeBill.setPayeeAccount(condition.getPayeeAccount());
         financeBill.setPayeeName(condition.getPayeeName());
         financeBill.setPayeePhone(condition.getPayeePhone());
+        financeBill.setBankName(condition.getBankName());
 
         financeBill.setBillStatus(billStatus.getCode());
         financeBill.setBillType(billType.getCode());
@@ -103,4 +117,24 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         financeRecordService.save(financeRecord);
         return ResponseObj.success(billNo);
     }
+
+    @Override
+    public Pager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition) {
+        return financeBillDao.getFinanceBillListWeb(condition);
+    }
+
+    @Override
+    public Pager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition) {
+        condition.setTradeType(TradeType.WITHDRAW.getCode());
+        return financeBillDao.getWithdrawBillListWeb(condition);
+    }
+
+    @Override
+    public WithdrawBillDetailModel getWithdrawBillDetail(Long billId) {
+        FinanceBill financeBill = financeBillDao.selectById(billId);
+        WithdrawBillDetailModel model = new WithdrawBillDetailModel();
+        BeanUtilsExtends.copyProperties(model,financeBill);
+        return model;
+    }
+
 }

@@ -1,14 +1,13 @@
 package com.yoogurt.taxi.user.controller.mobile;
 
-import com.yoogurt.taxi.common.vo.EnumModel;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.DateUtil;
-import com.yoogurt.taxi.common.utils.ReflectUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.CarInfo;
 import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.UserAddress;
@@ -18,8 +17,8 @@ import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.user.UserSessionModel;
 import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.service.*;
+import com.yoogurt.taxi.user.service.rest.RestOrderService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +48,8 @@ public class UserMobileController extends BaseController {
     private UserAddressService userAddressService;
     @Autowired
     private CarService carService;
+    @Autowired
+    private RestOrderService restOrderService;
 
     @RequestMapping(value = "/i/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj agentLogin(@RequestBody LoginForm loginForm) {
@@ -154,6 +156,36 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
         return ResponseObj.success(carInfos.get(0));
+    }
+
+    @RequestMapping(value = "/i/driverInfo/userId/{userId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getDriverInfo(@PathVariable(name = "userId") Long userId) {
+        RestResult<Map<String, Object>> statisticsRestResult = restOrderService.statistics(userId);
+        if (!statisticsRestResult.isSuccess()) {
+            return ResponseObj.of(statisticsRestResult);
+        }
+        Map<String, Object> statisticsRestResultBody = statisticsRestResult.getBody();
+        DriverInfo driverInfo = driverService.getDriverByUserId(userId);
+        if (driverInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED);
+        }
+        Map<String,Object> driverInfoMap = new HashMap<>();
+        UserInfo userInfo = userService.getUserByUserId(userId);
+        driverInfoMap.put("avatar",userInfo.getAvatar());
+        driverInfoMap.put("name",userInfo.getName().substring(1)+"师傅");
+        statisticsRestResultBody.put("driverInfo",driverInfoMap);
+        if (UserType.USER_APP_OFFICE==UserType.getEnumsByCode(driverInfo.getType())) {
+            List<CarInfo> carInfos = carService.getCarByUserId(userId);
+            if (CollectionUtils.isEmpty(carInfos)) {
+                return ResponseObj.fail(StatusCode.BIZ_FAILED);
+            }
+            Map<String,Object> carInfoMap = new HashMap<>();
+            carInfoMap.put("carPicture",carInfos.get(0).getCarPicture());
+            carInfoMap.put("plateNumber",carInfos.get(0).getPlateNumber());
+            carInfoMap.put("company",carInfos.get(0).getCompany());
+            statisticsRestResultBody.put("carInfo",carInfoMap);
+        }
+        return ResponseObj.success(statisticsRestResultBody);
     }
 
     /**

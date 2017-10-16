@@ -21,6 +21,7 @@
     <result column="payee_account" jdbcType="VARCHAR" property="payeeAccount" />
     <result column="payee_name" jdbcType="VARCHAR" property="payeeName" />
     <result column="payee_phone" jdbcType="VARCHAR" property="payeePhone" />
+    <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
     <result column="payment" jdbcType="INTEGER" property="payment" />
     <result column="drawee_account" jdbcType="VARCHAR" property="draweeAccount" />
     <result column="drawee_name" jdbcType="VARCHAR" property="draweeName" />
@@ -33,12 +34,51 @@
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
     <select id="getFinanceBillListApp" parameterType="com.yoogurt.taxi.dal.condition.account.AccountListAppCondition"
-            resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListModel">
+            resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel">
         SELECT id,bill_no AS billNo,context_id AS contextId,
         amount,trade_type AS tradeType,bill_status AS billStatus,gmt_create AS gmtCreate
         FROM finance_bill
         WHERE
         user_id=#{userId}
         AND bill_type=#{billType}
+    </select>
+    <select id="getFinanceBillListWeb" parameterType="com.yoogurt.taxi.dal.condition.account.BillListWebCondition"
+            resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListWebModel">
+      SELECT id,`name`,username,user_type AS userType,trade_type AS tradeType,amount,gmt_create AS gmtCreate
+      FROM finance_bill
+      <where>
+        <if test="name != null and name !=''">
+          name like concat('%',#{name},'%')
+        </if>
+        <if test="username != null and username != ''">
+          and username like concat('%',#{username},'%')
+        </if>
+        <if test="userType != null">
+          and user_type=#{userType}
+        </if>
+        <if test="billType != null">
+          and bill_type=#{billType}
+        </if>
+      </where>
+    </select>
+    <select id="getWithdrawBillListWeb" parameterType="com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition"
+            resultType="com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel">
+      SELECT id,username,bill_type AS billType,
+        payee_account AS payeeAccount, amount,
+        bill_status AS billStatus,gmt_create AS gmtCreate
+      FROM finance_bill
+      WHERE trade_type = #{tradeType}
+      <if test="username != null and username != ''">
+        AND username like concat('%',#{username},'%')
+      </if>
+      <if test="billType != null">
+        AND bill_type = #{billType}
+      </if>
+      <if test="startTime != null">
+        AND gmt_create>=#{startTime}
+      </if>
+      <if test="endTime != null">
+        AND gmt_create <![CDATA[<=#{endTime}]]>
+      </if>
     </select>
 </mapper>

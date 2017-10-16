@@ -6,8 +6,8 @@ import com.yoogurt.taxi.account.service.FinanceBillService;
 import com.yoogurt.taxi.account.service.FinanceRecordService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
-import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -15,8 +15,10 @@ import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.FinanceRecord;
 import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.condition.account.AccountListWebCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.enums.*;
+import com.yoogurt.taxi.dal.model.account.FinanceAccountListModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -87,7 +89,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
             TradeType tradeType = condition.getTradeType();
             if (financeAccount == null) {//账户不存在
                 //创建账户
-                createAccount(RandomUtils.getPrimaryKey(), new Money(0), userId);
+                financeAccount = createAccount(RandomUtils.getPrimaryKey(), new Money(0), userId);
             }
             Payment payment = condition.getPayment();
             //判断账户的有效性
@@ -126,7 +128,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     if (financeBill == null) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录不存在");
                     }
-                    if (financeBill.getBillStatus() != BillStatus.PENDING.getCode()) {
+                    if (financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED,"该充值记录已处理");
                     }
                     if (!financeBill.getAmount().equals(money.getAmount())) {
@@ -187,6 +189,34 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         }
     }
 
+    @Override
+    public Pager<FinanceAccountListModel> getListWeb(AccountListWebCondition condition) {
+        return financeAccountDao.getListWeb(condition);
+    }
+
+    @Override
+    public ResponseObj handleWithdraw(Long billId, BillStatus billStatus) {
+        FinanceBill financeBill = financeBillService.get(billId);
+        if (financeBill == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"操作对象不存在，请刷新重试");
+        }
+        if (billStatus.getCode().intValue() != BillStatus.PENDING
+                && billStatus != BillStatus.TRANSFERRING) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"非法流程操作");
+        }
+        switch (billStatus) {
+            case SUCCESS:
+            case FAIL:
+            case TRANSFERRING:
+            default:
+                return ResponseObj.fail(StatusCode.FORM_INVALID,"操作标识不正确");
+        }
+        if (billStatus == BillStatus.SUCCESS) {//转账成功，减少冻结资金
+
+        }
+        return null;
+    }
+
     private ResponseObj validateAccount(FinanceAccount financeAccount, TradeType tradeType, Money money, Payment payment) {
         if (!tradeType.isAdd()) {//扣除资金
             //扣除资金额大于账户总资金(罚款)
@@ -209,9 +239,4 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         return ResponseObj.success();
     }
 
-//    private void addBalance(FinanceAccount financeAccount, Money money) {
-//        financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
-//        /**更新或插入账户*/
-//        financeAccountDao.updateById(financeAccount);
-//    }
 }

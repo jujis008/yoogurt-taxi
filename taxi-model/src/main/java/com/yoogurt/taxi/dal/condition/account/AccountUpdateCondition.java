@@ -1,10 +1,7 @@
 package com.yoogurt.taxi.dal.condition.account;
 
 import com.yoogurt.taxi.common.bo.Money;
-import com.yoogurt.taxi.dal.enums.BillType;
-import com.yoogurt.taxi.dal.enums.DestinationType;
-import com.yoogurt.taxi.dal.enums.Payment;
-import com.yoogurt.taxi.dal.enums.TradeType;
+import com.yoogurt.taxi.dal.enums.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,6 +24,8 @@ public class AccountUpdateCondition {
     private String payeeName;
     /**收款人手机号（必传）*/
     private String payeePhone;
+
+    private String bankName;
     /**付款人账号（必传）*/
     private String draweeAccount;
     /**付款人姓名（必传）*/
