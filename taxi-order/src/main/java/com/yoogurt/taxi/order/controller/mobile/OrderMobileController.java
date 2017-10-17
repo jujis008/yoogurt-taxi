@@ -72,7 +72,9 @@ public class OrderMobileController extends BaseController {
     @RequestMapping(value = "/info/{orderId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getOrderDetails(@PathVariable(name = "orderId") Long orderId) {
 
-        return ResponseObj.success(orderInfoService.getOrderDetails(orderId, super.getUserId()));
+        Map<String, Object> extras = new HashMap<>();
+        extras.put("timestamp", System.currentTimeMillis());
+        return ResponseObj.success(orderInfoService.getOrderDetails(orderId, super.getUserId()), extras);
     }
 
     @RequestMapping(value = "/handover", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
