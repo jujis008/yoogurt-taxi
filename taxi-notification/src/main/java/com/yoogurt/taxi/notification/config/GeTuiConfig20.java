@@ -1,8 +1,12 @@
 package com.yoogurt.taxi.notification.config;
 
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
+@Setter
+@Configuration("config20")
 @ConfigurationProperties(prefix = "push.end20")
 public class GeTuiConfig20 implements IGeTuiConfig {
 
