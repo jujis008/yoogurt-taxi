@@ -19,8 +19,8 @@ import com.yoogurt.taxi.dal.condition.account.AccountListWebCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.account.FinanceAccountListModel;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +28,11 @@ import java.math.BigDecimal;
 
 @Slf4j
 @Service
+@Setter
 public class FinanceAccountServiceImpl implements FinanceAccountService {
-    @Autowired
     private FinanceAccountDao financeAccountDao;
-    @Autowired
     private FinanceRecordService financeRecordService;
-    @Autowired
     private FinanceBillService financeBillService;
-    @Autowired
     private RestUserService restUserService;
 
     @Override
@@ -69,8 +66,8 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
      * 更新账户，具体功能有：1.充值（提现申请），2.提现（回调，即将冻结金额扣除，账户不动）
      * 3.罚款，4.补偿，5.订单收入
      *
-     * @param condition
-     * @return
+     * @param condition 条件参数
+     * @return ResponseObj
      */
     @Transactional
     @Override
@@ -100,7 +97,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
             }
             switch (tradeType) {
                 case WITHDRAW://提现
-                    BillType billType = null;
+                    BillType billType;
                     if (payment == Payment.BALANCE) {//余额提现
                         billType = BillType.BALANCE;
                         Money frozenBalance = new Money(financeAccount.getFrozenBalance());
@@ -108,7 +105,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                         if (condition.getChangeType() == AccountChangeType.frozen_add) {//提现申请，放入冻结
                             financeAccount.setFrozenBalance(frozenBalance.add(money).getAmount());
                             financeAccount.setBalance(balance.subtract(money).getAmount());
-                            /**1.更新账户*/
+                            /*1.更新账户*/
                             financeAccountDao.updateById(financeAccount);
                             financeBillService.insertBill(money, condition, payment, BillStatus.PENDING, billType);
                             return ResponseObj.success(financeAccount);
@@ -169,7 +166,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                         if (condition.getChangeType() == AccountChangeType.frozen_add) {//提现申请,放入冻结
                             financeAccount.setFrozenDeposit(frozenDeposit.add(money).getAmount());
                             financeAccount.setReceivedDeposit(receivedDeposit.subtract(money).getAmount());
-                            /**1.更新账户*/
+                            /*1.更新账户*/
                             financeAccountDao.updateById(financeAccount);
                             financeBillService.insertBill(money, condition, payment, BillStatus.PENDING, billType);
                             return ResponseObj.success(financeAccount);
@@ -248,12 +245,12 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     financeBill.setPayment(condition.getPayment().getCode());
                     financeBill.setTransactionNo(condition.getTransactionNo());
                     financeBill.setBillStatus(BillStatus.SUCCESS.getCode());
-                    /**更新账户*/
+                    /*更新账户*/
                     financeAccountDao.updateById(financeAccount);
-                    /**更新账单状态*/
+                    /*更新账单状态*/
                     financeBillService.save(financeBill);
 
-                    /**3.插入账单记录*/
+                    /*3.插入账单记录*/
                     FinanceRecord financeRecord = new FinanceRecord();
                     financeRecord.setBillId(financeBill.getId());
                     financeRecord.setBillNo(financeBill.getBillNo());
@@ -262,7 +259,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     return ResponseObj.success(financeAccount);
                 case FINE_IN://补偿,余额增加
                     financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
-                    /**更新账户*/
+                    /*更新账户*/
                     financeAccountDao.updateById(financeAccount);
                     financeBillService.insertBill(money, condition, Payment.BALANCE, BillStatus.SUCCESS, BillType.BALANCE);
                     return ResponseObj.success(financeAccount);
@@ -286,7 +283,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     return ResponseObj.success(financeAccount);
                 case INCOME://订单收入,余额增加
                     financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
-                    /**更新或插入账户*/
+                    /*更新或插入账户*/
                     financeAccountDao.updateById(financeAccount);
                     financeBillService.insertBill(money, condition, Payment.ALIPAY, BillStatus.SUCCESS, BillType.BALANCE);
                     return ResponseObj.success(financeAccount);

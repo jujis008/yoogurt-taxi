@@ -18,10 +18,10 @@ import com.yoogurt.taxi.dal.model.user.UserSessionModel;
 import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.service.*;
 import com.yoogurt.taxi.user.service.rest.RestOrderService;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,21 +34,15 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/mobile/user")
+@Setter
 public class UserMobileController extends BaseController {
 
-    @Autowired
     private LoginService loginService;
-    @Autowired
     private UserService userService;
-    @Autowired
     private DriverService driverService;
-    @Autowired
     private RedisHelper redisHelper;
-    @Autowired
     private UserAddressService userAddressService;
-    @Autowired
     private CarService carService;
-    @Autowired
     private RestOrderService restOrderService;
 
     @RequestMapping(value = "/i/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
@@ -72,7 +66,7 @@ public class UserMobileController extends BaseController {
     /**
      * 查看用户信息
      *
-     * @return
+     * @return ResponseObj
      */
     @RequestMapping(value = "/info", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getUserInfo() {
@@ -104,7 +98,7 @@ public class UserMobileController extends BaseController {
     public ResponseObj activeStatus() {
         Long userId = getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
-        if (userInfo.getStatus() != UserStatus.UN_ACTIVE.getCode()) {
+        if (UserStatus.UN_ACTIVE.getCode().equals(userInfo.getStatus())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户非未激活状态");
         }
         Object o = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId);
@@ -114,26 +108,10 @@ public class UserMobileController extends BaseController {
         return ResponseObj.success(o);
     }
 
-//    @RequestMapping(value = "/authenticationStatus", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-//    public ResponseObj AuthenticationStatus() {
-//        Long userId = getUserId();
-//        UserType userType = UserType.getEnumsByCode(getUserType());
-//        Map<String, Object> map = new HashMap<>();
-//        DriverInfo driverInfo = driverService.getDriverByUserId(userId);
-//        map.put("driverAuthenticated", driverInfo.getIsAuthentication());
-//        if (userType == UserType.USER_APP_OFFICE) {
-//            List<CarInfo> carByUsers = carService.getCarByUserId(userId);
-//            if (CollectionUtils.isNotEmpty(carByUsers)) {
-//                map.put("carAuthenticated", carByUsers.get(0).getIsAuthentication());
-//            }
-//        }
-//        return ResponseObj.success(map);
-//    }
-
     /**
      * 获取司机身份资料
      *
-     * @return
+     * @return ResponseObj
      */
     @RequestMapping(value = "/driverIdentity", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj driverIdentity() {
@@ -147,17 +125,22 @@ public class UserMobileController extends BaseController {
     /**
      * 车辆资料
      *
-     * @return
+     * @return ResponseObj
      */
     @RequestMapping(value = "/carIdentity", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj carIdentity() {
-        List<CarInfo> carInfos = carService.getCarByUserId(getUserId());
-        if (CollectionUtils.isEmpty(carInfos)) {
+        List<CarInfo> carInfoList = carService.getCarByUserId(getUserId());
+        if (CollectionUtils.isEmpty(carInfoList)) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
-        return ResponseObj.success(carInfos.get(0));
+        return ResponseObj.success(carInfoList.get(0));
     }
 
+    /**
+     * 获取司机信息
+     * @param userId 用户id
+     * @return  ResponseObj
+     */
     @RequestMapping(value = "/i/driverInfo/userId/{userId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getDriverInfo(@PathVariable(name = "userId") Long userId) {
         RestResult<Map<String, Object>> statisticsRestResult = restOrderService.statistics(userId);
@@ -169,21 +152,21 @@ public class UserMobileController extends BaseController {
         if (driverInfo == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
-        Map<String,Object> driverInfoMap = new HashMap<>();
+        Map<String, Object> driverInfoMap = new HashMap<>();
         UserInfo userInfo = userService.getUserByUserId(userId);
-        driverInfoMap.put("avatar",userInfo.getAvatar());
-        driverInfoMap.put("name",userInfo.getName().substring(1)+"师傅");
-        statisticsRestResultBody.put("driverInfo",driverInfoMap);
-        if (UserType.USER_APP_OFFICE==UserType.getEnumsByCode(driverInfo.getType())) {
-            List<CarInfo> carInfos = carService.getCarByUserId(userId);
-            if (CollectionUtils.isEmpty(carInfos)) {
+        driverInfoMap.put("avatar", userInfo.getAvatar());
+        driverInfoMap.put("name", userInfo.getName().substring(1) + "师傅");
+        statisticsRestResultBody.put("driverInfo", driverInfoMap);
+        if (UserType.USER_APP_OFFICE == UserType.getEnumsByCode(driverInfo.getType())) {
+            List<CarInfo> carInfoList = carService.getCarByUserId(userId);
+            if (CollectionUtils.isEmpty(carInfoList)) {
                 return ResponseObj.fail(StatusCode.BIZ_FAILED);
             }
-            Map<String,Object> carInfoMap = new HashMap<>();
-            carInfoMap.put("carPicture",carInfos.get(0).getCarPicture());
-            carInfoMap.put("plateNumber",carInfos.get(0).getPlateNumber());
-            carInfoMap.put("company",carInfos.get(0).getCompany());
-            statisticsRestResultBody.put("carInfo",carInfoMap);
+            Map<String, Object> carInfoMap = new HashMap<>();
+            carInfoMap.put("carPicture", carInfoList.get(0).getCarPicture());
+            carInfoMap.put("plateNumber", carInfoList.get(0).getPlateNumber());
+            carInfoMap.put("company", carInfoList.get(0).getCompany());
+            statisticsRestResultBody.put("carInfo", carInfoMap);
         }
         return ResponseObj.success(statisticsRestResultBody);
     }
@@ -191,9 +174,9 @@ public class UserMobileController extends BaseController {
     /**
      * 激活账户
      *
-     * @param activeAccountForm
-     * @param bindingResult
-     * @return
+     * @param activeAccountForm 表单
+     * @param bindingResult 校验结果
+     * @return ResponseObj
      */
     @RequestMapping(value = "/activateAccount", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj activateAccount(@RequestBody @Valid ActiveAccountForm activeAccountForm, BindingResult bindingResult) {
@@ -237,7 +220,7 @@ public class UserMobileController extends BaseController {
         return ResponseObj.success();
     }
 
-    public void redisSetting(Long userId) {
+    private void redisSetting(Long userId) {
         if (redisHelper.get(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId) == null) {
             redisHelper.set(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId, "1", DateUtil.getSurplusSeconds().intValue());
         } else {
@@ -248,12 +231,12 @@ public class UserMobileController extends BaseController {
     /**
      * 激活账户-设置登录密码
      *
-     * @return
+     * @return ResponseObj
      */
     @RequestMapping(value = "/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
-    public ResponseObj activeLoginPassword(@RequestBody @Valid ModifyPasswordForm form,BindingResult result) {
+    public ResponseObj activeLoginPassword(@RequestBody @Valid ModifyPasswordForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         if (form.getNewPassword().equals(form.getOldPassword())) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "默认密码不能作为新密码");
@@ -279,27 +262,28 @@ public class UserMobileController extends BaseController {
 
     /**
      * 修改密码
-     * @param form
-     * @param result
-     * @return
+     *
+     * @param form 表单
+     * @param result 校验结果
+     * @return  ResponseObj
      */
     @RequestMapping(value = "/loginPassword/modify", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
-    public ResponseObj modifyLoginPassword(@RequestBody @Valid ModifyPasswordForm form,BindingResult result) {
+    public ResponseObj modifyLoginPassword(@RequestBody @Valid ModifyPasswordForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         if (form.getNewPassword().equals(form.getOldPassword())) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "新旧密码不能相同");
         }
         Long userId = getUserId();
-        return userService.modifyLoginPassword(userId,form.getOldPassword(),form.getNewPassword());
+        return userService.modifyLoginPassword(userId, form.getOldPassword(), form.getNewPassword());
     }
 
     /**
      * 激活账户-设置交易密码
      *
-     * @param form
-     * @return
+     * @param form 表单
+     * @return ResponseObj
      */
     @RequestMapping(value = "/payPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj activePayPassword(@RequestBody UserPatchForm form) {
@@ -318,16 +302,15 @@ public class UserMobileController extends BaseController {
         if (!object.equals("3")) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
-        ResponseObj responseObj = userService.payPwdSetting(userId, form.getPassword());
-        return responseObj;
+        return userService.payPwdSetting(userId, form.getPassword());
     }
 
     /**
      * 司机身份认证
      *
-     * @param form
-     * @param result
-     * @return
+     * @param form 表单
+     * @param result 校验结果
+     * @return  ResponseObj
      */
     @RequestMapping(value = "/driverIdentity", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj authenticateIdentity(@RequestBody @Valid DriverIdentityForm form, BindingResult result) throws InvocationTargetException, IllegalAccessException {
@@ -349,9 +332,9 @@ public class UserMobileController extends BaseController {
     /**
      * 车辆认证
      *
-     * @param form
-     * @param result
-     * @return
+     * @param form 表单
+     * @param result 校验
+     * @return  ResponseObj
      */
     @RequestMapping(value = "/carIdentity", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj authenticateCar(@RequestBody @Valid CarIdentityForm form, BindingResult result) {
@@ -359,7 +342,7 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         Long userId = getUserId();
-        if (getUserType() != UserType.USER_APP_OFFICE.getCode()) {
+        if (UserType.USER_APP_OFFICE.getCode().equals(getUserType())) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
         List<CarInfo> carList = carService.getCarByUserId(userId);
@@ -368,7 +351,7 @@ public class UserMobileController extends BaseController {
         }
         CarInfo carInfo = carList.get(0);
         UserInfo userInfo = userService.getUserByUserId(userId);
-        if (userInfo.getStatus() == UserStatus.AUTHENTICATED.getCode()) {
+        if (UserStatus.AUTHENTICATED.getCode().equals(userInfo.getStatus())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "已认证，无需再次认证");
         }
         carInfo.setIsAuthentication(Boolean.TRUE);
@@ -380,12 +363,12 @@ public class UserMobileController extends BaseController {
     /**
      * 上传头像
      *
-     * @param form
-     * @return
+     * @param form 请求参数
+     * @return ResponseObj
      */
     @RequestMapping(value = "/avatar", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
     public ResponseObj uploadAvatar(@RequestBody UserPatchForm form) {
-         if (StringUtils.isBlank(form.getAvatar())) {
+        if (StringUtils.isBlank(form.getAvatar())) {
             return ResponseObj.fail(StatusCode.PARAM_BLANK, "请上传头像");
         }
         return userService.modifyHeadPicture(getUserId(), form.getAvatar());
@@ -394,7 +377,7 @@ public class UserMobileController extends BaseController {
     /**
      * 修改交易密码
      *
-     * @return
+     * @return ResponseObj
      */
     @RequestMapping(value = "/modifyPayPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
     public ResponseObj modifyPayPassword(@RequestBody @Valid ModifyPasswordForm form) {
@@ -404,7 +387,7 @@ public class UserMobileController extends BaseController {
     /**
      * 重置交易密码
      *
-     * @return
+     * @return ResponseObj
      */
     @RequestMapping(value = "/resetPayPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
     public ResponseObj resetPayPassword(@RequestBody @Valid ModifyBindPhoneForm form) {
@@ -418,7 +401,7 @@ public class UserMobileController extends BaseController {
     /**
      * 修改绑定手机号
      *
-     * @return
+     * @return ResponseObj
      */
     @RequestMapping(value = "/modifyBindPhone", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
     public ResponseObj modifyBindPhone(@RequestBody @Valid ModifyBindPhoneForm form) {
@@ -429,9 +412,9 @@ public class UserMobileController extends BaseController {
     /**
      * 新增/编辑常用地址
      *
-     * @param form
-     * @param result
-     * @return
+     * @param form 表单
+     * @param result 校验结果
+     * @return ResponseObj
      */
     @RequestMapping(value = "/saveAddress", method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
     public ResponseObj saveAddress(@RequestBody @Valid UserAddressForm form, BindingResult result) {
@@ -447,8 +430,8 @@ public class UserMobileController extends BaseController {
     /**
      * 用户地址列表
      *
-     * @param keywords
-     * @return
+     * @param keywords 搜索关键字
+     * @return ResponseObj
      */
     @RequestMapping(value = "/addresses", method = RequestMethod.GET, produces = {"application/json;charset=UTF-8"})
     public ResponseObj addressList(String keywords) {
