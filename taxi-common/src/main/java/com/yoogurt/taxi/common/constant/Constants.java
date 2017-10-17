@@ -104,24 +104,24 @@ public final class Constants {
     public static final String GIF_FILE_SUFFIX        = "gif";
 
     /** 代理司机应收押金 */
-    public static final BigDecimal AGENT_RECEIVABLEDEPOSIT = new Money("3000").getAmount();
+    public static final BigDecimal AGENT_RECEIVABLE_DEPOSIT = new Money("3000").getAmount();
 
     /** 正式司机应收押金 */
-    public static final BigDecimal OFFICE_RECEIVABLEDEPOSIT = new Money("1000").getAmount();
-
-    /** 公司对公账户 */
-    public static final String comanyFinanceAccount = "0000000000000";
-
-    /** 公司对公账户名称 */
-    public static final String companyName = "邮鸽公司";
-
-    /** 公司对公账户联系方式 */
-    public static final String companyPhone = "(0571)8888888";
+    public static final BigDecimal OFFICE_RECEIVABLE_DEPOSIT = new Money("1000").getAmount();
 
     /** 替你开司机端 */
     public static final String AGENT_APP_NAME = "替你开司机端";
 
     /** 替你开车主端 */
     public static final String OFFICIAL_APP_NAME = "替你开车主端";
+
+    /**提现允许日期*/
+    public static final int withdraw_day_of_week = 2;
+    /**提现允许开始时间*/
+    public static final String withdraw_start_time = "9:00";
+    /**提现允许结束时间*/
+    public static final String withdraw_end_time = "18:00";
+    /**提现允许次数*/
+    public static final int withdraw_times = 1;
 
 }

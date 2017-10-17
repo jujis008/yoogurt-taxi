@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.user.controller.web;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
@@ -25,6 +26,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,16 +40,23 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/web/user")
-@Setter
 public class UserWebController extends BaseController{
 
+    @Autowired
     private UserService userService;
+    @Autowired
     private LoginService loginService;
+    @Autowired
     private DriverService   driverService;
+    @Autowired
     private CarService carService;
+    @Autowired
     private RoleAuthorityService    roleAuthorityService;
+    @Autowired
     private AuthorityInfoService    authorityInfoService;
+    @Autowired
     private RoleInfoService roleInfoService;
+    @Autowired
     private RedisHelper redisHelper;
 
     @RequestMapping("/tt")

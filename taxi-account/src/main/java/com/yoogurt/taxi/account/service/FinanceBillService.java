@@ -4,10 +4,7 @@ import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
-import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
-import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.condition.account.BillListWebCondition;
-import com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition;
+import com.yoogurt.taxi.dal.condition.account.*;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.Payment;
@@ -15,6 +12,9 @@ import com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListWebModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillDetailModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
+
+import java.util.Date;
+import java.util.List;
 
 public interface FinanceBillService {
     /**
@@ -53,4 +53,6 @@ public interface FinanceBillService {
     Pager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition);
 
     WithdrawBillDetailModel getWithdrawBillDetail(Long billId);
+
+    List<FinanceBill> getBillList(BillCondition condition);
 }
