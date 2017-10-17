@@ -31,9 +31,6 @@ import java.util.Map;
 public class PushServiceImpl implements PushService {
 
     @Autowired
-    private GeTuiConfig20 getui;
-
-    @Autowired
     private PushHelper pushHelper;
 
     @Autowired
@@ -264,7 +261,7 @@ public class PushServiceImpl implements PushService {
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户未绑定设备");
                 }
                 clientId = device.getClientId();
-                pushResult = pushHelper.push(msgType, deviceType, clientId, getui);
+                pushResult = pushHelper.push(msgType, deviceType, clientId, null);
 
             } else if (userIds.size() > 1) {//指定用户群
                 List<PushDevice> devices = getDeviceByUserIds(userIds);
@@ -273,7 +270,7 @@ public class PushServiceImpl implements PushService {
                     for (PushDevice device : devices) {
                         clientIds.add(device.getClientId());
                     }
-                    pushResult = pushHelper.push(clientIds, getui);
+                    pushResult = pushHelper.push(clientIds, null);
                 } else {
 
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户未绑定设备");
