@@ -13,6 +13,7 @@ import javax.persistence.*;
 @Setter
 @Table(name = "order_traffic_violation_info")
 public class OrderTrafficViolationInfo extends SuperModel{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +24,15 @@ public class OrderTrafficViolationInfo extends SuperModel{
     @Column(name = "order_id")
     private Long orderId;
 
+    /**
+     * 录入违章的用户ID，通常为正式司机
+     */
+    @Column(name = "input_user_id")
+    private Long inputUserId;
+
+    /**
+     * 违章的用户ID，通常为代理司机
+     */
     @Column(name = "user_id")
     private Long userId;
 

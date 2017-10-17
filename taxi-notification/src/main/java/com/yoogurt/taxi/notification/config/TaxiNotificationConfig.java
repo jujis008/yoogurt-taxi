@@ -6,6 +6,6 @@ import org.springframework.context.annotation.Import;
 
 @Configuration
 @ComponentScan(basePackages = "com.yoogurt.taxi")
-@Import({SmsConfig.class})
+@Import({SmsConfig.class, GeTuiConfig.class})
 public class TaxiNotificationConfig {
 }

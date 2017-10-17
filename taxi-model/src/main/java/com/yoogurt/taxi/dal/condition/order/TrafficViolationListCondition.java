@@ -19,4 +19,6 @@ public class TrafficViolationListCondition extends PeriodWithPageableCondition {
     private Integer status;
 
     private boolean fromApp;
+
+    private Integer userType;
 }

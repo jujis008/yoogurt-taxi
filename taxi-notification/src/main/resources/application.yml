@@ -6,3 +6,14 @@ sms:
   accountSid: 08c32a4d179fd602e73617272dcd1a2b
   authToken: fe9c1d57c38ffff624a0de85d09d6710
   RestUrl: https://api.ucpaas.com
+push:
+  end20:
+    host: http://sdk.open.api.igexin.com/apiex.htm
+    appId: k7JWnRjSw7AHDMgsmBbqWA
+    appKey: 0Wg7TeuZgK81kmRwF36MD2
+    master: nPAFy6CQAv6aWz0CKx1yo9
+  end30:
+    host: http://sdk.open.api.igexin.com/apiex.htm
+    appId: B4BE7YUeZd5QK8hHvaBHg9
+    appKey: trTY6RzcK37Xs3do47xfQ5
+    master: ffX30Uojf8AUwGypQm5nJA

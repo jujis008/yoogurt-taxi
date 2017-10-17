@@ -33,6 +33,7 @@ public class TrafficViolationController extends BaseController {
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         condition.setFromApp(true);
         condition.setUserId(super.getUserId());
+        condition.setUserType(super.getUserType());
         return ResponseObj.success(trafficViolationService.getTrafficViolations(condition));
     }
 

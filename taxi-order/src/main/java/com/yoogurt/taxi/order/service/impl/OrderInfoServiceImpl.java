@@ -167,12 +167,13 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             String key = name.replaceFirst(firstLetter, firstLetter.toLowerCase(Locale.ENGLISH));
             result.put(key, BeanRefUtils.toMap(info, false));
         }
+        /*
         //违约记录
         DisobeyListCondition condition = new DisobeyListCondition();
         condition.setOrderId(orderId);
         List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null);
         result.put("disobeys", disobeyList);
-
+        */
         return result;
     }
 
@@ -400,6 +401,8 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         if (status == null) return null;
 
         switch (status) {
+            case HAND_OVER:
+                return new HandoverOrderModel();
             case PICK_UP:
                 return new PickUpOrderModel();
             case GIVE_BACK:
