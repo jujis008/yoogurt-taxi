@@ -142,7 +142,7 @@ public class FinanceMobileController extends BaseController{
         condition.setDraweeAccount(financeAccount.getAccountNo().toString());
         condition.setDraweeName(userInfo.getName());
         condition.setDestinationType(destinationType);
-        condition.setFlag(1);
+        condition.setChangeType(AccountChangeType.frozen_add);
         return financeAccountService.updateAccount(condition);
     }
 }

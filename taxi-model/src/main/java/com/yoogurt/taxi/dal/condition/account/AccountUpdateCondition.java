@@ -40,6 +40,6 @@ public class AccountUpdateCondition {
     private Long contextId;
 
     /** 操作行为：1-冻结，2-冻结扣除，3-冻结返回*/
-    private int flag;
+    private AccountChangeType changeType;
     private String remark;
 }

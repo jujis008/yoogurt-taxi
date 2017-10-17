@@ -68,6 +68,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
     /**
      * 更新账户，具体功能有：1.充值（提现申请），2.提现（回调，即将冻结金额扣除，账户不动）
      * 3.罚款，4.补偿，5.订单收入
+     *
      * @param condition
      * @return
      */
@@ -103,8 +104,8 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     if (payment == Payment.BALANCE) {//余额提现
                         billType = BillType.BALANCE;
                         Money frozenBalance = new Money(financeAccount.getFrozenBalance());
-                        if (condition.getFlag()==1) {//提现申请，放入冻结
-                            Money balance = new Money(financeAccount.getBalance());
+                        Money balance = new Money(financeAccount.getBalance());
+                        if (condition.getChangeType() == AccountChangeType.frozen_add) {//提现申请，放入冻结
                             financeAccount.setFrozenBalance(frozenBalance.add(money).getAmount());
                             financeAccount.setBalance(balance.subtract(money).getAmount());
                             /**1.更新账户*/
@@ -112,16 +113,16 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                             financeBillService.insertBill(money, condition, payment, BillStatus.PENDING, billType);
                             return ResponseObj.success(financeAccount);
                         }
-                        if (condition.getFlag() == 2) {//提现成功，冻结扣除
+                        if (condition.getChangeType() == AccountChangeType.frozen_deduct) {//提现成功，冻结扣除
                             FinanceBill financeBill = financeBillService.get(condition.getBillId());
                             if (financeBill == null) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"账单不存在");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "账单不存在");
                             }
                             if (!financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"已处理");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "已处理");
                             }
                             if (billType != BillType.getEnumsByCode(financeBill.getBillType())) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"非法操作");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "非法操作");
                             }
                             financeAccount.setFrozenBalance(frozenBalance.subtract(new Money(financeBill.getAmount())).getAmount());
 
@@ -135,18 +136,19 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                             financeRecordService.save(financeRecord);
                             return ResponseObj.success(financeAccount);
                         }
-                        if (condition.getFlag() == 3) {//提现失败，冻结返回
+                        if (condition.getChangeType() == AccountChangeType.frozen_back) {//提现失败，冻结返回
                             FinanceBill financeBill = financeBillService.get(condition.getBillId());
                             if (financeBill == null) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"账单不存在");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "账单不存在");
                             }
                             if (!financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"已处理");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "已处理");
                             }
                             if (billType != BillType.getEnumsByCode(financeBill.getBillType())) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"非法操作");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "非法操作");
                             }
-                            financeAccount.setFrozenBalance(frozenBalance.add(new Money(financeBill.getAmount())).getAmount());
+                            financeAccount.setFrozenBalance(frozenBalance.subtract(new Money(financeBill.getAmount())).getAmount());
+                            financeAccount.setBalance(balance.add(new Money(financeBill.getAmount())).getAmount());
 
                             financeBill.setBillStatus(BillStatus.FAIL.getCode());
                             financeBill.setDescription(condition.getRemark());
@@ -159,12 +161,12 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                             financeRecordService.save(financeRecord);
                             return ResponseObj.success(financeAccount);
                         }
-                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"余额提现操作有误");
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "余额提现操作有误");
                     } else if (payment == Payment.DEPOSIT) {//押金提现
                         billType = BillType.DEPOSIT;
                         Money frozenDeposit = new Money(financeAccount.getFrozenDeposit());
-                        if (condition.getFlag()==1) {//提现申请,放入冻结
-                            Money receivedDeposit = new Money(financeAccount.getReceivedDeposit());
+                        Money receivedDeposit = new Money(financeAccount.getReceivedDeposit());
+                        if (condition.getChangeType() == AccountChangeType.frozen_add) {//提现申请,放入冻结
                             financeAccount.setFrozenDeposit(frozenDeposit.add(money).getAmount());
                             financeAccount.setReceivedDeposit(receivedDeposit.subtract(money).getAmount());
                             /**1.更新账户*/
@@ -172,18 +174,19 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                             financeBillService.insertBill(money, condition, payment, BillStatus.PENDING, billType);
                             return ResponseObj.success(financeAccount);
                         }
-                        if (condition.getFlag() == 2) {//提现成功，扣除冻结
+                        if (condition.getChangeType() == AccountChangeType.frozen_deduct) {//提现成功，扣除冻结
                             FinanceBill financeBill = financeBillService.get(condition.getBillId());
                             if (financeBill == null) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"账单不存在");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "账单不存在");
                             }
                             if (!financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"已处理");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "已处理");
                             }
                             if (billType != BillType.getEnumsByCode(financeBill.getBillType())) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"非法操作");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "非法操作");
                             }
                             financeAccount.setFrozenDeposit(frozenDeposit.subtract(new Money(financeBill.getAmount())).getAmount());
+
                             financeBill.setBillStatus(BillStatus.SUCCESS.getCode());
                             financeAccountDao.updateById(financeAccount);
                             financeBillService.save(financeBill);
@@ -194,18 +197,20 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                             financeRecordService.save(financeRecord);
                             return ResponseObj.success(financeAccount);
                         }
-                        if (condition.getFlag()==3) {//提现失败，冻结返回
+                        if (condition.getChangeType() == AccountChangeType.frozen_back) {//提现失败，冻结返回
                             FinanceBill financeBill = financeBillService.get(condition.getBillId());
                             if (financeBill == null) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"账单不存在");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "账单不存在");
                             }
                             if (!financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"已处理");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "已处理");
                             }
                             if (billType != BillType.getEnumsByCode(financeBill.getBillType())) {
-                                return ResponseObj.fail(StatusCode.BIZ_FAILED,"非法操作");
+                                return ResponseObj.fail(StatusCode.BIZ_FAILED, "非法操作");
                             }
-                            financeAccount.setFrozenDeposit(frozenDeposit.add(new Money(financeBill.getAmount())).getAmount());
+                            financeAccount.setFrozenDeposit(frozenDeposit.subtract(new Money(financeBill.getAmount())).getAmount());
+                            financeAccount.setReceivedDeposit(receivedDeposit.add(new Money(financeBill.getAmount())).getAmount());
+
                             financeBill.setBillStatus(BillStatus.FAIL.getCode());
                             financeBill.setDescription(condition.getRemark());
                             financeAccountDao.updateById(financeAccount);
@@ -217,9 +222,9 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                             financeRecordService.save(financeRecord);
                             return ResponseObj.success(financeAccount);
                         }
-                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"押金提现操作有误");
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "押金提现操作有误");
                     } else {
-                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"不支持的提现类型");
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "不支持的提现类型");
                     }
                 case CHARGE://充值(回调时使用)
                     if (condition.getDestinationType() != DestinationType.DEPOSIT) {//目前只支持押金充值
@@ -228,13 +233,13 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     financeAccount.setReceivedDeposit(new Money(financeAccount.getReceivedDeposit()).add(money).getAmount());
                     FinanceBill financeBill = financeBillService.get(condition.getBillId());
                     if (financeBill == null) {
-                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录不存在");
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "充值记录不存在");
                     }
                     if (financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
-                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"该充值记录已处理");
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "该充值记录已处理");
                     }
                     if (!financeBill.getAmount().equals(money.getAmount())) {
-                        return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值记录异常");
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "充值记录异常");
                     }
                     financeBill.setBillType(BillType.DEPOSIT.getCode());
                     financeBill.setDraweePhone(condition.getDraweePhone());
@@ -273,7 +278,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                         financeAccount.setReceivedDeposit(deposit.add(balance).subtract(money).getAmount());
                         financeAccountDao.updateById(financeAccount);
 
-                        if (!balance.equals(new Money(0))){//余额没钱，不用插入记录，全部从押金扣
+                        if (!balance.equals(new Money(0))) {//余额没钱，不用插入记录，全部从押金扣
                             financeBillService.insertBill(balance, condition, Payment.BALANCE, BillStatus.SUCCESS, BillType.BALANCE);
                         }
                         financeBillService.insertBill(money.subtract(balance), condition, Payment.DEPOSIT, BillStatus.SUCCESS, BillType.DEPOSIT);
@@ -300,20 +305,20 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
     public ResponseObj handleWithdraw(Long billId, BillStatus billStatus) {
         FinanceBill financeBill = financeBillService.get(billId);
         if (financeBill == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"操作对象不存在，请刷新重试");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "操作对象不存在，请刷新重试");
         }
         AccountUpdateCondition condition = new AccountUpdateCondition();
         switch (billStatus) {
             case SUCCESS://转账成功，减少冻结资金
                 condition.setBillId(billId);
-                condition.setFlag(2);
+                condition.setChangeType(AccountChangeType.frozen_deduct);
                 return updateAccount(condition);
             case FAIL:
                 condition.setBillId(billId);
-                condition.setFlag(3);
+                condition.setChangeType(AccountChangeType.frozen_back);
                 return updateAccount(condition);
             default:
-                return ResponseObj.fail(StatusCode.FORM_INVALID,"操作标识不正确");
+                return ResponseObj.fail(StatusCode.FORM_INVALID, "操作标识不正确");
         }
     }
 
