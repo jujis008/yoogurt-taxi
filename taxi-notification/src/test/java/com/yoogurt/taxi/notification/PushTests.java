@@ -4,7 +4,9 @@ import com.gexin.rp.sdk.base.IPushResult;
 import com.yoogurt.taxi.dal.beans.PushDevice;
 import com.yoogurt.taxi.dal.enums.DeviceType;
 import com.yoogurt.taxi.dal.enums.MsgType;
-import com.yoogurt.taxi.notification.config.GeTuiConfig20;
+import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.notification.config.IGeTuiConfig;
+import com.yoogurt.taxi.notification.factory.GeTuiFactory;
 import com.yoogurt.taxi.notification.helper.PushHelper;
 import com.yoogurt.taxi.notification.service.PushService;
 import org.junit.Assert;
@@ -26,9 +28,6 @@ public class PushTests {
     @Autowired
     private PushHelper pushHelper;
 
-    @Autowired
-    private GeTuiConfig20 getui;
-
     @Test
     public void bindDeviceTest() {
         PushDevice device = pushService.binding("p0j_097oKJw5ur1o2pi09KS", 8888L);
@@ -45,11 +44,16 @@ public class PushTests {
     @Test
     public void pushTest() {
         try {
-            IPushResult push = pushHelper.push(MsgType.ALL, DeviceType.ANDROID, "", getui);
+            IPushResult push = pushHelper.push(MsgType.ALL, DeviceType.ANDROID, "", null);
             push.getResponse();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    @Test
+    public void getuiConfigTest() {
+        IGeTuiConfig config = GeTuiFactory.getConfigFactory(UserType.USER_APP_OFFICE).generateConfig();
+        Assert.assertNotNull("获取推送配置信息失败", config);
+    }
 }
