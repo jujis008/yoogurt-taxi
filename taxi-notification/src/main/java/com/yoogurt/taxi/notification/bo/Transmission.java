@@ -3,6 +3,7 @@ package com.yoogurt.taxi.notification.bo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.dal.enums.SendType;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -17,40 +18,47 @@ import java.util.Map;
 @Slf4j
 @Getter
 @Setter
+@Builder
 public class Transmission {
 
-	private SendType sendType;
-	
-	private String content;
-	
-	private Map<String, Object> extras;
+    /**
+     * 消息发送类型
+     */
+    private SendType sendType;
 
-	public Transmission() { }
+    /**
+     * 标题
+     */
+    private String title;
 
-	public Transmission(SendType sendType, String content) {
-		this.sendType = sendType;
-		this.content = content;
-	}
+    /**
+     * 内容
+     */
+    private String content;
 
-	public Transmission(SendType sendType, String content, Map<String, Object> extras) {
-		this.sendType = sendType;
-		this.content = content;
-		this.extras = extras;
-	}
+    /**
+     * 通知栏图标
+     */
+    private String icon;
 
-	@Override
-	public String toString() {
-		return "Transmission [sendType=" + sendType + ", content=" + content + ", extras=" + extras + "]";
-	}
+    /**
+     * 额外的传输内容，便于App客户端处理
+     */
+    private Map<String, Object> extras;
 
-	public String toJSON() {
-		try {
-			ObjectMapper m = new ObjectMapper();
-			m.setDateFormat(DateFormat.getDateTimeInstance());
-			return m.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
-			log.error("JSON序列化异常, {}", e);
-		}
-		return StringUtils.EMPTY;
-	}
+    @Override
+    public String toString() {
+        return toJSON();
+    }
+
+    public String toJSON() {
+        try {
+            ObjectMapper m = new ObjectMapper();
+            m.setDateFormat(DateFormat.getDateTimeInstance());
+            return m.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            log.error("JSON序列化异常, {}", e);
+        }
+        return StringUtils.EMPTY;
+    }
 }

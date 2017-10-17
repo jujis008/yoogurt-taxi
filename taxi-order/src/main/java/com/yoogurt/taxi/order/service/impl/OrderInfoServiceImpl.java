@@ -326,7 +326,8 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             CarInfo carInfo = carResult.getBody().get(0);
             buildCarInfo(rentInfo, carInfo);
         }
-        OrderInfo order = new OrderInfo(RandomUtils.getPrimaryKey());
+        //订单ID复用租单的ID
+        OrderInfo order = new OrderInfo(rentInfo.getRentId());
         buildDriverInfo(order, rentInfo, driverResult.getBody(), userInfo);
         buildCarInfo(order, rentInfo);
         buildRentInfo(order, rentInfo);

@@ -12,9 +12,10 @@ import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.gexin.rp.sdk.template.TransmissionTemplate;
 import com.yoogurt.taxi.dal.enums.DeviceType;
 import com.yoogurt.taxi.dal.enums.MsgType;
-import com.yoogurt.taxi.notification.config.GeTuiConfig;
+import com.yoogurt.taxi.notification.bo.TransmissionPayload;
 import com.yoogurt.taxi.notification.bo.PushTemplate;
 import com.yoogurt.taxi.notification.bo.Transmission;
+import com.yoogurt.taxi.notification.config.IGeTuiConfig;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -34,26 +35,26 @@ public class PushHelper {
 	 * </p>
 	 * @author weihao.liu
 	 * @date 2016年12月31日 
-	 * @param msgType
-	 * @param deviceType
-	 * @param clientId
-	 * @param getui
+	 * @param msgType 消息类型
+	 * @param deviceType 设备类型
+	 * @param clientId 设备id，单推的时候不可为空
+	 * @param payload
 	 * @return
 	 * @throws IOException
 	 */
-	public IPushResult push(MsgType msgType, DeviceType deviceType, String clientId, GeTuiConfig getui) throws IOException{
+	public IPushResult push(MsgType msgType, DeviceType deviceType, String clientId, TransmissionPayload payload) throws IOException{
 		if(msgType != null && msgType.equals(MsgType.SINGLE) && StringUtils.isNotBlank(clientId)){
-			return singlePushByTransmission(clientId, getui);
+			return singlePushByTransmission(clientId, payload);
 		}else{
 			switch (deviceType) {
 				case ALL:
-					return pushAll(getui);
+					return pushAll(payload);
 
 				case ANDROID:
-					return pushAllAndroid(getui);
+					return pushAllAndroid(payload);
 
 				case IOS:
-					return pushAllIOS(getui);
+					return pushAllIOS(payload);
 
 				default:
 					return null;
@@ -68,19 +69,17 @@ public class PushHelper {
 	 * @author weihao.liu
 	 * @date 2017年1月20日 
 	 * @param clientIds
-	 * @param getui
+	 * @param payload
 	 * @return
 	 * @throws IOException
 	 */
-	public IPushResult push(List<String> clientIds, GeTuiConfig getui) throws IOException{
-		IGtPush push = new IGtPush(getui.getHost(), getui.getAppKey(), getui.getMaster());
+	public IPushResult push(List<String> clientIds, TransmissionPayload payload) throws IOException{
+		IGeTuiConfig config = payload.getConfig();
+		IGtPush push = getPush(payload.getConfig());
 	    push.connect();
-	    String tranContent = getui.getContent();
-	    Transmission transmission = getui.getTransmission();
-	    if(transmission != null){
-	    	tranContent = transmission.toJSON();
-	    }
-	    TransmissionTemplate template = PushTemplate.transmissionTemplate(getui.getAppId(), getui.getAppKey(), getui.getTitle(), getui.getContent(), tranContent);
+		Transmission transmission = payload.getTransmission();
+		String tranContent = transmission.toJSON();
+	    TransmissionTemplate template = PushTemplate.transmissionTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
 	    ListMessage message = new ListMessage(); 
 	    message.setOffline(true);
 	    message.setOfflineExpireTime(OFFLINE_EXPIRE_TIME);
@@ -89,7 +88,7 @@ public class PushHelper {
 	    List<Target> targets = new ArrayList<Target>();
 	    for(String clientId:clientIds){
 		    Target target = new Target();
-		    target.setAppId(getui.getAppId());
+		    target.setAppId(config.getAppId());
 	        target.setClientId(clientId);
 	        targets.add(target);
 	    }
@@ -109,21 +108,19 @@ public class PushHelper {
 	 * </p>
 	 * @author weihao.liu
 	 * @date 2016年12月31日 
-	 * @param getui
+	 * @param payload
 	 * @return
 	 * @throws IOException
 	 */
-	public IPushResult pushAll(GeTuiConfig getui) throws IOException{
-		IGtPush push = new IGtPush(getui.getHost(), getui.getAppKey(), getui.getMaster());
+	public IPushResult pushAll(TransmissionPayload payload) throws IOException{
+		IGeTuiConfig config = payload.getConfig();
+		IGtPush push = getPush(config);
 		//建立连接，开始鉴权
 		push.connect();
-		String tranContent = getui.getContent();
-	    Transmission transmission = getui.getTransmission();
-	    if(transmission != null){
-	    	tranContent = transmission.toJSON();
-	    }
+		Transmission transmission = payload.getTransmission();
+		String tranContent = transmission.toJSON();
 		//通知模板
-		NotificationTemplate template = PushTemplate.notificationTemplate(getui.getAppId(), getui.getAppKey(), getui.getTitle(), getui.getContent(), tranContent);
+		NotificationTemplate template = PushTemplate.notificationTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
 		AppMessage message = new AppMessage();
 		message.setData(template);
 		//设置消息离线，并设置离线时间
@@ -132,7 +129,7 @@ public class PushHelper {
 		message.setOfflineExpireTime(OFFLINE_EXPIRE_TIME);
 		//设置推送目标条件过滤
 		List<String> appIdList = new ArrayList<>();
-        appIdList.add(getui.getAppId());
+        appIdList.add(config.getAppId());
 		message.setAppIdList(appIdList);
 		return push.pushMessageToApp(message);
 	}
@@ -142,21 +139,19 @@ public class PushHelper {
 	 * </p>
 	 * @author weihao.liu
 	 * @date 2016年12月31日 
-	 * @param getui
+	 * @param payload
 	 * @return
 	 * @throws IOException
 	 */
-	public IPushResult pushAllAndroid(GeTuiConfig getui) throws IOException{
-		IGtPush push = new IGtPush(getui.getHost(), getui.getAppKey(), getui.getMaster());
+	public IPushResult pushAllAndroid(TransmissionPayload payload) throws IOException{
+		IGeTuiConfig config = payload.getConfig();
+		IGtPush push = getPush(config);
 		//建立连接，开始鉴权
 		push.connect();
-		String tranContent = getui.getContent();
-	    Transmission transmission = getui.getTransmission();
-	    if(transmission != null){
-	    	tranContent = transmission.toJSON();
-	    }
+		Transmission transmission = payload.getTransmission();
+		String tranContent = transmission.toJSON();
 		//通知模板
-		NotificationTemplate template = PushTemplate.notificationTemplate(getui.getAppId(), getui.getAppKey(), getui.getTitle(), getui.getContent(), tranContent);
+		NotificationTemplate template = PushTemplate.notificationTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
 		AppMessage message = new AppMessage();
 		message.setData(template);
 		//设置消息离线，并设置离线时间
@@ -167,9 +162,9 @@ public class PushHelper {
         AppConditions cdt = new AppConditions(); 
 		//设置推送目标条件过滤
 		List<String> appIdList = new ArrayList<>();
-        appIdList.add(getui.getAppId());
+        appIdList.add(config.getAppId());
 		message.setAppIdList(appIdList);
-		  //手机类型
+		//手机类型
         List<String> phoneTypeList = new ArrayList<>();
         phoneTypeList.add("ANDROID");
 		cdt.addCondition(AppConditions.PHONE_TYPE, phoneTypeList);
@@ -183,19 +178,18 @@ public class PushHelper {
 	 * </p>
 	 * @author weihao.liu
 	 * @date 2016年12月31日 
-	 * @param getui
+	 * @param payload
 	 * @return
 	 * @throws IOException
 	 */
-	public IPushResult pushAllIOS(GeTuiConfig getui) throws IOException {
-		IGtPush push = new IGtPush(getui.getHost(), getui.getAppKey(), getui.getMaster());
-	    push.connect();
-	    String tranContent = getui.getContent();
-	    Transmission transmission = getui.getTransmission();
-	    if(transmission != null){
-	    	tranContent = transmission.toJSON();
-	    }
-	    TransmissionTemplate template = PushTemplate.transmissionTemplate(getui.getAppId(), getui.getAppKey(), getui.getTitle(), getui.getContent(), tranContent);
+	public IPushResult pushAllIOS(TransmissionPayload payload) throws IOException {
+		IGeTuiConfig config = payload.getConfig();
+		IGtPush push = getPush(config);
+		//建立连接，开始鉴权
+		push.connect();
+		Transmission transmission = payload.getTransmission();
+		String tranContent = transmission.toJSON();
+	    TransmissionTemplate template = PushTemplate.transmissionTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
 	    AppMessage message = new AppMessage();
 	    message.setOffline(true);
 	    message.setOfflineExpireTime(OFFLINE_EXPIRE_TIME);
@@ -203,7 +197,7 @@ public class PushHelper {
 	    
 	    message.setData(template);
 	    List<String> appIdList = new ArrayList<>();
-	    appIdList.add(getui.getAppId());
+	    appIdList.add(config.getAppId());
 	    message.setAppIdList(appIdList);
 	    //推送给App的目标用户需要满足的条件
         AppConditions cdt = new AppConditions(); 
@@ -223,27 +217,26 @@ public class PushHelper {
 	  * @author weihao.liu
 	  * @date 2016年12月31日 
 	  * @param clientId
-	  * @param getui
+	  * @param payload
 	  * @return
 	  * @throws IOException
 	  */
-	public IPushResult singlePushByTransmission(String clientId, GeTuiConfig getui) throws IOException {
-	 
-		IGtPush push = new IGtPush(getui.getHost(), getui.getAppKey(), getui.getMaster());
-	    push.connect();
-	    String tranContent = getui.getContent();
-	    Transmission transmission = getui.getTransmission();
-	    if(transmission != null){
-	    	tranContent = transmission.toJSON();
-	    }
-	    TransmissionTemplate template = PushTemplate.transmissionTemplate(getui.getAppId(), getui.getAppKey(), getui.getTitle(), getui.getContent(), tranContent);
+	public IPushResult singlePushByTransmission(String clientId, TransmissionPayload payload) throws IOException {
+
+		IGeTuiConfig config = payload.getConfig();
+		IGtPush push = getPush(config);
+		//建立连接，开始鉴权
+		push.connect();
+		Transmission transmission = payload.getTransmission();
+		String tranContent = transmission.toJSON();
+		TransmissionTemplate template = PushTemplate.transmissionTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
 	    SingleMessage message = new SingleMessage(); 
 	    message.setOffline(true);
 	    message.setOfflineExpireTime(OFFLINE_EXPIRE_TIME);
 	    message.setPushNetWorkType(0);
 	    message.setData(template);
 	    Target target = new Target();
-	    target.setAppId(getui.getAppId());
+	    target.setAppId(config.getAppId());
         target.setClientId(clientId);
 	    IPushResult ret;
         try {
@@ -254,4 +247,10 @@ public class PushHelper {
         }
         return ret;
 	}
+
+	private IGtPush getPush(IGeTuiConfig config) {
+
+		return new IGtPush(config.getHost(), config.getAppKey(), config.getMasterSecret());
+	}
+
 }

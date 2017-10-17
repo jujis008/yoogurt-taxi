@@ -9,7 +9,7 @@ import com.yoogurt.taxi.dal.enums.DeviceStatus;
 import com.yoogurt.taxi.dal.enums.DeviceType;
 import com.yoogurt.taxi.dal.enums.MsgType;
 import com.yoogurt.taxi.dal.enums.SendType;
-import com.yoogurt.taxi.notification.config.GeTuiConfig;
+import com.yoogurt.taxi.notification.config.GeTuiConfig20;
 import com.yoogurt.taxi.notification.bo.Transmission;
 import com.yoogurt.taxi.notification.dao.PushDeviceDao;
 import com.yoogurt.taxi.notification.helper.PushHelper;
@@ -31,7 +31,7 @@ import java.util.Map;
 public class PushServiceImpl implements PushService {
 
     @Autowired
-    private GeTuiConfig getui;
+    private GeTuiConfig20 getui;
 
     @Autowired
     private PushHelper pushHelper;
@@ -147,7 +147,7 @@ public class PushServiceImpl implements PushService {
     public ResponseObj pushMessage(String content, boolean persist) {
 
         ResponseObj pushResult = pushMessage(SendType.COMMON, MsgType.ALL, DeviceType.ALL, null, content, null, true);
-        log.info(pushResult.toString());
+        log.info(pushResult.toJSON());
         return pushResult;
     }
 
@@ -165,7 +165,7 @@ public class PushServiceImpl implements PushService {
     @Override
     public ResponseObj pushMessage(String deviceType, String content, boolean persist) {
         ResponseObj pushResult = pushMessage(SendType.COMMON, MsgType.ALL, DeviceType.getEnumByType(deviceType), null, content, null, persist);
-        log.info(pushResult.toString());
+        log.info(pushResult.toJSON());
         return pushResult;
     }
 
@@ -188,7 +188,7 @@ public class PushServiceImpl implements PushService {
         userIds.add(userId);
         ResponseObj pushResult = pushMessage(SendType.getEnumByType(sendType), MsgType.SINGLE, null, userIds, content, extras, persist);
         log.info("userId: [" + userId + "]");
-        log.info(pushResult.toString());
+        log.info(pushResult.toJSON());
         return pushResult;
     }
 
@@ -209,7 +209,7 @@ public class PushServiceImpl implements PushService {
     public ResponseObj pushMessage(List<Long> userIds, String sendType, String content, Map<String, Object> extras, boolean persist) {
         ResponseObj pushResult = pushMessage(SendType.getEnumByType(sendType), MsgType.SINGLE, null, userIds, content, extras, persist);
         log.info("userIds: " + userIds);
-        log.info(pushResult.toString());
+        log.info(pushResult.toJSON());
         return pushResult;
     }
 
@@ -253,10 +253,8 @@ public class PushServiceImpl implements PushService {
         }
 
         try {
-            Transmission transmission = new Transmission(sendType, content, extras);
-            log.info("PUSH " + transmission.toString());
-            getui.setContent(content);//设置消息体
-            getui.setTransmission(transmission);
+            Transmission transmission = Transmission.builder().content(content).extras(extras).build();
+            log.info("PUSH " + transmission.toJSON());
             String clientId;
             IPushResult pushResult = null;
             if (userIds.size() == 1) {//如果只有一个用户，则退化成单推
@@ -290,16 +288,7 @@ public class PushServiceImpl implements PushService {
                 return ResponseObj.fail(StatusCode.BIZ_FAILED, "推送消息失败");
             }
             if (persist) {//持久化到数据库
-                for (Long userId : userIds) {
-
-                    Message msg = new Message();
-                    msg.setToUserId(userId);
-                    msg.setTitle(sendType.getMessage());
-                    msg.setContent(content);
-                    msg.setType(sendType.getCode());
-                    msg.setStatus(10);
-                    messageService.addMessage(msg);
-                }
+                persistMessage(userIds, "", "", sendType.getCode());
             }
         } catch (Exception e) {
             log.error("Message push failed: ", e);
@@ -313,5 +302,20 @@ public class PushServiceImpl implements PushService {
         Example ex = new Example(PushDevice.class);
         ex.createCriteria().andIn("userId", userIds);
         return deviceDao.selectByExample(ex);
+    }
+
+    private boolean persistMessage(List<Long> userIds, String title, String content, Integer type) {
+        if(CollectionUtils.isEmpty(userIds)) return false;
+        List<Message> messages = new ArrayList<>();
+        for (Long userId : userIds) {
+            Message msg = new Message();
+            msg.setToUserId(userId);
+            msg.setTitle(title);
+            msg.setContent(content);
+            msg.setType(type);
+            msg.setStatus(10);
+            messages.add(msg);
+        }
+        return messageService.addMessages(messages) == userIds.size();
     }
 }

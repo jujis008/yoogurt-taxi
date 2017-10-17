@@ -4,7 +4,7 @@ import com.gexin.rp.sdk.base.IPushResult;
 import com.yoogurt.taxi.dal.beans.PushDevice;
 import com.yoogurt.taxi.dal.enums.DeviceType;
 import com.yoogurt.taxi.dal.enums.MsgType;
-import com.yoogurt.taxi.notification.config.GeTuiConfig;
+import com.yoogurt.taxi.notification.config.GeTuiConfig20;
 import com.yoogurt.taxi.notification.helper.PushHelper;
 import com.yoogurt.taxi.notification.service.PushService;
 import org.junit.Assert;
@@ -27,7 +27,7 @@ public class PushTests {
     private PushHelper pushHelper;
 
     @Autowired
-    private GeTuiConfig getui;
+    private GeTuiConfig20 getui;
 
     @Test
     public void bindDeviceTest() {
