@@ -7,7 +7,6 @@ import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.condition.account.AccountListWebCondition;
 import com.yoogurt.taxi.dal.condition.account.BillListWebCondition;
 import com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition;
@@ -59,10 +58,6 @@ public class FinanceWebController extends BaseController{
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
-        int i = financeBillService.updateStatus(form.getId(), BillStatus.getEnumsByCode(form.getStatus()));
-        if (i >0) {
-            return ResponseObj.success();
-        }
-        return ResponseObj.fail();
+        return financeAccountService.handleWithdraw(form.getId(), BillStatus.getEnumsByCode(form.getStatus()));
     }
 }

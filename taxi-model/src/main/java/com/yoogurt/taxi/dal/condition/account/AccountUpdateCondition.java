@@ -32,10 +32,14 @@ public class AccountUpdateCondition {
     private String draweeName;
     /**付款人手机号（必传）*/
     private String draweePhone;
-    /**账单id(充值必传)*/
+    /**账单id(回调必传)*/
     private Long billId;
     /**交易流水号（充值必传）*/
     private String transactionNo;
     /**交易对象id（罚款，补偿，订单收入）*/
     private Long contextId;
+
+    /** 操作行为：1-冻结，2-冻结扣除，3-冻结返回*/
+    private int flag;
+    private String remark;
 }
