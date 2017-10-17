@@ -8,15 +8,12 @@ import org.apache.commons.lang.StringUtils;
     10-群推消息, 
     20-单个推送消息
  * </p>
- * @ClassName: SendType 
- * @version V1.0  
- * @date 2016年12月30日 
+ * @version V1.0
  * @author weihao.liu
- * Copyright 2016 tsou.com, Inc. All rights reserved
  */
 public enum MsgType {
 
-    ALL("10", "群推"), 
+    ALL("10", "群推"), // 含push_all类型的推送
     SINGLE("20", "单个推");
 
     private String  type;

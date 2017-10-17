@@ -9,7 +9,8 @@ public interface MessageService {
 
     Message addMessage(Message message);
 
-    List<Message> getMessages(MessageCondition condition);
+    int addMessages(List<Message> messages);
 
+    List<Message> getMessages(MessageCondition condition);
 
 }
