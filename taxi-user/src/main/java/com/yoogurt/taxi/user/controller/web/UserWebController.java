@@ -1,13 +1,13 @@
 package com.yoogurt.taxi.user.controller.web;
 
-import com.yoogurt.taxi.common.helper.excel.CellPropertyBean;
-import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
-import com.yoogurt.taxi.common.helper.excel.ExcelParamBean;
-import com.yoogurt.taxi.common.helper.excel.ExcelUtils;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
+import com.yoogurt.taxi.common.helper.excel.CellPropertyBean;
+import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
+import com.yoogurt.taxi.common.helper.excel.ExcelParamBean;
+import com.yoogurt.taxi.common.helper.excel.ExcelUtils;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -20,11 +20,11 @@ import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
 import com.yoogurt.taxi.dal.model.user.RoleWLModel;
 import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.service.*;
+import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,32 +34,20 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Description:
- * 后台用户管理接口
- * @Author Eric Lau
- * @Date 2017/9/4.
+ * 后台用户controller
  */
 @RestController
 @RequestMapping("/web/user")
+@Setter
 public class UserWebController extends BaseController{
 
-    @Autowired
     private UserService userService;
-    @Autowired
     private LoginService loginService;
-    @Autowired
     private DriverService   driverService;
-    @Autowired
     private CarService carService;
-    @Autowired
-    private UserRoleService userRoleService;
-    @Autowired
     private RoleAuthorityService    roleAuthorityService;
-    @Autowired
     private AuthorityInfoService    authorityInfoService;
-    @Autowired
     private RoleInfoService roleInfoService;
-    @Autowired
     private RedisHelper redisHelper;
 
     @RequestMapping("/tt")
@@ -69,10 +57,10 @@ public class UserWebController extends BaseController{
 
     /**
      * 代理司机导入
-     * @param file
-     * @return
-     * @throws IOException
-     * @throws InvalidFormatException
+     * @param file excel源文件
+     * @return ResponseObj
+     * @throws IOException 文件读写异常
+     * @throws InvalidFormatException 类型转换异常
      */
     @RequestMapping(value = "/import/agentDrivers",method = RequestMethod.POST,produces = {"application/json;UTF-8"})
     public ResponseObj importAgentUserFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
@@ -108,10 +96,10 @@ public class UserWebController extends BaseController{
 
     /**
      * 正式司机导入
-     * @param file
-     * @return
-     * @throws IOException
-     * @throws InvalidFormatException
+     * @param file 源文件
+     * @return ResponseObj
+     * @throws IOException 文件读写异常
+     * @throws InvalidFormatException 类型转换异常
      */
     @RequestMapping(value = "/import/officeDrivers",method = RequestMethod.POST,produces = {"application/json;UTF-8"})
     public ResponseObj importOfficeUsersFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
@@ -158,8 +146,8 @@ public class UserWebController extends BaseController{
 
     /**
      *web端登录
-     * @param loginForm
-     * @return
+     * @param loginForm 表单
+     * @return ResponseObj
      */
     @RequestMapping(value = "/i/login",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
     public ResponseObj login(@RequestBody LoginForm loginForm) {

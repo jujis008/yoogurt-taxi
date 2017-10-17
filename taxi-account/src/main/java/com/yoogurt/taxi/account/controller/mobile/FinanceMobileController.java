@@ -20,6 +20,7 @@ import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,59 +29,67 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/mobile/account")
-public class FinanceMobileController extends BaseController{
-    @Autowired
+@Setter
+public class FinanceMobileController extends BaseController {
+
     private FinanceAccountService financeAccountService;
-    @Autowired
     private FinanceBillService financeBillService;
-    @Autowired
     private RestUserService restUserService;
 
-    @RequestMapping(value = "/bill/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/bill/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getListApp(@Valid AccountListAppCondition condition, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         condition.setUserId(getUserId());
         Pager<FinanceBillListAppModel> financeBillListApp = financeBillService.getFinanceBillListApp(condition);
         return ResponseObj.success(financeBillListApp);
     }
 
+    @RequestMapping(value = "/info",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    public ResponseObj getAccount() {
+        Long userId = getUserId();
+        FinanceAccount financeAccount = financeAccountService.get(userId);
+        return ResponseObj.success(financeAccount);
+    }
+
     /**
      * 押金充值
-     * @param form
-     * @param result
-     * @return
+     *
+     * @param form 表单
+     * @param result 验证结果
+     * @return ResponseObj
      */
-    @RequestMapping(value = "/charge",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/charge", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj chargeDeposit(@RequestBody @Valid ChargeDepositForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         Long userId = getUserId();
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
         if (!userInfoRestResult.isSuccess()) {
-            return ResponseObj.fail(userInfoRestResult.getStatus(),userInfoRestResult.getMessage());
+            return ResponseObj.fail(userInfoRestResult.getStatus(), userInfoRestResult.getMessage());
         }
         FinanceAccount financeAccount = financeAccountService.get(userId);
         if (financeAccount == null) {
             Money receivableDeposit = new Money(0);
             UserInfo userInfo = userInfoRestResult.getBody();
-            if (UserType.USER_APP_OFFICE.getCode() == userInfo.getType()) {
+            if (UserType.USER_APP_OFFICE.getCode().equals(userInfo.getType())) {
                 receivableDeposit = new Money(Constants.OFFICE_RECEIVABLEDEPOSIT);
             }
-            if (UserType.USER_APP_AGENT.getCode() == userInfo.getType()) {
+            if (UserType.USER_APP_AGENT.getCode().equals(userInfo.getType())) {
                 receivableDeposit = new Money(Constants.AGENT_RECEIVABLEDEPOSIT);
             }
-            financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit,userId);
+            financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, userId);
         }
         UserInfo userInfo = userInfoRestResult.getBody();
         Payment payment = Payment.getEnumsBycode(form.getChargeType());
         if (payment == null || !payment.isChargeType()) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"充值方式有误");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "充值方式有误");
         }
         AccountUpdateCondition condition = new AccountUpdateCondition();
         condition.setDestinationType(DestinationType.DEPOSIT);
@@ -99,36 +108,37 @@ public class FinanceMobileController extends BaseController{
 
     /**
      * 提现：payment=1表示押金提现，payment=2表示余额提现
-     * @param form
-     * @param result
-     * @return
+     *
+     * @param form 表单
+     * @param result 校验结果
+     * @return ResponseObj
      */
-    @RequestMapping(value = "/withdraw",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/withdraw", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj withdraw(@RequestBody @Valid WithdrawForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         UserInfo userInfo = restUserService.getUserInfoById(getUserId()).getBody();
         if (UserStatus.FROZEN == UserStatus.getEnumsByCode(userInfo.getStatus())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"账户已被冻结，不可操作");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "账户已被冻结，不可操作");
         }
-        if (!Encipher.matches(form.getPayPassword(),userInfo.getPayPassword())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"交易密码有误");
+        if (!Encipher.matches(form.getPayPassword(), userInfo.getPayPassword())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "交易密码有误");
         }
         FinanceAccount financeAccount = financeAccountService.get(getUserId());
         if (financeAccount == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"账户总资金不足");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "账户总资金不足");
         }
         Payment payment = Payment.getEnumsBycode(form.getPayment());
         if (payment == null) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"提现类型错误");
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "提现类型错误");
         }
         if (payment != Payment.DEPOSIT && payment != Payment.BALANCE) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"提现类型错误");
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "提现类型错误");
         }
         DestinationType destinationType = DestinationType.getEnumsBycode(form.getDestinationType());
         if (destinationType == null) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"目的账户类型有误");
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "目的账户类型有误");
         }
         AccountUpdateCondition condition = new AccountUpdateCondition();
         condition.setTradeType(TradeType.WITHDRAW);
