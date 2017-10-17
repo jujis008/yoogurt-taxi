@@ -15,12 +15,14 @@ import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
+import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
+import com.yoogurt.taxi.dal.condition.account.BillCondition;
+import com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,15 +31,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Optional;
+import java.time.*;
+import java.util.*;
 
 @RestController
 @RequestMapping("/mobile/account")
-@Setter
 public class FinanceMobileController extends BaseController {
-
+    @Autowired
     private FinanceAccountService financeAccountService;
+    @Autowired
     private FinanceBillService financeBillService;
+    @Autowired
     private RestUserService restUserService;
 
     @RequestMapping(value = "/bill/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
@@ -53,7 +57,23 @@ public class FinanceMobileController extends BaseController {
     @RequestMapping(value = "/info",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public ResponseObj getAccount() {
         Long userId = getUserId();
+        RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
+        if (!userInfoRestResult.isSuccess()) {
+            return ResponseObj.of(userInfoRestResult);
+        }
+        UserInfo userInfo = userInfoRestResult.getBody();
+        if (!UserType.getEnumsByCode(userInfo.getType()).isAppUser()) {
+            return ResponseObj.fail(StatusCode.NO_AUTHORITY);
+        }
         FinanceAccount financeAccount = financeAccountService.get(userId);
+        if (financeAccount == null) {
+            if (userInfo.getType().equals(UserType.USER_APP_OFFICE.getCode())) {
+                financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(),new Money(Constants.OFFICE_RECEIVABLE_DEPOSIT),userId);
+            }
+            if (userInfo.getType().equals(UserType.USER_APP_AGENT.getCode())) {
+                financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(),new Money(Constants.AGENT_RECEIVABLE_DEPOSIT),userId);
+            }
+        }
         return ResponseObj.success(financeAccount);
     }
 
@@ -79,10 +99,10 @@ public class FinanceMobileController extends BaseController {
             Money receivableDeposit = new Money(0);
             UserInfo userInfo = userInfoRestResult.getBody();
             if (UserType.USER_APP_OFFICE.getCode().equals(userInfo.getType())) {
-                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLEDEPOSIT);
+                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLE_DEPOSIT);
             }
             if (UserType.USER_APP_AGENT.getCode().equals(userInfo.getType())) {
-                receivableDeposit = new Money(Constants.AGENT_RECEIVABLEDEPOSIT);
+                receivableDeposit = new Money(Constants.AGENT_RECEIVABLE_DEPOSIT);
             }
             financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, userId);
         }
@@ -119,6 +139,23 @@ public class FinanceMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         UserInfo userInfo = restUserService.getUserInfoById(getUserId()).getBody();
+        LocalTime nowTime = LocalTime.now();
+        LocalDate nowDate = LocalDate.now();
+        LocalTime startTime = LocalTime.parse(Constants.withdraw_start_time);
+        LocalTime endTime = LocalTime.parse(Constants.withdraw_end_time);
+        if (nowDate.getDayOfWeek().compareTo(DayOfWeek.of(Constants.withdraw_day_of_week)) != 0
+                && nowTime.isBefore(startTime)
+                && nowTime.isAfter(endTime)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"未在开放时间内");
+        }
+        BillCondition billCondition = new BillCondition();
+        billCondition.setUserId(getUserId());
+        billCondition.setStartTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
+        billCondition.setEndTime(Date.from(LocalDateTime.now().minusDays(7).atZone(ZoneId.systemDefault()).toInstant()));
+        List<FinanceBill> billList = financeBillService.getBillList(billCondition);
+        if (billList.size()>=Constants.withdraw_times) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"一周只能请求一次");
+        }
         if (UserStatus.FROZEN == UserStatus.getEnumsByCode(userInfo.getStatus())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "账户已被冻结，不可操作");
         }
@@ -154,5 +191,15 @@ public class FinanceMobileController extends BaseController {
         condition.setDestinationType(destinationType);
         condition.setChangeType(AccountChangeType.frozen_add);
         return financeAccountService.updateAccount(condition);
+    }
+
+    @RequestMapping(value = "/i/withdraw/rule", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getWithrawRule() {
+        Map<String,Object> map = new HashMap<>();
+        map.put("weekday", Constants.withdraw_day_of_week);
+        map.put("startTime",Constants.withdraw_start_time);
+        map.put("endTime",Constants.withdraw_end_time);
+        map.put("times",Constants.withdraw_times);
+        return ResponseObj.success(map);
     }
 }

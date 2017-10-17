@@ -13,10 +13,7 @@ import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.FinanceRecord;
 import com.yoogurt.taxi.dal.beans.UserInfo;
-import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
-import com.yoogurt.taxi.dal.condition.account.BillListWebCondition;
-import com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition;
+import com.yoogurt.taxi.dal.condition.account.*;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.Payment;
@@ -28,6 +25,10 @@ import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
+
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -135,6 +136,15 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         WithdrawBillDetailModel model = new WithdrawBillDetailModel();
         BeanUtilsExtends.copyProperties(model,financeBill);
         return model;
+    }
+
+    @Override
+    public List<FinanceBill> getBillList(BillCondition condition) {
+        Example example = new Example(FinanceBill.class);
+        example.createCriteria().andEqualTo("userId",condition.getUserId())
+                .andBetween("gmtCreate",condition.getStartTime(),condition.getEndTime());
+        List<FinanceBill> financeBillList = financeBillDao.selectByExample(example);
+        return financeBillList;
     }
 
 }

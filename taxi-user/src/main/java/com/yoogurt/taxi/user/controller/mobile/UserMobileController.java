@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,15 +35,21 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/mobile/user")
-@Setter
 public class UserMobileController extends BaseController {
 
+    @Autowired
     private LoginService loginService;
+    @Autowired
     private UserService userService;
+    @Autowired
     private DriverService driverService;
+    @Autowired
     private RedisHelper redisHelper;
+    @Autowired
     private UserAddressService userAddressService;
+    @Autowired
     private CarService carService;
+    @Autowired
     private RestOrderService restOrderService;
 
     @RequestMapping(value = "/i/login", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})

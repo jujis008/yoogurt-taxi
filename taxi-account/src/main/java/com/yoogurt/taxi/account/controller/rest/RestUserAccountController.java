@@ -38,10 +38,10 @@ public class RestUserAccountController {
             Money receivableDeposit = new Money(0);
             UserInfo userInfo = userInfoRestResult.getBody();
             if (UserType.USER_APP_OFFICE.getCode() == userInfo.getType()) {
-                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLEDEPOSIT);
+                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLE_DEPOSIT);
             }
             if (UserType.USER_APP_AGENT.getCode() == userInfo.getType()) {
-                receivableDeposit = new Money(Constants.AGENT_RECEIVABLEDEPOSIT);
+                receivableDeposit = new Money(Constants.AGENT_RECEIVABLE_DEPOSIT);
             }
             financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, userId);
         }
@@ -80,10 +80,10 @@ public class RestUserAccountController {
             Money receivableDeposit = new Money(0);
             UserInfo userInfo = userInfoRestResult.getBody();
             if (UserType.USER_APP_OFFICE.getCode() == userInfo.getType()) {
-                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLEDEPOSIT);
+                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLE_DEPOSIT);
             }
             if (UserType.USER_APP_AGENT.getCode() == userInfo.getType()) {
-                receivableDeposit = new Money(Constants.AGENT_RECEIVABLEDEPOSIT);
+                receivableDeposit = new Money(Constants.AGENT_RECEIVABLE_DEPOSIT);
             }
             fineOutFinanceAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, voObject.getOutUserId());
         }
