@@ -31,8 +31,15 @@ public class PushTests {
 
     @Test
     public void bindDeviceTest() {
-        PushDevice device = pushService.userBinding(8888L, "cl_097oKJw5ur1o2pi09AS");
+        PushDevice device = pushService.binding("p0j_097oKJw5ur1o2pi09KS", 8888L);
         Assert.assertNotNull("绑定失败", device);
+    }
+
+    @Test
+    public void unbindDeviceTest() {
+        PushDevice device = pushService.unBinding("p0j_097oKJw5ur1o2pi09KS", 8888L);
+        Assert.assertNotNull("解绑失败", device);
+        Assert.assertNull("解绑失败", device.getUserId());
     }
 
     @Test
