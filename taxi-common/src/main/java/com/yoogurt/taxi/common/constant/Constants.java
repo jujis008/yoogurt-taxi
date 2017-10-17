@@ -116,6 +116,12 @@ public final class Constants {
     public static final String companyName = "邮鸽公司";
 
     /** 公司对公账户联系方式 */
-    public static final String companyPhone = "05718888888";
+    public static final String companyPhone = "(0571)8888888";
+
+    /** 替你开司机端 */
+    public static final String AGENT_APP_NAME = "替你开司机端";
+
+    /** 替你开车主端 */
+    public static final String OFFICIAL_APP_NAME = "替你开车主端";
 
 }
