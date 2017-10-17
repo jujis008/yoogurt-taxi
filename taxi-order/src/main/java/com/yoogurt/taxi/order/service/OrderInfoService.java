@@ -5,6 +5,7 @@ import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
+import com.yoogurt.taxi.dal.condition.order.WarningOrderCondition;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.model.order.CancelModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
@@ -30,12 +31,14 @@ public interface OrderInfoService extends OrderBizService {
 
     /**
      * 获取取消订单列表
+     *
      * @param orderId  订单ID
      * @param userId   用户ID
      * @param userType 用户类型
      * @return 取消订单列表
      */
     List<CancelModel> getCancelOrders(Long orderId, Long userId, Integer userType);
+
     /**
      * 获取订单列表
      *
@@ -45,6 +48,14 @@ public interface OrderInfoService extends OrderBizService {
      * @return 订单列表
      */
     List<OrderInfo> getOrderList(Long userId, Integer userType, Integer... status);
+
+    /**
+     * 获取告警订单列表
+     *
+     * @param condition 查询条件
+     * @return 告警订单列表
+     */
+    List<OrderInfo> getWarningOrders(WarningOrderCondition condition);
 
     /**
      * 获取订单基本信息
@@ -59,7 +70,7 @@ public interface OrderInfoService extends OrderBizService {
      * 订单详情接口
      *
      * @param orderId 订单id
-     * @param userId
+     * @param userId  用户id
      * @return 订单详细信息
      */
     Map<String, Object> getOrderDetails(Long orderId, Long userId);

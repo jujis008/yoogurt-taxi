@@ -150,7 +150,8 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
      * @param status 租单状态，可以传入多个
      * @return 租单列表
      */
-    private List<RentInfo> getRentList(Long userId, Integer... status) {
+    @Override
+    public List<RentInfo> getRentList(Long userId, Integer... status) {
         Example ex = new Example(RentInfo.class);
         ex.createCriteria()
                 .andEqualTo("userId", userId)
@@ -178,7 +179,6 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         if (rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_WORKING_HOURS * 3600000)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与还车时间至少间隔" + Constants.MIN_WORKING_HOURS + "小时");
 
-        //TODO 1. 押金校验 "extras": {"redirect": "charge"}
         ResponseObj obj = super.isAllowed(userId);
         if (!obj.isSuccess()) return obj;
 

@@ -2,7 +2,9 @@ package com.yoogurt.taxi.order;
 
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
+import com.yoogurt.taxi.dal.condition.order.WarningOrderCondition;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.form.PlaceOrderForm;
 import com.yoogurt.taxi.order.service.OrderInfoService;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @RunWith(SpringRunner.class)
@@ -36,6 +39,14 @@ public class OrderInfoTests {
         condition.setStatus(10);
         Pager<OrderModel> pager = orderInfoService.getOrderList(condition);
         Assert.assertNotNull("获取订单列表失败", pager);
+    }
+
+    @Test
+    public void warningOrdersTest() {
+        WarningOrderCondition condition = new WarningOrderCondition();
+        condition.setAgentUserId(8888L);
+        List<OrderInfo> warningOrders = orderInfoService.getWarningOrders(condition);
+        Assert.assertEquals(1, warningOrders.size());
     }
 
     @Test

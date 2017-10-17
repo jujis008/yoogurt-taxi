@@ -9,6 +9,7 @@ import com.yoogurt.taxi.order.service.rest.RestAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,12 +27,13 @@ public abstract class AbstractOrderBizService implements OrderBizService {
             return ResponseObj.of(accountResult);
         }
         FinanceAccount account = accountResult.getBody();
-        if (account.getReceivedDeposit().doubleValue() < account.getReceivableDeposit().doubleValue()) {
-            log.warn("[REST]{}", "押金未充足");
-            Map<String, Object> extras = new HashMap<>();
-            extras.put("redirect", "charge");
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "您的押金不足，请充值", extras);
+        if (account.getReceivedDeposit() != null && account.getReceivedDeposit().doubleValue() >= account.getReceivableDeposit().doubleValue()) {
+            return ResponseObj.success();
         }
-        return ResponseObj.success();
+        log.warn("[REST]{}", "押金未充足");
+        Map<String, Object> extras = new HashMap<>();
+        extras.put("redirect", "charge");
+        return ResponseObj.fail(StatusCode.BIZ_FAILED, "您的押金不足，请充值", extras);
     }
+
 }

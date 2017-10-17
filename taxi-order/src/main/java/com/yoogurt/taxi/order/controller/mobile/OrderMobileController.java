@@ -6,6 +6,7 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
+import com.yoogurt.taxi.dal.condition.order.WarningOrderCondition;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.ResponsibleParty;
@@ -56,6 +57,13 @@ public class OrderMobileController extends BaseController {
         condition.setUserType(user.getType());
         condition.setFromApp(true);
         return ResponseObj.success(orderInfoService.getOrderList(condition));
+    }
+
+    @RequestMapping(value = "/warnings", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getOrderList() {
+        WarningOrderCondition condition = new WarningOrderCondition();
+        condition.setAgentUserId(super.getUserId());
+        return ResponseObj.success(orderInfoService.getWarningOrders(condition));
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})

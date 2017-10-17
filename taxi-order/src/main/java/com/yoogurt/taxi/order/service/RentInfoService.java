@@ -21,6 +21,8 @@ public interface RentInfoService {
 
 	List<RentInfo> getRentInfoList(Long userId, Integer pageNum, Integer pageSize, Integer... status);
 
+	List<RentInfo> getRentList(Long userId, Integer... status);
+
 	RentInfo getRentInfo(Long rentId, Long userId);
 
 	ResponseObj addRentInfo(RentForm rentForm);

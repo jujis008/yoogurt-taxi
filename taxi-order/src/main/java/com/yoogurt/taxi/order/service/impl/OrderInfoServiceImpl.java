@@ -14,6 +14,7 @@ import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.*;
 import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
+import com.yoogurt.taxi.dal.condition.order.WarningOrderCondition;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.UserStatus;
@@ -49,9 +50,6 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
 
     @Autowired
     private OrderDao orderDao;
-
-    @Autowired
-    private DisobeyService disobeyService;
 
     @Autowired
     private PagerFactory appPagerFactory;
@@ -237,6 +235,20 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     }
 
     /**
+     * 获取告警订单列表
+     *
+     * @param condition 查询条件
+     * @return 告警订单列表
+     */
+    @Override
+    public List<OrderInfo> getWarningOrders(WarningOrderCondition condition) {
+
+        Example ex = new Example(OrderInfo.class);
+        ex.createCriteria().andEqualTo(condition);
+        return orderDao.selectByExample(ex);
+    }
+
+    /**
      * 校验是否可以下单。
      * 1、租单信息：未接单
      * 2、押金余额：充足
@@ -267,7 +279,6 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单信息已被他人接走");
         }
         Long userId = orderForm.getUserId();
-        //TODO 2. 押金余额 "extras": {"redirect": "charge"}
         ResponseObj obj = super.isAllowed(userId);
         if (!obj.isSuccess()) return obj;
 
