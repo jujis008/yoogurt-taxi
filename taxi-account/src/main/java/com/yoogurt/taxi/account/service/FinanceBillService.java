@@ -4,12 +4,17 @@ import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
-import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
+import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
+import com.yoogurt.taxi.dal.condition.account.BillListWebCondition;
+import com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.Payment;
-import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
+import com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel;
+import com.yoogurt.taxi.dal.model.account.FinanceBillListWebModel;
+import com.yoogurt.taxi.dal.model.account.WithdrawBillDetailModel;
+import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
 
 public interface FinanceBillService {
     /**
@@ -17,7 +22,7 @@ public interface FinanceBillService {
      * @param condition
      * @return
      */
-    Pager<FinanceBillListModel> getFinanceBillListApp(AccountListAppCondition condition);
+    Pager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition);
 
     /**
      * 获取financeBill对象
@@ -42,4 +47,10 @@ public interface FinanceBillService {
     int updateStatus(Long id, BillStatus billStatus);
 
     ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus, BillType billType);
+
+    Pager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition);
+
+    Pager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition);
+
+    WithdrawBillDetailModel getWithdrawBillDetail(Long billId);
 }

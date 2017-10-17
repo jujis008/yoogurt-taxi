@@ -4,8 +4,8 @@ public enum BillStatus {
     PENDING(10,"待处理"),
     TRANSFERRING(20,"转账中"),
     SUCCESS(30,"成功"),
-    REFUSE(40,"失败"),
-    FAIL(50,"拒绝"),
+    FAIL(40,"失败"),
+    REFUSE(50,"拒绝"),
     ;
 
     private Integer code;

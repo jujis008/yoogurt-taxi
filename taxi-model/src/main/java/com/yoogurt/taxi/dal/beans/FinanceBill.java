@@ -93,6 +93,9 @@ public class FinanceBill extends SuperModel{
     @Column(name = "payee_phone")
     private String payeePhone;
 
+    @Column(name = "bank_name")
+    private String bankName;
+
     /**
      * 付款方式：1-押金，2-余额，3-支付宝，4-微信，5-银行卡，6-其它
      */

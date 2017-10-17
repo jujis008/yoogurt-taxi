@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.account.controller.rest;
 
-import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
@@ -13,9 +13,6 @@ import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.enums.DestinationType;
-import com.yoogurt.taxi.dal.enums.Payment;
-import com.yoogurt.taxi.dal.enums.TradeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,7 +90,7 @@ public class RestUserAccountController {
 
         UserInfo userInfo = fineInUserInfoRestResult.getBody();
         AccountUpdateCondition condition = new AccountUpdateCondition();
-        condition.setTradeType(tradeType);
+        condition.setTradeType(TradeType.getEnumsBycode(tradeType.getCode()));
         switch (tradeType) {
             case FINE_IN:
             case FINE_OUT:

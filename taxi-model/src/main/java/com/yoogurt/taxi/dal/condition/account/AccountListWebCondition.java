@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class AccountLIstWebCondition extends PageableCondition {
+public class AccountListWebCondition extends PageableCondition {
     private String name;
     private String username;
     private Integer userType;

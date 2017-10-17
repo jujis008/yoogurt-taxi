@@ -1,10 +1,7 @@
 package com.yoogurt.taxi.dal.condition.account;
 
 import com.yoogurt.taxi.common.bo.Money;
-import com.yoogurt.taxi.dal.enums.BillType;
-import com.yoogurt.taxi.dal.enums.DestinationType;
-import com.yoogurt.taxi.dal.enums.Payment;
-import com.yoogurt.taxi.dal.enums.TradeType;
+import com.yoogurt.taxi.dal.enums.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,16 +24,22 @@ public class AccountUpdateCondition {
     private String payeeName;
     /**收款人手机号（必传）*/
     private String payeePhone;
+
+    private String bankName;
     /**付款人账号（必传）*/
     private String draweeAccount;
     /**付款人姓名（必传）*/
     private String draweeName;
     /**付款人手机号（必传）*/
     private String draweePhone;
-    /**账单id(充值必传)*/
+    /**账单id(回调必传)*/
     private Long billId;
     /**交易流水号（充值必传）*/
     private String transactionNo;
     /**交易对象id（罚款，补偿，订单收入）*/
     private Long contextId;
+
+    /** 操作行为：1-冻结，2-冻结扣除，3-冻结返回*/
+    private AccountChangeType changeType;
+    private String remark;
 }

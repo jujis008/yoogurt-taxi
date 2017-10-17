@@ -19,7 +19,7 @@ import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
 import com.yoogurt.taxi.dal.enums.*;
-import com.yoogurt.taxi.dal.model.account.FinanceBillListModel;
+import com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +45,7 @@ public class FinanceMobileController extends BaseController{
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
         condition.setUserId(getUserId());
-        Pager<FinanceBillListModel> financeBillListApp = financeBillService.getFinanceBillListApp(condition);
+        Pager<FinanceBillListAppModel> financeBillListApp = financeBillService.getFinanceBillListApp(condition);
         return ResponseObj.success(financeBillListApp);
     }
 
@@ -136,11 +136,13 @@ public class FinanceMobileController extends BaseController{
         condition.setUserId(getUserId());
         condition.setPayeeName(form.getReservedName());
         condition.setPayeeAccount(form.getAccountNo());
+        condition.setBankName(form.getBankName());
         condition.setMoney(new Money(form.getWithdrawMoney()));
         condition.setDraweePhone(getUserName());
         condition.setDraweeAccount(financeAccount.getAccountNo().toString());
         condition.setDraweeName(userInfo.getName());
         condition.setDestinationType(destinationType);
+        condition.setChangeType(AccountChangeType.frozen_add);
         return financeAccountService.updateAccount(condition);
     }
 }

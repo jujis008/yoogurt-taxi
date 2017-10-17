@@ -21,5 +21,23 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
-  <!--<select id=""-->
+  <select id="getListWeb" resultType="com.yoogurt.taxi.dal.model.account.FinanceAccountListModel" parameterType="com.yoogurt.taxi.dal.condition.account.AccountListWebCondition">
+    SELECT user_id AS userId,`name`,username,user_type as userType,
+      balance,frozen_balance AS frozenBalance,
+      receivable_deposit AS  receivableDeposit,
+      received_deposit AS receivedDeposit,
+      frozen_deposit AS frozenDeposit
+    FROM finance_account
+    <where>
+      <if test="name != null and name !=''">
+        name like concat('%',#{name},'%')
+      </if>
+      <if test="username != null and username != ''">
+        and username like concat('%',#{username},'%')
+      </if>
+      <if test="userType != null">
+        and user_type=#{userType}
+      </if>
+    </where>
+  </select>
 </mapper>

@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Setter
 @Getter
-public class FinanceBillListModel {
+public class FinanceBillListAppModel {
     private Long id;
     private Long billNo;
     private Long contextId;
