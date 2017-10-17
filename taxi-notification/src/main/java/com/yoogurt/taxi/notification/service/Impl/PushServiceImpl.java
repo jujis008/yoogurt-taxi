@@ -5,13 +5,12 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.Message;
 import com.yoogurt.taxi.dal.beans.PushDevice;
-import com.yoogurt.taxi.dal.enums.DeviceStatus;
-import com.yoogurt.taxi.dal.enums.DeviceType;
-import com.yoogurt.taxi.dal.enums.MsgType;
-import com.yoogurt.taxi.dal.enums.SendType;
-import com.yoogurt.taxi.notification.config.GeTuiConfig20;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.notification.bo.Transmission;
+import com.yoogurt.taxi.notification.bo.TransmissionPayload;
+import com.yoogurt.taxi.notification.config.IGeTuiConfig;
 import com.yoogurt.taxi.notification.dao.PushDeviceDao;
+import com.yoogurt.taxi.notification.factory.GeTuiFactory;
 import com.yoogurt.taxi.notification.helper.PushHelper;
 import com.yoogurt.taxi.notification.service.MessageService;
 import com.yoogurt.taxi.notification.service.PushService;
@@ -135,15 +134,17 @@ public class PushServiceImpl implements PushService {
      * 功能：群推消息，含ANDROID和iOS设备，需要设置推送内容，仅支持普通消息。
      * </p>
      *
-     * @param content 推送内容
-     * @param persist 是否将推送消息持久化到数据库，可以在消息中心里面看到
+     * @param userType 用户类型，必填项
+     * @param title    消息标题
+     * @param content  推送内容
+     * @param persist  是否将推送消息持久化到数据库，可以在消息中心里面看到
      * @return 推送结果
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(String content, boolean persist) {
+    public ResponseObj pushMessage(UserType userType, String title, String content, boolean persist) {
 
-        ResponseObj pushResult = pushMessage(SendType.COMMON, MsgType.ALL, DeviceType.ALL, null, content, null, true);
+        ResponseObj pushResult = pushMessage(SendType.COMMON, MsgType.ALL, userType, DeviceType.ALL, null, title, content, null, persist);
         log.info(pushResult.toJSON());
         return pushResult;
     }
@@ -153,15 +154,17 @@ public class PushServiceImpl implements PushService {
      * 功能：群推消息，指定设备类型，需要设置推送内容，仅支持普通消息。
      * </p>
      *
+     * @param userType   用户类型，必填项
      * @param deviceType 设备类型
+     * @param title      消息标题
      * @param content    推送内容
      * @param persist    是否持久化到数据库，可以在消息中心里面看到
      * @return 推送结果
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(String deviceType, String content, boolean persist) {
-        ResponseObj pushResult = pushMessage(SendType.COMMON, MsgType.ALL, DeviceType.getEnumByType(deviceType), null, content, null, persist);
+    public ResponseObj pushMessage(UserType userType, String deviceType, String title, String content, boolean persist) {
+        ResponseObj pushResult = pushMessage(SendType.COMMON, MsgType.ALL, userType, DeviceType.getEnumByType(deviceType), null, title, content, null, persist);
         log.info(pushResult.toJSON());
         return pushResult;
     }
@@ -172,7 +175,9 @@ public class PushServiceImpl implements PushService {
      * </p>
      *
      * @param userId   推送的用户id
+     * @param userType 用户类型，必填项
      * @param sendType 推送类型 {@link SendType}
+     * @param title    消息标题
      * @param content  推送通知内容
      * @param extras   额外的参数，用于客户端后台逻辑处理
      * @param persist  是否持久化到数据库，可以在消息中心里面看到
@@ -180,10 +185,10 @@ public class PushServiceImpl implements PushService {
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(Long userId, String sendType, String content, Map<String, Object> extras, boolean persist) {
+    public ResponseObj pushMessage(Long userId, UserType userType, String sendType, String title, String content, Map<String, Object> extras, boolean persist) {
         List<Long> userIds = new ArrayList<>();
         userIds.add(userId);
-        ResponseObj pushResult = pushMessage(SendType.getEnumByType(sendType), MsgType.SINGLE, null, userIds, content, extras, persist);
+        ResponseObj pushResult = pushMessage(SendType.getEnumByType(sendType), MsgType.SINGLE, userType, null, userIds, title, content, extras, persist);
         log.info("userId: [" + userId + "]");
         log.info(pushResult.toJSON());
         return pushResult;
@@ -195,7 +200,9 @@ public class PushServiceImpl implements PushService {
      * </p>
      *
      * @param userIds  多个用户id
+     * @param userType 用户类型
      * @param sendType 发送类型
+     * @param title    消息标题
      * @param content  发送内容
      * @param extras   额外信息
      * @param persist  是否持久化到数据库，可以在消息中心里面看到
@@ -203,8 +210,8 @@ public class PushServiceImpl implements PushService {
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(List<Long> userIds, String sendType, String content, Map<String, Object> extras, boolean persist) {
-        ResponseObj pushResult = pushMessage(SendType.getEnumByType(sendType), MsgType.SINGLE, null, userIds, content, extras, persist);
+    public ResponseObj pushMessage(List<Long> userIds, UserType userType, String sendType, String title, String content, Map<String, Object> extras, boolean persist) {
+        ResponseObj pushResult = pushMessage(SendType.getEnumByType(sendType), MsgType.SINGLE, userType, null, userIds, title, content, extras, persist);
         log.info("userIds: " + userIds);
         log.info(pushResult.toJSON());
         return pushResult;
@@ -218,16 +225,17 @@ public class PushServiceImpl implements PushService {
      *
      * @param sendType   消息发送类型
      * @param msgType    消息类型
+     * @param userType   推送对象的用户类型，因为无法跨应用推送，所以push_all的情况下，只能在外部调用多次推送接口，分别传不同的userType
      * @param deviceType 目标设备类型，群推消息使用此参数
-     * @param userIds    单个推送的时候，指定用户id，即为推送对象（兼容多个用户推送），<stong>如果用户未绑定设备，将导致推送失败</strong>
+     * @param userIds    单个推送的时候，指定用户id，即为推送对象（兼容多个用户推送），如果用户未绑定设备，将导致推送失败。
+     * @param title      消息标题
      * @param content    消息体，可以直接显示在APP上
      * @param extras     透传内容，用于APP在后台进行逻辑处理，不直接显示给用户
      * @param persist    推送消息是否持久化到数据库
      * @return 推送结果
      * @author weihao.liu
      */
-    protected ResponseObj pushMessage(SendType sendType, MsgType msgType, DeviceType deviceType, List<Long> userIds, String content, Map<String, Object> extras, boolean persist) {
-        ResponseObj obj = ResponseObj.success();
+    protected ResponseObj pushMessage(SendType sendType, MsgType msgType, UserType userType, DeviceType deviceType, List<Long> userIds, String title, String content, Map<String, Object> extras, boolean persist) {
         if (msgType == null) {
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "不支持的消息类型");
@@ -244,14 +252,20 @@ public class PushServiceImpl implements PushService {
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "不支持的发送类型");
         }
+        if (userType == null) {
+
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "未指定应用类型");
+        }
         if (StringUtils.isBlank(content)) {
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "请指定消息内容");
         }
 
         try {
+            IGeTuiConfig config = GeTuiFactory.getConfigFactory(userType).generateConfig();
             Transmission transmission = Transmission.builder().content(content).extras(extras).build();
-            log.info("PUSH " + transmission.toJSON());
+            TransmissionPayload payload = new TransmissionPayload(config, transmission);
+            log.info("PUSH: " + transmission.toJSON());
             String clientId;
             IPushResult pushResult = null;
             if (userIds.size() == 1) {//如果只有一个用户，则退化成单推
@@ -261,7 +275,7 @@ public class PushServiceImpl implements PushService {
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户未绑定设备");
                 }
                 clientId = device.getClientId();
-                pushResult = pushHelper.push(msgType, deviceType, clientId, null);
+                pushResult = pushHelper.push(msgType, deviceType, clientId, payload);
 
             } else if (userIds.size() > 1) {//指定用户群
                 List<PushDevice> devices = getDeviceByUserIds(userIds);
@@ -270,13 +284,13 @@ public class PushServiceImpl implements PushService {
                     for (PushDevice device : devices) {
                         clientIds.add(device.getClientId());
                     }
-                    pushResult = pushHelper.push(clientIds, null);
+                    pushResult = pushHelper.push(clientIds, payload);
                 } else {
 
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户未绑定设备");
                 }
             }
-            if(pushResult == null) return ResponseObj.fail(StatusCode.SYS_ERROR, "推送消息失败");
+            if (pushResult == null) return ResponseObj.fail(StatusCode.SYS_ERROR, "推送消息失败");
 
             Map<String, Object> response = pushResult.getResponse();
             log.info("Message push result: " + response.toString());
@@ -285,13 +299,13 @@ public class PushServiceImpl implements PushService {
                 return ResponseObj.fail(StatusCode.BIZ_FAILED, "推送消息失败");
             }
             if (persist) {//持久化到数据库
-                persistMessage(userIds, "", "", sendType.getCode());
+                persistMessage(userIds, title, content, sendType.getCode());
             }
         } catch (Exception e) {
-            log.error("Message push failed: ", e);
+            log.error("Message push failed: {}", e);
             return ResponseObj.fail(StatusCode.SYS_ERROR, "推送消息失败");
         }
-        return obj;
+        return ResponseObj.success();
     }
 
     private List<PushDevice> getDeviceByUserIds(List<Long> userIds) {
@@ -302,7 +316,7 @@ public class PushServiceImpl implements PushService {
     }
 
     private boolean persistMessage(List<Long> userIds, String title, String content, Integer type) {
-        if(CollectionUtils.isEmpty(userIds)) return false;
+        if (CollectionUtils.isEmpty(userIds)) return false;
         List<Message> messages = new ArrayList<>();
         for (Long userId : userIds) {
             Message msg = new Message();

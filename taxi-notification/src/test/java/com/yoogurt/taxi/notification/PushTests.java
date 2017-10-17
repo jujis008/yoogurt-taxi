@@ -1,6 +1,8 @@
 package com.yoogurt.taxi.notification;
 
 import com.gexin.rp.sdk.base.IPushResult;
+import com.yoogurt.taxi.common.constant.Constants;
+import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.PushDevice;
 import com.yoogurt.taxi.dal.enums.DeviceType;
 import com.yoogurt.taxi.dal.enums.MsgType;
@@ -25,9 +27,6 @@ public class PushTests {
     @Autowired
     private PushService pushService;
 
-    @Autowired
-    private PushHelper pushHelper;
-
     @Test
     public void bindDeviceTest() {
         PushDevice device = pushService.binding("p0j_097oKJw5ur1o2pi09KS", 8888L);
@@ -43,12 +42,8 @@ public class PushTests {
 
     @Test
     public void pushTest() {
-        try {
-            IPushResult push = pushHelper.push(MsgType.ALL, DeviceType.ANDROID, "", null);
-            push.getResponse();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ResponseObj obj = pushService.pushMessage(UserType.USER_APP_OFFICE, Constants.AGENT_APP_NAME, "小胖在吗？去吃KFC吧！", true);
+        Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }
 
     @Test
