@@ -65,13 +65,13 @@ public class PushServiceImpl implements PushService {
      * 功能：用户与设备绑定，兼容未注册设备
      * </p>
      *
-     * @param userId   用户ID
      * @param clientId 设备ID
+     * @param userId   用户ID
      * @return 设备信息
      * @author weihao.liu
      */
     @Override
-    public PushDevice userBinding(Long userId, String clientId) {
+    public PushDevice binding(String clientId, Long userId) {
         if (StringUtils.isBlank(clientId) || userId == null) return null;
         PushDevice deviceInfo = getDeviceByUserId(userId);
         PushDevice target = getDeviceInfo(clientId, null);//需要绑定的目标设备

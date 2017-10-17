@@ -15,8 +15,21 @@ public interface PushService {
 
     PushDevice saveDevice(PushDevice device, boolean isAdd);
 
-    PushDevice userBinding(Long userId, String clientId);
+    /**
+     * 用户绑定设备
+     * @param clientId 设备ID
+     * @param userId 用户ID
+     * @return 设备信息
+     */
+    PushDevice binding(String clientId, Long userId);
 
+    /**
+     * 用户推送设备解绑
+     *
+     * @param clientId 设备ID
+     * @param userId   用户ID
+     * @return 设备信息
+     */
     PushDevice unBinding(String clientId, Long userId);
 
     /**
