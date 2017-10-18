@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.notification.config;
 
+import com.yoogurt.taxi.notification.config.getui.GeTuiConfig20;
+import com.yoogurt.taxi.notification.config.getui.GeTuiConfig30;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

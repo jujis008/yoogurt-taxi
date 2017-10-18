@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.notification.factory;
 
-import com.yoogurt.taxi.notification.config.GeTuiConfig30;
-import com.yoogurt.taxi.notification.config.IGeTuiConfig;
+import com.yoogurt.taxi.notification.config.getui.GeTuiConfig30;
+import com.yoogurt.taxi.notification.config.getui.IGeTuiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

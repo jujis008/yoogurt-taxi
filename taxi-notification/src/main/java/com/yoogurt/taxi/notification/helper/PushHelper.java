@@ -8,14 +8,13 @@ import com.gexin.rp.sdk.base.impl.Target;
 import com.gexin.rp.sdk.base.uitls.AppConditions;
 import com.gexin.rp.sdk.exceptions.RequestException;
 import com.gexin.rp.sdk.http.IGtPush;
-import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.gexin.rp.sdk.template.TransmissionTemplate;
 import com.yoogurt.taxi.dal.enums.DeviceType;
 import com.yoogurt.taxi.dal.enums.MsgType;
 import com.yoogurt.taxi.notification.bo.TransmissionPayload;
 import com.yoogurt.taxi.notification.bo.PushTemplate;
 import com.yoogurt.taxi.notification.bo.Transmission;
-import com.yoogurt.taxi.notification.config.IGeTuiConfig;
+import com.yoogurt.taxi.notification.config.getui.IGeTuiConfig;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 

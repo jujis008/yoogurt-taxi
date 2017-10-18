@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.notification.bo;
 
-import com.yoogurt.taxi.notification.config.IGeTuiConfig;
+import com.yoogurt.taxi.notification.config.getui.IGeTuiConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

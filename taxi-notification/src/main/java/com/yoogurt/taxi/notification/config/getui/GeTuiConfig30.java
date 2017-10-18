@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.notification.config;
+package com.yoogurt.taxi.notification.config.getui;
 
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;

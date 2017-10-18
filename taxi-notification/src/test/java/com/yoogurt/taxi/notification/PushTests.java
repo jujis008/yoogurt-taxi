@@ -5,7 +5,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.PushDevice;
 import com.yoogurt.taxi.dal.enums.DeviceType;
 import com.yoogurt.taxi.dal.enums.UserType;
-import com.yoogurt.taxi.notification.config.IGeTuiConfig;
+import com.yoogurt.taxi.notification.config.getui.IGeTuiConfig;
 import com.yoogurt.taxi.notification.factory.GeTuiFactory;
 import com.yoogurt.taxi.notification.form.UserBindingForm;
 import com.yoogurt.taxi.notification.service.PushService;

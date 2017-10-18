@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.notification.config;
+package com.yoogurt.taxi.notification.config.getui;
 
 public class GeTuiDefaultConfig implements IGeTuiConfig {
 

@@ -8,7 +8,7 @@ import com.yoogurt.taxi.dal.beans.PushDevice;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.notification.bo.Transmission;
 import com.yoogurt.taxi.notification.bo.TransmissionPayload;
-import com.yoogurt.taxi.notification.config.IGeTuiConfig;
+import com.yoogurt.taxi.notification.config.getui.IGeTuiConfig;
 import com.yoogurt.taxi.notification.dao.PushDeviceDao;
 import com.yoogurt.taxi.notification.factory.GeTuiFactory;
 import com.yoogurt.taxi.notification.form.UserBindingForm;
