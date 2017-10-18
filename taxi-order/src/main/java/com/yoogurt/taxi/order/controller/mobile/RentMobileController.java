@@ -10,6 +10,7 @@ import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
 import com.yoogurt.taxi.dal.enums.RentStatus;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.form.RentCancelForm;
 import com.yoogurt.taxi.order.form.RentForm;
 import com.yoogurt.taxi.order.service.RentInfoService;
@@ -44,6 +45,7 @@ public class RentMobileController extends BaseController {
 
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         condition.setStatus(RentStatus.WAITING.getCode());
+        condition.setUserType(UserType.USER_APP_AGENT.getCode().equals(super.getUserType()) ? UserType.USER_APP_OFFICE.getCode() : UserType.USER_APP_AGENT.getCode());
         return ResponseObj.success(rentInfoService.getRentList(condition));
     }
 
@@ -58,6 +60,7 @@ public class RentMobileController extends BaseController {
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         condition.setFromApp(true);
         condition.setStatus(RentStatus.WAITING.getCode());
+        condition.setUserType(UserType.USER_APP_AGENT.getCode().equals(super.getUserType()) ? UserType.USER_APP_OFFICE.getCode() : UserType.USER_APP_AGENT.getCode());
         return ResponseObj.success(rentInfoService.getRentListByPage(condition));
     }
 
@@ -100,7 +103,7 @@ public class RentMobileController extends BaseController {
     @RequestMapping(value = "/rent/info/{rentId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentInfo(@PathVariable(name = "rentId") Long rentId) {
 
-        RentInfo rentInfo = rentInfoService.getRentInfo(rentId, getUserId());
+        RentInfo rentInfo = rentInfoService.getRentInfo(rentId, super.getUserId());
         if(rentInfo != null) {
             Map<String, Object> extras = new HashMap<>();
             extras.put("timestamp", System.currentTimeMillis());

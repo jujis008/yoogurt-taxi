@@ -23,7 +23,8 @@ public class RentDaoImpl extends BaseDao<RentInfoMapper, RentInfo> implements Re
 
     @Override
     public List<RentInfoModel> getRentList(RentPOICondition condition) {
-        return rentInfoMapper.getRentList(condition.getUserId(), condition.getStatus(), condition.getMaxLng(), condition.getMinLng(),
+        return rentInfoMapper.getRentList(condition.getUserId(), condition.getUserType(), condition.getStatus(),
+                condition.getMaxLng(), condition.getMinLng(),
                 condition.getMaxLat(), condition.getMinLat(),
                 condition.getStartTime(), condition.getEndTime(), condition.likes());
     }
@@ -44,7 +45,7 @@ public class RentDaoImpl extends BaseDao<RentInfoMapper, RentInfo> implements Re
             orderBy += "r.gmt_create DESC";
         }
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize(), orderBy);
-        return rentInfoMapper.getRentListByPage(condition.getUserId(), condition.getStatus(),
+        return rentInfoMapper.getRentListByPage(condition.getUserId(), condition.getUserType(), condition.getStatus(),
                 condition.getMaxLng(), condition.getMinLng(),
                 condition.getMaxLat(), condition.getMinLat(),
                 condition.getStartTime(), condition.getEndTime(), condition.likes(),
