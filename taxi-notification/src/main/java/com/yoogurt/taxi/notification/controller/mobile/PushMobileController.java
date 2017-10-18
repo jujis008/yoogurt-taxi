@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/c/notification")
+@RequestMapping(value = "/mobile/notification")
 public class PushMobileController extends BaseController {
 
     @Autowired
