@@ -9,6 +9,8 @@
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
     <result column="bg_color" jdbcType="VARCHAR" property="bgColor" />
     <result column="font_color" jdbcType="VARCHAR" property="fontColor" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="positive" jdbcType="BIT" property="positive"/>
     <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
     <result column="creator" jdbcType="BIGINT" property="creator"/>
