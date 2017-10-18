@@ -11,12 +11,14 @@ import com.yoogurt.taxi.notification.bo.TransmissionPayload;
 import com.yoogurt.taxi.notification.config.IGeTuiConfig;
 import com.yoogurt.taxi.notification.dao.PushDeviceDao;
 import com.yoogurt.taxi.notification.factory.GeTuiFactory;
+import com.yoogurt.taxi.notification.form.UserBindingForm;
 import com.yoogurt.taxi.notification.helper.PushHelper;
 import com.yoogurt.taxi.notification.service.MessageService;
 import com.yoogurt.taxi.notification.service.PushService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -61,25 +63,27 @@ public class PushServiceImpl implements PushService {
      * 功能：用户与设备绑定，兼容未注册设备
      * </p>
      *
-     * @param clientId 设备ID
-     * @param userId   用户ID
+     * @param bindingForm 绑定信息表单
      * @return 设备信息
      * @author weihao.liu
      */
     @Override
-    public PushDevice binding(String clientId, Long userId) {
-        if (StringUtils.isBlank(clientId) || userId == null) return null;
+    public PushDevice binding(UserBindingForm bindingForm) {
+        if (bindingForm == null) return null;
+        String clientId = bindingForm.getClientId();
+        Long userId = bindingForm.getUserId();
+        //查看该用户是否绑定了设备
         PushDevice deviceInfo = getDeviceByUserId(userId);
         PushDevice target = getDeviceInfo(clientId, null);//需要绑定的目标设备
         if (deviceInfo == null) {    //该用户未绑定设备
-            deviceInfo = new PushDevice(clientId);//新生成一个设备绑定记录
             if (target != null) {//传入的设备已被绑定
                 if (!userId.equals(target.getUserId())) {//但是绑定的不是传入的用户
                     target.setUserId(userId);
-                    return saveDevice(deviceInfo, false);//将此设备切换到传入的用户
+                    return saveDevice(target, false);//将此设备切换到传入的用户
                 }
             } else {//传入的设备未绑定，且该用户也未绑定其他设备，则可以新生成一个设备绑定记录
-                deviceInfo.setUserId(userId);
+                deviceInfo = new PushDevice(clientId);//新生成一个设备绑定记录
+                BeanUtils.copyProperties(bindingForm, deviceInfo);
                 deviceInfo.setStatus(DeviceStatus.BIND.getStatus());
                 return saveDevice(deviceInfo, true);
             }
@@ -88,13 +92,12 @@ public class PushServiceImpl implements PushService {
                 deviceInfo.setUserId(null);
                 deviceInfo.setStatus(DeviceStatus.UNBIND.getStatus());
                 saveDevice(deviceInfo, false);//将原来绑定的设备解绑
-                if (target != null) {//新传入的设备已被绑定/注册
+                if (target != null) {//新传入的设备已被绑定
                     target.setUserId(userId);
-                    return saveDevice(deviceInfo, false);//将此设备切换到传入的用户
+                    return saveDevice(target, false);//将此设备切换到传入的用户
                 } else {
                     deviceInfo = new PushDevice();//新生成一个设备绑定记录
-                    deviceInfo.setClientId(clientId);
-                    deviceInfo.setUserId(userId);
+                    BeanUtils.copyProperties(bindingForm, deviceInfo);
                     deviceInfo.setStatus(DeviceStatus.BIND.getStatus());
                     return saveDevice(deviceInfo, true);
                 }
@@ -107,7 +110,7 @@ public class PushServiceImpl implements PushService {
     public PushDevice saveDevice(PushDevice device, boolean isAdd) {
         if (device == null) return null;
         if (isAdd) {
-            return deviceDao.insert(device) == 1 ? device : null;
+            return deviceDao.insertSelective(device) == 1 ? device : null;
         } else {
             return deviceDao.updateById(device) == 1 ? device : null;
         }

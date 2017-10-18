@@ -4,6 +4,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.PushDevice;
 import com.yoogurt.taxi.dal.enums.SendType;
 import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.notification.form.UserBindingForm;
 
 import java.util.List;
 import java.util.Map;
@@ -18,11 +19,10 @@ public interface PushService {
 
     /**
      * 用户绑定设备
-     * @param clientId 设备ID
-     * @param userId 用户ID
+     * @param bindingForm 设备ID
      * @return 设备信息
      */
-    PushDevice binding(String clientId, Long userId);
+    PushDevice binding(UserBindingForm bindingForm);
 
     /**
      * 用户推送设备解绑

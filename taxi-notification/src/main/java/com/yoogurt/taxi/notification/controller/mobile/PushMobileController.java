@@ -27,7 +27,8 @@ public class PushMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        PushDevice device = pushService.binding(bindingForm.getClientId(), super.getUserId());
+        bindingForm.setUserId(super.getUserId());
+        PushDevice device = pushService.binding(bindingForm);
         if (device != null) {
             return ResponseObj.success(device);
         }
