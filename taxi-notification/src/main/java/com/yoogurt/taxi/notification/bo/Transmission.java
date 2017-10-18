@@ -24,7 +24,7 @@ public class Transmission {
     /**
      * 消息发送类型
      */
-    private SendType sendType;
+    private SendType sendType = SendType.COMMON;
 
     /**
      * 标题
@@ -39,7 +39,7 @@ public class Transmission {
     /**
      * 通知栏图标
      */
-    private String icon;
+    private String icon = "icon.png";
 
     /**
      * 额外的传输内容，便于App客户端处理

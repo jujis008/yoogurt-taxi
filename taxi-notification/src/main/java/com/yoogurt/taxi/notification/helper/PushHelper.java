@@ -119,8 +119,8 @@ public class PushHelper {
 		push.connect();
 		Transmission transmission = payload.getTransmission();
 		String tranContent = transmission.toJSON();
-		//通知模板
-		NotificationTemplate template = PushTemplate.notificationTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
+		//透传模板
+		TransmissionTemplate template = PushTemplate.transmissionTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
 		AppMessage message = new AppMessage();
 		message.setData(template);
 		//设置消息离线，并设置离线时间
@@ -150,8 +150,8 @@ public class PushHelper {
 		push.connect();
 		Transmission transmission = payload.getTransmission();
 		String tranContent = transmission.toJSON();
-		//通知模板
-		NotificationTemplate template = PushTemplate.notificationTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
+		//透传模板
+		TransmissionTemplate template = PushTemplate.transmissionTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
 		AppMessage message = new AppMessage();
 		message.setData(template);
 		//设置消息离线，并设置离线时间
@@ -230,7 +230,7 @@ public class PushHelper {
 		Transmission transmission = payload.getTransmission();
 		String tranContent = transmission.toJSON();
 		TransmissionTemplate template = PushTemplate.transmissionTemplate(config.getAppId(), config.getAppKey(), transmission.getTitle(), transmission.getContent(), tranContent);
-	    SingleMessage message = new SingleMessage(); 
+	    SingleMessage message = new SingleMessage();
 	    message.setOffline(true);
 	    message.setOfflineExpireTime(OFFLINE_EXPIRE_TIME);
 	    message.setPushNetWorkType(0);

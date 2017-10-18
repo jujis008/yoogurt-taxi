@@ -54,10 +54,10 @@ public interface PushService {
      * </p>
      *
      *
-     * @param userType
+     * @param userType   用户类型，必填项
      * @param deviceType 设备类型
-     * @param title
-     *@param content    推送内容
+     * @param title      标题
+     * @param content    推送内容
      * @param persist    是否持久化到数据库，可以在消息中心里面看到   @return 推送结果
      * @author weihao.liu
      */

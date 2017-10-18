@@ -263,32 +263,36 @@ public class PushServiceImpl implements PushService {
 
         try {
             IGeTuiConfig config = GeTuiFactory.getConfigFactory(userType).generateConfig();
-            Transmission transmission = Transmission.builder().content(content).extras(extras).build();
+            Transmission transmission = Transmission.builder().sendType(sendType).title(title).content(content).extras(extras).build();
             TransmissionPayload payload = new TransmissionPayload(config, transmission);
             log.info("PUSH: " + transmission.toJSON());
-            String clientId;
             IPushResult pushResult = null;
-            if (userIds.size() == 1) {//如果只有一个用户，则退化成单推
-                PushDevice device = getDeviceByUserId(userIds.get(0));
-                if (device == null) {
+            if(CollectionUtils.isNotEmpty(userIds)) {
+                String clientId;
+                if (userIds.size() == 1) {//如果只有一个用户，则退化成单推
+                    PushDevice device = getDeviceByUserId(userIds.get(0));
+                    if (device == null) {
 
-                    return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户未绑定设备");
-                }
-                clientId = device.getClientId();
-                pushResult = pushHelper.push(msgType, deviceType, clientId, payload);
-
-            } else if (userIds.size() > 1) {//指定用户群
-                List<PushDevice> devices = getDeviceByUserIds(userIds);
-                if (devices != null && devices.size() > 0) {
-                    List<String> clientIds = new ArrayList<>();
-                    for (PushDevice device : devices) {
-                        clientIds.add(device.getClientId());
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户未绑定设备");
                     }
-                    pushResult = pushHelper.push(clientIds, payload);
-                } else {
+                    clientId = device.getClientId();
+                    pushResult = pushHelper.push(msgType, deviceType, clientId, payload);
 
-                    return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户未绑定设备");
+                } else if (userIds.size() > 1) {//指定用户群
+                    List<PushDevice> devices = getDeviceByUserIds(userIds);
+                    if (devices != null && devices.size() > 0) {
+                        List<String> clientIds = new ArrayList<>();
+                        for (PushDevice device : devices) {
+                            clientIds.add(device.getClientId());
+                        }
+                        pushResult = pushHelper.push(clientIds, payload);
+                    } else {
+
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户未绑定设备");
+                    }
                 }
+            } else {
+                pushResult = pushHelper.push(msgType, deviceType, "", payload);
             }
             if (pushResult == null) return ResponseObj.fail(StatusCode.SYS_ERROR, "推送消息失败");
 

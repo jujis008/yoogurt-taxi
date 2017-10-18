@@ -42,7 +42,7 @@ public class PushTests {
 
     @Test
     public void pushTest() {
-        ResponseObj obj = pushService.pushMessage(UserType.USER_APP_OFFICE, Constants.AGENT_APP_NAME, "小胖在吗？去吃KFC吧！", true);
+        ResponseObj obj = pushService.pushMessage(UserType.USER_APP_OFFICE, DeviceType.ANDROID.getType(), Constants.OFFICIAL_APP_NAME, "小胖在吗？去吃KFC吧！", true);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }
 
