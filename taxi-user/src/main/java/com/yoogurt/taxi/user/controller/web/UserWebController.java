@@ -170,8 +170,7 @@ public class UserWebController extends BaseController{
         if (!userType.isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
-        ResponseObj result = loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
-        return result;
+        return loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
     }
 
     /**
@@ -212,12 +211,13 @@ public class UserWebController extends BaseController{
 
     /**
      * 重置密码
-     * @param userId
+     * @param form
      * @return
      */
     @RequestMapping(value = "/loginPassword",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
-    public ResponseObj resetPassword(@RequestBody Long userId) {
+    public ResponseObj resetPassword(@RequestBody UserForm form) {
         String newPassword = RandomUtils.getRandNum(6);
+        Long userId = form.getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
         userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
         redisHelper.set(CacheKey.VERIFY_CODE_KEY+userInfo.getUsername(), newPassword,5*60);

@@ -2,17 +2,22 @@ package com.yoogurt.taxi.dal.model.account;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yoogurt.taxi.dal.enums.BillStatus;
+import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.TradeType;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Getter
+@Setter
 public class WithdrawBillDetailModel {
     private Long id;
     private String name;
     private String username;
-    private Integer tradeType;
-    private String tradeTypeName;
+    private Integer billType;
+    private String billTypeName;
     private BigDecimal amount;
     private String payeeName;
     private String payeeAccount;
@@ -22,9 +27,9 @@ public class WithdrawBillDetailModel {
     private Integer billStatus;
     private String billStatusName;
 
-    public void setTradeType(Integer tradeType) {
-        this.tradeType = tradeType;
-        this.tradeTypeName = TradeType.getEnumsBycode(tradeType).getName();
+    public void setBillType(Integer billType) {
+        this.billType = billType;
+        this.billTypeName = BillType.getEnumsByCode(billType).getName();
     }
 
     public void setBillStatus(Integer billStatus) {

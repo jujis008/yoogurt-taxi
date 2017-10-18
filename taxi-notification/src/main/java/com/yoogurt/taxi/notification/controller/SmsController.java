@@ -34,7 +34,7 @@ public class SmsController {
         templateSms.setParam(param);
         redisHelper.set(CacheKey.VERIFY_CODE_KEY+phoneNumber,param, Constants.VERIFY_CODE_EXPIRE_SECONDS);
         smsService.templateSMS(templateSms);
-        return ResponseObj.success();
+        return ResponseObj.success(param);
     }
 
 }
