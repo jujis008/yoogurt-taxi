@@ -70,6 +70,18 @@ public class UserMobileController extends BaseController {
         return loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
     }
 
+    @RequestMapping(value = "/reset/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
+    public ResponseObj resetLoginPassword(@RequestBody @Valid ResetPasswordForm form, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID);
+        }
+        UserInfo userInfo = userService.getUserByUserId(getUserId());
+        if (userInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户不存在");
+        }
+        return userService.resetLoginPwd(getUserName(),form.getPhoneCode(),UserType.getEnumsByCode(userInfo.getType()),form.getPassword());
+    }
+
     /**
      * 查看用户信息
      *
