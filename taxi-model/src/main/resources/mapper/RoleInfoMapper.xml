@@ -11,7 +11,7 @@
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="creator" jdbcType="BIGINT" property="creator" />
-    <result column="gmt_modifier" jdbcType="TIMESTAMP" property="gmtModifier" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
 

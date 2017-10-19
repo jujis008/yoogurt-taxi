@@ -26,6 +26,7 @@ public class AccountUpdateCondition {
     private String payeePhone;
 
     private String bankName;
+    private String bankAddress;
     /**付款人账号（必传）*/
     private String draweeAccount;
     /**付款人姓名（必传）*/

@@ -22,6 +22,8 @@ public class WithdrawForm {
     private String accountNo;
     @NotBlank(message = "请输入开户行")
     private String bankName;
+    @NotBlank(message = "请输入开户地")
+    private String bankAddress;
     @NotNull(message = "请输入提现金额")
     @Min(value = 1)
     @Max(value = 10000)

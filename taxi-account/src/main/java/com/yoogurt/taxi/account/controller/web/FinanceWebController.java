@@ -54,7 +54,7 @@ public class FinanceWebController extends BaseController{
     }
 
     @RequestMapping(value = "/withdraw",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
-    public ResponseObj updateWithdrawBillStatus(@RequestBody @Valid UpdateBillForm form, BindingResult result) {
+    public ResponseObj handleWithdraw(@RequestBody @Valid UpdateBillForm form, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }

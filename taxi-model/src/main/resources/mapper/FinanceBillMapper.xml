@@ -22,6 +22,7 @@
     <result column="payee_name" jdbcType="VARCHAR" property="payeeName" />
     <result column="payee_phone" jdbcType="VARCHAR" property="payeePhone" />
     <result column="bank_name" jdbcType="VARCHAR" property="bankName" />
+    <result column="bank_address" jdbcType="VARCHAR" property="bankAddress" />
     <result column="payment" jdbcType="INTEGER" property="payment" />
     <result column="drawee_account" jdbcType="VARCHAR" property="draweeAccount" />
     <result column="drawee_name" jdbcType="VARCHAR" property="draweeName" />

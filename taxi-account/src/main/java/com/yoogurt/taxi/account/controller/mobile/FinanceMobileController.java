@@ -17,10 +17,9 @@ import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.UserInfo;
-import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
+import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.condition.account.BillCondition;
-import com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.*;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mobile/account")
@@ -184,6 +186,7 @@ public class FinanceMobileController extends BaseController {
         condition.setPayeeName(form.getReservedName());
         condition.setPayeeAccount(form.getAccountNo());
         condition.setBankName(form.getBankName());
+        condition.setBankAddress(form.getBankAddress());
         condition.setMoney(new Money(form.getWithdrawMoney()));
         condition.setDraweePhone(getUserName());
         condition.setDraweeAccount(financeAccount.getAccountNo().toString());

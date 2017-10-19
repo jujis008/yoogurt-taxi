@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jws.Oneway;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -96,10 +97,12 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                 financeAccount = createAccount(RandomUtils.getPrimaryKey(), new Money(0), userId);
             }
             Payment payment = condition.getPayment();
-            //判断账户的有效性
-            ResponseObj responseObj = this.validateAccount(financeAccount, tradeType, money, payment);
-            if (!responseObj.isSuccess()) {
-                return responseObj;
+            if (condition.getChangeType() == null) {
+                //判断账户的有效性
+                ResponseObj responseObj = this.validateAccount(financeAccount, tradeType, money, payment);
+                if (!responseObj.isSuccess()) {
+                    return responseObj;
+                }
             }
             switch (tradeType) {
                 case WITHDRAW://提现
@@ -311,13 +314,16 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "操作对象不存在，请刷新重试");
         }
         AccountUpdateCondition condition = new AccountUpdateCondition();
+        condition.setBillId(billId);
+        condition.setUserId(financeBill.getUserId());
+        condition.setMoney(new Money(financeBill.getAmount()));
+        condition.setTradeType(TradeType.WITHDRAW);
+        condition.setPayment(Payment.getEnumsBycode(financeBill.getPayment()));
         switch (billStatus) {
             case SUCCESS://转账成功，减少冻结资金
-                condition.setBillId(billId);
                 condition.setChangeType(AccountChangeType.frozen_deduct);
                 return updateAccount(condition);
             case FAIL:
-                condition.setBillId(billId);
                 condition.setChangeType(AccountChangeType.frozen_back);
                 return updateAccount(condition);
             default:

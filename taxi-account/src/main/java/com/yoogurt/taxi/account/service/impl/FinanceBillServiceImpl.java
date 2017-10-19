@@ -6,7 +6,6 @@ import com.yoogurt.taxi.account.service.FinanceRecordService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.pager.Pager;
-import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -23,11 +22,12 @@ import com.yoogurt.taxi.dal.model.account.FinanceBillListWebModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillDetailModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Date;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @Slf4j
@@ -103,6 +103,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         financeBill.setPayeeName(condition.getPayeeName());
         financeBill.setPayeePhone(condition.getPayeePhone());
         financeBill.setBankName(condition.getBankName());
+        financeBill.setBankAddress(condition.getBankAddress());
 
         financeBill.setBillStatus(billStatus.getCode());
         financeBill.setBillType(billType.getCode());
@@ -134,7 +135,11 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     public WithdrawBillDetailModel getWithdrawBillDetail(Long billId) {
         FinanceBill financeBill = financeBillDao.selectById(billId);
         WithdrawBillDetailModel model = new WithdrawBillDetailModel();
-        BeanUtilsExtends.copyProperties(model,financeBill);
+        try {
+            BeanUtils.copyProperties(model,financeBill);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return model;
     }
 
@@ -143,8 +148,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         Example example = new Example(FinanceBill.class);
         example.createCriteria().andEqualTo("userId",condition.getUserId())
                 .andBetween("gmtCreate",condition.getStartTime(),condition.getEndTime());
-        List<FinanceBill> financeBillList = financeBillDao.selectByExample(example);
-        return financeBillList;
+        return financeBillDao.selectByExample(example);
     }
 
 }
