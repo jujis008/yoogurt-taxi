@@ -1,6 +1,8 @@
 package com.yoogurt.taxi.user.dao.impl;
 
 import com.github.pagehelper.Page;
+import com.yoogurt.taxi.common.dao.IDao;
+import com.yoogurt.taxi.common.dao.impl.BaseDao;
 import com.yoogurt.taxi.common.dao.impl.BatchDao;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class UserDaoImpl extends BatchDao<UserInfoMapper, UserInfo> implements UserDao {
+public class UserDaoImpl extends BaseDao<UserInfoMapper,UserInfo> implements UserDao {
 
     @Autowired
     private UserInfoMapper userInfoMapper;
@@ -21,6 +23,11 @@ public class UserDaoImpl extends BatchDao<UserInfoMapper, UserInfo> implements U
     @Override
     public Page<UserWLModel> getUserWebListPage(UserWLCondition condition) {
         return userInfoMapper.getUserWebListPage(condition);
+    }
+
+    @Override
+    public int batchInsert(List<UserInfo> list) {
+        return userInfoMapper.batchInsert(list);
     }
 
 }

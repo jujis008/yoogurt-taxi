@@ -105,7 +105,7 @@ public class UserMobileController extends BaseController {
     public ResponseObj activeStatus() {
         Long userId = getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
-        if (UserStatus.UN_ACTIVE.getCode().equals(userInfo.getStatus())) {
+        if (!UserStatus.UN_ACTIVE.getCode().equals(userInfo.getStatus())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户非未激活状态");
         }
         Object o = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId);

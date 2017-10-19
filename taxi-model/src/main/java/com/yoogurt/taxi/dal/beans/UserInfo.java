@@ -5,9 +5,7 @@ import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 @Domain
 @Setter
@@ -16,6 +14,7 @@ import java.util.Date;
 public class UserInfo extends SuperModel {
     @Id
     @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
     /**

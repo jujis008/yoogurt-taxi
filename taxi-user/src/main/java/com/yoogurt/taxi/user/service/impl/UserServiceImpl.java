@@ -313,10 +313,10 @@ public class UserServiceImpl implements UserService {
             driverInfoList.add(driverInfo);
 
             if (dbUsernameList.contains(phoneNumber)) {
-                errorCellBeanList.add(new ErrorCellBean("账号已存在", phoneNumber, list.indexOf(map1) + 2, 0));
+                errorCellBeanList.add(new ErrorCellBean("账号已存在", phoneNumber, list.indexOf(map1) + 2, 1));
             }
             if (!driverInfo.getIdCard().equals(driverInfo.getDrivingLicense())) {
-                errorCellBeanList.add(new ErrorCellBean("身份证号和驾驶证号不一致", map1.get("idCard").toString(), list.indexOf(map1) + 2, 0));
+                errorCellBeanList.add(new ErrorCellBean("身份证号和驾驶证号不一致", map1.get("idCard").toString(), list.indexOf(map1) + 2, 1));
             }
         }
         if (!CollectionUtils.isEmpty(errorCellBeanList)) {
@@ -325,14 +325,14 @@ public class UserServiceImpl implements UserService {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
 
             int result = 0;
-            result += userDao.insertList(userInfoList);
-            result += driverDao.insertList(driverInfoList);
+            result += userDao.batchInsert(userInfoList);
+            result += driverDao.batchInsert(driverInfoList);
             phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
 
             return result;
         });
         future.thenAccept(result -> {
-            log.info("IMPORT{}", "导入条数：" + result);
+            log.info("IMPORT{}", "导入条数：" + result/2);
         });
         return errorCellBeanList;
     }
@@ -413,10 +413,18 @@ public class UserServiceImpl implements UserService {
         if (!CollectionUtils.isEmpty(errorCellBeanList)) {
             return errorCellBeanList;
         }
-        userDao.insertList(userInfoList);
-        driverDao.insertList(driverInfoList);
-        carDao.batchInsert(carInfoList);
-        phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
+        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+
+            int result = 0;
+            result +=userDao.batchInsert(userInfoList);
+            result +=driverDao.batchInsert(driverInfoList);
+            result += carDao.batchInsert(carInfoList);
+            phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
+            return result;
+        });
+        future.thenAccept(result -> {
+            log.info("IMPORT{}", "导入条数：" + result/3);
+        });
         return errorCellBeanList;
     }
 }

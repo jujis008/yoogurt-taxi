@@ -9,6 +9,8 @@ import tk.mybatis.mapper.common.Mapper;
 
 import java.util.List;
 
-public interface DriverInfoMapper extends SuperMapper<DriverInfo> {
+public interface DriverInfoMapper extends Mapper<DriverInfo> {
     Page<DriverWLModel> getDriverWebList(DriverWLCondition condition);
+
+    int batchInsert(List<DriverInfo> list);
 }

@@ -10,6 +10,7 @@ import com.yoogurt.taxi.dal.model.user.DriverWLModel;
 
 import java.util.List;
 
-public interface DriverDao extends IBatchDao<DriverInfoMapper,DriverInfo> {
+public interface DriverDao extends IDao<DriverInfoMapper,DriverInfo> {
     Page<DriverWLModel> getDriverWebList(DriverWLCondition condition);
+    int batchInsert(List<DriverInfo> list);
 }

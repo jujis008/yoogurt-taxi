@@ -16,9 +16,11 @@ import java.util.List;
  * @author Eric Lau
  * @Date 2017/8/28.
  */
-public interface UserDao extends IBatchDao<UserInfoMapper, UserInfo> {
+public interface UserDao extends IDao<UserInfoMapper, UserInfo> {
 
 
     Page<UserWLModel> getUserWebListPage(UserWLCondition condition);
+
+    int batchInsert(List<UserInfo> list);
 
 }
