@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Service("cancelService")
-public class CancelServiceImpl implements CancelService {
+public class CancelServiceImpl extends AbstractOrderBizService implements CancelService {
 
     @Autowired
     private CancelDao cancelDao;
@@ -43,11 +43,12 @@ public class CancelServiceImpl implements CancelService {
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, cancelForm.getUserId());
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //已完成的订单不可取消了
-        if(OrderStatus.FINISH.equals(status)) return null;
+        if (OrderStatus.FINISH.equals(status)) return null;
 
         OrderCancelInfo cancelInfo = new OrderCancelInfo();
         BeanUtils.copyProperties(cancelForm, cancelInfo);
         ResponsibleParty responsibleParty = ResponsibleParty.getEnumsByCode(cancelForm.getResponsibleParty());
+        UserType userType = UserType.getEnumsByCode(responsibleParty.getUserType());
         //默认时间单位
         String unit = "HOURS";
 
@@ -57,7 +58,7 @@ public class CancelServiceImpl implements CancelService {
         cancelInfo.setTime(0);
 
         //App端提交的取消申请
-        if(cancelForm.isFromApp()) {
+        if (cancelForm.isFromApp()) {
             //超过了交车时间，需要计算违约金
             Date now = new Date();
             //计算时间，向上取整
@@ -65,7 +66,7 @@ public class CancelServiceImpl implements CancelService {
             OrderCancelRule rule = ruleService.getRuleInfo(hours, unit);
             if (rule != null) {
                 //该时段不允许取消
-                if(!rule.getAllowCancel()) return null;
+                if (!rule.getAllowCancel()) return null;
                 cancelInfo.setRuleId(rule.getRuleId());
                 cancelInfo.setUnit(unit);
                 cancelInfo.setTime(hours);
@@ -76,7 +77,7 @@ public class CancelServiceImpl implements CancelService {
                 //违约记录
                 String description = "距离交车时间" + hours + "个小时取消订单，缴纳违约金￥" + fineMoney.doubleValue();
                 OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
-                        orderInfo, UserType.getEnumsByCode(responsibleParty.getUserType()), DisobeyType.CANCEL_ORDER,
+                        orderInfo, userType, DisobeyType.CANCEL_ORDER,
                         rule.getRuleId(), fineMoney, description);
                 disobeyService.addDisobey(disobey);
             } else {
@@ -88,6 +89,11 @@ public class CancelServiceImpl implements CancelService {
             rentInfoService.modifyStatus(orderInfo.getRentId(), RentStatus.CANCELED);
             //修改订单状态
             orderInfoService.modifyStatus(orderId, OrderStatus.CANCELED);
+            //已取消，操作方不需要提醒
+            if (cancelForm.isFromApp()) {
+                //对于App客户端，操作者通常是责任方，除非无责取消
+                super.push(orderInfo, userType, SendType.ORDER_CANCEL);
+            }
             return (CancelOrderModel) info(orderId, cancelForm.getUserId());
         }
         return null;
@@ -102,7 +108,7 @@ public class CancelServiceImpl implements CancelService {
     public OrderModel info(Long orderId, Long userId) {
         CancelOrderModel model = new CancelOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
 
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间

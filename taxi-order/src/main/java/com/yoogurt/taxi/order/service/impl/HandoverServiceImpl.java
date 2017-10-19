@@ -1,16 +1,20 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderHandoverInfo;
 import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
+import com.yoogurt.taxi.dal.bo.PushPayload;
 import com.yoogurt.taxi.dal.enums.DisobeyType;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
+import com.yoogurt.taxi.dal.enums.SendType;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.HandoverOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.HandoverDao;
 import com.yoogurt.taxi.order.form.HandoverForm;
+import com.yoogurt.taxi.order.mq.NotificationSender;
 import com.yoogurt.taxi.order.service.DisobeyService;
 import com.yoogurt.taxi.order.service.HandoverRuleService;
 import com.yoogurt.taxi.order.service.HandoverService;
@@ -24,7 +28,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Service("handoverService")
-public class HandoverServiceImpl implements HandoverService {
+public class HandoverServiceImpl extends AbstractOrderBizService implements HandoverService {
 
     @Autowired
     private HandoverDao handoverDao;
@@ -37,6 +41,9 @@ public class HandoverServiceImpl implements HandoverService {
 
     @Autowired
     private DisobeyService disobeyService;
+
+    @Autowired
+    private NotificationSender sender;
 
     /**
      * 正式司机确认交车
@@ -91,6 +98,8 @@ public class HandoverServiceImpl implements HandoverService {
         if (handoverDao.insertSelective(handoverInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
+            //向代理司机发送已交车的通知
+            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER);
             return (HandoverOrderModel) info(orderId, handoverForm.getUserId());
         }
         return null;

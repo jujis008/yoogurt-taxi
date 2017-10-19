@@ -6,6 +6,7 @@ import com.yoogurt.taxi.dal.beans.OrderGiveBackRule;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.enums.DisobeyType;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
+import com.yoogurt.taxi.dal.enums.SendType;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.GiveBackOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
@@ -24,7 +25,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Service("giveBackService")
-public class GiveBackServiceImpl implements GiveBackService {
+public class GiveBackServiceImpl extends AbstractOrderBizService implements GiveBackService {
 
     @Autowired
     private GiveBackDao giveBackDao;
@@ -84,6 +85,8 @@ public class GiveBackServiceImpl implements GiveBackService {
         if (giveBackDao.insertSelective(giveBackInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
+            //已还车，通知正式司机
+            super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK);
             return (GiveBackOrderModel) info(orderId, giveBackForm.getUserId());
         }
         return null;

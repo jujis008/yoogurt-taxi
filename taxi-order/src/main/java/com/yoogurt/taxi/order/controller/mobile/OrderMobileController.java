@@ -160,8 +160,10 @@ public class OrderMobileController extends BaseController {
         }
         form.setFromApp(true);
         SessionUser user = super.getUser();
-        form.setResponsibleParty(ResponsibleParty.getEnumsByType(user.getType()).getCode());
-        form.setReason(UserType.USER_APP_OFFICE.getCode().equals(user.getType()) ? "正式司机手动取消" : "代理司机手动取消");
+        Integer userType = user.getType();
+        form.setUserType(userType);
+        form.setResponsibleParty(ResponsibleParty.getEnumsByType(userType).getCode());
+        form.setReason(UserType.USER_APP_OFFICE.getCode().equals(userType) ? "正式司机手动取消" : "代理司机手动取消");
 
         CancelOrderModel model = cancelService.doCancel(form);
         if (model != null) {

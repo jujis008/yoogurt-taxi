@@ -4,6 +4,8 @@ import com.yoogurt.taxi.dal.beans.CommonResource;
 import com.yoogurt.taxi.dal.beans.OrderAcceptInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
+import com.yoogurt.taxi.dal.enums.SendType;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.AcceptOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.AcceptDao;
@@ -19,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service("acceptService")
-public class AcceptServiceImpl implements AcceptService {
+public class AcceptServiceImpl extends AbstractOrderBizService implements AcceptService {
 
     @Autowired
     private AcceptDao acceptDao;
@@ -49,6 +51,8 @@ public class AcceptServiceImpl implements AcceptService {
                 List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_accept_info", pictures);
                 resourceService.addResources(resources);
             }
+            //订单已结束，通知代理司机
+            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_FINISH);
             return (AcceptOrderModel) info(orderId, acceptForm.getUserId());
         }
         return null;

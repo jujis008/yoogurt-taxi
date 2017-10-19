@@ -3,16 +3,22 @@ package com.yoogurt.taxi.order.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
+import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
+import com.yoogurt.taxi.dal.bo.PushPayload;
 import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
 import com.yoogurt.taxi.dal.enums.DisobeyType;
+import com.yoogurt.taxi.dal.enums.SendType;
 import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.DisobeyDao;
 import com.yoogurt.taxi.order.form.OrderStatisticForm;
+import com.yoogurt.taxi.order.mq.NotificationSender;
 import com.yoogurt.taxi.order.service.DisobeyService;
+import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.OrderStatisticService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +31,13 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class DisobeyServiceImpl implements DisobeyService {
+public class DisobeyServiceImpl extends AbstractOrderBizService implements DisobeyService {
 
     @Autowired
     private DisobeyDao disobeyDao;
+
+    @Autowired
+    private OrderInfoService orderInfoService;
 
     @Autowired
     private OrderStatisticService statisticService;
@@ -84,6 +93,12 @@ public class DisobeyServiceImpl implements DisobeyService {
         if (disobey == null) return null;
         if (disobeyDao.insertSelective(disobey) == 1) {
             statisticService.record(OrderStatisticForm.builder().userId(disobey.getUserId()).disobeyCount(1).build());
+            OrderInfo orderInfo = orderInfoService.getOrderInfo(disobey.getOrderId(), disobey.getUserId());
+            UserType userType = UserType.getEnumsByCode(disobey.getType());
+            //受罚者
+            super.push(orderInfo, userType, SendType.DISOBEY_FINE_OUT);
+            //补偿者
+            super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.DISOBEY_FINE_IN);
             return disobey;
         }
         return null;
@@ -192,5 +207,11 @@ public class DisobeyServiceImpl implements DisobeyService {
             criteria.andLessThanOrEqualTo("happenTime", condition.getEndTime());
         }
         return ex;
+    }
+
+    @Override
+    public OrderModel info(Long orderId, Long userId) {
+
+        return null;
     }
 }

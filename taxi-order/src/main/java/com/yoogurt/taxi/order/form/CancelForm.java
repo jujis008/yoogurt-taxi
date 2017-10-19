@@ -35,6 +35,11 @@ public class CancelForm extends OrderForm {
 	private BigDecimal fineMoney = new BigDecimal(0);
 
 	/**
+	 * 取消者的身份类型
+	 */
+	private Integer userType;
+
+	/**
 	 * 取消订单的请求是否来源于手机客户端
 	 */
 	private boolean fromApp;

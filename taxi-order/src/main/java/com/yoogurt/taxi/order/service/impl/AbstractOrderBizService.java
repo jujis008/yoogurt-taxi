@@ -1,9 +1,15 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
+import com.yoogurt.taxi.dal.beans.OrderInfo;
+import com.yoogurt.taxi.dal.bo.PushPayload;
+import com.yoogurt.taxi.dal.enums.SendType;
+import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.order.mq.NotificationSender;
 import com.yoogurt.taxi.order.service.OrderBizService;
 import com.yoogurt.taxi.order.service.rest.RestAccountService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +24,9 @@ public abstract class AbstractOrderBizService implements OrderBizService {
 
     @Autowired
     private RestAccountService accountService;
+
+    @Autowired
+    private NotificationSender sender;
 
     public ResponseObj isAllowed(Long userId) {
 
@@ -36,4 +45,48 @@ public abstract class AbstractOrderBizService implements OrderBizService {
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "您的押金不足，请充值", extras);
     }
 
+    /**
+     * 触发消息推送
+     *
+     * @param orderInfo 订单信息
+     * @param userType  推送对象的用户类型
+     * @param sendType  推送类型
+     */
+    public void push(OrderInfo orderInfo, UserType userType, SendType sendType) {
+
+        if (orderInfo == null || userType == null || sendType == null) return;
+        Long orderId = orderInfo.getOrderId();
+        String message = sendType.getMessage();
+        String title = userType.equals(UserType.USER_APP_AGENT) ? Constants.AGENT_APP_NAME : Constants.OFFICIAL_APP_NAME;
+        Long userId = userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getAgentUserId() : orderInfo.getOfficialUserId();
+        PushPayload payload = new PushPayload(userType, sendType, title);
+        Map<String, Object> extras = new HashMap<>();
+        extras.put("orderId", orderId);
+        payload.setExtras(extras);
+        switch (sendType) {
+            case ORDER_RENT: //已接单
+                String type = userType.equals(UserType.USER_APP_AGENT) ? "求租" : "出租";
+                String driverName = userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getAgentDriverName() : orderInfo.getOfficialDriverName();
+                payload.setContent(String.format(message, type, orderId, driverName));
+                break;
+            case ORDER_PAID: //已支付
+                payload.setContent(String.format(message, orderId));
+                break;
+            case ORDER_HANDOVER: //已交车
+            case ORDER_HANDOVER_REMINDER: // 交车时间到，提醒正式司机
+            case ORDER_HANDOVER_REMINDER1: // 交车前1小时，提醒正式司机
+            case ORDER_HANDOVER_UNFINISHED_REMINDER: // 未在规定时间完成交车
+            case ORDER_GIVE_BACK: //已还车，提醒正式司机
+            case ORDER_GIVE_BACK_REMINDER: //还车时间到，提醒代理司机
+            case ORDER_GIVE_BACK_REMINDER1: //还车前1小时，提醒代理司机
+            case ORDER_FINISH: //订单结束，提醒代理司机
+            case ORDER_TIMEOUT: //订单无人接单，提醒发单者
+            case ORDER_CANCEL: //订单被取消
+            case TRAFFIC_VIOLATION: //正式司机录入违章记录，提醒代理司机
+                payload.setContent(String.format(message, orderId));
+                break;
+        }
+        payload.addUserId(userId);
+        sender.send(payload); //推送请求进入消息队列
+    }
 }
