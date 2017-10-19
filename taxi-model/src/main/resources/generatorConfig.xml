@@ -27,17 +27,14 @@
         <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}"
                              type="XMLMAPPER"/>
 
-        <table tableName="message">
+        <table tableName="app_version">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
-        <table tableName="message_read">
+        <table tableName="feedback_record">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
-        <table tableName="message_remove">
+        <table tableName="feedback_type">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-        </table>
-        <table tableName="push_device">
-            <generatedKey column="client_id" sqlStatement="Mysql"/>
         </table>
 
     </context>
