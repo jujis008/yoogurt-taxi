@@ -8,6 +8,9 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="phone_model" jdbcType="VARCHAR" property="phoneModel" />
+    <result column="system_version" jdbcType="VARCHAR" property="systemVersion" />
+    <result column="app_version" jdbcType="VARCHAR" property="appVersion" />
     <result column="feedback_type" jdbcType="BIGINT" property="feedbackType" />
     <result column="feedback_content" jdbcType="VARCHAR" property="feedbackContent" />
     <result column="is_handle" jdbcType="BIT" property="isHandle" />

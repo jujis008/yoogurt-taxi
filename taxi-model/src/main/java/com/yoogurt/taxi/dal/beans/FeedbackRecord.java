@@ -25,6 +25,13 @@ public class FeedbackRecord extends SuperModel{
      */
     private String username;
 
+    @Column(name = "phone_model")
+    private String phoneModel;
+    @Column(name = "system_version")
+    private String systemVersion;
+    @Column(name = "app_version")
+    private String appVersion;
+
     /**
      * 反馈id
      */

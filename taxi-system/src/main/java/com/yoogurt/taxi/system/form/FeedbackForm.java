@@ -13,4 +13,10 @@ public class FeedbackForm {
     private String content;
     @NotNull(message = "请选择反馈类型")
     private Long feedbackType;
+    @NotBlank(message = "手机型号不能为空")
+    private String phoneModel;
+    @NotBlank(message = "系统版本号不能为空")
+    private String systemVersion;
+    @NotBlank(message = "应用版本号不能为空")
+    private String appVersion;
 }

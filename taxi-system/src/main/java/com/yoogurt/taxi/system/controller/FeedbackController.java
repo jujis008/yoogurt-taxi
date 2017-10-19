@@ -47,6 +47,9 @@ public class FeedbackController extends BaseController{
         feedbackRecord.setIsHandle(Boolean.FALSE);
         feedbackRecord.setUserId(getUserId());
         feedbackRecord.setUsername(getUserName());
+        feedbackRecord.setPhoneModel(form.getPhoneModel());
+        feedbackRecord.setSystemVersion(form.getSystemVersion());
+        feedbackRecord.setAppVersion(form.getAppVersion());
         feedBackRecordService.insert(feedbackRecord);
         return ResponseObj.success();
     }
