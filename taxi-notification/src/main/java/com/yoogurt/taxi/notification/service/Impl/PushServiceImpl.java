@@ -147,7 +147,7 @@ public class PushServiceImpl implements PushService {
     @Override
     public ResponseObj pushMessage(UserType userType, String title, String content, boolean persist) {
 
-        ResponseObj pushResult = pushMessage(SendType.COMMON, MsgType.ALL, userType, DeviceType.ALL, null, title, content, null, persist);
+        ResponseObj pushResult = pushMessage(null, userType, SendType.COMMON, MsgType.ALL, DeviceType.ALL, title, content, null, persist);
         log.info(pushResult.toJSON());
         return pushResult;
     }
@@ -166,8 +166,8 @@ public class PushServiceImpl implements PushService {
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(UserType userType, String deviceType, String title, String content, boolean persist) {
-        ResponseObj pushResult = pushMessage(SendType.COMMON, MsgType.ALL, userType, DeviceType.getEnumByType(deviceType), null, title, content, null, persist);
+    public ResponseObj pushMessage(UserType userType, DeviceType deviceType, String title, String content, boolean persist) {
+        ResponseObj pushResult = pushMessage(null, userType, SendType.COMMON, MsgType.ALL, deviceType, title, content, null, persist);
         log.info(pushResult.toJSON());
         return pushResult;
     }
@@ -188,10 +188,10 @@ public class PushServiceImpl implements PushService {
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(Long userId, UserType userType, String sendType, String title, String content, Map<String, Object> extras, boolean persist) {
+    public ResponseObj pushMessage(Long userId, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist) {
         List<Long> userIds = new ArrayList<>();
         userIds.add(userId);
-        ResponseObj pushResult = pushMessage(SendType.getEnumByType(sendType), MsgType.SINGLE, userType, null, userIds, title, content, extras, persist);
+        ResponseObj pushResult = pushMessage(userIds, userType, sendType, MsgType.SINGLE, null, title, content, extras, persist);
         log.info("userId: [" + userId + "]");
         log.info(pushResult.toJSON());
         return pushResult;
@@ -213,8 +213,8 @@ public class PushServiceImpl implements PushService {
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(List<Long> userIds, UserType userType, String sendType, String title, String content, Map<String, Object> extras, boolean persist) {
-        ResponseObj pushResult = pushMessage(SendType.getEnumByType(sendType), MsgType.SINGLE, userType, null, userIds, title, content, extras, persist);
+    public ResponseObj pushMessage(List<Long> userIds, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist) {
+        ResponseObj pushResult = pushMessage(userIds, userType, sendType, MsgType.SINGLE, null, title, content, extras, persist);
         log.info("userIds: " + userIds);
         log.info(pushResult.toJSON());
         return pushResult;
@@ -226,11 +226,11 @@ public class PushServiceImpl implements PushService {
      * 功能：消息推送，含单个推和群推，不建议直接使用此方法。
      * </p>
      *
+     * @param userIds    单个推送的时候，指定用户id，即为推送对象（兼容多个用户推送），如果用户未绑定设备，将导致推送失败。
+     * @param userType   推送对象的用户类型，因为无法跨应用推送，所以push_all的情况下，只能在外部调用多次推送接口，分别传不同的userType
      * @param sendType   消息发送类型
      * @param msgType    消息类型
-     * @param userType   推送对象的用户类型，因为无法跨应用推送，所以push_all的情况下，只能在外部调用多次推送接口，分别传不同的userType
      * @param deviceType 目标设备类型，群推消息使用此参数
-     * @param userIds    单个推送的时候，指定用户id，即为推送对象（兼容多个用户推送），如果用户未绑定设备，将导致推送失败。
      * @param title      消息标题
      * @param content    消息体，可以直接显示在APP上
      * @param extras     透传内容，用于APP在后台进行逻辑处理，不直接显示给用户
@@ -238,16 +238,17 @@ public class PushServiceImpl implements PushService {
      * @return 推送结果
      * @author weihao.liu
      */
-    protected ResponseObj pushMessage(SendType sendType, MsgType msgType, UserType userType, DeviceType deviceType, List<Long> userIds, String title, String content, Map<String, Object> extras, boolean persist) {
+    @Override
+    public ResponseObj pushMessage(List<Long> userIds, UserType userType, SendType sendType, MsgType msgType, DeviceType deviceType, String title, String content, Map<String, Object> extras, boolean persist) {
         if (msgType == null) {
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "不支持的消息类型");
 
-        } else if (msgType.equals(MsgType.SINGLE) && userIds.size() == 0) {//单个推送消息，未指定推送对象
+        } else if (MsgType.SINGLE.equals(msgType) && CollectionUtils.isNotEmpty(userIds)) {//单个推送消息，未指定推送对象
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "请指定消息推送对象");
         }
-        if (msgType.equals(MsgType.ALL) && deviceType == null) {//群推消息，未指定目标设备类型
+        if (MsgType.ALL.equals(msgType) && deviceType == null) {//群推消息，未指定目标设备类型
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "不支持的设备类型");
         }

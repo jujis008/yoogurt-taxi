@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.order;
 
+import com.yoogurt.taxi.dal.bo.PushPayload;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.mq.NotificationSender;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -18,6 +20,11 @@ public class MQTests {
 
     @Test
     public void sendTest() {
-        sender.send();
+        PushPayload payload = new PushPayload();
+        payload.setTitle("小胖你在哪");
+        payload.setContent("看到消息回我，有事找！！！");
+        payload.setUserType(UserType.USER_APP_OFFICE);
+        payload.setPersist(true);
+        sender.send(payload);
     }
 }
