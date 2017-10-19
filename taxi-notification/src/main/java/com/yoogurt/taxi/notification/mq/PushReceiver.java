@@ -1,9 +1,13 @@
 package com.yoogurt.taxi.notification.mq;
 
+import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.bo.PushPayload;
+import com.yoogurt.taxi.notification.service.PushService;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +16,15 @@ import org.springframework.stereotype.Service;
 @RabbitListener(queues = "X-Queue-Notification")
 public class PushReceiver {
 
-    @RabbitHandler
-    public void receive(@Payload String msg) {
+    @Autowired
+    private PushService pushService;
 
-        log.info(DateTime.now().toString("yyyy-MM-dd HH:mm:ss") + "收到消息：" + msg);
+    @RabbitHandler
+    public void receive(@Payload PushPayload payload) {
+
+        log.info(DateTime.now().toString("yyyy-MM-dd HH:mm:ss") + "收到消息：" + payload.toString());
+
+        pushService.pushMessage(payload.getUserIds(), payload.getUserType(), payload.getSendType(), payload.getMsgType(), payload.getDeviceType(), payload.getTitle(), payload.getContent(), payload.getExtras(), payload.isPersist());
+
     }
 }
