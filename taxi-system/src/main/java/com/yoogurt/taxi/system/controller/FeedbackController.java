@@ -5,6 +5,7 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FeedbackRecord;
 import com.yoogurt.taxi.dal.beans.FeedbackType;
+import com.yoogurt.taxi.dal.enums.AppType;
 import com.yoogurt.taxi.system.form.FeedbackForm;
 import com.yoogurt.taxi.system.service.FeedBackRecordService;
 import com.yoogurt.taxi.system.service.FeedbackTypeService;
@@ -41,6 +42,9 @@ public class FeedbackController extends BaseController{
         if (one == null) {
             return ResponseObj.fail(StatusCode.FORM_INVALID,"错误的反馈类型");
         }
+        if (AppType.getEnumsByCode(form.getAppType()) == null) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,"错误的app类型");
+        }
         FeedbackRecord feedbackRecord = new FeedbackRecord();
         feedbackRecord.setFeedbackContent(form.getContent());
         feedbackRecord.setFeedbackType(form.getFeedbackType());
@@ -50,6 +54,7 @@ public class FeedbackController extends BaseController{
         feedbackRecord.setPhoneModel(form.getPhoneModel());
         feedbackRecord.setSystemVersion(form.getSystemVersion());
         feedbackRecord.setAppVersion(form.getAppVersion());
+        feedbackRecord.setAppType(form.getAppType());
         feedBackRecordService.insert(feedbackRecord);
         return ResponseObj.success();
     }

@@ -29,8 +29,11 @@ public class FeedbackRecord extends SuperModel{
     private String phoneModel;
     @Column(name = "system_version")
     private String systemVersion;
+    @Column(name = "app_type")
+    private Integer appType;
+
     @Column(name = "app_version")
-    private String appVersion;
+    private Integer appVersion;
 
     /**
      * 反馈id

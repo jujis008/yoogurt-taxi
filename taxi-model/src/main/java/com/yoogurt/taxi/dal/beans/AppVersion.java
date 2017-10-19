@@ -33,7 +33,7 @@ public class AppVersion extends SuperModel{
      * 版本号
      */
     @Column(name = "version_number")
-    private String versionNumber;
+    private Integer versionNumber;
 
     /**
      * 下载地址

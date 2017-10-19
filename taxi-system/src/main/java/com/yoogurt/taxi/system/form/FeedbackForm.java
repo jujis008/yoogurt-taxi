@@ -17,6 +17,8 @@ public class FeedbackForm {
     private String phoneModel;
     @NotBlank(message = "系统版本号不能为空")
     private String systemVersion;
+    @NotBlank(message = "应用类型不能为空")
+    private Integer appType;
     @NotBlank(message = "应用版本号不能为空")
-    private String appVersion;
+    private Integer appVersion;
 }

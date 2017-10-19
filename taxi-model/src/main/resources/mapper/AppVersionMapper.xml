@@ -8,7 +8,7 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="app_type" jdbcType="INTEGER" property="appType" />
     <result column="version_name" jdbcType="VARCHAR" property="versionName" />
-    <result column="version_number" jdbcType="VARCHAR" property="versionNumber" />
+    <result column="version_number" jdbcType="INTEGER" property="versionNumber" />
     <result column="download_url" jdbcType="VARCHAR" property="downloadUrl" />
     <result column="is_force" jdbcType="BIT" property="isForce" />
     <result column="description" jdbcType="VARCHAR" property="description" />
