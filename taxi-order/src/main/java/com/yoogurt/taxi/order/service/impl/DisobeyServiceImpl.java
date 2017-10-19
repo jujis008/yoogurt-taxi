@@ -3,23 +3,20 @@ package com.yoogurt.taxi.order.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
-import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
-import com.yoogurt.taxi.dal.bo.PushPayload;
 import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
-import com.yoogurt.taxi.dal.enums.DisobeyType;
-import com.yoogurt.taxi.dal.enums.SendType;
-import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
+import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.order.dao.DisobeyDao;
 import com.yoogurt.taxi.order.form.OrderStatisticForm;
-import com.yoogurt.taxi.order.mq.NotificationSender;
 import com.yoogurt.taxi.order.service.DisobeyService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.OrderStatisticService;
+import com.yoogurt.taxi.order.service.rest.RestAccountService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +38,9 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
 
     @Autowired
     private OrderStatisticService statisticService;
+
+    @Autowired
+    private RestAccountService accountService;
 
     @Autowired
     private PagerFactory appPagerFactory;
@@ -67,7 +67,7 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
     @Override
     public List<OrderDisobeyInfo> getDisobeyList(Long orderId, Long userId, DisobeyType... types) {
         List<OrderDisobeyInfo> disobeyInfoList = Lists.newArrayList();
-        if(orderId == null && userId == null && (types == null || types.length == 0)) return disobeyInfoList;
+        if (orderId == null && userId == null && (types == null || types.length == 0)) return disobeyInfoList;
         Example ex = new Example(OrderDisobeyInfo.class);
         Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
         if (orderId != null) {
@@ -95,6 +95,16 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
             statisticService.record(OrderStatisticForm.builder().userId(disobey.getUserId()).disobeyCount(1).build());
             OrderInfo orderInfo = orderInfoService.getOrderInfo(disobey.getOrderId(), disobey.getUserId());
             UserType userType = UserType.getEnumsByCode(disobey.getType());
+            //更新账户
+            if (disobey.getFineMoney().doubleValue() > 0) {
+                ModificationVo vo = ModificationVo.builder().contextId(disobey.getId())
+                        .inUserId(userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getOfficialUserId() : orderInfo.getAgentUserId())
+                        .outUserId(disobey.getUserId())
+                        .money(disobey.getFineMoney())
+                        .payment(Payment.BALANCE.getCode())
+                        .type(BillType.BALANCE.getCode()).build();
+                accountService.updateAccount(vo);
+            }
             //受罚者
             super.push(orderInfo, userType, SendType.DISOBEY_FINE_OUT);
             //补偿者
