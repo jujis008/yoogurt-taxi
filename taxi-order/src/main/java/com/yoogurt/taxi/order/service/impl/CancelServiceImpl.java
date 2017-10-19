@@ -48,7 +48,7 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
         OrderCancelInfo cancelInfo = new OrderCancelInfo();
         BeanUtils.copyProperties(cancelForm, cancelInfo);
         ResponsibleParty responsibleParty = ResponsibleParty.getEnumsByCode(cancelForm.getResponsibleParty());
-        UserType userType = UserType.getEnumsByCode(responsibleParty.getUserType());
+        UserType userType = UserType.getEnumsByCode(cancelForm.getUserType());
         //默认时间单位
         String unit = "HOURS";
 
@@ -77,7 +77,7 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
                 //违约记录
                 String description = "距离交车时间" + hours + "个小时取消订单，缴纳违约金￥" + fineMoney.doubleValue();
                 OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
-                        orderInfo, userType, DisobeyType.CANCEL_ORDER,
+                        orderInfo, UserType.getEnumsByCode(responsibleParty.getUserType()), DisobeyType.CANCEL_ORDER,
                         rule.getRuleId(), fineMoney, description);
                 disobeyService.addDisobey(disobey);
             } else {
@@ -89,10 +89,14 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
             rentInfoService.modifyStatus(orderInfo.getRentId(), RentStatus.CANCELED);
             //修改订单状态
             orderInfoService.modifyStatus(orderId, OrderStatus.CANCELED);
-            //已取消，操作方不需要提醒
-            if (cancelForm.isFromApp()) {
+            //后台取消，需要通知双方
+            if (!cancelForm.isFromApp()) {
+                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL);
+                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL);
+            } else {
                 //对于App客户端，操作者通常是责任方，除非无责取消
-                super.push(orderInfo, userType, SendType.ORDER_CANCEL);
+                //通知对方，订单已取消
+                super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_CANCEL);
             }
             return (CancelOrderModel) info(orderId, cancelForm.getUserId());
         }
