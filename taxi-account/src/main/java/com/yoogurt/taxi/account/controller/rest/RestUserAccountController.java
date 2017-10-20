@@ -90,7 +90,7 @@ public class RestUserAccountController {
 
         UserInfo userInfo = fineInUserInfoRestResult.getBody();
         AccountUpdateCondition condition = new AccountUpdateCondition();
-        condition.setTradeType(TradeType.getEnumsBycode(tradeType.getCode()));
+        condition.setTradeType(tradeType);
         switch (tradeType) {
             case FINE_IN:
             case FINE_OUT:

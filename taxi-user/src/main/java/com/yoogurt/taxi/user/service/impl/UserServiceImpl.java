@@ -333,6 +333,7 @@ public class UserServiceImpl implements UserService {
             int result = 0;
             result += userDao.batchInsert(userInfoList);
             result += driverDao.batchInsert(driverInfoList);
+            //TODO 上线前更换为短信发送
             phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
 
             return result;
@@ -423,6 +424,7 @@ public class UserServiceImpl implements UserService {
             result +=userDao.batchInsert(userInfoList);
             result +=driverDao.batchInsert(driverInfoList);
             result += carDao.batchInsert(carInfoList);
+            //TODO 上线前更换为短信发送
             phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
             return result;
         });
