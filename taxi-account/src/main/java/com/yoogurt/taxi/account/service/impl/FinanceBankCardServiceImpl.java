@@ -17,7 +17,7 @@ public class FinanceBankCardServiceImpl implements FinanceBankCardService{
     private FinanceBankCardDao financeBankCardDao;
     @Override
     public int save(FinanceBankCard bankCard) {
-        if (bankCard == null) {
+        if (bankCard.getId() == null) {
             return financeBankCardDao.insert(bankCard);
         }
         return financeBankCardDao.updateById(bankCard);
@@ -44,6 +44,7 @@ public class FinanceBankCardServiceImpl implements FinanceBankCardService{
         example.setOrderByClause(" is_primary desc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("userId",userId);
+        criteria.andEqualTo("isDeleted", Boolean.FALSE);
         return financeBankCardDao.selectByExample(example);
     }
 }

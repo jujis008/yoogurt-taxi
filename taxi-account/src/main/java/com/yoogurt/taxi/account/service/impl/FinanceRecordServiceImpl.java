@@ -50,6 +50,7 @@ public class FinanceRecordServiceImpl implements FinanceRecordService {
         example.setOrderByClause(" gmt_create desc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("userId",userId);
+        criteria.andEqualTo("isDeleted",Boolean.FALSE);
         if (billId != null) {
             criteria.andEqualTo("billId",billId);
         }

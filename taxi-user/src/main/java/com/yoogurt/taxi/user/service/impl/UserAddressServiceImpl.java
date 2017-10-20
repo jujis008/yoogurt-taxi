@@ -23,6 +23,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         example.setOrderByClause("is_primary desc,gmt_modify desc");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("userId", userId);
+        criteria.andEqualTo("isDeleted",Boolean.FALSE);
         if (StringUtils.isNotBlank(keywords)) {
             criteria.andLike("address", "%" + keywords + "%");
         }
@@ -34,7 +35,8 @@ public class UserAddressServiceImpl implements UserAddressService {
         if (userAddress.getIsPrimary()) {
             Example example = new Example(UserAddress.class);
             example.createCriteria().andEqualTo("userId",userAddress.getUserId())
-                    .andEqualTo("isPrimary",Boolean.TRUE);
+                    .andEqualTo("isPrimary",Boolean.TRUE)
+                    .andEqualTo("isDeleted",Boolean.FALSE);
             List<UserAddress> userAddresses = userAddressDao.selectByExample(example);
             if (CollectionUtils.isNotEmpty(userAddresses)) {
                 UserAddress dbUserAddress = userAddresses.get(0);

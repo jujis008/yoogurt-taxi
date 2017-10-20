@@ -1,6 +1,8 @@
-package com.yoogurt.taxi.system.form;
+package com.yoogurt.taxi.system.controller.form;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -17,8 +19,18 @@ public class FeedbackForm {
     private String phoneModel;
     @NotBlank(message = "系统版本号不能为空")
     private String systemVersion;
-    @NotBlank(message = "应用类型不能为空")
+    @NotNull(message = "应用类型不能为空")
     private Integer appType;
-    @NotBlank(message = "应用版本号不能为空")
+    @NotNull(message = "应用版本号不能为空")
     private Integer appVersion;
+
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class OtherForm {
+
+        private Long id;
+    }
 }

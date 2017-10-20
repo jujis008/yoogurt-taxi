@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.system.controller;
+package com.yoogurt.taxi.system.controller.mobile;
 
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
@@ -6,7 +6,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FeedbackRecord;
 import com.yoogurt.taxi.dal.beans.FeedbackType;
 import com.yoogurt.taxi.dal.enums.AppType;
-import com.yoogurt.taxi.system.form.FeedbackForm;
+import com.yoogurt.taxi.system.controller.form.FeedbackForm;
 import com.yoogurt.taxi.system.service.FeedBackRecordService;
 import com.yoogurt.taxi.system.service.FeedbackTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/mobile/system/feedback")
-public class FeedbackController extends BaseController{
+public class FeedbackMobileController extends BaseController{
     @Autowired
     private FeedbackTypeService feedbackTypeService;
     @Autowired

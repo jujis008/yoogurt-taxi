@@ -294,7 +294,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
                     /*更新或插入账户*/
                     financeAccountDao.updateById(financeAccount);
-                    financeBillService.insertBill(money, condition, Payment.ALIPAY, BillStatus.SUCCESS, BillType.BALANCE);
+                    financeBillService.insertBill(money, condition, condition.getPayment(), BillStatus.SUCCESS, BillType.BALANCE);
                     return ResponseObj.success(financeAccount);
                 default:
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "交易类型不存在");

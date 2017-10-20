@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.system.controller;
+package com.yoogurt.taxi.system.controller.mobile;
 
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("mobile/system/version")
-public class AppVersionController {
+public class AppVersionMobileController {
     @Autowired
     private AppVersionService appVersionService;
 
