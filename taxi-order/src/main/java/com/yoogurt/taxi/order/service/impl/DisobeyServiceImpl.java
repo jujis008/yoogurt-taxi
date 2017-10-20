@@ -94,16 +94,22 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
         if (disobeyDao.insertSelective(disobey) == 1) {
             statisticService.record(OrderStatisticForm.builder().userId(disobey.getUserId()).disobeyCount(1).build());
             OrderInfo orderInfo = orderInfoService.getOrderInfo(disobey.getOrderId(), disobey.getUserId());
-            UserType userType = UserType.getEnumsByCode(disobey.getType());
+            UserType userType = UserType.getEnumsByCode(disobey.getUserType());
             //更新账户
             if (disobey.getFineMoney().doubleValue() > 0) {
                 ModificationVo vo = ModificationVo.builder().contextId(disobey.getId())
-                        .inUserId(userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getOfficialUserId() : orderInfo.getAgentUserId())
+                        .userId(disobey.getUserId())
                         .outUserId(disobey.getUserId())
+                        .inUserId(userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getOfficialUserId() : orderInfo.getAgentUserId())
                         .money(disobey.getFineMoney())
                         .payment(Payment.BALANCE.getCode())
-                        .type(BillType.BALANCE.getCode()).build();
+                        .type(TradeType.FINE_OUT.getCode()).build();
                 accountService.updateAccount(vo);
+
+                vo.setUserId(vo.getInUserId());
+                vo.setType(TradeType.FINE_IN.getCode());
+                accountService.updateAccount(vo);
+
             }
             //受罚者
             super.push(orderInfo, userType, SendType.DISOBEY_FINE_OUT);
@@ -127,6 +133,11 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
      */
     @Override
     public OrderDisobeyInfo buildDisobeyInfo(OrderInfo orderInfo, UserType userType, DisobeyType disobeyType, Long ruleId, BigDecimal fineMoney, String description) {
+        //只有这三种状态会涉及到违约
+        if(!OrderStatus.HAND_OVER.getCode().equals(orderInfo.getStatus())
+                && !OrderStatus.GIVE_BACK.getCode().equals(orderInfo.getStatus())
+                && !OrderStatus.CANCELED.getCode().equals(orderInfo.getStatus())) return null;
+
         OrderDisobeyInfo disobey = new OrderDisobeyInfo(orderInfo.getOrderId());
         if (userType.equals(UserType.USER_APP_OFFICE)) {
             disobey.setUserId(orderInfo.getOfficialUserId());

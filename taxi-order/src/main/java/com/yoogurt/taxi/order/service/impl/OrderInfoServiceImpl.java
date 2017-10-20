@@ -15,10 +15,7 @@ import com.yoogurt.taxi.dal.beans.*;
 import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
 import com.yoogurt.taxi.dal.condition.order.WarningOrderCondition;
-import com.yoogurt.taxi.dal.enums.OrderStatus;
-import com.yoogurt.taxi.dal.enums.RentStatus;
-import com.yoogurt.taxi.dal.enums.UserStatus;
-import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.order.*;
 import com.yoogurt.taxi.order.dao.OrderDao;
 import com.yoogurt.taxi.order.form.PlaceOrderForm;
@@ -65,6 +62,8 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         if (obj.isSuccess() && orderDao.insertSelective(orderInfo) == 1) {
             //更改租单状态 --> 已接单
             rentInfoService.modifyStatus(orderForm.getRentId(), RentStatus.RENT);
+            //已接单，通知对方
+            super.push(orderInfo, UserType.getEnumsByCode(orderForm.getUserType()).equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_RENT);
             OrderModel model = new OrderModel();
             BeanUtils.copyProperties(orderInfo, model);
             model.setOrderTime(orderInfo.getGmtCreate());

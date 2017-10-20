@@ -244,7 +244,7 @@ public class PushServiceImpl implements PushService {
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "不支持的消息类型");
 
-        } else if (MsgType.SINGLE.equals(msgType) && CollectionUtils.isNotEmpty(userIds)) {//单个推送消息，未指定推送对象
+        } else if (MsgType.SINGLE.equals(msgType) && CollectionUtils.isEmpty(userIds)) {//单个推送消息，未指定推送对象
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "请指定消息推送对象");
         }

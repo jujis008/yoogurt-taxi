@@ -12,8 +12,10 @@ import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.OrderTrafficViolationInfo;
 import com.yoogurt.taxi.dal.condition.order.TrafficViolationListCondition;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
+import com.yoogurt.taxi.dal.enums.SendType;
 import com.yoogurt.taxi.dal.enums.TrafficStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.TrafficViolationDao;
 import com.yoogurt.taxi.order.form.OrderStatisticForm;
 import com.yoogurt.taxi.order.form.TrafficViolationForm;
@@ -30,7 +32,7 @@ import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.entity.Example;
 
 @Repository
-public class TrafficViolationServiceImpl implements TrafficViolationService {
+public class TrafficViolationServiceImpl extends AbstractOrderBizService implements TrafficViolationService {
 
     @Autowired
     private TrafficViolationDao trafficViolationDao;
@@ -72,6 +74,8 @@ public class TrafficViolationServiceImpl implements TrafficViolationService {
         if (trafficViolation == null) return null;
         if (trafficViolationDao.insertSelective(trafficViolation) == 1) {
             statisticService.record(OrderStatisticForm.builder().userId(trafficViolation.getUserId()).disobeyCount(1).build());
+            OrderInfo orderInfo = orderInfoService.getOrderInfo(trafficViolation.getOrderId(), trafficViolation.getUserId());
+            super.push(orderInfo, UserType.getEnumsByCode(trafficViolation.getUserType()), SendType.TRAFFIC_VIOLATION);
             return trafficViolation;
         }
         return null;
@@ -172,5 +176,10 @@ public class TrafficViolationServiceImpl implements TrafficViolationService {
             criteria.andLessThanOrEqualTo("happenTime", condition.getEndTime());
         }
         return ex;
+    }
+
+    @Override
+    public OrderModel info(Long orderId, Long userId) {
+        return null;
     }
 }

@@ -90,7 +90,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
                 OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
                         orderInfo, UserType.USER_APP_OFFICE, DisobeyType.OFFICIAL_DRIVER_HANDOVER_TIMEOUT,
                         rule.getRuleId(), fineMoney, description);
-                disobeyService.addDisobey(disobey);
+                if (disobey != null) disobeyService.addDisobey(disobey);
             } else {
                 handoverInfo.setTime(minutes);
             }
