@@ -205,6 +205,9 @@ public class UserServiceImpl implements UserService {
         if (!cachePhoneCode.equals(phoneCode)) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码错误");
         }
+        if(getUserByUsernameAndType(phoneNumber,user.getType()) !=null ){
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"手机号已被使用");
+        }
         user.setUsername(phoneNumber);
         userDao.updateById(user);
         return ResponseObj.success();
