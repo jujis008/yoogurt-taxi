@@ -71,7 +71,9 @@ public class UserServiceImpl implements UserService {
     public UserInfo getUserByUsernameAndType(String username, Integer userType) {
         Example example = new Example(UserInfo.class);
         Example.Criteria criteria = example.createCriteria();
-        criteria.andEqualTo("username", username).andEqualTo("type", userType);
+        criteria.andEqualTo("username", username)
+                .andEqualTo("isDeleted",Boolean.FALSE)
+                .andEqualTo("type", userType);
         List<UserInfo> userInfoList = userDao.selectByExample(example);
         if (CollectionUtils.isEmpty(userInfoList)) {
             return null;
@@ -115,7 +117,9 @@ public class UserServiceImpl implements UserService {
         }
         Example example = new Example(UserInfo.class);
         example.createCriteria().andEqualTo("username", username);
-        example.createCriteria().andEqualTo("type", userType.getCode());
+        example.createCriteria()
+                .andEqualTo("isDeleted", Boolean.FALSE)
+                .andEqualTo("type", userType.getCode());
         List<UserInfo> userList = userDao.selectByExample(example);
         if (userList.size() == 0) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "账号有误");
@@ -171,7 +175,9 @@ public class UserServiceImpl implements UserService {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码错误");
         }
         Example example = new Example(UserInfo.class);
-        example.createCriteria().andEqualTo("username", username);
+        example.createCriteria()
+                .andEqualTo("isDeleted",Boolean.FALSE)
+                .andEqualTo("username", username);
         example.createCriteria().andEqualTo("type", userType.getCode());
         List<UserInfo> userList = userDao.selectByExample(example);
         if (userList.size() == 0) {
@@ -331,9 +337,7 @@ public class UserServiceImpl implements UserService {
 
             return result;
         });
-        future.thenAccept(result -> {
-            log.info("IMPORT{}", "导入条数：" + result/2);
-        });
+        future.thenAccept(result ->log.info("IMPORT{}", "导入条数：" + result/2));
         return errorCellBeanList;
     }
 
@@ -422,9 +426,7 @@ public class UserServiceImpl implements UserService {
             phoneCodeList.forEach(e -> redisHelper.set(CacheKey.VERIFY_CODE_KEY + e.get("phoneNumber"), e.get("originPassword")));
             return result;
         });
-        future.thenAccept(result -> {
-            log.info("IMPORT{}", "导入条数：" + result/3);
-        });
+        future.thenAccept(result ->log.info("IMPORT{}", "导入条数：" + result/3));
         return errorCellBeanList;
     }
 }

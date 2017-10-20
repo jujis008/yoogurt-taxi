@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.system.controller;
+package com.yoogurt.taxi.system.controller.commen;
 
 import com.aliyuncs.http.ProtocolType;
 import com.aliyuncs.sts.model.v20150401.AssumeRoleResponse;
