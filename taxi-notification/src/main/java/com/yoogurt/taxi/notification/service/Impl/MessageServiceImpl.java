@@ -41,7 +41,7 @@ public class MessageServiceImpl implements MessageService {
         }
         if (condition.getType() != null) {
 
-            criteria.andEqualTo("type", condition.getType());
+            criteria.andLike("type", condition.getType() + "%");
         }
         if (StringUtils.isNoneBlank(condition.getKeywords())) {
             criteria.andLike("title", condition.likes());
