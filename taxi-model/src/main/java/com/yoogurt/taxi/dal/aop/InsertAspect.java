@@ -54,7 +54,7 @@ public class InsertAspect {
     private void domainHandle(Object object) throws Exception {
         //添加了@Domain注解
         if (object.getClass().isAnnotationPresent(Domain.class)) {
-            Long userId = null;
+            Long userId = 0L;
             try {
                 //不需要考虑token过期的情况了
                 userId = tokenHelper.getUserId(ServletHelper.getRequest());
