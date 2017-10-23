@@ -79,7 +79,7 @@ public class UserMobileController extends BaseController {
         if (userInfo == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户不存在");
         }
-        return userService.resetLoginPwd(getUserName(),form.getPhoneCode(),UserType.getEnumsByCode(userInfo.getType()),form.getPassword());
+        return userService.resetLoginPwd(form.getPhoneNumber(),form.getPhoneCode(),UserType.getEnumsByCode(userInfo.getType()),form.getPassword());
     }
 
     /**
