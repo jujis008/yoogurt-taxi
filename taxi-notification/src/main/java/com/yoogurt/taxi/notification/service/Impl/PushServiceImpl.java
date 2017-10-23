@@ -316,13 +316,6 @@ public class PushServiceImpl implements PushService {
         return ResponseObj.success();
     }
 
-    private List<PushDevice> getDeviceByUserIds(List<Long> userIds) {
-
-        Example ex = new Example(PushDevice.class);
-        ex.createCriteria().andIn("userId", userIds);
-        return deviceDao.selectByExample(ex);
-    }
-
     private boolean persistMessage(List<Long> userIds, String title, String content, Integer type) {
         if (CollectionUtils.isEmpty(userIds)) return false;
         List<Message> messages = new ArrayList<>();
@@ -336,5 +329,12 @@ public class PushServiceImpl implements PushService {
             messages.add(msg);
         }
         return messageService.addMessages(messages) == userIds.size();
+    }
+
+    private List<PushDevice> getDeviceByUserIds(List<Long> userIds) {
+
+        Example ex = new Example(PushDevice.class);
+        ex.createCriteria().andIn("userId", userIds);
+        return deviceDao.selectByExample(ex);
     }
 }
