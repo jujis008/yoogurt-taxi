@@ -131,7 +131,7 @@ public class UserMobileController extends BaseController {
         if (o == null) {
             return ResponseObj.success(1);
         }
-        return ResponseObj.success(o);
+        return ResponseObj.success(Integer.valueOf(o.toString()));
     }
 
     /**
