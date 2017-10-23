@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.account.service.impl;
 
 import com.yoogurt.taxi.account.dao.FinanceBillDao;
+import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.FinanceBillService;
 import com.yoogurt.taxi.account.service.FinanceRecordService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
@@ -41,6 +42,8 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     private FinanceRecordService financeRecordService;
     @Autowired
     private RestUserService restUserService;
+    @Autowired
+    private FinanceAccountService financeAccountService;
     @Override
     public Pager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition) {
         return financeBillDao.getFinanceBillListApp(condition);
@@ -161,10 +164,34 @@ public class FinanceBillServiceImpl implements FinanceBillService {
 
     @Override
     public ResponseObj batchHandleWithdraw(List<BankReceiptOfMerchantsModel> list) {
+        int count=0;
         for (BankReceiptOfMerchantsModel model:list) {
-            //TODO 回执信息太少，不足以做业务回调。accountNo不适合做索引，所以不能用来检索
+            Long billId = model.getId();
+            FinanceBill financeBill = financeBillDao.selectById(billId);
+            if (financeBill == null) {
+                log.error("账单id："+billId+",账单记录不存在，请核实");
+                continue;
+            }
+            if (!financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
+                log.error("账单id："+billId+",账单异常billStatus="+financeBill.getBillStatus());
+                continue;
+            }
+            if (financeBill.getAmount().compareTo(model.getAmount())!=0) {
+                log.error("账单id："+billId+",金额有误");
+                continue;
+            }
+            if (!financeBill.getPayeeAccount().equals(model.getAccountNo())) {
+                log.error("账单id："+billId+",账号有误");
+                continue;
+            }
+            if (!financeBill.getPayeeName().equals(model.getAccountName())) {
+                log.error("账单id："+billId+",户名有误");
+            }
+            BillStatus billStatus = model.getStatus()?BillStatus.SUCCESS:BillStatus.FAIL;
+            financeAccountService.handleWithdraw(billId,billStatus);
+            count++;
         }
-        return null;
+        return ResponseObj.success(count);
     }
 
 }

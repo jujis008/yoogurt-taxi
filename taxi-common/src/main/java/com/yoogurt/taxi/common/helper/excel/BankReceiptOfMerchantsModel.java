@@ -12,7 +12,7 @@ public class BankReceiptOfMerchantsModel {
     private String accountName;
     private BigDecimal amount;
     private Boolean status;
-    private String description;
+    private Long id;
     private String note;
     private String bankName;
     private String bankAddress;

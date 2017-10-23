@@ -37,7 +37,7 @@
     <select id="getWithdrawListForExport" resultType="java.util.Map" parameterType="com.yoogurt.taxi.dal.condition.account.ExportBillCondition">
       SELECT payee_account AS payeeAccount,payee_name AS payeeName,
         amount,bank_name AS bankName,bank_address AS bankAddress,
-        description
+        id
       FROM finance_bill
       WHERE is_deleted = 0
       <if test="phoneNumber != null">
