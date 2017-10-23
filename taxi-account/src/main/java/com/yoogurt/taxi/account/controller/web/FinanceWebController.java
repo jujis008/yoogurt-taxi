@@ -89,7 +89,7 @@ public class FinanceWebController extends BaseController{
         excelHeaders.add(new ExcelHeader("amount", "金额", 3));
         excelHeaders.add(new ExcelHeader("bankName", "开户行", 4));
         excelHeaders.add(new ExcelHeader("bankAddress", "开户地", 5));
-        excelHeaders.add(new ExcelHeader("description", "注释", 6));
+        excelHeaders.add(new ExcelHeader("id", "注释", 6));
 
         Collections.sort(excelHeaders,Comparator.comparingInt(ExcelHeader::getOrder));
         excelData.setExcelHeaders(excelHeaders);
@@ -110,8 +110,10 @@ public class FinanceWebController extends BaseController{
         return;
     }
 
+    //TODO 上线时，切换成需要后台登录
+    @RequestMapping(value = "/i/withdraw/import",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
     public ResponseObj importExcel(MultipartFile file) throws IOException, InvalidFormatException {
         List<BankReceiptOfMerchantsModel> list = ExcelUtils.importExcelForWithdraw(file.getInputStream());
-        return ResponseObj.success();
+        return financeBillService.batchHandleWithdraw(list);
     }
 }

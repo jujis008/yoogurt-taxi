@@ -89,7 +89,7 @@ public class ExcelUtils {
             model.setAccountName(getCellValue(r.getCell(1)).toString());
             model.setAmount(new BigDecimal(getCellValue(r.getCell(2)).toString()));
             model.setStatus(getCellValue(r.getCell(3)).equals("成功"));
-            model.setDescription(getCellValue(r.getCell(4)).toString());
+            model.setId(getCellValue(r.getCell(4)).toString());
             model.setNote(getCellValue(r.getCell(5)).toString());
             model.setBankName(getCellValue(r.getCell(6)).toString());
             model.setBankAddress(getCellValue(r.getCell(7)).toString());
