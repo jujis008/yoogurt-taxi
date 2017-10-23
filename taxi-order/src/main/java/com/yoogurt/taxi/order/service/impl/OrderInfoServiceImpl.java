@@ -221,9 +221,10 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     @Override
     public List<OrderInfo> getOrderList(Long userId, Integer userType, Integer... status) {
         Example ex = new Example(OrderInfo.class);
-        Example.Criteria criteria = ex.createCriteria()
-                .andIn("status", Arrays.asList(status))
-                .andEqualTo("isDeleted", Boolean.FALSE);
+        Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
+        if (status != null && status.length > 0) {
+            criteria.andIn("status", Arrays.asList(status));
+        }
         if (UserType.USER_APP_AGENT.getCode().equals(userType)) {
             criteria.andEqualTo("agentUserId", userId);
         } else {
