@@ -8,12 +8,14 @@ import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.order.service.CommentTagStatisticService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.OrderStatisticService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,17 +47,31 @@ public class RestOrderController {
         return RestResult.success(result);
     }
 
-    @RequestMapping(value = "/statistics/unfinished/userId/{userId}/userType/{userType}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public RestResult<List<OrderInfo>> unfinishedOrders(@PathVariable(name = "userId") Long userId, @PathVariable(name = "userType") Integer userType) {
-        //未完成订单数量
-        List<OrderInfo> orderList = orderInfoService.getOrderList(userId, userType, OrderStatus.HAND_OVER.getCode(), OrderStatus.PICK_UP.getCode(), OrderStatus.GIVE_BACK.getCode(), OrderStatus.ACCEPT.getCode());
-        return RestResult.success(orderList);
-    }
+    @RequestMapping(value = "/statistics/userId/{userId}/userType/{userType}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public RestResult<Map<String, Object>> orderStatistics(@PathVariable(name = "userId") Long userId, @PathVariable(name = "userType") Integer userType) {
+        Map<String, Object> map = new HashMap<>();
 
-    @RequestMapping(value = "/statistics/complete/userId/{userId}/userType/{userType}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public RestResult<List<OrderInfo>> orderStatistics(@PathVariable(name = "userId") Long userId, @PathVariable(name = "userType") Integer userType) {
+        //未完成订单数量
         //最近一笔已完成订单时间
-        List<OrderInfo> orderList = orderInfoService.getOrderList(userId, userType, OrderStatus.FINISH.getCode());
-        return RestResult.success(orderList);
+        List<OrderInfo> orders = orderInfoService.getOrderList(userId, userType);
+        List<OrderInfo> finishedList = new ArrayList<>();
+        List<OrderInfo> unfinishedList = new ArrayList<>();
+        orders.forEach(order -> {
+            if (OrderStatus.FINISH.getCode().equals(order.getStatus())) {
+                finishedList.add(order);
+            } else if (!OrderStatus.CANCELED.getCode().equals(order.getStatus())) {
+                unfinishedList.add(order);
+            }
+        });
+        //已完成订单
+        map.put("finishedList", finishedList);
+        //未完成的订单列表
+        map.put("unfinishedList", unfinishedList);
+        //是否有未完成的订单
+        map.put("hasUnFinishedOrder", CollectionUtils.isNotEmpty(unfinishedList));
+        //当前时间戳
+        map.put("timestamp", System.currentTimeMillis());
+
+        return RestResult.success(map);
     }
 }
