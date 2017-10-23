@@ -5,7 +5,7 @@ import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
-import com.yoogurt.taxi.common.utils.DateUtil;
+import com.yoogurt.taxi.common.utils.DateUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.CarInfo;
@@ -18,8 +18,8 @@ import com.yoogurt.taxi.dal.model.user.UserSessionModel;
 import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.service.*;
 import com.yoogurt.taxi.user.service.rest.RestOrderService;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,12 +70,12 @@ public class UserMobileController extends BaseController {
         return loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
     }
 
-    @RequestMapping(value = "/reset/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/i/reset/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj resetLoginPassword(@RequestBody @Valid ResetPasswordForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID);
+            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
         }
-        UserInfo userInfo = userService.getUserByUserId(getUserId());
+        UserInfo userInfo = userService.getUserByUsernameAndType(form.getPhoneNumber(),getUserType());
         if (userInfo == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户不存在");
         }
@@ -96,7 +96,14 @@ public class UserMobileController extends BaseController {
         Long userId = getUserId();
         UserType userType = UserType.getEnumsByCode(getUserType());
         DriverInfo driverInfo = driverService.getDriverByUserId(userInfo.getUserId());
+        RestResult<Map<String, Object>> mapRestResult = restOrderService.statistics(userId);
+        if (!mapRestResult.isSuccess()) {
+            return ResponseObj.of(mapRestResult);
+        }
         UserSessionModel userSessionModel = new UserSessionModel();
+        BeanUtilsExtends.copyProperties(userSessionModel,mapRestResult.getBody().get("comment"));
+        BeanUtilsExtends.copyProperties(userSessionModel,mapRestResult.getBody().get("order"));
+
         BeanUtilsExtends.copyProperties(userSessionModel, userInfo);
         userSessionModel.setDriverAuthenticated(driverInfo.getIsAuthentication());
         if (userType == UserType.USER_APP_OFFICE) {
@@ -174,7 +181,7 @@ public class UserMobileController extends BaseController {
         Map<String, Object> driverInfoMap = new HashMap<>();
         UserInfo userInfo = userService.getUserByUserId(userId);
         driverInfoMap.put("avatar", userInfo.getAvatar());
-        driverInfoMap.put("name", userInfo.getName().substring(1) + "师傅");
+        driverInfoMap.put("name", userInfo.getName().substring(0,1) + "师傅");
         statisticsRestResultBody.put("driverInfo", driverInfoMap);
         if (UserType.USER_APP_OFFICE == UserType.getEnumsByCode(driverInfo.getType())) {
             List<CarInfo> carInfoList = carService.getCarByUserId(userId);
@@ -241,7 +248,7 @@ public class UserMobileController extends BaseController {
 
     private void redisSetting(Long userId) {
         if (redisHelper.get(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId) == null) {
-            redisHelper.set(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId, "1", DateUtil.getSurplusSeconds().intValue());
+            redisHelper.set(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId, "1", DateUtils.getSurplusSeconds().intValue());
         } else {
             redisHelper.incrBy(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId, 1);
         }

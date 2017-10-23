@@ -78,10 +78,12 @@ public class UserWebController extends BaseController{
         ExcelParamBean bean2 = new ExcelParamBean(1, "idCard", "^(\\d{18}$|^\\d{17}(\\d|X|x))$", "身份证格式有误", Boolean.TRUE, "表格存在身份证号重复");
         ExcelParamBean bean3 = new ExcelParamBean(2, "phoneNumber","^(\\+\\d+)?1[34578]\\d{9}$", "手机号格式有误", Boolean.TRUE, "表格存在手机号重复");
         ExcelParamBean bean4 = new ExcelParamBean(3, "drivingLicense","^\\S{1,}$", "不能为空", Boolean.FALSE, null);
+        ExcelParamBean bean5 = new ExcelParamBean(4, "serviceNumber","^\\S{1,}$", "不能为空", Boolean.FALSE, null);
         paramBeanList.add(bean1);
         paramBeanList.add(bean2);
         paramBeanList.add(bean3);
         paramBeanList.add(bean4);
+        paramBeanList.add(bean5);
         Map<ExcelParamBean, List<CellPropertyBean>> map = ExcelUtils.importExcel(file.getInputStream(), paramBeanList);
         Set<Integer> skipSet = new HashSet<>();//忽略跳过行数
         List<ErrorCellBean> errorCellBeanList = ExcelUtils.filter(map, skipSet);//过滤表格中的内容

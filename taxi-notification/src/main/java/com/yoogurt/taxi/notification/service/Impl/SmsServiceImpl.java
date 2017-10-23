@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.notification.service.Impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yoogurt.taxi.common.utils.DateUtil;
+import com.yoogurt.taxi.common.utils.DateUtils;
 import com.yoogurt.taxi.common.utils.EncryptUtil;
 import com.yoogurt.taxi.dal.model.ucpaas.TemplateSms;
 import com.yoogurt.taxi.notification.config.SmsConfig;
@@ -37,7 +37,7 @@ public class SmsServiceImpl implements SmsService {
         //MD5加密
         EncryptUtil encryptUtil = new EncryptUtil();
         //构造请求URL内容
-        String timestamp = DateUtil.dateToStr(new Date(), DateUtil.DATE_TIME_NO_SLASH);
+        String timestamp = DateUtils.dateToStr(new Date(), DateUtils.DATE_TIME_NO_SLASH);
         String signature = getSignature(accountSid, authToken, timestamp, encryptUtil);
         String url = getStringBuffer().append("/").append("2014-06-30").
                 append("/Accounts/").append(accountSid).append("/Messages")

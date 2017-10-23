@@ -9,7 +9,7 @@ import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
-import com.yoogurt.taxi.common.utils.DateUtil;
+import com.yoogurt.taxi.common.utils.DateUtils;
 import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -195,6 +195,9 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "账号异常");
         }
+        if (phoneNumber.equals(user.getUsername())){
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"请输入新的手机号");
+        }
         if (!Encipher.matches(password, user.getLoginPassword())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "密码有误");
         }
@@ -315,6 +318,7 @@ public class UserServiceImpl implements UserService {
             driverInfo.setGender(UserGender.secret.getCode());
             driverInfo.setIsDeleted(Boolean.FALSE);
             driverInfo.setGmtModify(new Date());
+            driverInfo.setServiceNumber(map1.get("serviceNumber").toString());
             driverInfo.setModifier(0L);
             driverInfo.setId(driverId);
             driverInfo.setGmtCreate(new Date());
@@ -388,6 +392,7 @@ public class UserServiceImpl implements UserService {
             driverInfo.setUserId(userId);
             driverInfo.setType(UserType.USER_APP_OFFICE.getCode());
             driverInfo.setMobile(map1.get("phoneNumber").toString());
+            driverInfo.setServiceNumber(map1.get("serviceNumber").toString());
             driverInfo.setGender(UserGender.secret.getCode());
             driverInfo.setIsDeleted(Boolean.FALSE);
             driverInfo.setGmtModify(new Date());
@@ -399,7 +404,7 @@ public class UserServiceImpl implements UserService {
             CarInfo carInfo = new CarInfo();
             carInfo.setIsAuthentication(Boolean.FALSE);
             carInfo.setVehicleType(map1.get("vehicleType").toString());
-            carInfo.setVehicleRegisterTime(DateUtil.strToDate(map1.get("vehicleRegisterTime").toString(), "yyyy-MM-dd"));
+            carInfo.setVehicleRegisterTime(DateUtils.strToDate(map1.get("vehicleRegisterTime").toString(), "yyyy-MM-dd"));
             carInfo.setUserId(userId);
             carInfo.setPlateNumber(map1.get("plateNumber").toString());
             carInfo.setCompany(map1.get("company").toString());
