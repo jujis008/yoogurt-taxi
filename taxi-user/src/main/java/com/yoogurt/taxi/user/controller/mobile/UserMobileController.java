@@ -73,13 +73,13 @@ public class UserMobileController extends BaseController {
     @RequestMapping(value = "/i/reset/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj resetLoginPassword(@RequestBody @Valid ResetPasswordForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        UserInfo userInfo = userService.getUserByUsernameAndType(form.getPhoneNumber(),getUserType());
+        UserInfo userInfo = userService.getUserByUsernameAndType(form.getPhoneNumber(), getUserType());
         if (userInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户不存在");
         }
-        return userService.resetLoginPwd(form.getPhoneNumber(),form.getPhoneCode(),UserType.getEnumsByCode(userInfo.getType()),form.getPassword());
+        return userService.resetLoginPwd(form.getPhoneNumber(), form.getPhoneCode(), UserType.getEnumsByCode(userInfo.getType()), form.getPassword());
     }
 
     /**
@@ -101,8 +101,14 @@ public class UserMobileController extends BaseController {
             return ResponseObj.of(mapRestResult);
         }
         UserSessionModel userSessionModel = new UserSessionModel();
-        BeanUtilsExtends.copyProperties(userSessionModel,mapRestResult.getBody().get("comment"));
-        BeanUtilsExtends.copyProperties(userSessionModel,mapRestResult.getBody().get("order"));
+        Object comment = mapRestResult.getBody().get("comment");
+        if (comment != null) {
+            BeanUtilsExtends.copyProperties(userSessionModel, comment);
+        }
+        Object order = mapRestResult.getBody().get("order");
+        if (order != null) {
+            BeanUtilsExtends.copyProperties(userSessionModel, order);
+        }
 
         BeanUtilsExtends.copyProperties(userSessionModel, userInfo);
         userSessionModel.setDriverAuthenticated(driverInfo.getIsAuthentication());
@@ -164,8 +170,9 @@ public class UserMobileController extends BaseController {
 
     /**
      * 获取司机信息
+     *
      * @param userId 用户id
-     * @return  ResponseObj
+     * @return ResponseObj
      */
     @RequestMapping(value = "/i/driverInfo/userId/{userId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getDriverInfo(@PathVariable(name = "userId") Long userId) {
@@ -181,7 +188,7 @@ public class UserMobileController extends BaseController {
         Map<String, Object> driverInfoMap = new HashMap<>();
         UserInfo userInfo = userService.getUserByUserId(userId);
         driverInfoMap.put("avatar", userInfo.getAvatar());
-        driverInfoMap.put("name", userInfo.getName().substring(0,1) + "师傅");
+        driverInfoMap.put("name", userInfo.getName().substring(0, 1) + "师傅");
         statisticsRestResultBody.put("driverInfo", driverInfoMap);
         if (UserType.USER_APP_OFFICE == UserType.getEnumsByCode(driverInfo.getType())) {
             List<CarInfo> carInfoList = carService.getCarByUserId(userId);
@@ -201,7 +208,7 @@ public class UserMobileController extends BaseController {
      * 激活账户
      *
      * @param activeAccountForm 表单
-     * @param bindingResult 校验结果
+     * @param bindingResult     校验结果
      * @return ResponseObj
      */
     @RequestMapping(value = "/activateAccount", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
@@ -289,9 +296,9 @@ public class UserMobileController extends BaseController {
     /**
      * 修改密码
      *
-     * @param form 表单
+     * @param form   表单
      * @param result 校验结果
-     * @return  ResponseObj
+     * @return ResponseObj
      */
     @RequestMapping(value = "/loginPassword/modify", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj modifyLoginPassword(@RequestBody @Valid ModifyPasswordForm form, BindingResult result) {
@@ -334,9 +341,9 @@ public class UserMobileController extends BaseController {
     /**
      * 司机身份认证
      *
-     * @param form 表单
+     * @param form   表单
      * @param result 校验结果
-     * @return  ResponseObj
+     * @return ResponseObj
      */
     @RequestMapping(value = "/driverIdentity", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj authenticateIdentity(@RequestBody @Valid DriverIdentityForm form, BindingResult result) throws InvocationTargetException, IllegalAccessException {
@@ -358,9 +365,9 @@ public class UserMobileController extends BaseController {
     /**
      * 车辆认证
      *
-     * @param form 表单
+     * @param form   表单
      * @param result 校验
-     * @return  ResponseObj
+     * @return ResponseObj
      */
     @RequestMapping(value = "/carIdentity", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj authenticateCar(@RequestBody @Valid CarIdentityForm form, BindingResult result) {
@@ -438,7 +445,7 @@ public class UserMobileController extends BaseController {
     /**
      * 新增/编辑常用地址
      *
-     * @param form 表单
+     * @param form   表单
      * @param result 校验结果
      * @return ResponseObj
      */
