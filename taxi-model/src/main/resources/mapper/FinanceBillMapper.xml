@@ -34,6 +34,35 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     <result column="modifier" jdbcType="BIGINT" property="modifier" />
   </resultMap>
+    <select id="getWithdrawListForExport" resultType="java.util.Map" parameterType="com.yoogurt.taxi.dal.condition.account.ExportBillCondition">
+      SELECT payee_account AS payeeAccount,payee_name AS payeeName,
+        amount,bank_name AS bankName,bank_address AS bankAddress,
+        description
+      FROM finance_bill
+      WHERE is_deleted = 0
+      <if test="phoneNumber != null">
+        AND phone_number = #{phoneNumber}
+      </if>
+      <if test="billType != null">
+        AND bill_type = #{billType}
+      </if>
+      <if test="billStatus != null">
+        AND bill_status = #{billStatus}
+      </if>
+      <if test="startTime != null">
+        AND gmt_create >= #{startTime}
+      </if>
+      <if test="endTime != null">
+        AND gmt_create <![CDATA[<=]]> #{endTime}
+      </if>
+      <if test="tradeType != null">
+        AND trade_type = #{tradeType}
+      </if>
+      <if test="destinationType != null">
+        AND destination_type = #{destinationType}
+      </if>
+    </select>
+
     <select id="getFinanceBillListApp" parameterType="com.yoogurt.taxi.dal.condition.account.AccountListAppCondition"
             resultType="com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel">
         SELECT id,bill_no AS billNo,context_id AS contextId,

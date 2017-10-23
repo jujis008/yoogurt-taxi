@@ -26,7 +26,7 @@ public class WithdrawForm {
     private String bankAddress;
     @NotNull(message = "请输入提现金额")
     @Min(value = 1)
-    @Max(value = 10000)
+    @Max(value = 15000)
     private BigDecimal withdrawMoney;
     @NotNull(message = "请指明提现目的账户类型")
     private Integer destinationType;

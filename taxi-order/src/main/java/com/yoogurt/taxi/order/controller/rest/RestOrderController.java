@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,9 @@ public class RestOrderController {
 
         //订单统计信息
         OrderStatistic orderStatistics = orderStatisticService.getOrderStatistics(userId);
+        if (orderStatistics.getScore() != null){
+            orderStatistics.setScore(new BigDecimal(Math.round(orderStatistics.getScore().doubleValue())));
+        }
         //评价标签统计信息
         List<CommentTagStatistic> commentTagStatistics = commentTagStatisticService.getStatistic(userId);
 

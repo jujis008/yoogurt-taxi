@@ -10,5 +10,4 @@ import java.math.BigDecimal;
 public class ChargeDepositForm {
     private Integer chargeType;
     private Integer payment;
-    private BigDecimal chargeMoney;
 }

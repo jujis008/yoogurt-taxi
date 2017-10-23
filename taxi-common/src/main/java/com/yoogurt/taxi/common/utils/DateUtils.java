@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-public class DateUtil {
+public class DateUtils {
 	/**
      * 变量：日期格式化类型 - 格式:yyyy/MM/dd
      */

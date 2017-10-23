@@ -5,6 +5,7 @@ import com.yoogurt.taxi.account.service.FinanceBillService;
 import com.yoogurt.taxi.account.service.FinanceRecordService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
+import com.yoogurt.taxi.common.helper.excel.BankReceiptOfMerchantsModel;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -29,6 +30,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -150,6 +152,19 @@ public class FinanceBillServiceImpl implements FinanceBillService {
                 .andEqualTo("isDeleted",Boolean.FALSE)
                 .andBetween("gmtCreate",condition.getStartTime(),condition.getEndTime());
         return financeBillDao.selectByExample(example);
+    }
+
+    @Override
+    public List<Map<String,Object>> getBillListForExport(ExportBillCondition condition) {
+        return financeBillDao.getWithdrawListForExport(condition);
+    }
+
+    @Override
+    public ResponseObj batchHandleWithdraw(List<BankReceiptOfMerchantsModel> list) {
+        for (BankReceiptOfMerchantsModel model:list) {
+            //TODO 回执信息太少，不足以做业务回调。accountNo不适合做索引，所以不能用来检索
+        }
+        return null;
     }
 
 }

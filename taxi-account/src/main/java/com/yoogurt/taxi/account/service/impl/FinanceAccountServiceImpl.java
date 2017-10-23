@@ -1,11 +1,13 @@
 package com.yoogurt.taxi.account.service.impl;
 
 import com.yoogurt.taxi.account.dao.FinanceAccountDao;
+import com.yoogurt.taxi.account.mq.NotificationSender;
 import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.FinanceBillService;
 import com.yoogurt.taxi.account.service.FinanceRecordService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
+import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
@@ -15,20 +17,18 @@ import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.FinanceRecord;
 import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.bo.PushPayload;
 import com.yoogurt.taxi.dal.condition.account.AccountListWebCondition;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.account.FinanceAccountListModel;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.jws.Oneway;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -41,6 +41,8 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
     private FinanceBillService financeBillService;
     @Autowired
     private RestUserService restUserService;
+    @Autowired
+    private NotificationSender notificationSender;
 
     @Override
     public FinanceAccount get(Long userId) {
@@ -108,6 +110,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                 case WITHDRAW://提现
                     BillType billType;
                     if (payment == Payment.BALANCE) {//余额提现
+
                         billType = BillType.BALANCE;
                         Money frozenBalance = new Money(financeAccount.getFrozenBalance());
                         Money balance = new Money(financeAccount.getBalance());
@@ -319,13 +322,41 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         condition.setMoney(new Money(financeBill.getAmount()));
         condition.setTradeType(TradeType.WITHDRAW);
         condition.setPayment(Payment.getEnumsBycode(financeBill.getPayment()));
+        UserType userType = UserType.getEnumsByCode(financeBill.getUserType());
+        String title = "消息通知";
+        if (userType == UserType.USER_APP_OFFICE) {
+            title = Constants.OFFICIAL_APP_NAME;
+        }
+        if (userType == UserType.USER_APP_AGENT) {
+            title = Constants.AGENT_APP_NAME;
+        }
         switch (billStatus) {
             case SUCCESS://转账成功，减少冻结资金
                 condition.setChangeType(AccountChangeType.frozen_deduct);
-                return updateAccount(condition);
+                ResponseObj responseObj = updateAccount(condition);
+                if (responseObj.isSuccess()) {
+                    String finalTitle = title;
+                    CompletableFuture.supplyAsync(()->{
+                        PushPayload payload = new PushPayload(userType,SendType.WITHDRAW_SUCCESS, finalTitle);
+                        payload.addUserId(financeBill.getUserId());
+                        notificationSender.send(payload);
+                        return 1;
+                    });
+                }
+                return responseObj;
             case FAIL:
                 condition.setChangeType(AccountChangeType.frozen_back);
-                return updateAccount(condition);
+                ResponseObj obj = updateAccount(condition);
+                if (obj.isSuccess()) {
+                    String finalTitle = title;
+                    CompletableFuture.supplyAsync(()->{
+                        PushPayload payload = new PushPayload(userType,SendType.WITHDRAW_FAILED, finalTitle);
+                        payload.addUserId(financeBill.getUserId());
+                        notificationSender.send(payload);
+                        return 1;
+                    });
+                }
+                return obj;
             default:
                 return ResponseObj.fail(StatusCode.FORM_INVALID, "操作标识不正确");
         }
