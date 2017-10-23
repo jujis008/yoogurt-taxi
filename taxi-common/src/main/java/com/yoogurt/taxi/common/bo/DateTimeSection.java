@@ -127,7 +127,7 @@ public class DateTimeSection implements Comparable<DateTimeSection>, Serializabl
 
     @Override
     public String toString() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年M月d日", Locale.CHINESE);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年M月d日 HH:mm", Locale.CHINESE);
         return "[" + dateFormat.format(this.startTime) + "-" + dateFormat.format(this.endTime) + "]";
     }
 
