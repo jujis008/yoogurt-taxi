@@ -15,7 +15,6 @@ import com.yoogurt.taxi.order.service.rest.RestAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,8 +50,9 @@ public abstract class AbstractOrderBizService implements OrderBizService {
      * @param orderInfo 订单信息
      * @param userType  推送对象的用户类型
      * @param sendType  推送类型
+     * @param extras    额外的回传参数
      */
-    public void push(OrderInfo orderInfo, UserType userType, SendType sendType) {
+    public void push(OrderInfo orderInfo, UserType userType, SendType sendType, Map<String, Object> extras) {
 
         if (orderInfo == null || userType == null || sendType == null) return;
         Long orderId = orderInfo.getOrderId();
@@ -60,7 +60,9 @@ public abstract class AbstractOrderBizService implements OrderBizService {
         String title = userType.equals(UserType.USER_APP_AGENT) ? Constants.AGENT_APP_NAME : Constants.OFFICIAL_APP_NAME;
         Long userId = userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getAgentUserId() : orderInfo.getOfficialUserId();
         PushPayload payload = new PushPayload(userType, sendType, title);
-        Map<String, Object> extras = new HashMap<>();
+        if (extras == null) {
+            extras = new HashMap<>();
+        }
         extras.put("orderId", orderId);
         payload.setExtras(extras);
         switch (sendType) {

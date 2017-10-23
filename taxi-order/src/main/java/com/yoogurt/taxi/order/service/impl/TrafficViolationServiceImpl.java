@@ -31,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.HashMap;
+
 @Repository
 public class TrafficViolationServiceImpl extends AbstractOrderBizService implements TrafficViolationService {
 
@@ -75,7 +77,7 @@ public class TrafficViolationServiceImpl extends AbstractOrderBizService impleme
         if (trafficViolationDao.insertSelective(trafficViolation) == 1) {
             statisticService.record(OrderStatisticForm.builder().userId(trafficViolation.getUserId()).disobeyCount(1).build());
             OrderInfo orderInfo = orderInfoService.getOrderInfo(trafficViolation.getOrderId(), trafficViolation.getUserId());
-            super.push(orderInfo, UserType.getEnumsByCode(trafficViolation.getUserType()), SendType.TRAFFIC_VIOLATION);
+            super.push(orderInfo, UserType.getEnumsByCode(trafficViolation.getUserType()), SendType.TRAFFIC_VIOLATION, new HashMap<>());
             return trafficViolation;
         }
         return null;

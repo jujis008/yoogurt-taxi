@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 
 @Service("giveBackService")
 public class GiveBackServiceImpl extends AbstractOrderBizService implements GiveBackService {
@@ -86,7 +87,7 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
             //已还车，通知正式司机
-            super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK);
+            super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK, new HashMap<>());
             return (GiveBackOrderModel) info(orderId, giveBackForm.getUserId());
         }
         return null;

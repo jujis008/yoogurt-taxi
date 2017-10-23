@@ -25,6 +25,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -112,9 +113,9 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
 
             }
             //受罚者
-            super.push(orderInfo, userType, SendType.DISOBEY_FINE_OUT);
+            super.push(orderInfo, userType, SendType.DISOBEY_FINE_OUT, new HashMap<>());
             //补偿者
-            super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.DISOBEY_FINE_IN);
+            super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.DISOBEY_FINE_IN, new HashMap<>());
             return disobey;
         }
         return null;

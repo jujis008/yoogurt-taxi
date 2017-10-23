@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 
 @Service("cancelService")
 public class CancelServiceImpl extends AbstractOrderBizService implements CancelService {
@@ -91,12 +92,12 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
             orderInfoService.modifyStatus(orderId, OrderStatus.CANCELED);
             //后台取消，需要通知双方
             if (!cancelForm.isFromApp()) {
-                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL);
-                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL);
+                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL, new HashMap<>());
+                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
             } else {
                 //对于App客户端，操作者通常是责任方，除非无责取消
                 //通知对方，订单已取消
-                super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_CANCEL);
+                super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
             }
             return (CancelOrderModel) info(orderId, cancelForm.getUserId());
         }

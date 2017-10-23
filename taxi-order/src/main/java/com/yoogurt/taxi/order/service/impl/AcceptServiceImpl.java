@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service("acceptService")
@@ -47,12 +48,12 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
             String[] pictures = acceptForm.getPictures();
-            if (pictures != null && pictures.length > 1) {//添加图片资源
+            if (pictures != null && pictures.length > 0) {//添加图片资源
                 List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_accept_info", pictures);
                 resourceService.addResources(resources);
             }
             //订单已结束，通知代理司机
-            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_FINISH);
+            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_FINISH, new HashMap<>());
             return (AcceptOrderModel) info(orderId, acceptForm.getUserId());
         }
         return null;

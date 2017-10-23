@@ -1,11 +1,9 @@
 package com.yoogurt.taxi.order.service.impl;
 
-import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderHandoverInfo;
 import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
-import com.yoogurt.taxi.dal.bo.PushPayload;
 import com.yoogurt.taxi.dal.enums.DisobeyType;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.SendType;
@@ -26,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 
 @Service("handoverService")
 public class HandoverServiceImpl extends AbstractOrderBizService implements HandoverService {
@@ -99,7 +98,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
             //向代理司机发送已交车的通知
-            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER);
+            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER, new HashMap<>());
             return (HandoverOrderModel) info(orderId, handoverForm.getUserId());
         }
         return null;

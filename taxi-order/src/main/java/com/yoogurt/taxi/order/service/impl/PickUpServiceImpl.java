@@ -45,7 +45,7 @@ public class PickUpServiceImpl implements PickUpService {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
             String[] pictures = pickupForm.getPictures();
-            if (pictures != null && pictures.length > 1) {//添加图片资源
+            if (pictures != null && pictures.length > 0) {//添加图片资源
                 List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_pick_up_info", pictures);
                 resourceService.addResources(resources);
             }
