@@ -336,12 +336,9 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                 ResponseObj responseObj = updateAccount(condition);
                 if (responseObj.isSuccess()) {
                     String finalTitle = title;
-                    CompletableFuture.supplyAsync(()->{
-                        PushPayload payload = new PushPayload(userType,SendType.WITHDRAW_SUCCESS, finalTitle);
-                        payload.addUserId(financeBill.getUserId());
-                        notificationSender.send(payload);
-                        return 1;
-                    });
+                    PushPayload payload = new PushPayload(userType, SendType.WITHDRAW_SUCCESS, finalTitle);
+                    payload.addUserId(financeBill.getUserId());
+                    notificationSender.send(payload);
                 }
                 return responseObj;
             case FAIL:
@@ -349,12 +346,9 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                 ResponseObj obj = updateAccount(condition);
                 if (obj.isSuccess()) {
                     String finalTitle = title;
-                    CompletableFuture.supplyAsync(()->{
-                        PushPayload payload = new PushPayload(userType,SendType.WITHDRAW_FAILED, finalTitle);
-                        payload.addUserId(financeBill.getUserId());
-                        notificationSender.send(payload);
-                        return 1;
-                    });
+                    PushPayload payload = new PushPayload(userType, SendType.WITHDRAW_FAILED, finalTitle);
+                    payload.addUserId(financeBill.getUserId());
+                    notificationSender.send(payload);
                 }
                 return obj;
             default:
