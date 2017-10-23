@@ -375,7 +375,7 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         Long userId = getUserId();
-        if (UserType.USER_APP_OFFICE.getCode().equals(getUserType())) {
+        if (!UserType.USER_APP_OFFICE.getCode().equals(getUserType())) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
         List<CarInfo> carList = carService.getCarByUserId(userId);
