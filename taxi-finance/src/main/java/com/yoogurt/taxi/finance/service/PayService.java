@@ -1,14 +1,15 @@
-package com.yoogurt.taxi.finance.task;
+package com.yoogurt.taxi.finance.service;
 
 import com.yoogurt.taxi.dal.doc.finance.PayParams;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.finance.task.PayTask;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * 生成支付任务，提交给MQ
  */
-public interface PayTaskManager {
+public interface PayService {
 
     /**
      * 提交一个支付任务，返回任务相关信息，方便后续查询。
@@ -16,7 +17,7 @@ public interface PayTaskManager {
      * @param params 支付参数
      * @return 支付任务信息
      */
-    PayTask submitPayTask(PayParams params);
+    PayTask submit(PayParams params);
 
     /**
      * 获取支付任务执行结果。
@@ -40,7 +41,7 @@ public interface PayTaskManager {
      * @param taskId 任务id
      * @return 任务信息
      */
-    PayTask cancelPayTask(String taskId);
+    PayTask cancel(String taskId);
 
     /**
      * 根据id获取支付对象。

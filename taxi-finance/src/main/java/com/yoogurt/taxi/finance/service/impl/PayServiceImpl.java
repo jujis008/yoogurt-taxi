@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.finance.task.impl;
+package com.yoogurt.taxi.finance.service.impl;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
@@ -7,7 +7,7 @@ import com.yoogurt.taxi.dal.doc.finance.PayParams;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.mq.PayTaskSender;
 import com.yoogurt.taxi.finance.task.PayTask;
-import com.yoogurt.taxi.finance.task.PayTaskManager;
+import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.TaskInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 
 @Service
-public class PayTaskManagerImpl implements PayTaskManager {
+public class PayServiceImpl implements PayService {
 
     @Autowired
     private PayTaskSender sender;
@@ -44,6 +44,17 @@ public class PayTaskManagerImpl implements PayTaskManager {
      */
     @Override
     public PayTask cancel(String taskId) {
+        return null;
+    }
+
+    /**
+     * 根据id获取支付对象。
+     *
+     * @param payId 支付对象id
+     * @return 支付对象信息
+     */
+    @Override
+    public Payment getPayment(String payId) {
         return null;
     }
 
