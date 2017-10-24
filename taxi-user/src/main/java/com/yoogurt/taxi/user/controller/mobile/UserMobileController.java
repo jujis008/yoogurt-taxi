@@ -5,6 +5,7 @@ import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
+import com.yoogurt.taxi.common.utils.CommonUtils;
 import com.yoogurt.taxi.common.utils.DateUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -188,7 +189,7 @@ public class UserMobileController extends BaseController {
         Map<String, Object> driverInfoMap = new HashMap<>();
         UserInfo userInfo = userService.getUserByUserId(userId);
         driverInfoMap.put("avatar", userInfo.getAvatar());
-        driverInfoMap.put("name", userInfo.getName().substring(0, 1) + "师傅");
+        driverInfoMap.put("name", CommonUtils.convertName(userInfo.getName(), "师傅"));
         statisticsRestResultBody.put("driverInfo", driverInfoMap);
         if (UserType.USER_APP_OFFICE == UserType.getEnumsByCode(driverInfo.getType())) {
             List<CarInfo> carInfoList = carService.getCarByUserId(userId);

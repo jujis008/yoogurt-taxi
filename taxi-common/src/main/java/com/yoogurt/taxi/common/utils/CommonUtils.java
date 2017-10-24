@@ -3,6 +3,7 @@ package com.yoogurt.taxi.common.utils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 import com.yoogurt.taxi.common.constant.Constants;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.net.InetAddress;
@@ -14,43 +15,44 @@ import java.util.Map;
 public class CommonUtils {
 
 
-    public static List<String> PIC_FILE_SUFFIXS;
+    private static List<String> PIC_FILE_SUFFIX;
 
     static {
-        PIC_FILE_SUFFIXS = new ArrayList<>();
-        PIC_FILE_SUFFIXS.add(Constants.JPG_FILE_SUFFIX);
-        PIC_FILE_SUFFIXS.add(Constants.JPEG_FILE_SUFFIX);
-        PIC_FILE_SUFFIXS.add(Constants.PNG_FILE_SUFFIX);
-        PIC_FILE_SUFFIXS.add(Constants.ICO_FILE_SUFFIX);
-        PIC_FILE_SUFFIXS.add(Constants.GIF_FILE_SUFFIX);
+        PIC_FILE_SUFFIX = new ArrayList<>();
+        PIC_FILE_SUFFIX.add(Constants.JPG_FILE_SUFFIX);
+        PIC_FILE_SUFFIX.add(Constants.JPEG_FILE_SUFFIX);
+        PIC_FILE_SUFFIX.add(Constants.PNG_FILE_SUFFIX);
+        PIC_FILE_SUFFIX.add(Constants.ICO_FILE_SUFFIX);
+        PIC_FILE_SUFFIX.add(Constants.GIF_FILE_SUFFIX);
     }
 
     /**
      * 校验图片文件类型
-     * 
+     *
      * @param filename
      * @return
      */
     public static boolean checkPicFile(String filename) {
 
-        return PIC_FILE_SUFFIXS.contains(getFileSuffix(filename));
+        return PIC_FILE_SUFFIX.contains(getFileSuffix(filename));
 
     }
 
     /**
      * 校验图片文件后缀类型
+     *
      * @param suffix
      * @return
      */
     public static boolean checkPicFileSuffix(String suffix) {
 
-        return PIC_FILE_SUFFIXS.contains(suffix);
+        return PIC_FILE_SUFFIX.contains(suffix);
 
     }
 
     /**
      * unicode码转汉字
-     * 
+     *
      * @param unicode
      * @return
      */
@@ -77,7 +79,7 @@ public class CommonUtils {
 
     /**
      * 获取拼装后的uri
-     * 
+     *
      * @param params
      * @param url
      * @return
@@ -97,7 +99,7 @@ public class CommonUtils {
 
     /**
      * 数组是否存在该字符串
-     * 
+     *
      * @param strs
      * @param parm
      * @return
@@ -115,7 +117,7 @@ public class CommonUtils {
 
     /**
      * 去掉最后一个指定字符
-     * 
+     *
      * @param str
      * @param regex
      * @return
@@ -132,7 +134,7 @@ public class CommonUtils {
 
     /**
      * 校验excel文件类型
-     * 
+     *
      * @param filename
      * @return
      */
@@ -151,7 +153,7 @@ public class CommonUtils {
 
     /**
      * 获取文件后缀名
-     * 
+     *
      * @param filename
      * @return
      */
@@ -170,7 +172,7 @@ public class CommonUtils {
 
     /**
      * 取目标字符前两位
-     * 
+     *
      * @param order
      * @return
      */
@@ -184,7 +186,7 @@ public class CommonUtils {
 
     /**
      * 拼接成三位 001-999 超出不减
-     * 
+     *
      * @param order
      * @return
      */
@@ -198,7 +200,7 @@ public class CommonUtils {
 
     /**
      * 截取后三位或拼接成三位 001-999 超出不减
-     * 
+     *
      * @param str
      * @return
      */
@@ -224,115 +226,144 @@ public class CommonUtils {
         }
         return str;
     }
-    
+
     /**
      * <p class="detail">
      * 功能：根据文件地址，读取文件内容
      * </p>
-     * @author weihao.liu
-     * @date 2016年12月31日 
+     *
      * @param filePath
      * @return
+     * @author weihao.liu
+     * @date 2016年12月31日
      */
     public static String readFile(String filePath) {
-    	return readFile(new File(filePath));
+        return readFile(new File(filePath));
     }
 
-    
+
     /**
      * <p class="detail">
      * 功能：读取文件内容
      * </p>
-     * @author weihao.liu
-     * @date 2016年12月31日 
+     *
      * @param file
      * @return
+     * @author weihao.liu
+     * @date 2016年12月31日
      */
     public static String readFile(File file) {
-    	if(file == null || file.isDirectory())	return StringUtils.EMPTY;
-    	StringBuilder dataBuilder = new StringBuilder();
+        if (file == null || file.isDirectory()) return StringUtils.EMPTY;
+        StringBuilder dataBuilder = new StringBuilder();
         FileInputStream in = null;
         InputStreamReader inReader = null;
         BufferedReader bf = null;
         try {
-			in = new FileInputStream(file);
-			inReader = new InputStreamReader(in, "UTF-8");
-			bf = new BufferedReader(inReader);
-			String line;
-			do {
-			    line = bf.readLine();
-			    if (line != null) {
-			        if (dataBuilder.length() != 0) {
-			            dataBuilder.append("\n");
-			        }
-			        dataBuilder.append(line);
-			    }
-			} while (line != null);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}finally {
-			try {
-				if(in != null)	in.close();
-				if(inReader != null)	inReader.close();
-				if(bf != null)	bf.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+            in = new FileInputStream(file);
+            inReader = new InputStreamReader(in, "UTF-8");
+            bf = new BufferedReader(inReader);
+            String line;
+            do {
+                line = bf.readLine();
+                if (line != null) {
+                    if (dataBuilder.length() != 0) {
+                        dataBuilder.append("\n");
+                    }
+                    dataBuilder.append(line);
+                }
+            } while (line != null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (in != null) in.close();
+                if (inReader != null) inReader.close();
+                if (bf != null) bf.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return dataBuilder.toString();
     }
 
 
     /**
      * 获取真实的ip地址
+     *
      * @param request
      * @return
      */
-	public static String getIpAddress(HttpServletRequest request) {
-		String ipAddress = request.getHeader("x-forwarded-for");
-		if (ipAddress == null || ipAddress.length() == 0
-				|| Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
-			ipAddress = request.getHeader("Proxy-Client-IP");
-		}
-		if (ipAddress == null || ipAddress.length() == 0
-				|| Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
-			ipAddress = request.getHeader("WL-Proxy-Client-IP");
-		}
-		if (ipAddress == null || ipAddress.length() == 0
-				|| Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
-			ipAddress = request.getRemoteAddr();
-			if (ipAddress.equals("127.0.0.1")
-					|| ipAddress.equals("0:0:0:0:0:0:0:1")) {
-				// 根据网卡取本机配置的IP
-				InetAddress inet = null;
-				try {
-					inet = InetAddress.getLocalHost();
-				} catch (UnknownHostException e) {
-					e.printStackTrace();
-				}
-				ipAddress = inet.getHostAddress();
-			}
-		}
-		// 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
-		if (ipAddress != null && ipAddress.length() > 15) { // "***.***.***.***".length() = 15
-			if (ipAddress.indexOf(",") > 0) {
-				ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
-			}
-		}
-		return ipAddress;
-	}
-
-	/**
-	 * <p class="detail">
-	 * 功能：获取basepath
-	 * </p>
-	 * @author weihao.liu
-	 * @date 2017年08月07日
-	 * @param request
-	 * @return
-	 */
-    public static String getBasePath(HttpServletRequest request){
-    	return request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+ request.getContextPath() +"/";
+    public static String getIpAddress(HttpServletRequest request) {
+        String ipAddress = request.getHeader("x-forwarded-for");
+        if (ipAddress == null || ipAddress.length() == 0
+                || Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0
+                || Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0
+                || Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+            if (ipAddress.equals("127.0.0.1")
+                    || ipAddress.equals("0:0:0:0:0:0:0:1")) {
+                // 根据网卡取本机配置的IP
+                InetAddress inet = null;
+                try {
+                    inet = InetAddress.getLocalHost();
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+                ipAddress = inet.getHostAddress();
+            }
+        }
+        // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
+        if (ipAddress != null && ipAddress.length() > 15) { // "***.***.***.***".length() = 15
+            if (ipAddress.indexOf(",") > 0) {
+                ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
+            }
+        }
+        return ipAddress;
     }
-    
+
+    /**
+     * <p class="detail">
+     * 功能：获取basepath
+     * </p>
+     *
+     * @param request
+     * @return
+     * @author weihao.liu
+     * @date 2017年08月07日
+     */
+    public static String getBasePath(HttpServletRequest request) {
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
+    }
+
+    /**
+     * 取出姓名前N个字符，后面追加字符。
+     *
+     * @param name   转换前的名字
+     * @param append 转换后名字追加的字符
+     * @param left   截取前几个
+     * @return 转换后的名字
+     */
+    public static String convertName(String name, String append, int left) {
+
+        if (StringUtils.isBlank(name)) return StringUtils.EMPTY;
+        String leftStr = StringUtils.left(name, left);
+        return StringUtils.isBlank(append) ? leftStr : (leftStr + append);
+    }
+
+    /**
+     * 取出姓名的第一个字符，后面追加字符。
+     *
+     * @param name   转换前的名字
+     * @param append 转换后名字追加的字符
+     * @return 转换后的名字
+     */
+    public static String convertName(String name, String append) {
+        return convertName(name, append, 1);
+    }
 }

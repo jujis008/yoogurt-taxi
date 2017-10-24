@@ -2,6 +2,7 @@ package com.yoogurt.taxi.order.service.impl;
 
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.utils.CommonUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
@@ -68,7 +69,7 @@ public abstract class AbstractOrderBizService implements OrderBizService {
         switch (sendType) {
             case ORDER_RENT: //已接单
                 String type = userType.equals(UserType.USER_APP_AGENT) ? "求租" : "出租";
-                String driverName = userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getAgentDriverName() : orderInfo.getOfficialDriverName();
+                String driverName = userType.equals(UserType.USER_APP_AGENT) ? CommonUtils.convertName(orderInfo.getAgentDriverName(), "师傅") : CommonUtils.convertName(orderInfo.getOfficialDriverName(), "师傅");
                 payload.setContent(String.format(message, type, orderId, driverName));
                 break;
             case ORDER_PAID: //已支付
