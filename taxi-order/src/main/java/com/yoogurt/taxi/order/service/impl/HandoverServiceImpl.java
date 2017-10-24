@@ -74,9 +74,9 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
         //实际的交车时间超出了预约的交车时间
         if (orderInfo.getHandoverTime().before(now)) {
             //计算时间，向上取整
-            int minutes = (int) Math.floor((now.getTime() - orderInfo.getHandoverTime().getTime()) / 60000.00);
+            int minutes = (int) Math.abs(Math.floor((now.getTime() - orderInfo.getHandoverTime().getTime()) / 60000.00));
             String unit = "MINUTES";
-            OrderHandoverRule rule = ruleService.getRuleInfo(minutes, unit);
+            OrderHandoverRule rule = ruleService.getRuleInfo(now.getTime() - orderInfo.getHandoverTime().getTime());
             handoverInfo.setIsDisobey(rule != null);
             if (rule != null) {
                 handoverInfo.setRuleId(rule.getRuleId());

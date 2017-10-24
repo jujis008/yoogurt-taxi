@@ -45,6 +45,8 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //已完成的订单不可取消了
         if (OrderStatus.FINISH.equals(status)) return null;
+        //已取消的订单不可操作了
+        if (OrderStatus.CANCELED.equals(status)) return null;
 
         OrderCancelInfo cancelInfo = new OrderCancelInfo();
         BeanUtils.copyProperties(cancelForm, cancelInfo);
@@ -63,8 +65,8 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
             //超过了交车时间，需要计算违约金
             Date now = new Date();
             //计算时间，向上取整
-            int hours = (int) Math.floor((now.getTime() - orderInfo.getHandoverTime().getTime()) / 3600000.00);
-            OrderCancelRule rule = ruleService.getRuleInfo(hours, unit);
+            int hours = (int) Math.abs(Math.floor((orderInfo.getHandoverTime().getTime() - now.getTime()) / 3600000.00));
+            OrderCancelRule rule = ruleService.getRuleInfo(orderInfo.getHandoverTime().getTime() - now.getTime());
             if (rule != null) {
                 //该时段不允许取消
                 if (!rule.getAllowCancel()) return null;

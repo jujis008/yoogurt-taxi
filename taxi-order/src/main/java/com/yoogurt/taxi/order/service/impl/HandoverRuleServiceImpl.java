@@ -41,21 +41,18 @@ public class HandoverRuleServiceImpl implements HandoverRuleService {
 
     /**
      * 根据交车超时时间，获取违约规则，返回null表示没有违约
+     *  @param milliseconds 交车超出的时间
      *
-     * @param time 交车超出的时间
-     * @param unit 时间单位：MINUTES-分钟，HOURS-小时
      */
     @Override
-    public OrderHandoverRule getRuleInfo(int time, String unit) {
-        if (StringUtils.isBlank(unit)) {
-            //交车的时间单位默认为 分钟
-            unit = "MINUTES";
-        }
+    public OrderHandoverRule getRuleInfo(long milliseconds) {
+        if (milliseconds <= 0) return null;
         OrderHandoverRule rule = getRuleInfo();
         if(rule == null) return null;
-        int period = rule.getTime();
-        //时间单位不一样，或者没有超出设置好的违约时限，都视为没有违约
-        if (!unit.equalsIgnoreCase(rule.getUnit()) || period > time) return null;
+        TimeUnit unit = TimeUnit.valueOf(rule.getUnit());
+        long period = unit.toMillis(rule.getTime());
+        //没有超出设置好的违约时限，都视为没有违约
+        if (period > milliseconds) return null;
         return rule;
     }
 

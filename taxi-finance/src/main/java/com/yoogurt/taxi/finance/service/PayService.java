@@ -1,12 +1,14 @@
-package com.yoogurt.taxi.finance.service;
+package com.yoogurt.taxi.finance.task;
 
 import com.yoogurt.taxi.dal.doc.finance.PayParams;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
-import com.yoogurt.taxi.finance.task.PayTask;
 
 import java.util.concurrent.TimeUnit;
 
-public interface IPayService {
+/**
+ * 生成支付任务，提交给MQ
+ */
+public interface PayTaskManager {
 
     /**
      * 提交一个支付任务，返回任务相关信息，方便后续查询。
@@ -23,16 +25,6 @@ public interface IPayService {
      * @return 支付对象
      */
     Payment queryResult(String taskId);
-
-    /**
-     * 获取支付任务执行结果，可设置获取超时时间。
-     *
-     * @param taskId  任务id
-     * @param timeout 超时时长
-     * @param unit    时长单位
-     * @return 支付对象
-     */
-    Payment queryResult(String taskId, long timeout, TimeUnit unit);
 
     /**
      * 获取任务信息。
@@ -57,5 +49,14 @@ public interface IPayService {
      * @return 支付对象信息
      */
     Payment getPayment(String payId);
+
+
+    /**
+     * 任务重试
+     *
+     * @param taskId 任务id
+     * @return 任务信息
+     */
+    PayTask retry(String taskId);
 
 }

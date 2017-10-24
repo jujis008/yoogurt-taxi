@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class GiveBackRuleServiceImpl implements GiveBackRuleService {
 
@@ -29,16 +31,14 @@ public class GiveBackRuleServiceImpl implements GiveBackRuleService {
     }
 
     @Override
-    public OrderGiveBackRule getRuleInfo(int time, String unit) {
-        if (StringUtils.isBlank(unit)) {
-            //交车的时间单位默认为 分钟
-            unit = "MINUTES";
-        }
+    public OrderGiveBackRule getRuleInfo(long milliseconds) {
+        if (milliseconds <= 0) return null;
         OrderGiveBackRule rule = getRuleInfo();
         if(rule == null) return null;
-        int period = rule.getTime();
-        //时间单位不一样，或者没有超出设置好的违约时限，都视为没有违约
-        if (!unit.equalsIgnoreCase(rule.getUnit()) || period > time) return null;
+        TimeUnit unit = TimeUnit.valueOf(rule.getUnit());
+        long period = unit.toMillis(rule.getTime());
+        //没有超出设置好的违约时限，都视为没有违约
+        if (period > milliseconds) return null;
         return rule;
     }
 

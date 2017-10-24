@@ -51,10 +51,10 @@ public class DisobeyRuleTests {
 
     @Test
     public void ruleInfoByTimeTest() {
-        OrderHandoverRule rule = handoverRuleService.getRuleInfo(5, "MINUTES");
+        OrderHandoverRule rule = handoverRuleService.getRuleInfo(5);
         Assert.assertNotNull("交车违约规则不能为空", rule);
 
-        OrderGiveBackRule rule1 = giveBackRuleService.getRuleInfo(5, "MINUTES");
+        OrderGiveBackRule rule1 = giveBackRuleService.getRuleInfo(5);
         Assert.assertNotNull("交车违约规则不能为空", rule1);
     }
 
@@ -70,7 +70,7 @@ public class DisobeyRuleTests {
     @Test
     public void cancelRuleInfoTest() {
 
-        OrderCancelRule cancelRule = cancelRuleService.getRuleInfo(1, "HOURS");
+        OrderCancelRule cancelRule = cancelRuleService.getRuleInfo(1);
         Assert.assertNotNull("取消订单违约规则不能为空", cancelRule);
     }
 }
