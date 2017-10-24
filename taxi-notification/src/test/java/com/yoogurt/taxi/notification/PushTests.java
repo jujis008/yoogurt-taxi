@@ -3,7 +3,8 @@ package com.yoogurt.taxi.notification;
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.PushDevice;
-import com.yoogurt.taxi.dal.enums.DeviceType;
+import com.yoogurt.taxi.dal.bo.PushPayload;
+import com.yoogurt.taxi.dal.enums.SendType;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.notification.config.getui.IGeTuiConfig;
 import com.yoogurt.taxi.notification.factory.GeTuiFactory;
@@ -15,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -46,7 +49,14 @@ public class PushTests {
 
     @Test
     public void pushTest() {
-        ResponseObj obj = pushService.pushMessage(UserType.USER_APP_OFFICE, DeviceType.ANDROID, Constants.OFFICIAL_APP_NAME, "小胖在吗？去吃KFC吧！", true);
+        String message = SendType.ORDER_FINISH.getMessage();
+        Long userId = 17092815473727752L;
+        PushPayload payload = new PushPayload(UserType.USER_APP_OFFICE, SendType.ORDER_FINISH, Constants.OFFICIAL_APP_NAME, String.format(message, 17101609512257244L));
+        payload.setExtras(new HashMap<String, Object>(){{
+            put("orderId", 17101609512257244L);
+        }});
+        payload.addUserId(userId);
+        ResponseObj obj = pushService.pushMessage(payload.getUserIds(), payload.getUserType(), payload.getSendType(), payload.getMsgType(), payload.getDeviceType(), payload.getTitle(), payload.getContent(), payload.getExtras(), false);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }
 
