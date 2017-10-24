@@ -58,8 +58,8 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
                 resourceService.addResources(resources);
             }
             //统计订单数量-双方司机的订单数量各 +1
-            statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getOfficialUserId()).disobeyCount(1).build());
-            statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getAgentUserId()).disobeyCount(1).build());
+            statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getOfficialUserId()).orderCount(1).build());
+            statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getAgentUserId()).orderCount(1).build());
 
             //订单已结束，通知代理司机
             super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_FINISH, new HashMap<>());
