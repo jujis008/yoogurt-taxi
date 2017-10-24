@@ -5,6 +5,7 @@ import com.yoogurt.taxi.common.dao.IDao;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.condition.order.RentWebListCondition;
 import com.yoogurt.taxi.dal.mapper.RentInfoMapper;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 

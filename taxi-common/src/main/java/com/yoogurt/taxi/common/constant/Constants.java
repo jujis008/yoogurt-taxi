@@ -66,6 +66,8 @@ public final class Constants {
      */
     public static final String USER_TYPE_HERDER_NAME = "X-yoogurt-user-type";
 
+    public static final String REQUEST_SYSTEM_TYPE = "system-type";
+
     /**
      * 授权码的有效期，单位：秒
      */

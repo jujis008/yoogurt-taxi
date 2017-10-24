@@ -11,6 +11,7 @@ import com.yoogurt.taxi.dal.model.user.DriverWLModel;
 import com.yoogurt.taxi.user.dao.DriverDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -26,5 +27,12 @@ public class DriverDaoImpl extends BaseDao<DriverInfoMapper,DriverInfo> implemen
     @Override
     public int batchInsert(List<DriverInfo> list) {
         return driverInfoMapper.batchInsert(list);
+    }
+
+    @Override
+    public List<DriverInfo> getDriverByUserId(Long userId) {
+        Example example = new Example(DriverInfo.class);
+        example.createCriteria().andEqualTo("userId",userId);
+        return driverInfoMapper.selectByExample(example);
     }
 }

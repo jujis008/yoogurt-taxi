@@ -190,6 +190,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ResponseObj modifyUserName(Long userId, String password, String phoneCode, String phoneNumber) {
         UserInfo user = userDao.selectById(userId);
         if (user == null) {
@@ -212,6 +213,11 @@ public class UserServiceImpl implements UserService {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"手机号已被使用");
         }
         user.setUsername(phoneNumber);
+        List<DriverInfo> driverList = driverDao.getDriverByUserId(userId);
+        for (DriverInfo driverInfo:driverList) {
+            driverInfo.setMobile(phoneNumber);
+            driverDao.updateByIdSelective(driverInfo);
+        }
         userDao.updateById(user);
         return ResponseObj.success();
     }
