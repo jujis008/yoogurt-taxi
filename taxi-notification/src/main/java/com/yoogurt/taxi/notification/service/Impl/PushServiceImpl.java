@@ -79,6 +79,7 @@ public class PushServiceImpl implements PushService {
             if (target != null) {//传入的设备已被绑定
                 if (!userId.equals(target.getUserId())) {//但是绑定的不是传入的用户
                     target.setUserId(userId);
+                    target.setStatus(DeviceStatus.BIND.getStatus());
                     return saveDevice(target, false);//将此设备切换到传入的用户
                 }
             } else {//传入的设备未绑定，且该用户也未绑定其他设备，则可以新生成一个设备绑定记录
