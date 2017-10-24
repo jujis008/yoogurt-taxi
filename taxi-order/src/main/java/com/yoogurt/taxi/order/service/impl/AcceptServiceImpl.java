@@ -10,9 +10,11 @@ import com.yoogurt.taxi.dal.model.order.AcceptOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.AcceptDao;
 import com.yoogurt.taxi.order.form.AcceptForm;
+import com.yoogurt.taxi.order.form.OrderStatisticForm;
 import com.yoogurt.taxi.order.service.AcceptService;
 import com.yoogurt.taxi.order.service.CommonResourceService;
 import com.yoogurt.taxi.order.service.OrderInfoService;
+import com.yoogurt.taxi.order.service.OrderStatisticService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,9 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
     @Autowired
     private CommonResourceService resourceService;
 
+    @Autowired
+    private OrderStatisticService statisticService;
+
     @Transactional
     @Override
     public AcceptOrderModel doAccept(AcceptForm acceptForm) {
@@ -52,6 +57,10 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
                 List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_accept_info", pictures);
                 resourceService.addResources(resources);
             }
+            //统计订单数量-双方司机的订单数量各 +1
+            statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getOfficialUserId()).disobeyCount(1).build());
+            statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getAgentUserId()).disobeyCount(1).build());
+
             //订单已结束，通知代理司机
             super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_FINISH, new HashMap<>());
             return (AcceptOrderModel) info(orderId, acceptForm.getUserId());
