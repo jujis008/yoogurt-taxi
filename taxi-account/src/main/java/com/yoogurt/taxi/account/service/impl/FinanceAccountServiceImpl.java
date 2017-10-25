@@ -28,6 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -323,12 +325,19 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         condition.setTradeType(TradeType.WITHDRAW);
         condition.setPayment(Payment.getEnumsBycode(financeBill.getPayment()));
         UserType userType = UserType.getEnumsByCode(financeBill.getUserType());
-        String title = "消息通知";
+        String title = "提现通知";
         if (userType == UserType.USER_APP_OFFICE) {
             title = Constants.OFFICIAL_APP_NAME;
         }
         if (userType == UserType.USER_APP_AGENT) {
             title = Constants.AGENT_APP_NAME;
+        }
+        Map<String,Object> extras = new HashMap<>();
+        if (financeBill.getBillType().equals(BillType.BALANCE.getCode())) {
+            extras.put("type","balance");
+        }
+        if (financeBill.getBillType().equals(BillType.DEPOSIT.getCode())) {
+            extras.put("type","deposit");
         }
         switch (billStatus) {
             case SUCCESS://转账成功，减少冻结资金
@@ -338,6 +347,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     String finalTitle = title;
                     PushPayload payload = new PushPayload(userType, SendType.WITHDRAW_SUCCESS, finalTitle);
                     payload.addUserId(financeBill.getUserId());
+                    payload.setExtras(extras);
                     notificationSender.send(payload);
                 }
                 return responseObj;
@@ -348,6 +358,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     String finalTitle = title;
                     PushPayload payload = new PushPayload(userType, SendType.WITHDRAW_FAILED, finalTitle);
                     payload.addUserId(financeBill.getUserId());
+                    payload.setExtras(extras);
                     notificationSender.send(payload);
                 }
                 return obj;

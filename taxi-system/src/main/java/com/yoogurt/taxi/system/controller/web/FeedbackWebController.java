@@ -39,7 +39,7 @@ public class FeedbackWebController extends BaseController{
         return ResponseObj.success(one);
     }
 
-    @RequestMapping(value = "info",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "handle",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
     public ResponseObj handle(@RequestBody FeedbackSelectiveForm form) {
         FeedbackRecord record = new FeedbackRecord();
         record.setId(form.getId());

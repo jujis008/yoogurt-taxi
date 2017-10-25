@@ -140,6 +140,13 @@ public final class TokenHelper {
         return Integer.valueOf(userType);
     }
 
+    public Integer getSysType(HttpServletRequest request) {
+        if (request == null) return -1;
+        String sysType = request.getHeader(Constants.REQUEST_SYSTEM_TYPE);
+        if (StringUtils.isBlank(sysType)) return -1;
+        return Integer.valueOf(sysType);
+    }
+
     /**
      * 获取token的颁发（创建）时间
      * @param token token

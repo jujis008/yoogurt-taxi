@@ -48,6 +48,11 @@ public class BaseController {
         return tokenHelper.getUserType(request);
     }
 
+    public Integer getSysType() {
+        HttpServletRequest request = ServletHelper.getRequest();
+        return tokenHelper.getSysType(request);
+    }
+
     /**
      * 从缓存中获取{@link SessionUser} SessionUser
      * @return SessionUser

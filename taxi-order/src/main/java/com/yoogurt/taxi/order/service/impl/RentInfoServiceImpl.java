@@ -16,6 +16,7 @@ import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
 import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.condition.order.RentWebListCondition;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
@@ -28,6 +29,7 @@ import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -133,6 +135,31 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
 
         rentInfo.setStatus(status.getCode());
         return rentDao.updateByIdSelective(rentInfo) == 1;
+    }
+
+    @Override
+    public Pager<RentInfo> getRentListForWebPage(RentWebListCondition condition) {
+        PageHelper.startPage(condition.getPageNum(),condition.getPageSize());
+        Example example = new Example(RentInfo.class);
+        example.setOrderByClause(" gmt_create desc");
+        Example.Criteria criteria = example.createCriteria();
+        if (StringUtils.isNotBlank(condition.getName())) {
+            criteria.andLike("driverName","%"+condition.getName()+"%");
+        }
+        if (StringUtils.isNotBlank(condition.getPhone())) {
+            criteria.andLike("mobile","%"+condition.getPhone()+"%");
+        }
+        if (condition.getOrderId() != null) {
+            criteria.andLike("mobile","%"+condition.getOrderId()+"%");
+        }
+        if (condition.getStartTime() != null) {
+            criteria.andGreaterThanOrEqualTo("handoverTime",condition.getStartTime());
+        }
+        if (condition.getStartTime() != null) {
+            criteria.andLessThanOrEqualTo("giveBackTime",condition.getStartTime());
+        }
+        Page<RentInfo> rentInfoList = (Page<RentInfo>) rentDao.selectByExample(example);
+        return webPagerFactory.generatePager(rentInfoList);
     }
 
     @Override

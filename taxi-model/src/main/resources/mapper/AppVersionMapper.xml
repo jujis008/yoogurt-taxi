@@ -6,6 +6,7 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sys_type" jdbcType="INTEGER" property="sysType" />
     <result column="app_type" jdbcType="INTEGER" property="appType" />
     <result column="version_name" jdbcType="VARCHAR" property="versionName" />
     <result column="version_number" jdbcType="INTEGER" property="versionNumber" />
