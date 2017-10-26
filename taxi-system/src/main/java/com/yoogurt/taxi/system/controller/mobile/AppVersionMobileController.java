@@ -22,10 +22,10 @@ public class AppVersionMobileController extends BaseController{
     public ResponseObj getLatestVersion() {
         Integer userType = super.getUserType();
         AppType appType = null;
-        if (userType.equals(UserType.USER_APP_AGENT)) {
+        if (userType.equals(UserType.USER_APP_AGENT.getCode())) {
             appType = AppType.agent;
         }
-        if (userType.equals(UserType.USER_APP_OFFICE)) {
+        if (userType.equals(UserType.USER_APP_OFFICE.getCode())) {
             appType = AppType.office;
         }
         SysType sysType = SysType.getEnumsByCode(super.getSysType());
