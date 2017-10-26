@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.finance.task;
 
-import com.yoogurt.taxi.dal.doc.finance.PayParams;
+import com.yoogurt.taxi.finance.form.PayForm;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +16,6 @@ public class PayTask implements Serializable {
 
 	private TaskInfo task;
 
-	private PayParams params;
+	private PayForm payParams;
 
 }
