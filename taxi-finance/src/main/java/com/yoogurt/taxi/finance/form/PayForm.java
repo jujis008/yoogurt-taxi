@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.dal.doc.finance;
+package com.yoogurt.taxi.finance.form;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class PayParams extends CommonParams {
+public class PayForm extends CommonForm {
 
 	/**
 	 * 商户订单号，不可重复
@@ -30,13 +30,13 @@ public class PayParams extends CommonParams {
 	private String channel;
 
 	/**
-	 * 主题信息
+	 * 主题信息，最长为 32 个 Unicode 字符
 	 */
 	@NotBlank(message = "请指定商品标题")
 	private String subject;
 
 	/**
-	 * 主体信息
+	 * 主体信息，最长为 128 个 Unicode 字符
 	 */
 	private String body;
 
@@ -46,7 +46,8 @@ public class PayParams extends CommonParams {
 	private Map<String, Object> extras;
 
 	/**
-	 * 元数据，用户可定制
+	 * 元数据，用户可定制。
+	 * 最多可以拥有 10 个键值对，数据总长度在 1000 个 Unicode 字符以内
 	 */
 	private Map<String, Object> metadata;
 
