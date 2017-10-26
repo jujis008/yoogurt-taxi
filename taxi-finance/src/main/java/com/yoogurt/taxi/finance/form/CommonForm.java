@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.dal.doc.finance;
+package com.yoogurt.taxi.finance.form;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
-public abstract class CommonParams implements Serializable {
+public abstract class CommonForm implements Serializable {
 
 	/**
 	 * 接入支付的应用id，用于加载该应用的支付配置参数
@@ -23,8 +23,7 @@ public abstract class CommonParams implements Serializable {
 	private String version = "v0.1";
 
 	/**
-	 * 接口名称。例如：gogen.nirvana.pay
-	 * 便于以后集成API网关
+	 * 接口名称
 	 */
 	@NotBlank(message = "请指定接口名称")
 	private String method;
