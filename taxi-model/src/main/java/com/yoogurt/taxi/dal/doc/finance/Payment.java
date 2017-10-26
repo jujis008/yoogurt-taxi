@@ -2,17 +2,88 @@ package com.yoogurt.taxi.dal.doc.finance;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Map;
 
 @Getter
 @Setter
-public class Payment extends PayParams {
+public class Payment implements Serializable {
 
 	/**
 	 * 支付对象 id
 	 */
+	@Id
 	private String payId;
+
+	/**
+	 * 接入支付的应用id，用于加载该应用的支付配置参数
+	 */
+	private String appId;
+
+	/**
+	 * 接口版本号
+	 */
+	private String version = "v0.1";
+
+	/**
+	 * 接口名称
+	 */
+	private String method = "yoogurt.taxi.finance.pay";
+
+	/**
+	 * 发送请求的时间戳
+	 */
+	private Long timestamp;
+
+	/**
+	 * 发起请求的客户端ip地址
+	 */
+	private String clientIp;
+
+	/**
+	 * 商户订单号，不可重复
+	 */
+	private String orderNo;
+
+	/**
+	 * 支付金额，单位：分
+	 */
+	private Long amount;
+
+	/**
+	 * 支付渠道
+	 */
+	private String channel;
+
+	/**
+	 * 主题信息
+	 */
+	private String subject;
+
+	/**
+	 * 主体信息
+	 */
+	private String body;
+
+	/**
+	 * 订单附加说明，最多 255 个 Unicode 字符。
+	 */
+	private String description;
+
+	/**
+	 * 附加参数，渠道返回
+	 */
+	private Map<String, Object> extras;
+
+	/**
+	 * 元数据，用户可定制
+	 */
+	private Map<String, Object> metadata;
+
 
 	/**
 	 * 支付凭证，用于客户端发起支付
@@ -44,6 +115,15 @@ public class Payment extends PayParams {
 	 */
 	private String statusCode;
 
+	/**
+	 * 提示消息
+	 */
 	private String message;
 
+	public Payment() {
+	}
+
+	public Payment(String payId) {
+		this.payId = payId;
+	}
 }
