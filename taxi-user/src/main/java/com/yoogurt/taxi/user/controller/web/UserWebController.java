@@ -1,7 +1,6 @@
 package com.yoogurt.taxi.user.controller.web;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
-import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
@@ -21,7 +20,6 @@ import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
 import com.yoogurt.taxi.dal.model.user.RoleWLModel;
 import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.service.*;
-import lombok.Setter;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
