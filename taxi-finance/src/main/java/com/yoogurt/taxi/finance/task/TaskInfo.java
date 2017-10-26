@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.finance.task;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.dal.enums.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,16 +21,19 @@ public class TaskInfo implements Serializable {
 	/**
 	 * [RabbitMQ]消息交换机
 	 */
+	@JsonIgnore
 	private String exchangeName = "X-Exchange-Pay";
 
 	/**
 	 * [RabbitMQ]消息路由的key
 	 */
+	@JsonIgnore
 	private String routingKey = "topic.task.pay";
 
 	/**
 	 * [RabbitMQ]任务队列名称，由数字或字母组成，不允许特殊字符。
 	 */
+	@JsonIgnore
 	private String queueName = "X-Queue-Pay";
 
 	/**
