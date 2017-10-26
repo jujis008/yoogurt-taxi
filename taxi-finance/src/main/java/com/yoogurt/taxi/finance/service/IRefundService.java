@@ -1,12 +1,12 @@
 package com.yoogurt.taxi.finance.service;
 
 import com.yoogurt.taxi.dal.doc.finance.Refund;
-import com.yoogurt.taxi.dal.doc.finance.RefundParams;
+import com.yoogurt.taxi.finance.form.RefundForm;
 import com.yoogurt.taxi.finance.task.RefundTask;
 
 public interface IRefundService {
 
-	RefundTask submitRefundTask(RefundParams params);
+	RefundTask submitRefundTask(RefundForm params);
 
 	Refund queryResult(String taskId);
 
