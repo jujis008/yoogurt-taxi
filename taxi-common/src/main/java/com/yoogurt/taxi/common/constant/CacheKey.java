@@ -81,12 +81,12 @@ public final class CacheKey {
     /**
      * 支付对象缓存的hash key
      */
-    public static final String PAYMENT_HASH_KEY = "payment";
+    public static final String PAYMENT_HASH_KEY = "P_PAYMENT#";
 
     /**
      * 任务对象缓存的hash key
      */
-    public static final String TASK_HASH_KEY = "task";
+    public static final String TASK_HASH_KEY = "P_TASK#";
 
     /**
      * 退款相关的缓存，以Map形式存储
