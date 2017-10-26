@@ -342,6 +342,40 @@ public class CommonUtils {
     }
 
     /**
+     * <p class="detail">
+     * 功能：判断一个字符串的长度，1个汉字=2个字符
+     * </p>
+     * @author liu.weihao
+     * @param str 需要判断的字符串
+     * @return 字符串的实际长度
+     */
+    public static int getLength(String str) {
+        if (str == null)
+            return 0;
+        char[] c = str.toCharArray();
+        int len = 0;
+        for (char aC : c) {
+            len++;
+            if (!isLetter(aC))
+                len++;
+        }
+        return len;
+    }
+
+    /**
+     * <p class="detail">
+     * 功能：判断是否是标准的字符
+     * </p>
+     * @author liu.weihao
+     * @param c 字符
+     * @return 是否
+     */
+    public static boolean isLetter(char c) {
+        int k = 0x80;
+        return c / k == 0;
+    }
+
+    /**
      * 取出姓名前N个字符，后面追加字符。
      *
      * @param name   转换前的名字
