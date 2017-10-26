@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.finance.task;
 
-import com.yoogurt.taxi.dal.doc.finance.RefundParams;
+import com.yoogurt.taxi.finance.form.RefundForm;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +14,6 @@ public class RefundTask {
 
 	private TaskInfo task;
 
-	private RefundParams params;
+	private RefundForm refundParams;
 
 }

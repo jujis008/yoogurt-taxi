@@ -1,11 +1,11 @@
 package com.yoogurt.taxi.finance.task;
 
 import com.yoogurt.taxi.dal.doc.finance.Refund;
-import com.yoogurt.taxi.dal.doc.finance.RefundParams;
+import com.yoogurt.taxi.finance.form.RefundForm;
 
 public interface RefundTaskManager {
 
-	RefundTask submit(RefundParams params);
+	RefundTask submit(RefundForm params);
 
 	/**
 	 * 取消支付任务，任务状态变为EXECUTE_CANCELED
@@ -22,6 +22,6 @@ public interface RefundTaskManager {
 	 */
 	Refund queryResult(String taskId);
 
-	RefundTask retry(RefundParams params);
+	RefundTask retry(RefundForm params);
 
 }
