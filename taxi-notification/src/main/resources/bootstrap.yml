@@ -5,6 +5,7 @@ spring:
     config:
       uri: http://peer1:9998
       fail-fast: true
+
 ---
 spring:
   profiles:

@@ -2,6 +2,9 @@ package com.yoogurt.taxi.user;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.CarInfo;
+import com.yoogurt.taxi.dal.bo.SmsPayload;
+import com.yoogurt.taxi.dal.enums.SmsTemplateType;
+import com.yoogurt.taxi.user.mq.SmsSender;
 import com.yoogurt.taxi.user.service.CarService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +23,20 @@ import java.util.List;
 public class CarServiceTest {
     @Autowired
     private CarService carService;
+    @Autowired
+    private SmsSender smsSender;
+
+    @Test
+    public void sendTest() {
+        SmsPayload payload = new SmsPayload();
+        payload.setType(SmsTemplateType.VALID);
+        payload.setParam("123456");
+        List<String> phoneNumbers = new ArrayList<>();
+        phoneNumbers.add("13516712356");
+        phoneNumbers.add("18814892833");
+        payload.setPhoneNumbers(phoneNumbers);
+        smsSender.send(payload);
+    }
 
     @Test
     public void getCarByUserId() {
