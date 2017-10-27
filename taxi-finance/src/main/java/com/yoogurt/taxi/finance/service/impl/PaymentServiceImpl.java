@@ -1,10 +1,10 @@
-package com.yoogurt.taxi.finance.service;
+package com.yoogurt.taxi.finance.service.impl;
 
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.dao.PaymentDao;
 import com.yoogurt.taxi.finance.form.PayForm;
-import com.yoogurt.taxi.finance.service.impl.PayTaskServiceImpl;
+import com.yoogurt.taxi.finance.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
