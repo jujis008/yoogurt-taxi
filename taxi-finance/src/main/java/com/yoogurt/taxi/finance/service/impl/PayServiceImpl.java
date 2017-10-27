@@ -15,8 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-
 @Slf4j
 @Service
 public class PayServiceImpl extends PaymentServiceImpl implements PayService {
@@ -63,7 +61,7 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     @Override
     public PayTask getTask(String taskId) {
 
-        Object o = redis.getMapValue(CacheKey.PAY_MAP, taskId);
+        Object o = redis.getMapValue(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId);
         if(o == null) return null;
         return (PayTask) o;
     }
@@ -76,7 +74,7 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     @Override
     public Payment queryResult(String taskId) {
 
-        Object o = redis.getMapValue(CacheKey.PAY_MAP, taskId);
+        Object o = redis.getMapValue(CacheKey.PAY_MAP, CacheKey.PAYMENT_HASH_KEY + taskId);
         if(o == null) return null;
         return (Payment) o;
     }
@@ -110,8 +108,8 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
             task = getTask(taskId);
         } else {
             TaskInfo taskInfo = buildTask();
-            task = new PayTask(taskInfo, form);
-            redis.put(CacheKey.PAY_MAP, taskInfo.getTaskId(), task);
+            task = new PayTask(taskInfo.getTaskId(), taskInfo, form);
+            redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskInfo.getTaskId(), task);
         }
         sender.send(task);
         return task;
