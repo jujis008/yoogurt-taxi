@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.finance;
 
+import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.form.PayForm;
 import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.PayTask;
@@ -31,11 +32,24 @@ public class PayTests {
         form.setSubject("测试一下");
         form.setAppId("app_driver");
         form.setClientIp("127.0.0.1");
+        form.setMethod("yoogurt.taxi.finance.pay");
         form.setTimestamp(System.currentTimeMillis());
         form.setMetadata(new HashMap<String, Object>(){{
             put("type", "order");
         }});
         PayTask task = payService.submit(form);
         Assert.assertNotNull(task);
+    }
+
+    @Test
+    public void getTaskTest() {
+        PayTask payTask = payService.getTask("pt_17102711393874595");
+        Assert.assertNotNull(payTask);
+    }
+
+    @Test
+    public void getPaymentTest() {
+        Payment payment = payService.queryResult("pt_17102711315495101");
+        Assert.assertNotNull(payment);
     }
 }
