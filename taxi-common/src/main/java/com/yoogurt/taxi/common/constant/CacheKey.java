@@ -76,7 +76,7 @@ public final class CacheKey {
     /**
      * 支付相关的缓存，以Map形式存储
      */
-    public static final String PAY_MAP = "E_PAY_MAP";
+    public static final String PAY_MAP = "P_PAY_MAP";
 
     /**
      * 支付对象缓存的hash key
