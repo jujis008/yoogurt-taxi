@@ -121,9 +121,11 @@ public class Payment implements Serializable {
 	private String message;
 
 	public Payment() {
+		this.created = System.currentTimeMillis();
 	}
 
 	public Payment(String payId) {
+		this();
 		this.payId = payId;
 	}
 }
