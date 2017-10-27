@@ -4,6 +4,7 @@ import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.dao.PaymentDao;
 import com.yoogurt.taxi.finance.form.PayForm;
+import com.yoogurt.taxi.finance.service.impl.PayTaskServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class PaymentServiceImpl implements PaymentService {
+public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentService {
 
     @Autowired
     private PaymentDao paymentDao;

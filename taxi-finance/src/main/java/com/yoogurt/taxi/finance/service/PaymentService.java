@@ -6,7 +6,7 @@ import com.yoogurt.taxi.finance.form.PayForm;
 /**
  * Payment对象管理相关接口
  */
-public interface PaymentService {
+public interface PaymentService extends PayTaskService {
 
     /**
      * 根据id获取支付对象。
