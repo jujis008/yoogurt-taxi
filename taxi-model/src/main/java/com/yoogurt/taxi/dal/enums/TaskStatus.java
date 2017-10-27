@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.dal.enums;
 
 import lombok.Getter;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * 支付任务执行状态
@@ -46,5 +47,27 @@ public enum TaskStatus {
 	TaskStatus(String code, String message) {
 		this.code = code;
 		this.message = message;
+	}
+
+	public static TaskStatus getEnumByStatus(String status) {
+
+		if (!StringUtils.isBlank(status)) {
+			for (TaskStatus s : TaskStatus.values()) {
+				if (status.equals(s.getCode())) {
+					return s;
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean isExecutable() {
+		switch (this) {
+			case EXECUTE_READY:
+			case EXECUTE_LATER:
+				return true;
+			default:
+				return false;
+		}
 	}
 }
