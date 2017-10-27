@@ -33,6 +33,9 @@ public class PayMobileController extends BaseController {
      */
     private static final long MAX_REQUEST_INTERVAL = 30 * 60 * 1000; //半小时
 
+    /**
+     * 提交一个支付任务
+     */
     @RequestMapping(value = "/task", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj submitPayTask(@Valid @RequestBody PayForm payForm, BindingResult result) {
 
@@ -52,7 +55,8 @@ public class PayMobileController extends BaseController {
     }
 
     /**
-     * 获取任务信息
+     * 获取任务信息，支付任务执行成功后，
+     * 任务信息会从缓存中清除，调用此接口会返回失败
      * @param taskId 任务ID
      * @return ResponseObj
      */
@@ -62,17 +66,28 @@ public class PayMobileController extends BaseController {
         if (task != null) {
             return ResponseObj.success(task);
         }
-        return ResponseObj.fail(StatusCode.BIZ_FAILED, "未提交该支付任务");
+        return ResponseObj.fail(StatusCode.BIZ_FAILED, "该支付任务已执行完成或者未提交");
+    }
+
+    /**
+     * 获取支付任务执行结果
+     * @param taskId 发起支付任务的ID
+     * @return ResponseObj
+     */
+    @RequestMapping(value = "/result/{taskId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj queryResult(@PathVariable(name = "taskId") String taskId) {
+        Payment payment = payService.queryResult(taskId);
+        return ResponseObj.success(payment);
     }
 
     /**
      * 获取支付对象
-     * @param taskId 发起支付任务的ID
+     * @param payId 支付对象ID
      * @return ResponseObj
      */
-    @RequestMapping(value = "/payment/{taskId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getPayment(@PathVariable(name = "taskId") String taskId) {
-        Payment payment = payService.queryResult(taskId);
+    @RequestMapping(value = "/payment/{payId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getPayment(@PathVariable(name = "payId") String payId) {
+        Payment payment = payService.getPayment(payId);
         return ResponseObj.success(payment);
     }
 
