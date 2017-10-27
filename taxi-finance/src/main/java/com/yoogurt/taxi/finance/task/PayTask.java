@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Id;
 import java.io.Serializable;
 
 @Getter
@@ -13,6 +14,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PayTask implements Serializable {
+
+	@Id
+	private String taskId;
 
 	private TaskInfo task;
 
