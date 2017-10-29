@@ -5,8 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <id column="app_id" jdbcType="VARCHAR" property="appId" />
     <result column="wx_app_id" jdbcType="VARCHAR" property="wxAppId" />
     <result column="app_secret" jdbcType="VARCHAR" property="appSecret" />
     <result column="merchant_id" jdbcType="VARCHAR" property="merchantId" />
