@@ -18,7 +18,6 @@ public class FinanceAppSettings extends SuperModel {
      */
     @Id
     @Column(name = "app_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SELECT LAST_INSERT_ID()")
     private String appId;
 
     /**
