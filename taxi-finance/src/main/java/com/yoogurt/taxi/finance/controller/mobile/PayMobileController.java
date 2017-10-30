@@ -15,6 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/mobile/finance")
@@ -45,7 +47,11 @@ public class PayMobileController extends BaseController {
         //表单字段进一步验证
         ResponseObj validateResult = validatePayForm(payForm);
         if(!validateResult.isSuccess()) return validateResult;
-
+        Map<String, Object> extras = payForm.getExtras();
+        if (extras == null) {
+            extras = new HashMap<>();
+        }
+        extras.put("trade_type", "APP"); //APP支付
         PayTask task = payService.submit(payForm);
         if (task != null) {
 
