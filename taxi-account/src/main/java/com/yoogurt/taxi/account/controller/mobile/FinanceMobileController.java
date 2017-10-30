@@ -108,6 +108,12 @@ public class FinanceMobileController extends BaseController {
             }
             financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, userId);
         }
+        Money accountMoney = new Money(financeAccount.getReceivedDeposit());
+        Money receivableDepositMoney = new Money(financeAccount.getReceivableDeposit());
+        if (!receivableDepositMoney.greaterThan(accountMoney)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"押金充足，无需充值");
+        }
+        Money chargeMoney = receivableDepositMoney.subtract(accountMoney);
         UserInfo userInfo = userInfoRestResult.getBody();
         Payment payment = Payment.getEnumsBycode(form.getChargeType());
         if (payment == null || !payment.isChargeType()) {
@@ -121,7 +127,7 @@ public class FinanceMobileController extends BaseController {
         condition.setPayment(payment);
         condition.setUserId(userId);
         condition.setTradeType(TradeType.CHARGE);
-        ResponseObj responseObj = financeBillService.insertBill(new Money(form.getChargeMoney()), condition, payment, BillStatus.PENDING, BillType.DEPOSIT);
+        ResponseObj responseObj = financeBillService.insertBill(chargeMoney, condition, payment, BillStatus.PENDING, BillType.DEPOSIT);
         if (!responseObj.isSuccess()) {
             return responseObj;
         }

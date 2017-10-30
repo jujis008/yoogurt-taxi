@@ -47,4 +47,5 @@ public class AmqpConfig {
     Binding binding(Queue queue, TopicExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with(ORDER_TOPIC);
     }
+
 }

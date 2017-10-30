@@ -63,7 +63,7 @@
 
     <select id="getRentList" resultMap="RentPOIModel" parameterType="map">
         SELECT rent_id, r.user_id, r.driver_id, driver_name, plate_number, avatar, car_thumb, handover_time, give_back_time,
-        address, lng, lat, price, order_count, traffic_violation_count, disobey_count, score, status, remark
+        address, lng, lat, price, order_count, traffic_violation_count, disobey_count, ROUND(score, 1) AS score, status, remark
         FROM rent_info AS r
         LEFT JOIN order_statistic AS o ON (r.user_id=o.user_id)
         WHERE r.is_deleted=0
@@ -111,10 +111,10 @@
 
     <select id="getRentListByPage" parameterType="map" resultMap="RentListModel">
         SELECT rent_id, r.user_id, r.driver_id, driver_name, plate_number, avatar, car_thumb, handover_time, give_back_time,
-        address, lng, lat, price, order_count, traffic_violation_count, disobey_count, score, status, remark,
+        address, lng, lat, price, order_count, traffic_violation_count, disobey_count, ROUND(score, 1) AS score, status, remark,
         HOUR(give_back_time - handover_time) AS rent_time
         FROM rent_info AS r
-        LEFT JOIN order_statistic AS o ON (r.driver_id=o.user_id)
+        LEFT JOIN order_statistic AS o ON (r.user_id=o.user_id)
         WHERE r.is_deleted=0
         <if test="userId != null and userId > 0">
             AND r.user_id=#{userId}

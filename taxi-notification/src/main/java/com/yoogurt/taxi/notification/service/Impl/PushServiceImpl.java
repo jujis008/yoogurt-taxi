@@ -79,6 +79,7 @@ public class PushServiceImpl implements PushService {
             if (target != null) {//传入的设备已被绑定
                 if (!userId.equals(target.getUserId())) {//但是绑定的不是传入的用户
                     target.setUserId(userId);
+                    target.setStatus(DeviceStatus.BIND.getStatus());
                     return saveDevice(target, false);//将此设备切换到传入的用户
                 }
             } else {//传入的设备未绑定，且该用户也未绑定其他设备，则可以新生成一个设备绑定记录
@@ -316,13 +317,6 @@ public class PushServiceImpl implements PushService {
         return ResponseObj.success();
     }
 
-    private List<PushDevice> getDeviceByUserIds(List<Long> userIds) {
-
-        Example ex = new Example(PushDevice.class);
-        ex.createCriteria().andIn("userId", userIds);
-        return deviceDao.selectByExample(ex);
-    }
-
     private boolean persistMessage(List<Long> userIds, String title, String content, Integer type) {
         if (CollectionUtils.isEmpty(userIds)) return false;
         List<Message> messages = new ArrayList<>();
@@ -336,5 +330,12 @@ public class PushServiceImpl implements PushService {
             messages.add(msg);
         }
         return messageService.addMessages(messages) == userIds.size();
+    }
+
+    private List<PushDevice> getDeviceByUserIds(List<Long> userIds) {
+
+        Example ex = new Example(PushDevice.class);
+        ex.createCriteria().andIn("userId", userIds);
+        return deviceDao.selectByExample(ex);
     }
 }

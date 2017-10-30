@@ -37,7 +37,7 @@ public enum SendType {
     ORDER_CANCEL(2060, "order_cancel", "您的交易【%d】被对方/客服取消，点击查看详情。"),
     ORDER_REFUND(2070, "order_refund", "您有一笔交易退款，点击查看详情。"),
     DISOBEY_FINE_IN(3010, "disobey_fine_in", "您收到一笔赔偿金，点击查看详情。"),
-    DISOBEY_FINE_OUT(3020, "disobey_fine_out", "您受到一次违约罚款，点击查看详情。"),
+    DISOBEY_FINE_OUT(3020, "disobey_fine_out", "您收到一次违约罚款，点击查看详情。"),
     TRAFFIC_VIOLATION(4010, "traffic_violation", "您的交易【%d】收到一条违章投诉，请及时处理。"),
     WITHDRAW_SUCCESS(5010, "withdraw_success", "您的提现申请转账成功，点击查看详情。"),
     WITHDRAW_FAILED(5011, "withdraw_failed", "您的提现申请转账失败，点击查看详情。"),

@@ -13,7 +13,7 @@ public interface CancelRuleService {
 	/**
 	 * 获取匹配的取消违约规则
 	 */
-	OrderCancelRule getRuleInfo(int time, String unit);
+	OrderCancelRule getRuleInfo(long milliseconds);
 
 	List<OrderCancelRule> getRules();
 

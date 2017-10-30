@@ -70,6 +70,7 @@
         <docx.version>1.1.7</docx.version>
 
         <protobuf.version>2.5.0</protobuf.version>
+        <hessian.version>4.0.51</hessian.version>
     </properties>
 
     <!-- 内置了spring boot和spring cloud必要的依赖，module不需要额外添加 -->
@@ -395,6 +396,11 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>${hessian.version}</version>
             </dependency>
             <dependency>
                 <groupId>gexin.rp</groupId>

@@ -1,17 +1,19 @@
 package com.yoogurt.taxi.common.helper;
 
-import com.yoogurt.taxi.common.utils.SerializeUtils;
+import com.caucho.hessian.io.Hessian2Input;
+import com.caucho.hessian.io.Hessian2Output;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @author Eric Lau
  * @Date 2017/8/31
  */
+@Slf4j
 @Component
 public class RedisHelper {
 
@@ -153,6 +156,7 @@ public class RedisHelper {
      * @return hashKey对应的值
      */
     public Object getMapValue(String redisKey, Object hashKey) {
+
         return redisTemplate.opsForHash().get(redisKey, hashKey);
     }
 
@@ -202,25 +206,6 @@ public class RedisHelper {
         return redisTemplate.opsForHash().size(redisKey);
     }
 
-    /**
-     * 获取缓存（复杂对象）
-     * @param key 键
-     * @return 通常为自定义类
-     * @see #get(String)
-     */
-    public Object getObject(final String key) {
-        Object object = null;
-        object = redisTemplate.execute((RedisCallback<Object>) connection -> {
-
-            byte[] keyr = key.getBytes();
-            byte[] value = connection.get(keyr);
-            if (value == null) {
-                return null;
-            }
-            return SerializeUtils.unserialize(value);
-        });
-        return object;
-    }
 
     /**
      * 缓存对象
@@ -237,19 +222,67 @@ public class RedisHelper {
      * @param value        值
      * @param cacheSeconds 超时时间（单位：s），0为不超时
      */
-    public void setObject(String key, Object value, long cacheSeconds) {
-        final String keyf = key;
-        final Object valuef = value;
+    public void setObject(final String key, final Object value, long cacheSeconds) {
         final long liveTime = cacheSeconds;
 
         redisTemplate.execute((RedisCallback<Long>) connection -> {
-            byte[] keyb = keyf.getBytes();
-            byte[] valueb = SerializeUtils.serialize(valuef);
-            connection.set(keyb, valueb);
-            if (liveTime > 0) {
-                connection.expire(keyb, liveTime);
+            ByteArrayOutputStream os;
+            Hessian2Output output = null;
+            try {
+                byte[] keyBytes = key.getBytes();
+                os = new ByteArrayOutputStream();
+                output = new Hessian2Output(os);
+                output.setCloseStreamOnClose(true);
+                output.writeObject(value);
+                output.flush();
+                byte[] bytes = os.toByteArray();
+                connection.set(keyBytes, bytes);
+                if (liveTime > 0) {
+                    connection.expire(keyBytes, liveTime);
+                }
+                return 1L;
+            } catch (IOException e) {
+                log.error("[Hessian2]对象序列化失败, {}", e);
+            } finally {
+                try {
+                    if(output != null) output.close();
+                } catch (IOException e) {
+                    log.error("输出流关闭异常, {}", e);
+                }
             }
-            return 1L;
+            return 0L;
+        });
+    }
+
+    /**
+     * 获取缓存（复杂对象）
+     * @param key 键
+     * @return 通常为自定义类
+     * @see #get(String)
+     */
+    public Object getObject(final String key) {
+        return redisTemplate.execute((RedisConnection connection) -> {
+            ByteArrayInputStream is;
+            Hessian2Input input = null;
+            try {
+                byte[] value = connection.get(key.getBytes());
+                if (value == null) {
+                    return null;
+                }
+                is = new ByteArrayInputStream(value);
+                input = new Hessian2Input(is);
+                input.setCloseStreamOnClose(true);
+                return input.readObject();
+            } catch (IOException e) {
+                log.error("[Hessian2]对象反序列化失败, {}", e);
+            } finally {
+                try {
+                    if(input != null) input.close();
+                } catch (IOException e) {
+                    log.error("输入流关闭异常, {}", e);
+                }
+            }
+            return null;
         });
     }
 

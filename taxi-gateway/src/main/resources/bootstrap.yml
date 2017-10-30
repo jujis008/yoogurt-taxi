@@ -3,7 +3,7 @@ spring:
     name: taxi-gateway
   cloud:
     config:
-      uri: http://127.0.0.1:9998
+      uri: http://peer1:9998
       fail-fast: true
 management:
   security:
@@ -21,6 +21,9 @@ security:
   user:
     name: taxi-booter
     password: taxi123!@#
+logging:
+  level: debug
+  path: ./log/taxi-gateway
 ---
 spring:
   profiles:

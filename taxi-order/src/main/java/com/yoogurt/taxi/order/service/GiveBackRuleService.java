@@ -8,7 +8,7 @@ public interface GiveBackRuleService {
 
 	String getIntroduction();
 
-	OrderGiveBackRule getRuleInfo(int time, String unit);
+	OrderGiveBackRule getRuleInfo(long milliseconds);
 
 	OrderGiveBackRule getRuleInfo();
 

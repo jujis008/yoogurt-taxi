@@ -8,11 +8,9 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.BeanRefUtils;
-import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.*;
-import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
 import com.yoogurt.taxi.dal.condition.order.WarningOrderCondition;
 import com.yoogurt.taxi.dal.enums.*;
@@ -63,7 +61,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             //更改租单状态 --> 已接单
             rentInfoService.modifyStatus(orderForm.getRentId(), RentStatus.RENT);
             //已接单，通知对方
-            super.push(orderInfo, UserType.getEnumsByCode(orderForm.getUserType()).equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_RENT);
+            super.push(orderInfo, UserType.getEnumsByCode(orderForm.getUserType()).equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_RENT, new HashMap<>());
             OrderModel model = new OrderModel();
             BeanUtils.copyProperties(orderInfo, model);
             model.setOrderTime(orderInfo.getGmtCreate());
@@ -221,9 +219,10 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     @Override
     public List<OrderInfo> getOrderList(Long userId, Integer userType, Integer... status) {
         Example ex = new Example(OrderInfo.class);
-        Example.Criteria criteria = ex.createCriteria()
-                .andIn("status", Arrays.asList(status))
-                .andEqualTo("isDeleted", Boolean.FALSE);
+        Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
+        if (status != null && status.length > 0) {
+            criteria.andIn("status", Arrays.asList(status));
+        }
         if (UserType.USER_APP_AGENT.getCode().equals(userType)) {
             criteria.andEqualTo("agentUserId", userId);
         } else {

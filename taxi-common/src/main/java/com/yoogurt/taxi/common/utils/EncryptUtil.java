@@ -32,9 +32,9 @@ public class EncryptUtil {
        MessageDigest md = MessageDigest.getInstance("MD5");  
        byte[] b = md.digest(src.getBytes(UTF8));  
        return this.byte2HexStr(b);  
-    }  
-      
-    /** 
+    }
+
+    /**
      * BASE64编码
      * @param src 
      * @return 

@@ -2,6 +2,7 @@ package com.yoogurt.taxi.order.service.impl;
 
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.utils.CommonUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
@@ -15,7 +16,6 @@ import com.yoogurt.taxi.order.service.rest.RestAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,8 +51,9 @@ public abstract class AbstractOrderBizService implements OrderBizService {
      * @param orderInfo 订单信息
      * @param userType  推送对象的用户类型
      * @param sendType  推送类型
+     * @param extras    额外的回传参数
      */
-    public void push(OrderInfo orderInfo, UserType userType, SendType sendType) {
+    public void push(OrderInfo orderInfo, UserType userType, SendType sendType, Map<String, Object> extras) {
 
         if (orderInfo == null || userType == null || sendType == null) return;
         Long orderId = orderInfo.getOrderId();
@@ -60,13 +61,15 @@ public abstract class AbstractOrderBizService implements OrderBizService {
         String title = userType.equals(UserType.USER_APP_AGENT) ? Constants.AGENT_APP_NAME : Constants.OFFICIAL_APP_NAME;
         Long userId = userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getAgentUserId() : orderInfo.getOfficialUserId();
         PushPayload payload = new PushPayload(userType, sendType, title);
-        Map<String, Object> extras = new HashMap<>();
+        if (extras == null) {
+            extras = new HashMap<>();
+        }
         extras.put("orderId", orderId);
         payload.setExtras(extras);
         switch (sendType) {
             case ORDER_RENT: //已接单
                 String type = userType.equals(UserType.USER_APP_AGENT) ? "求租" : "出租";
-                String driverName = userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getAgentDriverName() : orderInfo.getOfficialDriverName();
+                String driverName = userType.equals(UserType.USER_APP_AGENT) ? CommonUtils.convertName(orderInfo.getAgentDriverName(), "师傅") : CommonUtils.convertName(orderInfo.getOfficialDriverName(), "师傅");
                 payload.setContent(String.format(message, type, orderId, driverName));
                 break;
             case ORDER_PAID: //已支付

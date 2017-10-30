@@ -1,10 +1,12 @@
 package com.yoogurt.taxi.account.service.impl;
 
 import com.yoogurt.taxi.account.dao.FinanceBillDao;
+import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.FinanceBillService;
 import com.yoogurt.taxi.account.service.FinanceRecordService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
+import com.yoogurt.taxi.common.helper.excel.BankReceiptOfMerchantsModel;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -29,6 +31,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -39,6 +42,8 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     private FinanceRecordService financeRecordService;
     @Autowired
     private RestUserService restUserService;
+    @Autowired
+    private FinanceAccountService financeAccountService;
     @Override
     public Pager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition) {
         return financeBillDao.getFinanceBillListApp(condition);
@@ -150,6 +155,43 @@ public class FinanceBillServiceImpl implements FinanceBillService {
                 .andEqualTo("isDeleted",Boolean.FALSE)
                 .andBetween("gmtCreate",condition.getStartTime(),condition.getEndTime());
         return financeBillDao.selectByExample(example);
+    }
+
+    @Override
+    public List<Map<String,Object>> getBillListForExport(ExportBillCondition condition) {
+        return financeBillDao.getWithdrawListForExport(condition);
+    }
+
+    @Override
+    public ResponseObj batchHandleWithdraw(List<BankReceiptOfMerchantsModel> list) {
+        int count=0;
+        for (BankReceiptOfMerchantsModel model:list) {
+            Long billId = model.getId();
+            FinanceBill financeBill = financeBillDao.selectById(billId);
+            if (financeBill == null) {
+                log.error("账单id："+billId+",账单记录不存在，请核实");
+                continue;
+            }
+            if (!financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
+                log.error("账单id："+billId+",账单异常billStatus="+financeBill.getBillStatus());
+                continue;
+            }
+            if (financeBill.getAmount().compareTo(model.getAmount())!=0) {
+                log.error("账单id："+billId+",金额有误");
+                continue;
+            }
+            if (!financeBill.getPayeeAccount().equals(model.getAccountNo())) {
+                log.error("账单id："+billId+",账号有误");
+                continue;
+            }
+            if (!financeBill.getPayeeName().equals(model.getAccountName())) {
+                log.error("账单id："+billId+",户名有误");
+            }
+            BillStatus billStatus = model.getStatus()?BillStatus.SUCCESS:BillStatus.FAIL;
+            financeAccountService.handleWithdraw(billId,billStatus);
+            count++;
+        }
+        return ResponseObj.success(count);
     }
 
 }

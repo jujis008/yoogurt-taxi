@@ -3,11 +3,11 @@ spring:
     name: taxi-order
   cloud:
     config:
-      uri: http://127.0.0.1:9998
+      uri: http://peer1:9998
       fail-fast: true
 logging:
   level: debug
-  tk.mybatis.mapper: debug
+  path: ./log/taxi-order
 ---
 spring:
   profiles:

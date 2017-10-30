@@ -3,8 +3,11 @@ spring:
     name: taxi-account
   cloud:
     config:
-      uri: http://127.0.0.1:9998
+      uri: http://peer1:9998
       fail-fast: true
+logging:
+  level: debug
+  path: ./log/taxi-account
 ---
 spring:
   profiles:

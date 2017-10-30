@@ -14,7 +14,11 @@ public class AmqpConfig {
 
     private final static String NOTIFICATION_QUEUE_NAME = "X-Queue-Notification";
 
+    private final static String NOTIFICATION_SMS_QUEUE_NAME = "X-Queue-Notification-SMS";
+
     private final static String NOTIFICATION_TOPIC = "topic.notification.#";
+
+    private final static String NOTIFICATION_SMS_TOPIC = "topic.sms.#";
 
     /**
      * 创建消息队列
@@ -24,6 +28,11 @@ public class AmqpConfig {
     @Bean
     Queue queue() {
         return new Queue(NOTIFICATION_QUEUE_NAME, true);
+    }
+
+    @Bean
+    Queue smsQueue() {
+        return new Queue(NOTIFICATION_SMS_QUEUE_NAME, true);
     }
 
     /**
@@ -46,5 +55,10 @@ public class AmqpConfig {
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with(NOTIFICATION_TOPIC);
+    }
+
+    @Bean
+    Binding smsBinding(Queue smsQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(smsQueue).to(exchange).with(NOTIFICATION_SMS_TOPIC);
     }
 }

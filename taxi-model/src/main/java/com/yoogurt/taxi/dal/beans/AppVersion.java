@@ -18,6 +18,12 @@ public class AppVersion extends SuperModel{
     private Long id;
 
     /**
+     * 应用类型：1-Android,2-iOS
+     */
+    @Column(name = "sys_type")
+    private Integer sysType;
+
+    /**
      * 应用类型：1-offfice,2-agent
      */
     @Column(name = "app_type")

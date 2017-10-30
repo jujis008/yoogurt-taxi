@@ -24,13 +24,4 @@ public class FeedbackForm {
     @NotNull(message = "应用版本号不能为空")
     private Integer appVersion;
 
-
-    @Setter
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class OtherForm {
-
-        private Long id;
-    }
 }

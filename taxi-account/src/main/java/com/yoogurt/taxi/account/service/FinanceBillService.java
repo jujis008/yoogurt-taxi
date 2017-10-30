@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.account.service;
 
 import com.yoogurt.taxi.common.bo.Money;
+import com.yoogurt.taxi.common.helper.excel.BankReceiptOfMerchantsModel;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
@@ -15,6 +16,7 @@ import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface FinanceBillService {
     /**
@@ -55,4 +57,8 @@ public interface FinanceBillService {
     WithdrawBillDetailModel getWithdrawBillDetail(Long billId);
 
     List<FinanceBill> getBillList(BillCondition condition);
+
+    List<Map<String,Object>> getBillListForExport(ExportBillCondition condition);
+
+    ResponseObj batchHandleWithdraw(List<BankReceiptOfMerchantsModel> list);
 }

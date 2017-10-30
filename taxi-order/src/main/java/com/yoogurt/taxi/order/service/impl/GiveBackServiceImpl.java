@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 
 @Service("giveBackService")
 public class GiveBackServiceImpl extends AbstractOrderBizService implements GiveBackService {
@@ -59,11 +60,11 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
         //超过了交车时间，需要计算违约金
         Date now = new Date();
         //实际的交车时间超出了预约的交车时间
-        if (orderInfo.getHandoverTime().before(now)) {
+        if (orderInfo.getGiveBackTime().before(now)) {
             //计算时间，向上取整
-            int minutes = (int) Math.floor((now.getTime() - orderInfo.getHandoverTime().getTime()) / 60000.00);
+            int minutes = (int) Math.floor((now.getTime() - orderInfo.getGiveBackTime().getTime()) / 60000.00);
             String unit = "MINUTES";
-            OrderGiveBackRule rule = ruleService.getRuleInfo(minutes, unit);
+            OrderGiveBackRule rule = ruleService.getRuleInfo(now.getTime() - orderInfo.getGiveBackTime().getTime());
             giveBackInfo.setIsDisobey(rule != null);
             if (rule != null) {
                 giveBackInfo.setRuleId(rule.getRuleId());
@@ -86,7 +87,7 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
             //已还车，通知正式司机
-            super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK);
+            super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK, new HashMap<>());
             return (GiveBackOrderModel) info(orderId, giveBackForm.getUserId());
         }
         return null;

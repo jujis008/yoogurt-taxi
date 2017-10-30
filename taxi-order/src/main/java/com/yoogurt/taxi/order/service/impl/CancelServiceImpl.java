@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 
 @Service("cancelService")
 public class CancelServiceImpl extends AbstractOrderBizService implements CancelService {
@@ -44,6 +45,8 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //已完成的订单不可取消了
         if (OrderStatus.FINISH.equals(status)) return null;
+        //已取消的订单不可操作了
+        if (OrderStatus.CANCELED.equals(status)) return null;
 
         OrderCancelInfo cancelInfo = new OrderCancelInfo();
         BeanUtils.copyProperties(cancelForm, cancelInfo);
@@ -62,8 +65,8 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
             //超过了交车时间，需要计算违约金
             Date now = new Date();
             //计算时间，向上取整
-            int hours = (int) Math.floor((now.getTime() - orderInfo.getHandoverTime().getTime()) / 3600000.00);
-            OrderCancelRule rule = ruleService.getRuleInfo(hours, unit);
+            int hours = (int) Math.abs(Math.floor((orderInfo.getHandoverTime().getTime() - now.getTime()) / 3600000.00));
+            OrderCancelRule rule = ruleService.getRuleInfo(orderInfo.getHandoverTime().getTime() - now.getTime());
             if (rule != null) {
                 //该时段不允许取消
                 if (!rule.getAllowCancel()) return null;
@@ -91,12 +94,12 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
             orderInfoService.modifyStatus(orderId, OrderStatus.CANCELED);
             //后台取消，需要通知双方
             if (!cancelForm.isFromApp()) {
-                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL);
-                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL);
+                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL, new HashMap<>());
+                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
             } else {
                 //对于App客户端，操作者通常是责任方，除非无责取消
                 //通知对方，订单已取消
-                super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_CANCEL);
+                super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
             }
             return (CancelOrderModel) info(orderId, cancelForm.getUserId());
         }

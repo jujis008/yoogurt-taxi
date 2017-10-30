@@ -1,32 +1,35 @@
 package com.yoogurt.taxi.system.controller.mobile;
 
-import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.AppVersion;
 import com.yoogurt.taxi.dal.enums.AppType;
+import com.yoogurt.taxi.dal.enums.SysType;
+import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.system.service.AppVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("mobile/system/version")
-public class AppVersionMobileController {
+@RequestMapping("mobile/system")
+public class AppVersionMobileController extends BaseController{
     @Autowired
     private AppVersionService appVersionService;
 
-    @RequestMapping(value = "/latest/type/{type}",method = RequestMethod.GET,produces = {"application/json;charset=UTF-8"})
-    public ResponseObj getLatestVersion(@PathVariable(name = "type") Integer type) {
-        AppType appType = AppType.getEnumsByCode(type);
-        if (appType == null) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"参数值错误");
+    @RequestMapping(value = "version/latest",method = RequestMethod.GET,produces = {"application/json;charset=UTF-8"})
+    public ResponseObj getLatestVersion() {
+        Integer userType = super.getUserType();
+        AppType appType = null;
+        if (userType.equals(UserType.USER_APP_AGENT.getCode())) {
+            appType = AppType.agent;
         }
-        AppVersion latestOne = appVersionService.getLatestOne(appType);
-        if (latestOne == null) {
-            return ResponseObj.fail(StatusCode.SYS_ERROR);
+        if (userType.equals(UserType.USER_APP_OFFICE.getCode())) {
+            appType = AppType.office;
         }
+        SysType sysType = SysType.getEnumsByCode(super.getSysType());
+        AppVersion latestOne = appVersionService.getLatestOne(appType, sysType);
         return ResponseObj.success(latestOne);
     }
 }

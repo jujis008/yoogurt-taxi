@@ -72,4 +72,34 @@ public final class CacheKey {
      * 短信验证码，后面拼接手机号码
      */
     public static final String VERIFY_CODE_KEY = "E_VERIFY_CODE#";
+
+    /**
+     * 支付相关的缓存，以Map形式存储
+     */
+    public static final String PAY_MAP = "P_PAY_MAP";
+
+    /**
+     * 支付对象缓存的hash key
+     */
+    public static final String PAYMENT_HASH_KEY = "P_PAYMENT#";
+
+    /**
+     * 任务对象缓存的hash key
+     */
+    public static final String TASK_HASH_KEY = "P_TASK#";
+
+    /**
+     * 退款相关的缓存，以Map形式存储
+     */
+    public static final String REFUND_MAP = "E_REFUND_MAP";
+
+    /**
+     * 正式司机导入相关的缓存，以map形式存储，{phoneNumber，password}
+     */
+    public static final String PHONE_PASSWORD_HASH_MAP_OFFICE = "P_PHONE_PASSWORD_OFFICE_MAP";
+
+
+    public static final String PHONE_PASSWORD_HASH_MAP_AGENT = "P_PHONE_PASSWORD_AGENT_MAP";
+
+
 }

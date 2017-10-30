@@ -8,6 +8,8 @@ import org.hibernate.validator.constraints.NotBlank;
 @Getter
 @Setter
 public class ResetPasswordForm {
+    @NotBlank(message = "请输入手机号")
+    private String phoneNumber;
     @NotBlank(message = "请输入验证码")
     @Length(min = 6,max = 6,message = "验证码为6位数字")
     private String phoneCode;

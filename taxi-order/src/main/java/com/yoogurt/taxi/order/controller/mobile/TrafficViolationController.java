@@ -13,10 +13,7 @@ import com.yoogurt.taxi.order.form.TrafficViolationForm;
 import com.yoogurt.taxi.order.service.TrafficViolationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -27,7 +24,6 @@ public class TrafficViolationController extends BaseController {
     @Autowired
     private TrafficViolationService trafficViolationService;
 
-
     @RequestMapping(value = "/trafficViolations", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getTrafficViolations(TrafficViolationListCondition condition) {
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
@@ -35,6 +31,12 @@ public class TrafficViolationController extends BaseController {
         condition.setUserId(super.getUserId());
         condition.setUserType(super.getUserType());
         return ResponseObj.success(trafficViolationService.getTrafficViolations(condition));
+    }
+
+    @RequestMapping(value = "/trafficViolations/{id}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getTrafficViolation(@PathVariable(name = "id") Long id) {
+        OrderTrafficViolationInfo traffic = trafficViolationService.getTrafficViolationInfo(id);
+        return ResponseObj.success(traffic);
     }
 
     @RequestMapping(value = "/trafficViolation", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
@@ -53,7 +55,6 @@ public class TrafficViolationController extends BaseController {
         if(traffic != null) return ResponseObj.success(traffic);
         return ResponseObj.fail();
     }
-
 
     @RequestMapping(value = "/trafficViolation", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj trafficHandle(@Valid @RequestBody TrafficHandleForm disobeyForm, BindingResult result) {
