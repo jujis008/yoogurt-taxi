@@ -66,9 +66,9 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     }
 
     @Override
-    public CompletableFuture<ResponseObj> doTask(PayTask payTask) {
+    public CompletableFuture<ResponseObj> doTask(final PayTask payTask) {
         if (payTask == null) return null;
-        PayForm payParams = payTask.getPayParams();
+        final PayForm payParams = payTask.getPayParams();
         if(payParams == null) return null;
         final String appId = payParams.getAppId();
         if(StringUtils.isBlank(appId)) return null;
