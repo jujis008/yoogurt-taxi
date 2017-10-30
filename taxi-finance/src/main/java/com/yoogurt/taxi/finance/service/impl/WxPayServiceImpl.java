@@ -70,22 +70,22 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         if (payTask == null) return null;
         PayForm payParams = payTask.getPayParams();
         if(payParams == null) return null;
-        String appId = payParams.getAppId();
+        final String appId = payParams.getAppId();
         if(StringUtils.isBlank(appId)) return null;
         return CompletableFuture.supplyAsync(() -> {
             try {
-                FinanceWxSettings settings = getWxSettings(appId);
+                final FinanceWxSettings settings = getWxSettings(appId);
                 if (settings == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "该应用暂不支持微信支付");
-                PrePayInfo pay = buildPrePayInfo(settings, payTask.getPayParams());
-                Document document = BeanRefUtils.toXml(pay, "xml");
-                ResponseEntity<String> prepayResult = restTemplate.postForEntity(URL_UNIFIED_ORDER, document.asXML(), String.class);
+                final PrePayInfo pay = buildPrePayInfo(settings, payTask.getPayParams());
+                final Document document = BeanRefUtils.toXml(pay, "xml");
+                final ResponseEntity<String> prepayResult = restTemplate.postForEntity(URL_UNIFIED_ORDER, document.asXML(), String.class);
                 //请求正常
                 if (prepayResult.getStatusCode().equals(HttpStatus.OK)) {
                     //控制台输出请求结果
                     CommonUtils.xmlOutput(DocumentHelper.parseText(prepayResult.getBody()));
                     //转换成JSON格式
                     XMLSerializer serializer = new XMLSerializer();
-                    JSONObject jsonObject = (JSONObject) serializer.read(prepayResult.getBody().replaceAll("^<\\?.*", "").replaceAll("\\r|\\t|\\n|\\s", ""));
+                    final JSONObject jsonObject = (JSONObject) serializer.read(prepayResult.getBody().replaceAll("^<\\?.*", "").replaceAll("\\r|\\t|\\n|\\s", ""));
                     if(!jsonObject.optString("return_code").equals("SUCCESS")){	//预下单不成功
                         //1、判断 return_code
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "获取支付对象失败");
