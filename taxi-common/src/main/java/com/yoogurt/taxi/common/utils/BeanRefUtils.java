@@ -26,6 +26,11 @@ public class BeanRefUtils {
     public static Map<?, ?> toMap(Object obj, boolean superClass) {
         if(obj == null) return null;
         if(superClass) return new BeanMap(obj);
+        return toMap(obj);
+    }
+
+    public static Map<String, Object> toMap(Object obj) {
+        if(obj == null) return null;
         Map<String, Object> map = new HashMap<>();
         Class<?> clz = obj.getClass();
         Field[] fields = clz.getDeclaredFields();
@@ -43,7 +48,6 @@ public class BeanRefUtils {
         }
         return map;
     }
-
 
     /**
      * <p class="detail">
@@ -67,12 +71,12 @@ public class BeanRefUtils {
                         key = key.substring(0, 1).toLowerCase() + key.substring(1);
                         sortedMap.put(key, value);
                     }
-                    log.info("转换结果: {}" + sortedMap.toString());
                 } catch (Exception e) {
                     log.error("Convert Bean to SortedMap occur exception:{}", e);
                 }
             }
         }
+        log.info("转换结果: " + sortedMap.toString());
         return sortedMap;
     }
 
