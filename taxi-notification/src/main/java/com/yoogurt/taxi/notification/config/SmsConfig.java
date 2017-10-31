@@ -23,4 +23,8 @@ public class SmsConfig {
     private String appId;
     @Value("validTemplateId")
     private String validTemplateId;
+    @Value("agentPwdTemplateId")
+    private String agentPwdTemplateId;
+    @Value("officePwdTemplateId")
+    private String officePwdTemplateId;
 }

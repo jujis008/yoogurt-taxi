@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,6 +123,10 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         financeRecord.setBillNo(financeBill.getBillNo());
         financeRecord.setBillId(financeBill.getId());
         financeRecordService.save(financeRecord);
+        Map<String, Object> map = new HashMap<>();
+        map.put("billNo",billNo);
+        map.put("subject","押金充值");
+        map.put("body","替你开押金充值");
         return ResponseObj.success(billNo);
     }
 

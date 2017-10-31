@@ -33,6 +33,10 @@ public class SmsReceiver {
             case VALID:
                 templateSms.setTemplateId(smsConfig.getValidTemplateId());
                 break;
+            case agent_pwd:
+                templateSms.setTemplateId(smsConfig.getAgentPwdTemplateId());
+            case office_pwd:
+                templateSms.setTemplateId(smsConfig.getOfficePwdTemplateId());
             default:
                 return;
         }
