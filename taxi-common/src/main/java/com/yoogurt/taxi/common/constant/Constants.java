@@ -120,7 +120,7 @@ public final class Constants {
     /**提现允许日期*/
     public static final int withdraw_day_of_week = 2;
     /**提现允许开始时间*/
-    public static final String withdraw_start_time = "9:00";
+    public static final String withdraw_start_time = "09:00";
     /**提现允许结束时间*/
     public static final String withdraw_end_time = "18:00";
     /**提现允许次数*/

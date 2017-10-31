@@ -72,9 +72,13 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     }
 
     @Override
-    public List<RentInfo> getRentInfoList(Long userId, Integer pageNum, Integer pageSize, Integer... status) {
+    public List<RentInfo> getRentInfoList(Long userId, Long orderId, Integer pageNum, Integer pageSize, Integer... status) {
         Example ex = new Example(RentInfo.class);
-        ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE).andEqualTo("userId", userId).andIn("status", Arrays.asList(status));
+        Example.Criteria criteria = ex.createCriteria();
+        criteria.andEqualTo("isDeleted", Boolean.FALSE).andEqualTo("userId", userId).andIn("status", Arrays.asList(status));
+        if (orderId != null && orderId>0) {
+            criteria.andEqualTo("rentId",orderId);
+        }
         if (pageNum != null && pageSize != null) {
             PageHelper.startPage(pageNum, pageSize, "gmt_create DESC");
         }

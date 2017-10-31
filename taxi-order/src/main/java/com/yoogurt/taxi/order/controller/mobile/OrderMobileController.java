@@ -7,22 +7,24 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
 import com.yoogurt.taxi.dal.condition.order.WarningOrderCondition;
-import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.ResponsibleParty;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.*;
 import com.yoogurt.taxi.order.form.*;
 import com.yoogurt.taxi.order.service.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/mobile/order")
@@ -51,7 +53,7 @@ public class OrderMobileController extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getOrderList(OrderListCondition condition) {
-        if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         SessionUser user = super.getUser();
         condition.setUserId(user.getUserId());
         condition.setUserType(user.getType());
@@ -176,22 +178,47 @@ public class OrderMobileController extends BaseController {
 
     @RequestMapping(value = "/cancel/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getCancelOrders() {
-        OrderListCondition condition = new OrderListCondition();
-        condition.setUserId(super.getUserId());
-        condition.setStatus(OrderStatus.CANCELED.getCode());
         SessionUser user = super.getUser();
         List<RentInfo> rentInfoList = rentInfoService.getRentInfoList(user.getUserId(), null, null, RentStatus.CANCELED.getCode(), RentStatus.TIMEOUT.getCode());
         List<CancelModel> cancelList = orderInfoService.getCancelOrders(null, user.getUserId(), user.getType());
-        rentInfoList.forEach(rent -> {
+        List<CancelModel> cancelModelList = new ArrayList<>(cancelList);
+        for (RentInfo rent : rentInfoList) {
+            List<CancelModel> collect = cancelModelList.stream().filter(e -> e.getOrderId().equals(rent.getRentId())).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(collect)) {
+                continue;
+            }
             CancelModel model = new CancelModel();
             BeanUtils.copyProperties(rent, model);
             model.setOrderId(rent.getRentId());
             model.setCancelTime(rent.getGmtModify());
-            model.setReason("发布人取消订单");
+            model.setReason(RentStatus.getEnumsByCode(rent.getStatus()).getName());
             model.setOrderTime(rent.getGmtCreate());
             model.setAmount(rent.getPrice());
             cancelList.add(model);
-        });
+        }
         return ResponseObj.success(cancelList);
     }
+
+    @RequestMapping(value = "/cancel/info/orderId/{orderId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getCancelOrderInfo(@PathVariable(name = "orderId") Long orderId) {
+        SessionUser user = super.getUser();
+        List<CancelModel> cancelList = orderInfoService.getCancelOrders(orderId, user.getUserId(), user.getType());
+        if (CollectionUtils.isNotEmpty(cancelList)) {
+            return ResponseObj.success(cancelList.get(0));
+        }
+        List<RentInfo> rentInfoList = rentInfoService.getRentInfoList(user.getUserId(), orderId, null, RentStatus.CANCELED.getCode(), RentStatus.TIMEOUT.getCode());
+        if (CollectionUtils.isNotEmpty(rentInfoList)) {
+            RentInfo body = rentInfoList.get(0);
+            CancelModel model = new CancelModel();
+            BeanUtils.copyProperties(body, model);
+            model.setOrderId(body.getRentId());
+            model.setCancelTime(body.getGmtModify());
+            model.setReason(RentStatus.getEnumsByCode(body.getStatus()).getName());
+            model.setOrderTime(body.getGmtCreate());
+            model.setAmount(body.getPrice());
+            return ResponseObj.success(model);
+        }
+        return ResponseObj.fail(StatusCode.BIZ_FAILED, "对象不存在");
+    }
+
 }
