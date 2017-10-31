@@ -27,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -140,34 +137,31 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 .sign_type("MD5")
                 .build();
         SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay);
-        String sign = createSign(parameters, settings.getPrivateKey());
+        String sign = sign(parameters, "MD5", settings.getPrivateKey(), super.getCharset(), "sign", "key");
         pay.setSign(sign);
         return pay;
     }
 
+
     /**
-     * 生成微信支付签名
-     * @param parameters 支付参数
-     * @param secretKey 密钥
-     * @return 支付签名
+     * 参数签名接口
+     *
+     * @param parameters 参数组装的SortedMap
+     * @param signType   加密方式，MD5，RSA，RSA2等
+     * @param privateKey  加密的私钥
+     * @param charset    编码方式
+     * @param skipAttrs  从parameters中跳过的属性
+     * @return 签名
      */
-    private String createSign(SortedMap<String, Object> parameters, String secretKey){
+    @Override
+    public String sign(SortedMap<String, Object> parameters, String signType, String privateKey, String charset, String... skipAttrs) {
+
         String sign = StringUtils.EMPTY;
         try {
-            StringBuilder str = new StringBuilder();
-            Set<Map.Entry<String, Object>> entrySet = parameters.entrySet();//所有参与传参的参数按照accsii排序（升序）
-            for (Map.Entry<String, Object> entry : entrySet) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                if (value != null && !StringUtils.isBlank(value.toString()) && !"sign".equals(key) && !"key".equals(key)) {
-                    str.append(key.trim()).append("=").append(value).append("&");
-                }
-            }
-            str.append("key=").append(secretKey.trim()); 	//拼接支付密钥
-            sign = DigestUtils.md5Hex(str.toString().getBytes("UTF-8")).toUpperCase();
+            sign = DigestUtils.md5Hex((super.createLinkString(parameters, skipAttrs) + "key=" + privateKey.trim()).getBytes(charset)).toUpperCase();    //拼接支付密钥
             log.info("sign = " + sign);
         } catch (UnsupportedEncodingException e) {
-            log.error("生成微信支付签名异常, {}", e);
+            log.error("生成支付签名异常, {}", e);
         }
         return sign;
     }
