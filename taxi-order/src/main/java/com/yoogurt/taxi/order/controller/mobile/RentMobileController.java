@@ -73,7 +73,7 @@ public class RentMobileController extends BaseController {
     public ResponseObj getRentList(PageableCondition condition) {
 
         if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
-        List<RentInfo> rents = rentInfoService.getRentInfoList(super.getUserId(), condition.getPageNum(), condition.getPageSize(), RentStatus.WAITING.getCode());
+        List<RentInfo> rents = rentInfoService.getRentInfoList(super.getUserId(), null, condition.getPageNum(), condition.getPageSize(), RentStatus.WAITING.getCode());
         return ResponseObj.success(appPagerFactory.generatePager((Page<RentInfo>) rents));
     }
 

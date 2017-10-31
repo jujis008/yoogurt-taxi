@@ -20,7 +20,7 @@ public interface RentInfoService {
 
 	Pager<RentInfoModel> getRentListByPage(RentListCondition condition);
 
-	List<RentInfo> getRentInfoList(Long userId, Integer pageNum, Integer pageSize, Integer... status);
+	List<RentInfo> getRentInfoList(Long userId, Long orderId, Integer pageNum, Integer pageSize, Integer... status);
 
 	List<RentInfo> getRentList(Long userId, Integer... status);
 

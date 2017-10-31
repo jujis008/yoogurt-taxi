@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.*;
+import java.time.temporal.TemporalAdjuster;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -158,11 +159,12 @@ public class FinanceMobileController extends BaseController {
         }
         BillCondition billCondition = new BillCondition();
         billCondition.setUserId(getUserId());
-        billCondition.setStartTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
-        billCondition.setEndTime(Date.from(LocalDateTime.now().minusDays(7).atZone(ZoneId.systemDefault()).toInstant()));
+        LocalDateTime firstTimeOfWeek = LocalDateTime.of(nowDate.with(DayOfWeek.MONDAY), LocalTime.of(0, 0, 0));
+        billCondition.setStartTime(Date.from(firstTimeOfWeek.atZone(ZoneId.systemDefault()).toInstant()));
+        billCondition.setEndTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         List<FinanceBill> billList = financeBillService.getBillList(billCondition);
         if (billList.size()>=Constants.withdraw_times) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"一周只能请求一次");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"本周已申请提现，无法重复提交申请。");
         }
         if (UserStatus.FROZEN == UserStatus.getEnumsByCode(userInfo.getStatus())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "账户已被冻结，不可操作");
@@ -211,4 +213,5 @@ public class FinanceMobileController extends BaseController {
         map.put("times",Constants.withdraw_times);
         return ResponseObj.success(map);
     }
+
 }
