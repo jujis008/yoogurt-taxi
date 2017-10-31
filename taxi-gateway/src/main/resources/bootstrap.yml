@@ -21,6 +21,9 @@ security:
   user:
     name: taxi-booter
     password: taxi123!@#
+logging:
+  level: debug
+  path: ./log/taxi-gateway
 ---
 spring:
   profiles:
