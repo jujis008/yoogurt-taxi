@@ -66,9 +66,9 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     public CompletableFuture<ResponseObj> doTask(final PayTask payTask) {
         if (payTask == null) return null;
         final PayForm payParams = payTask.getPayParams();
-        if(payParams == null) return null;
+        if (payParams == null) return null;
         final String appId = payParams.getAppId();
-        if(StringUtils.isBlank(appId)) return null;
+        if (StringUtils.isBlank(appId)) return null;
         return CompletableFuture.supplyAsync(() -> {
             try {
                 final FinanceWxSettings settings = getWxSettings(appId);
@@ -83,13 +83,13 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                     //转换成JSON格式
                     XMLSerializer serializer = new XMLSerializer();
                     final JSONObject jsonObject = (JSONObject) serializer.read(prepayResult.getBody().replaceAll("^<\\?.*", "").replaceAll("\\r|\\t|\\n|\\s", ""));
-                    if(!jsonObject.optString("return_code").equals("SUCCESS")){	//预下单不成功
+                    if (!jsonObject.optString("return_code").equals("SUCCESS")) {    //预下单不成功
                         //1、判断 return_code
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "获取支付对象失败");
-                    }else if(!jsonObject.optString("result_code").equals("SUCCESS")){
+                    } else if (!jsonObject.optString("result_code").equals("SUCCESS")) {
                         //2、判断 result_code
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "下单失败");
-                    }else{	//预下单请求成功
+                    } else {    //预下单请求成功
                         PrePayResult prePayResult = PrePayResult.builder()
                                 .appId(jsonObject.optString("appid"))
                                 .prepayId(jsonObject.optString("prepay_id"))
@@ -116,28 +116,28 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
 
     /**
      * 构造一个预下单对象
-     * @param settings 微信支付配置项
+     *
+     * @param settings  微信支付配置项
      * @param payParams 客户端提交的支付请求参数
      * @return 预下单对象
      */
     private PrePayInfo buildPrePayInfo(FinanceWxSettings settings, PayForm payParams) {
         Map<String, Object> extras = payParams.getExtras();
         PrePayInfo pay = PrePayInfo.builder()
-                .appid(settings.getAppId())
-                .nonce_str(UUID.randomUUID().toString())
-                .notify_url(super.getNotifyUrl()) //通知url必须为直接可访问的url，不能携带参数
-                .mch_id(settings.getMerchantId())
+                .appId(settings.getAppId())
+                .nonceStr(UUID.randomUUID().toString())
+                .notifyUrl(super.getNotifyUrl()) //通知url必须为直接可访问的url，不能携带参数
+                .mchId(settings.getMerchantId())
                 .body(payParams.getBody())
-                .out_trade_no(payParams.getOrderNo())
-                .total_fee(payParams.getAmount())
-                .spbill_create_ip(payParams.getClientIp())
-                .trade_type((extras != null && extras.get("trade_type") != null) ? extras.get("trade_type").toString() : "APP")
-                .appid(settings.getWxAppId())
+                .outTradeNo(payParams.getOrderNo())
+                .totalFee(payParams.getAmount())
+                .spbillCreateIp(payParams.getClientIp())
+                .tradeType((extras != null && extras.get("trade_type") != null) ? extras.get("trade_type").toString() : "APP")
                 .key(settings.getPrivateKey())
-                .sign_type("MD5")
+                .signType("MD5")
                 .build();
         SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay);
-        String sign = sign(parameters, "MD5", settings.getPrivateKey(), super.getCharset(), "sign", "key");
+        String sign = sign(parameters, pay.parameterMap(), "MD5", settings.getPrivateKey(), super.getCharset(), "sign", "key");
         pay.setSign(sign);
         return pay;
     }
@@ -146,20 +146,21 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     /**
      * 参数签名接口
      *
-     * @param parameters 参数组装的SortedMap
-     * @param signType   加密方式，MD5，RSA，RSA2等
-     * @param privateKey  加密的私钥
-     * @param charset    编码方式
-     * @param skipAttrs  从parameters中跳过的属性
+     * @param parameters   参数组装的SortedMap
+     * @param parameterMap 字段对应的请求参数，传入null，或者字段名对应的value为null，则以字段名为准
+     * @param signType     加密方式，MD5，RSA，RSA2等
+     * @param privateKey   加密的私钥
+     * @param charset      编码方式
+     * @param skipAttrs    从parameters中跳过的属性
      * @return 签名
      */
     @Override
-    public String sign(SortedMap<String, Object> parameters, String signType, String privateKey, String charset, String... skipAttrs) {
+    public String sign(SortedMap<String, Object> parameters, Map<String, Object> parameterMap, String signType, String privateKey, String charset, String... skipAttrs) {
 
         String sign = StringUtils.EMPTY;
         try {
-            sign = DigestUtils.md5Hex((super.createLinkString(parameters, skipAttrs) + "key=" + privateKey.trim()).getBytes(charset)).toUpperCase();    //拼接支付密钥
-            log.info("sign = " + sign);
+            sign = DigestUtils.md5Hex((super.parameterAssemble(parameters, parameterMap, skipAttrs) + "key=" + privateKey.trim()).getBytes(charset)).toUpperCase();    //拼接支付密钥
+            log.info("签名结果：" + sign);
         } catch (UnsupportedEncodingException e) {
             log.error("生成支付签名异常, {}", e);
         }
