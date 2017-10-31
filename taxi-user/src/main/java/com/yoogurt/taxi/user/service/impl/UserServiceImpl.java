@@ -2,11 +2,11 @@ package com.yoogurt.taxi.user.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
+import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.DateUtils;
@@ -19,10 +19,7 @@ import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.beans.UserRoleInfo;
 import com.yoogurt.taxi.dal.bo.SmsPayload;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
-import com.yoogurt.taxi.dal.enums.UserFrom;
-import com.yoogurt.taxi.dal.enums.UserGender;
-import com.yoogurt.taxi.dal.enums.UserStatus;
-import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.user.UserWLModel;
 import com.yoogurt.taxi.user.dao.CarDao;
 import com.yoogurt.taxi.user.dao.DriverDao;
@@ -354,7 +351,7 @@ public class UserServiceImpl implements UserService {
             int result = 0;
             result += userDao.batchInsert(userInfoList);
             result += driverDao.batchInsert(driverInfoList);
-            this.sendPhonePwd(phoneCodeMap);
+            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd);
             return result;
         });
         future.thenAccept(result ->log.info("IMPORT{}", "导入条数：" + result/2));
@@ -445,19 +442,20 @@ public class UserServiceImpl implements UserService {
             result += userDao.batchInsert(userInfoList);
             result += driverDao.batchInsert(driverInfoList);
             result += carDao.batchInsert(carInfoList);
-            this.sendPhonePwd(phoneCodeMap);
+            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd);
             return result;
         });
         future.thenAccept(result ->log.info("IMPORT{}", "导入条数：" + result/3));
         return errorCellBeanList;
     }
 
-    private void sendPhonePwd(Map<String, Object> phoneCodeMap) {
+    private void sendPhonePwd(Map<String, Object> phoneCodeMap, SmsTemplateType type) {
         if (profile.equals("prod")) {
             phoneCodeMap.forEach((e,b)->{
                 SmsPayload payload = new SmsPayload();
                 payload.setParam(b.toString());
                 payload.addOne(e);
+                payload.setType(type);
                 smsSender.send(payload);
             });
         } else {
