@@ -127,7 +127,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         map.put("billNo",billNo);
         map.put("subject","押金充值");
         map.put("body","替你开押金充值");
-        return ResponseObj.success(billNo);
+        return ResponseObj.success(map);
     }
 
     @Override
