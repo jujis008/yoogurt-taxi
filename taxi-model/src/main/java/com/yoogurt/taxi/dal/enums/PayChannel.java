@@ -11,21 +11,24 @@ import org.apache.commons.lang3.StringUtils;
 @Getter
 public enum PayChannel {
 
-    BALANCE("balance", "余额支付"),
-    ALIPAY("alipay", "支付宝快捷支付"),
-    UPACP("upacp", "银联支付"),
-    UPACP_WAP("upacp_wap", "银联网页支付"),
-    WX_PUB("wx_pub", "微信公众号支付"),
-    WX("wx", "微信支付"),
-    OFFLINE("Offline", "线下渠道");
+    BALANCE("balance", "余额支付", ""),
+    ALIPAY("alipay", "支付宝快捷支付", "alipayService"),
+    UPACP("upacp", "银联支付", "upacpService"),
+    UPACP_WAP("upacp_wap", "银联网页支付", "upacpService"),
+    WX_PUB("wx_pub", "微信公众号支付", "wxPayService"),
+    WX("wx", "微信支付", "wxPayService"),
+    OFFLINE("Offline", "线下渠道", "");
 
     private String name;
 
     private String detail;
 
-    PayChannel(String name, String detail) {
+    private String serviceName;
+
+    PayChannel(String name, String detail, String serviceName) {
         this.name = name;
         this.detail = detail;
+        this.serviceName = serviceName;
     }
 
     public static PayChannel getChannelByName(String name) {
