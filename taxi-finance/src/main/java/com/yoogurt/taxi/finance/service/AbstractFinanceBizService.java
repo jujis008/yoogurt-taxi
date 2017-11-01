@@ -17,7 +17,7 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
      * @param skipAttrs    从params中跳过的属性
      * @return 拼接后字符串
      */
-    public String parameterAssemble(SortedMap<String, Object> params, Map<String, Object> parameterMap, String... skipAttrs) {
+    protected String parameterAssemble(SortedMap<String, Object> params, Map<String, Object> parameterMap, String... skipAttrs) {
 
         List<String> skipList = new ArrayList<>();
         if (skipAttrs != null && skipAttrs.length > 0) {
@@ -43,7 +43,6 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
             }
             i++;
         }
-        log.info(str.toString());
         return str.toString();
     }
 
@@ -54,7 +53,7 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
      * @param charset 编码方式
      * @return encode之后的字符串
      */
-    public String parameterEncode(String params, String charset) {
+    protected String parameterEncode(String params, String charset) {
         if (StringUtils.isBlank(params) || !params.contains("&")) return params;
         if (StringUtils.isBlank(charset)) charset = getCharset();
         StringBuilder builder = new StringBuilder();
