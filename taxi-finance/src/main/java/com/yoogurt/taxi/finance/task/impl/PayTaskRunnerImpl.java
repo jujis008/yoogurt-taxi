@@ -5,14 +5,16 @@ import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.dal.enums.PayChannel;
 import com.yoogurt.taxi.dal.enums.TaskStatus;
-import com.yoogurt.taxi.finance.service.AlipayService;
+import com.yoogurt.taxi.finance.service.PayChannelService;
 import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.PayTask;
 import com.yoogurt.taxi.finance.task.PayTaskRunner;
 import com.yoogurt.taxi.finance.task.TaskInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
@@ -22,10 +24,10 @@ import java.util.concurrent.CompletableFuture;
 public class PayTaskRunnerImpl implements PayTaskRunner {
 
     @Autowired
-    private PayService payService;
+    private ApplicationContext context;
 
     @Autowired
-    private AlipayService alipayService;
+    private PayService payService;
 
     @Autowired
     private RedisHelper redis;
@@ -37,8 +39,11 @@ public class PayTaskRunnerImpl implements PayTaskRunner {
      */
     @Override
     public void run(final PayTask payTask) {
+        PayChannel channel = PayChannel.getChannelByName(payTask.getPayParams().getChannel());
+        if(channel == null) return;
 
-        CompletableFuture<ResponseObj> future = alipayService.doTask(payTask);
+        PayChannelService payChannelService = (PayChannelService) context.getBean(channel.getServiceName());
+        CompletableFuture<ResponseObj> future = payChannelService.doTask(payTask);
         if(future == null) return;
         future.thenAccept(obj -> {
 
@@ -62,7 +67,8 @@ public class PayTaskRunnerImpl implements PayTaskRunner {
                 redis.deleteMap(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId);
                 log.info("任务执行完毕！！");
             } else if (task.isNeedRetry()) {//触发任务重试
-                if (Constants.MAX_PAY_TASK_RETRY_TIMES >= task.getRetryTimes()) {
+                log.warn(obj.getMessage());
+                if (Constants.MAX_PAY_TASK_RETRY_TIMES > task.getRetryTimes()) {
                     //记录重试操作
                     payTask.retryRecord();
                     //重新设置任务信息缓存
@@ -71,6 +77,10 @@ public class PayTaskRunnerImpl implements PayTaskRunner {
                     payService.retry(taskId);
                     log.warn("任务执行失败，正在重试！！");
                 } else {
+                    //状态码
+                    task.setStatusCode(TaskStatus.EXECUTE_FAILED.getCode());
+                    //提示信息
+                    task.setMessage(TaskStatus.EXECUTE_FAILED.getMessage());
                     //将最终的任务状态更新到mongo中，没有此任务信息，会自动创建
                     payService.savePayTask(payTask);
                     //删除任务信息缓存
