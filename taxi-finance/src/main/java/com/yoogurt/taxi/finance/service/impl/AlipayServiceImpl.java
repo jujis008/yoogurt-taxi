@@ -26,7 +26,7 @@ import java.util.SortedMap;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-@Service
+@Service("alipayService")
 public class AlipayServiceImpl extends AbstractFinanceBizService implements AlipayService {
 
     @Autowired
