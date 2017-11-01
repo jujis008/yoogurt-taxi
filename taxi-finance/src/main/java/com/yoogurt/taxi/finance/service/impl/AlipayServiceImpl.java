@@ -65,10 +65,14 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
         if (payParams == null) return null;
         final String appId = payParams.getAppId();
         if (StringUtils.isBlank(appId)) return null;
+
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Payment payment = payService.buildPayment(payParams);
                 final FinanceAlipaySettings settings = getAlipaySettings(appId);
+                if (settings == null) {
+                    return ResponseObj.fail(StatusCode.BIZ_FAILED, "该应用暂不支持支付宝支付");
+                }
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 //构造支付参数
@@ -88,7 +92,12 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
                 //生成签名
                 String sign = sign(parameters, alipay.parameterMap(), RSA.RSA2_ALGORITHMS, settings.getPrivateKey(), "UTF-8", "sign", "key");
                 log.info("支付宝签名：" + sign);
-                if (StringUtils.isBlank(sign)) return ResponseObj.fail(StatusCode.SYS_ERROR, "签名失败");
+                if (StringUtils.isBlank(sign)) {
+                    payment.setStatusCode(String.valueOf(StatusCode.BIZ_FAILED.getStatus()));
+                    payment.setMessage("签名失败");
+                    return ResponseObj.fail(StatusCode.BIZ_FAILED, "签名失败");
+                }
+
                 //将请求的URL进行编码处理
                 String content = super.parameterAssemble(parameters, alipay.parameterMap(), "sign", "key") + "&sign=" + sign;
                 String encodedContent = super.parameterEncode(content, super.getCharset());
@@ -97,7 +106,6 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
                 Map<String, Object> credential = BeanRefUtils.toMap(alipay);
                 credential.put("order_str", encodedContent);
                 payment.setCredential(credential);
-
                 return ResponseObj.success(payment);
             } catch (Exception e) {
                 log.error("支付宝生成签名发生异常，{}", e);
