@@ -5,11 +5,13 @@ import com.yoogurt.taxi.common.utils.BeanRefUtils;
 import com.yoogurt.taxi.common.utils.CommonUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceWxSettings;
+import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.bo.wx.PrePayInfo;
 import com.yoogurt.taxi.finance.bo.wx.PrePayResult;
 import com.yoogurt.taxi.finance.dao.WxSettingsDao;
 import com.yoogurt.taxi.finance.form.PayForm;
 import com.yoogurt.taxi.finance.service.AbstractFinanceBizService;
+import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.service.WxPayService;
 import com.yoogurt.taxi.finance.task.PayTask;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +28,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -35,6 +38,8 @@ import java.util.concurrent.CompletableFuture;
 public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPayService {
 
     private static final String URL_UNIFIED_ORDER = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+    @Autowired
+    private PayService payService;
 
     @Autowired
     private WxSettingsDao wxSettingsDao;
@@ -74,8 +79,10 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 final FinanceWxSettings settings = getWxSettings(appId);
                 if (settings == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "该应用暂不支持微信支付");
                 final PrePayInfo pay = buildPrePayInfo(settings, payTask.getPayParams());
-                final Document document = BeanRefUtils.toXml(pay, "xml");
+                final Document document = BeanRefUtils.toXml(pay, "xml", pay.parameterMap(), "key");
+                CommonUtils.xmlOutput(document);
                 final ResponseEntity<String> prepayResult = restTemplate.postForEntity(URL_UNIFIED_ORDER, document.asXML(), String.class);
+                log.info(prepayResult.getBody());
                 //请求正常
                 if (prepayResult.getStatusCode().equals(HttpStatus.OK)) {
                     //控制台输出请求结果
@@ -83,7 +90,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                     //转换成JSON格式
                     XMLSerializer serializer = new XMLSerializer();
                     final JSONObject jsonObject = (JSONObject) serializer.read(prepayResult.getBody().replaceAll("^<\\?.*", "").replaceAll("\\r|\\t|\\n|\\s", ""));
-                    if (!jsonObject.optString("return_code").equals("SUCCESS")) {    //预下单不成功
+                    if (!jsonObject.optString("return_code").equals("SUCCESS")) {
                         //1、判断 return_code
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "获取支付对象失败");
                     } else if (!jsonObject.optString("result_code").equals("SUCCESS")) {
@@ -104,7 +111,9 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                                 .errCode(jsonObject.optString("err_code"))
                                 .errCodeDes(jsonObject.optString("err_code_des"))
                                 .build();
-                        return ResponseObj.success(prePayResult);
+                        Payment payment = payService.buildPayment(payParams);
+                        payment.setCredential(BeanRefUtils.toMap(prePayResult));
+                        return ResponseObj.success(payment);
                     }
                 }
             } catch (DocumentException e) {
@@ -124,8 +133,8 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     private PrePayInfo buildPrePayInfo(FinanceWxSettings settings, PayForm payParams) {
         Map<String, Object> extras = payParams.getExtras();
         PrePayInfo pay = PrePayInfo.builder()
-                .appId(settings.getAppId())
-                .nonceStr(UUID.randomUUID().toString())
+                .appId(settings.getWxAppId())
+                .nonceStr(UUID.randomUUID().toString().replaceAll("-", ""))
                 .notifyUrl(super.getNotifyUrl()) //通知url必须为直接可访问的url，不能携带参数
                 .mchId(settings.getMerchantId())
                 .body(payParams.getBody())
@@ -133,11 +142,11 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 .totalFee(payParams.getAmount())
                 .spbillCreateIp(payParams.getClientIp())
                 .tradeType((extras != null && extras.get("trade_type") != null) ? extras.get("trade_type").toString() : "APP")
-                .key(settings.getPrivateKey())
+                .key(settings.getApiSecret())
                 .signType("MD5")
                 .build();
         SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay);
-        String sign = sign(parameters, pay.parameterMap(), "MD5", settings.getPrivateKey(), super.getCharset(), "sign", "key");
+        String sign = sign(parameters, pay.parameterMap(), "MD5", settings.getApiSecret(), super.getCharset(), "sign");
         pay.setSign(sign);
         return pay;
     }
@@ -157,13 +166,11 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     @Override
     public String sign(SortedMap<String, Object> parameters, Map<String, Object> parameterMap, String signType, String privateKey, String charset, String... skipAttrs) {
 
-        String sign = StringUtils.EMPTY;
-        try {
-            sign = DigestUtils.md5Hex((super.parameterAssemble(parameters, parameterMap, skipAttrs) + "key=" + privateKey.trim()).getBytes(charset)).toUpperCase();    //拼接支付密钥
-            log.info("签名结果：" + sign);
-        } catch (UnsupportedEncodingException e) {
-            log.error("生成支付签名异常, {}", e);
-        }
+        String sign;
+        String content = super.parameterAssemble(parameters, parameterMap, skipAttrs) + "&key=" + privateKey.trim();
+        log.info(content);
+        sign = DigestUtils.md5Hex(content).toUpperCase();    //拼接支付密钥
+        log.info("签名结果：" + sign);
         return sign;
     }
 }
