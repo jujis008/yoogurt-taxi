@@ -103,7 +103,7 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
 
     private PayTask doSubmit(PayForm form, String taskId, boolean isRetry) {
         final PayTask task;
-        if (isRetry && StringUtils.isBlank(taskId)) {
+        if (isRetry && StringUtils.isNoneBlank(taskId)) {
             task = getTask(taskId);
         } else {
             TaskInfo taskInfo = buildTask();
