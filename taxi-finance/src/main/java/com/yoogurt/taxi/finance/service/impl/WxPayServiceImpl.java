@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +81,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 if (settings == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "该应用暂不支持微信支付");
                 final PrePayInfo pay = buildPrePayInfo(settings, payTask.getPayParams());
                 final Document document = BeanRefUtils.toXml(pay, "xml", pay.parameterMap(), "key");
+                //控制台输出请求参数
                 CommonUtils.xmlOutput(document);
                 final ResponseEntity<String> prepayResult = restTemplate.postForEntity(URL_UNIFIED_ORDER, document.asXML(), String.class);
                 log.info(prepayResult.getBody());
@@ -132,6 +134,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
      */
     private PrePayInfo buildPrePayInfo(FinanceWxSettings settings, PayForm payParams) {
         Map<String, Object> extras = payParams.getExtras();
+        DateTime now = DateTime.now();
         PrePayInfo pay = PrePayInfo.builder()
                 .appId(settings.getWxAppId())
                 .nonceStr(UUID.randomUUID().toString().replaceAll("-", ""))
@@ -144,8 +147,10 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 .tradeType((extras != null && extras.get("trade_type") != null) ? extras.get("trade_type").toString() : "APP")
                 .key(settings.getApiSecret())
                 .signType("MD5")
+                .timeStart(now.toString("yyyyMMddHHmmss"))
+                .timeExpire(now.plusMinutes(5).toString("yyyyMMddHHmmss"))
                 .build();
-        SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay);
+        SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay, "key");
         String sign = sign(parameters, pay.parameterMap(), "MD5", settings.getApiSecret(), super.getCharset(), "sign");
         pay.setSign(sign);
         return pay;
