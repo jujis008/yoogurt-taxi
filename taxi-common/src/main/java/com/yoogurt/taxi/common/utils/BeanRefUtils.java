@@ -9,10 +9,7 @@ import org.dom4j.Element;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 @Slf4j
 public class BeanRefUtils {
@@ -55,9 +52,14 @@ public class BeanRefUtils {
      * </p>
      * @author liuwh
      * @param obj 要转换的bean对象
+     * @param skipAttrs
      * @return SortedMap
      */
-    public static SortedMap<String, Object> toSortedMap(Object obj) {
+    public static SortedMap<String, Object> toSortedMap(Object obj, String... skipAttrs) {
+        List<String> skipList = new ArrayList<>();
+        if (skipAttrs != null && skipAttrs.length > 0) {
+            skipList.addAll(Arrays.asList(skipAttrs));
+        }
         SortedMap<String, Object> sortedMap = new TreeMap<>();
         Class<?> clz = obj.getClass();
         Method[] methods = clz.getMethods();
@@ -69,6 +71,7 @@ public class BeanRefUtils {
                     if (value != null) {
                         String key = methodName.substring(3);
                         key = key.substring(0, 1).toLowerCase() + key.substring(1);
+                        if(skipList.contains(key)) continue;
                         sortedMap.put(key, value);
                     }
                 } catch (Exception e) {
@@ -88,10 +91,16 @@ public class BeanRefUtils {
      * @author liuwh
      * @param obj 要转换的bean对象
      * @param rootElementName XML根元素名称，默认“xml”
+     * @param parameterMap
+     * @param skipAttrs
      * @return Document
      */
-    public static Document toXml(Object obj, String rootElementName){
+    public static Document toXml(Object obj, String rootElementName, Map<String, Object> parameterMap, String... skipAttrs){
         if (StringUtils.isBlank(rootElementName)) rootElementName = "xml";
+        List<String> skipList = new ArrayList<>();
+        if (skipAttrs != null && skipAttrs.length > 0) {
+            skipList.addAll(Arrays.asList(skipAttrs));
+        }
         Element rootElement = DocumentHelper.createElement(rootElementName);
         Document document = DocumentHelper.createDocument(rootElement);
         Class<?> clz = obj.getClass();
@@ -104,6 +113,10 @@ public class BeanRefUtils {
                     if (value != null) {
                         String key = methodName.substring(3);
                         key = key.substring(0, 1).toLowerCase() + key.substring(1);
+                        if(skipList.contains(key)) continue;
+                        if (parameterMap != null && parameterMap.get(key) != null) {
+                            key = parameterMap.get(key).toString();
+                        }
                         Element element = DocumentHelper.createElement(key);
                         element.setText(value.toString());
                         rootElement.add(element);
