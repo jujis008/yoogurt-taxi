@@ -53,6 +53,11 @@ public final class Constants {
     public static final int MAX_RENT_COUNT = 5;
 
     /**
+     * 支付任务最大重试次数
+     */
+    public static final int MAX_PAY_TASK_RETRY_TIMES = 5;
+
+    /**
      * 为了保证API的幂等性，每次请求需要有一个唯一的REQUEST_ID，
      * 所以加一个自定义Header：yoogurt-request-id: <request_id>。
      * 系统中用到的request_id生成算法暂定为UUID。
@@ -66,6 +71,9 @@ public final class Constants {
      */
     public static final String USER_TYPE_HERDER_NAME = "X-yoogurt-user-type";
 
+    /**
+     * 标识客户端操作系统类型
+     */
     public static final String REQUEST_SYSTEM_TYPE = "X-yoogurt-system-type";
 
     /**

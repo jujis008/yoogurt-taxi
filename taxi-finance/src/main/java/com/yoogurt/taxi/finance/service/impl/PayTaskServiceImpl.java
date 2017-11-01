@@ -28,7 +28,7 @@ public class PayTaskServiceImpl implements PayTaskService {
     }
 
     @Override
-    public PayTask updatePayTask(PayTask task) {
+    public PayTask savePayTask(PayTask task) {
         if(task == null) return null;
         return payTaskDao.save(task);
     }

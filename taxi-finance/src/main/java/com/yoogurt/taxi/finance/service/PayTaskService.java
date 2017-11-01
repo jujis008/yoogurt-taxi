@@ -8,7 +8,7 @@ public interface PayTaskService {
 
     PayTask addPayTask(PayTask task);
 
-    PayTask updatePayTask(PayTask task);
+    PayTask savePayTask(PayTask task);
 
     boolean deletePayTask(String taskId);
 

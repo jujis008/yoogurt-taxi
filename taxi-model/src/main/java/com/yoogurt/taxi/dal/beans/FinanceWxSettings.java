@@ -13,10 +13,8 @@ import javax.persistence.*;
 @Setter
 @Table(name = "finance_wx_settings")
 public class FinanceWxSettings extends SuperModel {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
+    @Id
     @Column(name = "app_id")
     private String appId;
 

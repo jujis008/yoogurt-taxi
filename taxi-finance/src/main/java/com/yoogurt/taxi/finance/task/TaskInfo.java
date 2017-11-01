@@ -37,6 +37,21 @@ public class TaskInfo implements Serializable {
 	private String queueName = "X-Queue-Pay";
 
 	/**
+	 * 是否需要重试，默认true
+	 */
+	private boolean needRetry = true;
+
+	/**
+	 * 当前任务重试的次数（不含第一次执行），最大重试次数内置为5次。
+	 */
+	private int retryTimes = 0;
+
+	/**
+	 * 上次任务重试的时间戳
+	 */
+	private long lastRetryTimestamp = 0;
+
+	/**
 	 * 任务执行的开始时间戳
 	 */
 	private long startTimestamp;
@@ -45,17 +60,6 @@ public class TaskInfo implements Serializable {
 	 * 任务结束的时间戳
 	 */
 	private long endTimestamp;
-
-	/**
-	 * 是否需要重试，默认true
-	 */
-	private boolean needRetry = true;
-
-	/**
-	 * 任务重试次数，默认三次，分别间隔1s，2s，3s
-	 * 间隔时间以公差为1的等差数列组成，最大重试次数内置为5次。
-	 */
-	private int retryTimes = 3;
 
 	/**
 	 * 任务执行状态码

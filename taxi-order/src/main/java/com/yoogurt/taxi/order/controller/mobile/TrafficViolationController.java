@@ -26,7 +26,7 @@ public class TrafficViolationController extends BaseController {
 
     @RequestMapping(value = "/trafficViolations", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getTrafficViolations(TrafficViolationListCondition condition) {
-        if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         condition.setFromApp(true);
         condition.setUserId(super.getUserId());
         condition.setUserType(super.getUserType());
@@ -39,6 +39,13 @@ public class TrafficViolationController extends BaseController {
         return ResponseObj.success(traffic);
     }
 
+    /**
+     * 录入违章信息
+     *
+     * @param form   form表单
+     * @param result 表单验证结果
+     * @return ResponseObj
+     */
     @RequestMapping(value = "/trafficViolation", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj addTrafficViolation(@Valid @RequestBody TrafficViolationForm form, BindingResult result) {
         if (result.hasErrors()) {
@@ -50,16 +57,23 @@ public class TrafficViolationController extends BaseController {
         }
         form.setUserId(user.getUserId());
         ResponseObj obj = trafficViolationService.buildTrafficViolation(form);
-        if(!obj.isSuccess()) return obj;
+        if (!obj.isSuccess()) return obj;
         OrderTrafficViolationInfo traffic = trafficViolationService.addTrafficViolation((OrderTrafficViolationInfo) obj.getBody());
-        if(traffic != null) return ResponseObj.success(traffic);
+        if (traffic != null) return ResponseObj.success(traffic);
         return ResponseObj.fail();
     }
 
+    /**
+     * 处理违章记录
+     *
+     * @param disobeyForm form表单
+     * @param result      表单验证结果
+     * @return ResponseObj
+     */
     @RequestMapping(value = "/trafficViolation", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj trafficHandle(@Valid @RequestBody TrafficHandleForm disobeyForm, BindingResult result) {
 
-        if(result.hasErrors()) {
+        if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUser().getType())) {

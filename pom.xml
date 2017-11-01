@@ -71,6 +71,9 @@
 
         <protobuf.version>2.5.0</protobuf.version>
         <hessian.version>4.0.51</hessian.version>
+        <dom4j.version>2.1.0</dom4j.version>
+        <json-lib.version>2.4</json-lib.version>
+
     </properties>
 
     <!-- 内置了spring boot和spring cloud必要的依赖，module不需要额外添加 -->
@@ -293,6 +296,19 @@
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml-schemas</artifactId>
                 <version>${poi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.sf.json-lib</groupId>
+                <artifactId>json-lib</artifactId>
+                <version>${json-lib.version}</version>
+                <classifier>jdk15</classifier>
             </dependency>
 
             <!-- shiro -->

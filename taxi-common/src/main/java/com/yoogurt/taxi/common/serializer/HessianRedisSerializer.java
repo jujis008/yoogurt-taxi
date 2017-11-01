@@ -21,6 +21,7 @@ public class HessianRedisSerializer<T> implements RedisSerializer<T> {
      */
     @Override
     public byte[] serialize(T t) throws SerializationException {
+        if(t == null) return new byte[0];
         Hessian2Output output = null;
         ByteArrayOutputStream os;
         try {
@@ -50,6 +51,7 @@ public class HessianRedisSerializer<T> implements RedisSerializer<T> {
      */
     @Override
     public T deserialize(byte[] bytes) throws SerializationException {
+        if(bytes == null || bytes.length <= 0) return null;
         Hessian2Input input = null;
         ByteArrayInputStream is;
         try {

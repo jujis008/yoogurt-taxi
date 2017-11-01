@@ -25,19 +25,27 @@ public class PayTests {
     @Test
     public void submitTaskTest() {
         PayForm form = new PayForm();
+        form.setAppId("app_driver");
         form.setAmount(1000L);
         form.setBody("来自Junit测试");
-        form.setChannel("wx");
+        form.setChannel("alipay");
         form.setOrderNo("1234567898");
         form.setSubject("测试一下");
-        form.setAppId("app_driver");
         form.setClientIp("127.0.0.1");
         form.setMethod("yoogurt.taxi.finance.pay");
         form.setTimestamp(System.currentTimeMillis());
+        form.setExtras(new HashMap<String, Object>(){{
+            put("trade_type", "APP");
+        }});
         form.setMetadata(new HashMap<String, Object>(){{
             put("type", "order");
         }});
         PayTask task = payService.submit(form);
+        try {
+            Thread.sleep(3500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Assert.assertNotNull(task);
     }
 

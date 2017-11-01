@@ -1,6 +1,8 @@
 package com.yoogurt.taxi.common.utils;
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.springframework.util.CollectionUtils;
 import com.yoogurt.taxi.common.constant.Constants;
 
@@ -345,9 +347,10 @@ public class CommonUtils {
      * <p class="detail">
      * 功能：判断一个字符串的长度，1个汉字=2个字符
      * </p>
-     * @author liu.weihao
+     *
      * @param str 需要判断的字符串
      * @return 字符串的实际长度
+     * @author liu.weihao
      */
     public static int getLength(String str) {
         if (str == null)
@@ -366,9 +369,10 @@ public class CommonUtils {
      * <p class="detail">
      * 功能：判断是否是标准的字符
      * </p>
-     * @author liu.weihao
+     *
      * @param c 字符
      * @return 是否
+     * @author liu.weihao
      */
     public static boolean isLetter(char c) {
         int k = 0x80;
@@ -399,5 +403,26 @@ public class CommonUtils {
      */
     public static String convertName(String name, String append) {
         return convertName(name, append, 1);
+    }
+
+    /**
+     * <p class="detail">
+     * 功能：XML格式化输出到控制台
+     * </p>
+     *
+     * @param document
+     * @author liuwh
+     */
+    public static void xmlOutput(org.dom4j.Document document) {
+        try {
+            // 设置输出格式
+            OutputFormat format = new OutputFormat("    ", true);// 设置缩进为4个空格，并且另起一行为true
+            // 输出到控制台
+            XMLWriter xmlWriter = new XMLWriter(format);
+            xmlWriter.write(document);
+            xmlWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

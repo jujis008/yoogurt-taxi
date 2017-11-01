@@ -40,6 +40,17 @@ public enum PayChannel {
         return null;
     }
 
+    public boolean isAppPay() {
+        switch (this) {
+            case ALIPAY:
+            case WX:
+            case UPACP:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public boolean isThirdParty() {
         switch (this) {
             case ALIPAY:
