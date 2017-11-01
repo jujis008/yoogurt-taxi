@@ -29,6 +29,9 @@ public class PrePayResult implements Serializable {
 	/** 微信生成的预支付会话标识，用于后续接口调用中使用，该值有效期为2小时 */
 	private String prepayId;
 
+	/** 时间戳，精确到秒 */
+	private long timestamp = System.currentTimeMillis() / 100;
+
 	/** trade_type为NATIVE时有返回，用于生成二维码，展示给用户进行扫码支付 */
 	private String codeUrl;
 
