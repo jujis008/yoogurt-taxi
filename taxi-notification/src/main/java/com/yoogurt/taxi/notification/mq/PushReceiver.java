@@ -27,6 +27,5 @@ public class PushReceiver {
         ResponseObj obj = pushService.pushMessage(payload.getUserIds(), payload.getUserType(), payload.getSendType(), payload.getMsgType(), payload.getDeviceType(), payload.getTitle(), payload.getContent(), payload.getExtras(), payload.isPersist());
 
         log.info("推送结果：" + obj.toJSON());
-
     }
 }
