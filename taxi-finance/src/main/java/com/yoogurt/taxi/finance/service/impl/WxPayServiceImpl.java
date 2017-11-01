@@ -35,7 +35,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-@Service
+@Service("wxPayService")
 public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPayService {
 
     private static final String URL_UNIFIED_ORDER = "https://api.mch.weixin.qq.com/pay/unifiedorder";
@@ -84,7 +84,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 //控制台输出请求参数
                 CommonUtils.xmlOutput(document);
                 final ResponseEntity<String> prepayResult = restTemplate.postForEntity(URL_UNIFIED_ORDER, document.asXML(), String.class);
-                log.info(prepayResult.getBody());
+                log.info("微信预下单请求响应：\n" + prepayResult.getBody());
                 //请求正常
                 if (prepayResult.getStatusCode().equals(HttpStatus.OK)) {
                     //控制台输出请求结果
@@ -94,10 +94,10 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                     final JSONObject jsonObject = (JSONObject) serializer.read(prepayResult.getBody().replaceAll("^<\\?.*", "").replaceAll("\\r|\\t|\\n|\\s", ""));
                     if (!jsonObject.optString("return_code").equals("SUCCESS")) {
                         //1、判断 return_code
-                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "获取支付对象失败");
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, jsonObject.optString("return_msg"));
                     } else if (!jsonObject.optString("result_code").equals("SUCCESS")) {
                         //2、判断 result_code
-                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "下单失败");
+                        return ResponseObj.fail(StatusCode.BIZ_FAILED, "[" + jsonObject.optString("err_code") + "]" + jsonObject.optString("err_code_des"));
                     } else {    //预下单请求成功
                         PrePayResult prePayResult = PrePayResult.builder()
                                 .appId(jsonObject.optString("appid"))
