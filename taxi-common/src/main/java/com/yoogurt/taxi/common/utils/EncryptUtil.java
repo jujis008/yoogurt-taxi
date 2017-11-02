@@ -12,6 +12,7 @@
  */
 package com.yoogurt.taxi.common.utils;
 
+import org.bouncycastle.crypto.digests.MD5Digest;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -71,5 +72,5 @@ public class EncryptUtil {
             sb.append(s.toUpperCase());  
         }  
         return sb.toString();  
-    }  
-}  
+    }
+}
