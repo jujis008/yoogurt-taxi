@@ -112,6 +112,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                                 .returnMsg(jsonObject.optString("return_msg"))
                                 .errCode(jsonObject.optString("err_code"))
                                 .errCodeDes(jsonObject.optString("err_code_des"))
+                                .timestamp(System.currentTimeMillis() / 1000)
                                 .build();
                         Payment payment = payService.buildPayment(payParams);
                         payment.setCredential(BeanRefUtils.toMap(prePayResult));
