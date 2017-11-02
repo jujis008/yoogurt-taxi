@@ -83,7 +83,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
                 alipay.setBody(payParams.getBody());
                 alipay.setOrderNo(payParams.getOrderNo());
                 alipay.setTotalAmount(new Money(payParams.getAmount()).getAmount());
-                alipay.setNotifyUrl(super.getNotifyUrl());
+                alipay.setNotifyUrl(getNotifyUrl());
                 alipay.setPassbackParams(mapper.writeValueAsString(payParams.getMetadata()));
                 //biz_content 转换成 JSON格式，null字段去掉
                 alipay.setBizContent(mapper.writeValueAsString(alipay));
@@ -132,4 +132,8 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
         return RSA.sign(content, signType, privateKey, charset);
     }
 
+    @Override
+    public String getNotifyUrl() {
+        return "http://api.yoogate.cn/webhooks/finance/i/alipay";
+    }
 }

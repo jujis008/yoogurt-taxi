@@ -138,7 +138,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         PrePayInfo pay = PrePayInfo.builder()
                 .appId(settings.getWxAppId())
                 .nonceStr(UUID.randomUUID().toString().replaceAll("-", ""))
-                .notifyUrl(super.getNotifyUrl()) //通知url必须为直接可访问的url，不能携带参数
+                .notifyUrl(getNotifyUrl()) //通知url必须为直接可访问的url，不能携带参数
                 .mchId(settings.getMerchantId())
                 .body(payParams.getBody())
                 .outTradeNo(payParams.getOrderNo())
@@ -177,5 +177,10 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         sign = DigestUtils.md5Hex(content).toUpperCase();    //拼接支付密钥
         log.info("签名结果：" + sign);
         return sign;
+    }
+
+    @Override
+    public String getNotifyUrl() {
+        return "http://api.yoogate.cn/webhooks/finance/i/wx";
     }
 }

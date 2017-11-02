@@ -75,12 +75,10 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
         return builder.toString();
     }
 
-    public String getNotifyUrl() {
-        return "http://m.yoogate.cn/common/finance/i/notify";
-    }
-
-
     public String getCharset() {
         return "UTF-8";
     }
+
+    public abstract String getNotifyUrl();
+
 }
