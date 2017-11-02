@@ -34,7 +34,7 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     @Override
     public PayTask submit(PayForm form) {
         try {
-            return doSubmit(form, null,false);
+            return doSubmit(form, null, false);
         } catch (Exception e) {
             log.error("提交支付任务失败,{}", e);
         }
@@ -61,7 +61,7 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     public PayTask getTask(String taskId) {
 
         Object o = redis.getMapValue(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId);
-        if(o == null) return null;
+        if (o == null) return null;
         return (PayTask) o;
     }
 
@@ -74,7 +74,7 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     public Payment queryResult(String taskId) {
 
         Object o = redis.getMapValue(CacheKey.PAY_MAP, CacheKey.PAYMENT_HASH_KEY + taskId);
-        if(o == null) return null;
+        if (o == null) return null;
         return (Payment) o;
     }
 
@@ -105,11 +105,25 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
         final PayTask task;
         if (isRetry && StringUtils.isNoneBlank(taskId)) {
             task = getTask(taskId);
+            try {
+                long interval = task.retryInterval();
+                log.warn("[" + task.getTaskId() + "]" + interval + "ms后重试……");
+                //重试间隔，让线程睡一会儿
+                Thread.sleep(interval);
+                //记录重试操作
+                task.retryRecord();
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            } catch (IllegalAccessException e) {
+                log.warn("[" + task.getTaskId() + "]重试失败, {}", e);
+            }
         } else {
             TaskInfo taskInfo = buildTask();
-            task = new PayTask(taskInfo.getTaskId(), taskInfo, form);
-            redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskInfo.getTaskId(), task);
+            taskId = taskInfo.getTaskId();
+            task = new PayTask(taskId, taskInfo, form);
         }
+        //重新设置任务信息缓存
+        redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId, task);
         sender.send(task);
         return task;
     }
