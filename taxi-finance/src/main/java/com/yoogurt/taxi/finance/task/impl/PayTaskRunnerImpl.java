@@ -40,12 +40,13 @@ public class PayTaskRunnerImpl implements PayTaskRunner {
     @Override
     public void run(final PayTask payTask) {
         PayChannel channel = PayChannel.getChannelByName(payTask.getPayParams().getChannel());
-        if(channel == null) return;
+        if (channel == null) return;
 
         PayChannelService payChannelService = (PayChannelService) context.getBean(channel.getServiceName());
         CompletableFuture<ResponseObj> future = payChannelService.doTask(payTask);
-        if(future == null) return;
+        if (future == null) return;
         future.thenAccept(obj -> {
+            log.warn(obj.getMessage());
 
             final String taskId = payTask.getTaskId();
             final TaskInfo task = payTask.getTask();
@@ -65,17 +66,11 @@ public class PayTaskRunnerImpl implements PayTaskRunner {
                 redis.put(CacheKey.PAY_MAP, CacheKey.PAYMENT_HASH_KEY + taskId, payment);
                 //删除任务信息缓存
                 redis.deleteMap(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId);
-                log.info("任务执行完毕！！");
+                log.info("[" + task.getTaskId() + "]任务执行完毕!");
             } else if (task.isNeedRetry()) {//触发任务重试
-                log.warn(obj.getMessage());
-                if (Constants.MAX_PAY_TASK_RETRY_TIMES > task.getRetryTimes()) {
-                    //记录重试操作
-                    payTask.retryRecord();
-                    //重新设置任务信息缓存
-                    redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId, payTask);
-                    //重试
-                    payService.retry(taskId);
-                    log.warn("任务执行失败，正在重试！！");
+                if (payTask.canRetry()) {
+                    log.warn("[" + task.getTaskId() + "]任务执行失败!!");
+                    payService.retry(taskId); //重试
                 } else {
                     //状态码
                     task.setStatusCode(TaskStatus.EXECUTE_FAILED.getCode());
@@ -85,7 +80,7 @@ public class PayTaskRunnerImpl implements PayTaskRunner {
                     payService.savePayTask(payTask);
                     //删除任务信息缓存
                     redis.deleteMap(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId);
-                    log.warn("任务执行失败！！");
+                    log.error("[" + task.getTaskId() + "]重试次数已达上限，任务执行失败!!!");
                 }
             }
         });
