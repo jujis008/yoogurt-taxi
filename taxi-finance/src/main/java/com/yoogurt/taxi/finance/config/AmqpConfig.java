@@ -20,19 +20,14 @@ public class AmqpConfig {
 
     private final static String PAY_EXCHANGE_NAME = "X-Exchange-Pay";
 
+    private final static String PAY_NOTIFY_QUEUE_NAME = "X-Queue-Pay-Notify";
+
     private final static String PAY_QUEUE_NAME = "X-Queue-Pay";
 
     private final static String TOPIC = "topic.task.#";
 
-    /**
-     * 创建消息队列
-     *
-     * @return Queue
-     */
-    @Bean
-    Queue queue() {
-        return new Queue(PAY_QUEUE_NAME, true);
-    }
+    /** 回调专用 route key */
+    private final static String TOPIC_TASK_NOTIFY = "topic.task.notify.#";
 
     /**
      * 创建消息交换机（exchange）
@@ -45,15 +40,47 @@ public class AmqpConfig {
     }
 
     /**
-     * 交换机和队列的绑定，并指定route key
+     * 创建支付消息队列
      *
-     * @param queue    消息队列
+     * @return Queue
+     */
+    @Bean("payQueue")
+    Queue payQueue() {
+        return new Queue(PAY_QUEUE_NAME, true);
+    }
+
+    /**
+     * 交换机和支付消息队列的绑定，并指定route key
+     *
+     * @param payQueue    消息队列
      * @param exchange 消息交换机
      * @return Binding
      */
     @Bean
-    Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with(TOPIC);
+    Binding payQueueBinding(Queue payQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(payQueue).to(exchange).with(TOPIC);
+    }
+
+    /**
+     * 创建回调消息队列
+     *
+     * @return Queue
+     */
+    @Bean("notifyQueue")
+    Queue notifyQueue() {
+        return new Queue(PAY_NOTIFY_QUEUE_NAME, true);
+    }
+
+    /**
+     * 交换机和回调消息队列的绑定，并指定route key
+     *
+     * @param notifyQueue    消息队列
+     * @param exchange 消息交换机
+     * @return Binding
+     */
+    @Bean
+    Binding notifyQueueBinding(Queue notifyQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(notifyQueue).to(exchange).with(TOPIC_TASK_NOTIFY);
     }
 
     @Bean
@@ -69,7 +96,7 @@ public class AmqpConfig {
     }
 
     /**
-     * issue: no method found for class [b
+     * issue: no method found for class [B
      * @return SimpleRabbitListenerContainerFactory
      */
     @Bean
