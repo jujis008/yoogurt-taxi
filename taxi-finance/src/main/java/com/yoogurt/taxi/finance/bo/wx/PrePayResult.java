@@ -30,7 +30,7 @@ public class PrePayResult implements Serializable {
 	private String prepayId;
 
 	/** 时间戳，精确到秒 */
-	private long timestamp = System.currentTimeMillis() / 100;
+	private long timestamp;
 
 	/** trade_type为NATIVE时有返回，用于生成二维码，展示给用户进行扫码支付 */
 	private String codeUrl;
