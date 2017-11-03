@@ -104,7 +104,7 @@ public class PayMobileController extends BaseController {
         if (!RegUtil.checkIpAddress(payForm.getClientIp())) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "ip_address error");
         }
-        if (System.currentTimeMillis() < payForm.getTimestamp() || System.currentTimeMillis() - payForm.getTimestamp() > MAX_REQUEST_INTERVAL) {
+        if (Math.abs(System.currentTimeMillis() - payForm.getTimestamp()) > MAX_REQUEST_INTERVAL) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "timestamp error");
         }
         if (CommonUtils.getLength(payForm.getSubject()) > 32) {
