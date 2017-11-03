@@ -3,18 +3,17 @@ package com.yoogurt.taxi.order.service.impl;
 import com.yoogurt.taxi.dal.beans.CommonResource;
 import com.yoogurt.taxi.dal.beans.OrderAcceptInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
-import com.yoogurt.taxi.dal.enums.OrderStatus;
-import com.yoogurt.taxi.dal.enums.SendType;
-import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.beans.OrderPayment;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.order.AcceptOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
+import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.order.dao.AcceptDao;
 import com.yoogurt.taxi.order.form.AcceptForm;
 import com.yoogurt.taxi.order.form.OrderStatisticForm;
-import com.yoogurt.taxi.order.service.AcceptService;
-import com.yoogurt.taxi.order.service.CommonResourceService;
-import com.yoogurt.taxi.order.service.OrderInfoService;
-import com.yoogurt.taxi.order.service.OrderStatisticService;
+import com.yoogurt.taxi.order.service.*;
+import com.yoogurt.taxi.order.service.rest.RestAccountService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +32,12 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
     private OrderInfoService orderInfoService;
 
     @Autowired
+    private OrderPaymentService paymentService;
+
+    @Autowired
+    private RestAccountService accountService;
+
+    @Autowired
     private CommonResourceService resourceService;
 
     @Autowired
@@ -43,17 +48,43 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
     public AcceptOrderModel doAccept(AcceptForm acceptForm) {
         Long orderId = acceptForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, acceptForm.getUserId());
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待收车】
-        if(!OrderStatus.ACCEPT.equals(status)) return null;
+        if (!OrderStatus.ACCEPT.equals(status)) return null;
         OrderAcceptInfo acceptInfo = new OrderAcceptInfo();
         BeanUtils.copyProperties(acceptForm, acceptInfo);
+        //插入收车记录信息
         if (acceptDao.insertSelective(acceptInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
+            //获取代理司机的支付信息
+            List<OrderPayment> payments = paymentService.getPayments(orderId);
+            if (CollectionUtils.isNotEmpty(payments)) {
+                OrderPayment payment = payments.get(0);
+                //支付渠道
+                PayChannel channel = PayChannel.getChannelByName(payment.getPayChannel());
+                if (channel != null) {
+                    //正式司机增加收入
+                    ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
+                            .userId(orderInfo.getOfficialUserId())
+                            .outUserId(orderInfo.getAgentUserId())
+                            .inUserId(orderInfo.getOfficialUserId())
+                            .money(orderInfo.getAmount())
+                            .type(TradeType.INCOME.getCode()).build();
+                    if (channel.isWx()) {
+                        vo.setPayment(Payment.WEIXIN.getCode());
+                    } else if (channel.isAlipay()) {
+                        vo.setPayment(Payment.ALIPAY.getCode());
+                    } else {
+                        vo.setPayment(Payment.BANK.getCode());
+                    }
+                    accountService.updateAccount(vo);
+                }
+            }
+            //添加图片资源
             String[] pictures = acceptForm.getPictures();
-            if (pictures != null && pictures.length > 0) {//添加图片资源
+            if (pictures != null && pictures.length > 0) {
                 List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_accept_info", pictures);
                 resourceService.addResources(resources);
             }
@@ -77,7 +108,7 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
     public OrderModel info(Long orderId, Long userId) {
         AcceptOrderModel model = new AcceptOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
         model.setOrderTime(orderInfo.getGmtCreate());
