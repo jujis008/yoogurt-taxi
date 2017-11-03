@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.dal.beans.CommonResource;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.OrderPickUpInfo;
@@ -16,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service("pickUpService")
@@ -29,6 +34,9 @@ public class PickUpServiceImpl implements PickUpService {
 
     @Autowired
     private CommonResourceService resourceService;
+
+    @Autowired
+    private RedisHelper redisHelper;
 
     @Transactional
     @Override
@@ -44,6 +52,17 @@ public class PickUpServiceImpl implements PickUpService {
         if (pickUpDao.insertSelective(pickUpInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime giveBackTime = LocalDateTime.ofInstant(orderInfo.getGiveBackTime().toInstant(), ZoneId.systemDefault());
+            long durationSeconds = Duration.between(now,giveBackTime).getSeconds();
+            if (durationSeconds-3600>10) {//剩余时间不足1小时，不需要添加任务
+                //设置还车1小时前提醒任务
+                redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY+orderId, durationSeconds-3600, orderId.toString());
+            }
+            //设置还车到点提醒任务
+            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY, durationSeconds, orderId.toString());
+
             String[] pictures = pickupForm.getPictures();
             if (pictures != null && pictures.length > 0) {//添加图片资源
                 List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_pick_up_info", pictures);

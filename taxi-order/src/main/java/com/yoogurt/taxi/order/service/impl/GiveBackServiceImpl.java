@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderGiveBackInfo;
 import com.yoogurt.taxi.dal.beans.OrderGiveBackRule;
@@ -39,6 +41,9 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
 
     @Autowired
     private DisobeyService disobeyService;
+
+    @Autowired
+    private RedisHelper redisHelper;
 
 
     @Transactional
@@ -86,6 +91,11 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
         if (giveBackDao.insertSelective(giveBackInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
+
+            //清除还车提醒任务
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY);
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY);
+
             //已还车，通知正式司机
             super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK, new HashMap<>());
             return (GiveBackOrderModel) info(orderId, giveBackForm.getUserId());

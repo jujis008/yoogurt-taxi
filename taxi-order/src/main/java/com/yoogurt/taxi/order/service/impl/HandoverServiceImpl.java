@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderHandoverInfo;
 import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
@@ -42,7 +44,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
     private DisobeyService disobeyService;
 
     @Autowired
-    private NotificationSender sender;
+    private RedisHelper redisHelper;
 
     /**
      * 正式司机确认交车
@@ -97,6 +99,12 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
         if (handoverDao.insertSelective(handoverInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
+
+            //取消交车提醒相关任务
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY);
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY);
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY);
+
             //向代理司机发送已交车的通知
             super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER, new HashMap<>());
             return (HandoverOrderModel) info(orderId, handoverForm.getUserId());

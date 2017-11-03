@@ -15,7 +15,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  */
 @Configuration
 public class RedisConfig {
-
     /**
      * 基于Jackson技术的序列化器。
      * 实际上是将对象转换成JSON字符串，可读性强，对用户友好。
@@ -39,6 +38,7 @@ public class RedisConfig {
     public RedisSerializer getHessianSerializer() {
         return new HessianRedisSerializer<>();
     }
+
 
     @Bean(name = "redisTemplate")
     public RedisTemplate<String, Object> getRedisTemplate(RedisConnectionFactory redisConnectionFactory) {

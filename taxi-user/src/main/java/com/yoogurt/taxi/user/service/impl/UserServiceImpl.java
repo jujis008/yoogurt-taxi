@@ -3,6 +3,7 @@ package com.yoogurt.taxi.user.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
@@ -326,7 +327,7 @@ public class UserServiceImpl implements UserService {
             driverInfo.setUserId(userId);
             driverInfo.setType(UserType.USER_APP_AGENT.getCode());
             driverInfo.setMobile(map1.get("phoneNumber").toString());
-            driverInfo.setGender(UserGender.secret.getCode());
+            driverInfo.setGender(UserGender.SECRET.getCode());
             driverInfo.setIsDeleted(Boolean.FALSE);
             driverInfo.setGmtModify(new Date());
             driverInfo.setServiceNumber(map1.get("serviceNumber").toString());
@@ -351,7 +352,7 @@ public class UserServiceImpl implements UserService {
             int result = 0;
             result += userDao.batchInsert(userInfoList);
             result += driverDao.batchInsert(driverInfoList);
-            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd);
+            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd,CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
             return result;
         });
         future.thenAccept(result ->log.info("IMPORT{}", "导入条数：" + result/2));
@@ -402,7 +403,7 @@ public class UserServiceImpl implements UserService {
             driverInfo.setType(UserType.USER_APP_OFFICE.getCode());
             driverInfo.setMobile(map1.get("phoneNumber").toString());
             driverInfo.setServiceNumber(map1.get("serviceNumber").toString());
-            driverInfo.setGender(UserGender.secret.getCode());
+            driverInfo.setGender(UserGender.SECRET.getCode());
             driverInfo.setIsDeleted(Boolean.FALSE);
             driverInfo.setGmtModify(new Date());
             driverInfo.setModifier(0L);
@@ -442,14 +443,14 @@ public class UserServiceImpl implements UserService {
             result += userDao.batchInsert(userInfoList);
             result += driverDao.batchInsert(driverInfoList);
             result += carDao.batchInsert(carInfoList);
-            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd);
+            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE);
             return result;
         });
         future.thenAccept(result ->log.info("IMPORT{}", "导入条数：" + result/3));
         return errorCellBeanList;
     }
 
-    private void sendPhonePwd(Map<String, Object> phoneCodeMap, SmsTemplateType type) {
+    private void sendPhonePwd(Map<String, Object> phoneCodeMap, SmsTemplateType type,String key) {
         if (profile.equals("prod")) {
             phoneCodeMap.forEach((e,b)->{
                 SmsPayload payload = new SmsPayload();
@@ -459,7 +460,7 @@ public class UserServiceImpl implements UserService {
                 smsSender.send(payload);
             });
         } else {
-            redisHelper.setMap(CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE,phoneCodeMap);
+            phoneCodeMap.forEach((hashKey,value)->redisHelper.put(key,hashKey,value));
         }
     }
 }

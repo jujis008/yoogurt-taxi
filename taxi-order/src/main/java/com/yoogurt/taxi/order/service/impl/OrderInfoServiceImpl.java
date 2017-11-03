@@ -3,9 +3,11 @@ package com.yoogurt.taxi.order.service.impl;
 import com.github.pagehelper.Page;
 import com.google.common.collect.Maps;
 import com.yoogurt.taxi.common.bo.DateTimeSection;
+import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
+import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.BeanRefUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -22,13 +24,20 @@ import com.yoogurt.taxi.order.service.rest.RestUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Seconds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service("orderInfoService")
@@ -47,10 +56,16 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     private OrderDao orderDao;
 
     @Autowired
+    private HandoverRuleService handoverRuleService;
+
+    @Autowired
     private PagerFactory appPagerFactory;
 
     @Autowired
     private PagerFactory webPagerFactory;
+
+    @Autowired
+    private RedisHelper redisHelper;
 
 
     @Override
@@ -59,7 +74,28 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         OrderInfo orderInfo = (OrderInfo) obj.getBody();
         if (obj.isSuccess() && orderDao.insertSelective(orderInfo) == 1) {
             //更改租单状态 --> 已接单
-            rentInfoService.modifyStatus(orderForm.getRentId(), RentStatus.RENT);
+            Long rentId = orderForm.getRentId();
+            rentInfoService.modifyStatus(rentId, RentStatus.RENT);
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime handoverDateTime = LocalDateTime.ofInstant(orderInfo.getHandoverTime().toInstant(), ZoneId.systemDefault());
+            long durationSeconds = Duration.between(now, handoverDateTime).getSeconds();
+
+
+            //设置交车前1小时提醒任务
+            if (durationSeconds-3600>10) {//如果接单时，距离交车时间不足一小时，就不用发通知了
+                redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY+ rentId,durationSeconds-3600, rentId.toString());
+            }
+
+            //设置交车到点提醒任务
+            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY+ rentId,durationSeconds, rentId.toString());
+
+            //设置交车超时，最大违约任务
+            OrderHandoverRule rule = handoverRuleService.getRuleInfo();
+            BigDecimal divide = orderInfo.getAmount().divide(rule.getPrice(), BigDecimal.ROUND_FLOOR);
+            long seconds = TimeUnit.valueOf(rule.getUnit()).toSeconds(divide.longValue()) + durationSeconds;
+            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY+ rentId, seconds, rentId.toString());
+
             //已接单，通知对方
             super.push(orderInfo, UserType.getEnumsByCode(orderForm.getUserType()).equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_RENT, new HashMap<>());
             OrderModel model = new OrderModel();
