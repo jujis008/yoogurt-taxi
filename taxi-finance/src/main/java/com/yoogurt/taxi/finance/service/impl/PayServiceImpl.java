@@ -106,12 +106,13 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
         if (isRetry && StringUtils.isNoneBlank(taskId)) {
             task = getTask(taskId);
             try {
-                long interval = task.retryInterval();
-                log.warn("[" + task.getTaskId() + "]" + interval + "ms后重试……");
+                TaskInfo t = task.getTask();
+                long interval = t.retryInterval();
+                log.warn("[" + t.getTaskId() + "]" + interval + "ms后重试……");
                 //重试间隔，让线程睡一会儿
                 Thread.sleep(interval);
                 //记录重试操作
-                task.retryRecord();
+                t.retryRecord();
             } catch (InterruptedException ignored) {
                 Thread.currentThread().interrupt();
             } catch (IllegalAccessException e) {

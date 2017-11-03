@@ -1,7 +1,6 @@
 package com.yoogurt.taxi.finance.task.impl;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
-import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
@@ -68,7 +67,7 @@ public class PayTaskRunnerImpl implements PayTaskRunner {
                 redis.deleteMap(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId);
                 log.info("[" + task.getTaskId() + "]任务执行完毕!");
             } else if (task.isNeedRetry()) {//触发任务重试
-                if (payTask.canRetry()) {
+                if (task.canRetry()) {
                     log.warn("[" + task.getTaskId() + "]任务执行失败!!");
                     payService.retry(taskId); //重试
                 } else {
