@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Setter
 @Getter
-public class AliapyNotify extends Notify {
+public class AlipayNotify extends Notify {
 
 	/**
 	 * 支付宝分配给开发者的应用Id
