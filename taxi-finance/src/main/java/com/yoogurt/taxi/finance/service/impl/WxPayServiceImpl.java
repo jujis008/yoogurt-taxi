@@ -3,6 +3,7 @@ package com.yoogurt.taxi.finance.service.impl;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.utils.BeanRefUtils;
 import com.yoogurt.taxi.common.utils.CommonUtils;
+import com.yoogurt.taxi.common.utils.XmlUtil;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceWxSettings;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
@@ -22,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.UUID;
@@ -119,7 +127,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                         return ResponseObj.success(payment);
                     }
                 }
-            } catch (DocumentException e) {
+            } catch (Exception e) {
                 log.error("微信预下单请求发生异常, {}", e);
             }
             return ResponseObj.fail(StatusCode.SYS_ERROR, StatusCode.SYS_ERROR.getDetail());
@@ -180,8 +188,63 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         return sign;
     }
 
+    /**
+     * 解析回调请求的参数
+     *
+     * @param request 回调请求对象
+     * @return 参数键值对
+     */
+    @Override
+    public Map<String, Object> parameterResolve(HttpServletRequest request) {
+        String rawData = getRawData(request);
+        if (StringUtils.isBlank(rawData)) return null;
+        try {
+            //解析参数(XML)格式
+            Document document = DocumentHelper.parseText(rawData);
+            //转换成Map对象
+            return XmlUtil.toMap(new HashMap<>(), document.getRootElement());
+        } catch (Exception e) {
+            log.error("参数转换发生异常, {}", e);
+        }
+        return null;
+    }
+
     @Override
     public String getNotifyUrl() {
         return "http://api.yoogate.cn/webhooks/finance/i/wx";
     }
+
+    /**
+     * 从请求体中获取参数
+     *
+     * @param request 请求对象
+     * @return 原始数据
+     */
+    private String getRawData(HttpServletRequest request) {
+        StringBuilder buffer = new StringBuilder();
+        InputStream stream = null;
+        BufferedReader br = null;
+        try {
+            stream = request.getInputStream();
+            br = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+            String line;
+            while (true) {
+                line = br.readLine();
+                if (StringUtils.isBlank(line)) break;
+                buffer.append(line);
+            }
+            return buffer.toString();
+        } catch (Exception e) {
+            log.error("获取微信回调参数发生异常, {}", e);
+        } finally {
+            try {
+                if (stream != null) stream.close();
+                if (br != null) br.close();
+            } catch (IOException e) {
+                log.error("关闭流发生异常, {}", e);
+            }
+        }
+        return null;
+    }
+
 }
