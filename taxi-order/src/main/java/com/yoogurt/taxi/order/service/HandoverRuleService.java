@@ -4,6 +4,8 @@ package com.yoogurt.taxi.order.service;
 import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
 
+import java.math.BigDecimal;
+
 public interface HandoverRuleService {
 
 	/**
@@ -26,5 +28,5 @@ public interface HandoverRuleService {
 	/**
 	 * 计算罚款金额。
 	 */
-	Money calculate(OrderHandoverRule rule, int time);
+	Money calculate(OrderHandoverRule rule, int time, BigDecimal limitAmount);
 }
