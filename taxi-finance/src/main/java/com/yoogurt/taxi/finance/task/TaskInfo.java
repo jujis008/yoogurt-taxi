@@ -6,10 +6,12 @@ import com.yoogurt.taxi.dal.enums.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor
@@ -120,8 +122,30 @@ public class TaskInfo implements Serializable {
         return (this.retryTimes.get() + 1) * 1000;
     }
 
+    /**
+     * 该任务是否可以重试
+     * @return true-可以重试 false-不可再重试
+     */
     public boolean canRetry() {
         TaskStatus status = TaskStatus.getEnumByStatus(this.statusCode);
         return status != null && status.isExecutable() && this.retryTimes.get() < Constants.MAX_TASK_RETRY_TIMES;
+    }
+
+    /**
+     * 任务重试动作，主要将线程sleep一段时间。
+     */
+    public void doRetry() {
+        try {
+            long interval = retryInterval();
+            log.warn("[" + getTaskId() + "]" + interval + "ms后重试……");
+            //重试间隔，让线程睡一会儿
+            Thread.sleep(interval);
+            //记录重试操作
+            retryRecord();
+        } catch (InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        } catch (IllegalAccessException e) {
+            log.warn("[" + this.taskId + "]重试失败, {}", e);
+        }
     }
 }
