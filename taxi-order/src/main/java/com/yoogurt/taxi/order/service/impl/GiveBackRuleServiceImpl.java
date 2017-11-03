@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -19,7 +20,7 @@ public class GiveBackRuleServiceImpl implements GiveBackRuleService {
     @Override
     public String getIntroduction() {
         OrderGiveBackRule rule = getRuleInfo();
-        if(rule == null) return StringUtils.EMPTY;
+        if (rule == null) return StringUtils.EMPTY;
         String unit = rule.getUnit();
         if ("HOURS".equalsIgnoreCase(unit)) {
             unit = "小时";
@@ -34,7 +35,7 @@ public class GiveBackRuleServiceImpl implements GiveBackRuleService {
     public OrderGiveBackRule getRuleInfo(long milliseconds) {
         if (milliseconds <= 0) return null;
         OrderGiveBackRule rule = getRuleInfo();
-        if(rule == null) return null;
+        if (rule == null) return null;
         TimeUnit unit = TimeUnit.valueOf(rule.getUnit());
         long period = unit.toMillis(rule.getTime());
         //没有超出设置好的违约时限，都视为没有违约
@@ -50,11 +51,19 @@ public class GiveBackRuleServiceImpl implements GiveBackRuleService {
         return giveBackRuleDao.selectOne(rule);
     }
 
+    /**
+     * 计算罚款金额。
+     *
+     * @param rule        违约对应的规则
+     * @param minutes     超出交车的时长
+     * @param limitAmount 最高处罚金额，传入null表示不限
+     */
     @Override
-    public Money calculate(OrderGiveBackRule rule, int minutes) {
-        if(rule == null) return null;
+    public Money calculate(OrderGiveBackRule rule, int minutes, BigDecimal limitAmount) {
+        if (rule == null) return null;
         Money money = new Money(rule.getPrice());
         money.multiplyBy(Math.floor((double) minutes / rule.getTime()));
-        return money;
+        Money limitMoney = new Money(limitAmount);
+        return limitMoney.compareTo(money) < 0 ? limitMoney : money;
     }
 }
