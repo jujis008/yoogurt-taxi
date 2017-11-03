@@ -1,6 +1,5 @@
 package com.yoogurt.taxi.common.utils;
 
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
@@ -8,7 +7,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,9 +15,7 @@ import java.util.Map;
 public class XmlUtil {
 
     /**
-     * <p class="detail">
-     * 功能：创建 {@link Document} 对象
-     * </p>
+     * 创建 {@link Document} 对象
      *
      * @param text XML字符串
      * @return Document
@@ -32,9 +28,7 @@ public class XmlUtil {
     }
 
     /**
-     * <p class="detail">
-     * 功能：创建XML节点
-     * </p>
+     * 创建XML节点
      *
      * @param name 节点名称，必填
      * @param text 节点内容，选填
@@ -51,17 +45,14 @@ public class XmlUtil {
     }
 
     /**
-     * <p class="detail">
-     * 功能：递归获取XML中的节点及其值
-     * </p>
+     * 递归获取XML中的节点及其值，将其转换成JSON对象
      *
      * @param jsonObject JSON对象
      * @param root       XML根元素
      * @return JSONObject
-     * @throws JSONException JSON解析异常
      * @author liuwh
      */
-    public static JSONObject toJSON(JSONObject jsonObject, Element root) throws JSONException {
+    public static JSONObject toJSON(JSONObject jsonObject, Element root) {
         List<Element> elementList = root.elements();
         for (Element element : elementList) {
             if (!StringUtils.isBlank(element.getTextTrim())) {
@@ -76,6 +67,13 @@ public class XmlUtil {
         return jsonObject;
     }
 
+    /**
+     * 递归获取XML中的节点及其值，将其转换成map对象
+     * @param map map对象
+     * @param root XML根元素
+     * @return Map
+     * @author liuwh
+     */
     public static Map<String, Object> toMap(Map<String, Object> map, Element root) {
         List<Element> elementList = root.elements();
         for (Element element : elementList) {
