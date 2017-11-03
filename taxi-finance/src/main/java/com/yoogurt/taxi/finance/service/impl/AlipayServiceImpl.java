@@ -21,6 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.CompletableFuture;
@@ -130,6 +133,24 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
         if (parameters == null || parameters.size() <= 0) return null;
         String content = super.parameterAssemble(parameters, parameterMap, skipAttrs);
         return RSA.sign(content, signType, privateKey, charset);
+    }
+
+    /**
+     * 解析回调请求的参数
+     *
+     * @param request 回调请求对象
+     * @return 参数键值对
+     */
+    @Override
+    public Map<String, Object> parameterResolve(HttpServletRequest request) {
+        Map<String, Object> parameterMap = new HashMap<>();
+        Enumeration<String> parameterNames = request.getParameterNames();
+        while (parameterNames.hasMoreElements()) {
+            String name = parameterNames.nextElement();
+            String value = request.getParameter(name);
+            parameterMap.put(name, value);
+        }
+        return parameterMap;
     }
 
     @Override
