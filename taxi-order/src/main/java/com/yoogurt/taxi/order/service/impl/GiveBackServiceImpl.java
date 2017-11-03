@@ -53,7 +53,7 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, giveBackForm.getUserId());
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待还车】
-        if(!OrderStatus.GIVE_BACK.equals(status)) return null;
+        if (!OrderStatus.GIVE_BACK.equals(status)) return null;
 
         OrderGiveBackInfo giveBackInfo = new OrderGiveBackInfo();
         BeanUtils.copyProperties(giveBackForm, giveBackInfo);
@@ -76,7 +76,7 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
                 giveBackInfo.setUnit(unit);
                 giveBackInfo.setTime(minutes);
                 //计算违约金
-                BigDecimal fineMoney = ruleService.calculate(rule, minutes).getAmount();
+                BigDecimal fineMoney = ruleService.calculate(rule, minutes, orderInfo.getAmount()).getAmount();
                 giveBackInfo.setFineMoney(fineMoney);
                 //违约记录
                 String description = "还车超时" + minutes + "分钟，缴纳违约金￥" + fineMoney.doubleValue();
@@ -93,8 +93,8 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
             orderInfoService.modifyStatus(orderId, status.next());
 
             //清除还车提醒任务
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY);
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY);
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY + orderId);
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY + orderId);
 
             //已还车，通知正式司机
             super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK, new HashMap<>());
@@ -112,7 +112,7 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
     public OrderModel info(Long orderId, Long userId) {
         GiveBackOrderModel model = new GiveBackOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
 
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
