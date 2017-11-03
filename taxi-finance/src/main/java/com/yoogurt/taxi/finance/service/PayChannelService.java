@@ -3,12 +3,18 @@ package com.yoogurt.taxi.finance.service;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.finance.task.PayTask;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.concurrent.CompletableFuture;
 
 public interface PayChannelService {
 
+    /**
+     * 执行支付任务（异步）
+     * @param payTask 支付任务信息
+     * @return
+     */
     CompletableFuture<ResponseObj> doTask(PayTask payTask);
 
     /**
@@ -23,4 +29,12 @@ public interface PayChannelService {
      * @return 签名
      */
     String sign(SortedMap<String, Object> parameters, Map<String, Object> parameterMap, String signType, String privateKey, String charset, String... skipAttrs);
+
+    /**
+     * 解析回调请求的参数
+     *
+     * @param request 回调请求对象
+     * @return 参数键值对
+     */
+    Map<String, Object> parameterResolve(HttpServletRequest request);
 }
