@@ -11,7 +11,7 @@ public interface OrderPaymentService {
 	/**
 	 * 获取订单的支付记录
 	 */
-	List getPayments(Long orderId);
+	List<OrderPayment> getPayments(Long orderId);
 
 	OrderPayment getPayment(String payId);
 
