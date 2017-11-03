@@ -1,9 +1,9 @@
 package com.yoogurt.taxi.dal.enums;
 
 public enum UserGender {
-    male(10,"男"),
-    female(20,"女"),
-    secret(30,"保密"),
+    MALE(10,"男"),
+    FEMALE(20,"女"),
+    SECRET(30,"保密"),
     ;
     private Integer code;
     private String  name;

@@ -7,9 +7,11 @@ import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.order.CancelOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
+import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.order.dao.CancelDao;
 import com.yoogurt.taxi.order.form.CancelForm;
 import com.yoogurt.taxi.order.service.*;
+import com.yoogurt.taxi.order.service.rest.RestAccountService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,9 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
     @Autowired
     private DisobeyService disobeyService;
 
+    @Autowired
+    private RestAccountService restAccountService;
+
     @Transactional
     @Override
     public CancelOrderModel doCancel(CancelForm cancelForm) {
@@ -60,12 +65,37 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
         cancelInfo.setIsDisobey(!ResponsibleParty.NONE.equals(responsibleParty));
         cancelInfo.setTime(0);
 
-        //App端提交的取消申请
-        if (cancelForm.isFromApp()) {
+        Date now = new Date();
+        //计算时间，向上取整
+        int hours = (int) Math.abs(Math.floor((orderInfo.getHandoverTime().getTime() - now.getTime()) / 3600000.00));
+
+        if (cancelForm.isInternal()) {
+            if (orderInfo.getIsPaid()) {//若司机已支付，需要退款
+                //退款到司机账户，记录为平台支出
+                ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
+                        .userId(orderInfo.getAgentUserId())
+                        .outUserId(0L)
+                        .inUserId(orderInfo.getAgentUserId())
+                        .money(orderInfo.getAmount())
+                        .payment(Payment.OTHERS.getCode())
+                        .type(TradeType.OTHERS.getCode()).build();
+                restAccountService.updateAccount(vo);
+            }
+            //添加一条车主的违约记录
+            BigDecimal fineMoney = orderInfo.getAmount();
+            cancelInfo.setRuleId(0L);
+            cancelInfo.setUnit(unit);
+            cancelInfo.setTime(hours);
+            cancelInfo.setFineMoney(fineMoney);
+            String description = "车主未按时交车，系统自动取消订单，车主缴纳违约金￥" + fineMoney.doubleValue();
+            OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
+                    orderInfo, UserType.getEnumsByCode(responsibleParty.getUserType()), DisobeyType.OFFICIAL_DRIVER_HANDOVER_TIMEOUT,
+                    0L, fineMoney, description);
+            disobeyService.addDisobey(disobey);
+        } else if (cancelForm.isFromApp()) {
+            //App端提交的取消申请
             //超过了交车时间，需要计算违约金
-            Date now = new Date();
-            //计算时间，向上取整
-            int hours = (int) Math.abs(Math.floor((orderInfo.getHandoverTime().getTime() - now.getTime()) / 3600000.00));
+
             OrderCancelRule rule = ruleService.getRuleInfo(orderInfo.getHandoverTime().getTime() - now.getTime());
             if (rule != null) {
                 //该时段不允许取消

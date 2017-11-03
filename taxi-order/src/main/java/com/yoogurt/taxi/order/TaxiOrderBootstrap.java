@@ -1,5 +1,7 @@
 package com.yoogurt.taxi.order;
 
+import com.yoogurt.taxi.common.helper.RedisHelper;
+import com.yoogurt.taxi.order.service.ExpiredMessageListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,6 +11,11 @@ import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 import java.net.InetAddress;
 
@@ -34,5 +41,22 @@ public class TaxiOrderBootstrap {
                 env.getProperty("server.port"),
                 InetAddress.getLocalHost().getHostAddress(),
                 env.getProperty("server.port"));
+
+        redisSubscribe(context);
 	}
+
+    private static void redisSubscribe(ConfigurableApplicationContext context) {
+
+        ExpiredMessageListener listener = context.getBean(ExpiredMessageListener.class);
+        RedisHelper helper = context.getBean(RedisHelper.class);
+        RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
+        RedisConnectionFactory connectionFactory = helper.getConnectionFactory();
+        String pattern = "__keyevent@1__:expired";
+        log.info("设置监听器，pattern为"+pattern);
+        listenerContainer.addMessageListener(listener, new PatternTopic(pattern));
+        listenerContainer.setConnectionFactory(connectionFactory);
+        RedisConnection connection = connectionFactory.getConnection();
+        connection.pSubscribe(listener, pattern.getBytes());
+        log.info("开启订阅，订阅pattern为"+pattern);
+    }
 }

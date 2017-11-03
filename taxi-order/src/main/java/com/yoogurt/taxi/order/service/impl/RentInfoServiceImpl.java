@@ -3,9 +3,11 @@ package com.yoogurt.taxi.order.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.bo.DateTimeSection;
+import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
+import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -32,9 +34,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +60,9 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
 
     @Autowired
     private RentDao rentDao;
+
+    @Autowired
+    private RedisHelper redisHelper;
 
     @Override
     public List<RentInfoModel> getRentList(RentPOICondition condition) {
@@ -111,7 +120,14 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         }
         ResponseObj obj = buildRentInfo(rentForm);
         if (obj.isSuccess()) {
-            rentDao.insertSelective((RentInfo) obj.getBody());
+            RentInfo rentInfo = (RentInfo) obj.getBody();
+            rentDao.insertSelective(rentInfo);
+
+            //加入redis超时取消消息队列
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime handoverDateTime = LocalDateTime.ofInstant(rentInfo.getHandoverTime().toInstant(), ZoneId.systemDefault());
+            long seconds = Duration.between(currentDateTime, handoverDateTime).getSeconds();
+            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+rentInfo.getRentId(),seconds,rentInfo.getRentId().toString());
         }
         return obj;
     }
@@ -124,9 +140,30 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         if (!RentStatus.WAITING.getCode().equals(rentInfo.getStatus())) return null;
         rentInfo.setStatus(RentStatus.CANCELED.getCode());
         if (modifyStatus(cancelForm.getRentId(), RentStatus.CANCELED)) {
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+cancelForm.getRentId());
             return rentInfo;
         }
         return null;
+    }
+
+    /**
+     * 租单超时自动取消
+     *
+     * @param rentId
+     * @return
+     */
+    @Override
+    public RentInfo cancelOverdue(Long rentId) {
+        RentInfo rentInfo = getRentInfo(rentId, null);
+        if (rentInfo == null) return null;
+        //如果订单已被操作，则无需再次操作
+        if (!rentInfo.getStatus().equals(RentStatus.WAITING.getCode())) return rentInfo;
+        rentInfo.setStatus(RentStatus.TIMEOUT.getCode());
+
+        Example example = new Example(RentInfo.class);
+        example.createCriteria().andEqualTo(rentId).andEqualTo("status",RentStatus.WAITING.getCode());
+        int i = rentDao.updateByExampleSelective(rentInfo, example);
+        return i==1?rentInfo:null;
     }
 
     @Override

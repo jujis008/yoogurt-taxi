@@ -30,6 +30,13 @@ public interface RentInfoService {
 
 	RentInfo cancel(RentCancelForm cancelForm);
 
+	/**
+	 * 租单超时自动取消
+	 * @param rentId
+	 * @return
+	 */
+	RentInfo cancelOverdue(Long rentId);
+
 	boolean modifyStatus(Long rentId, RentStatus status);
 
 	Pager<RentInfo> getRentListForWebPage(RentWebListCondition condition);

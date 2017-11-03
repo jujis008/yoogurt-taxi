@@ -40,6 +40,11 @@ public class CancelForm extends OrderForm {
 	private Integer userType;
 
 	/**
+	 * 是否来源内部系统
+	 */
+	private boolean internal;
+
+	/**
 	 * 取消订单的请求是否来源于手机客户端
 	 */
 	private boolean fromApp;

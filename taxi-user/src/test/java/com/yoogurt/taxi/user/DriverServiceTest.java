@@ -50,7 +50,7 @@ public class DriverServiceTest {
         driverInfo.setDrivingLicense("");
         driverInfo.setDrivingLicenseBack("");
         driverInfo.setDrivingLicenseFront("");
-        driverInfo.setGender(UserGender.female.getCode());
+        driverInfo.setGender(UserGender.FEMALE.getCode());
         driverInfo.setHousehold("");
         driverInfo.setIdBack("");
         driverInfo.setIdFront("");

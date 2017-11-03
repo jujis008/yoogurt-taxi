@@ -6,6 +6,7 @@ public enum TradeType {
     FINE_OUT(30,"罚款"),
     FINE_IN(40,"补偿"),
     INCOME(50,"收入"),
+    OTHERS(60,"其它")
     ;
 
     private Integer code;

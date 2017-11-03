@@ -40,6 +40,22 @@ public class RedisHelper {
         return redisTemplate.getConnectionFactory();
     }
 
+    public RedisConnection getExpireMessageConnection() {
+        RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
+        connection.select(1);
+        return connection;
+    }
+
+    public void setExForOrder(String key, long seconds, String value) {
+        RedisConnection expireMessageConnection = getExpireMessageConnection();
+        expireMessageConnection.setEx(key.getBytes(), seconds, value.getBytes());
+    }
+
+    public void delExForOrder(String key) {
+        RedisConnection expireMessageConnection = getExpireMessageConnection();
+        expireMessageConnection.del(key.getBytes());
+    }
+
     /**
      * 获取缓存内容
      * @param key 键
