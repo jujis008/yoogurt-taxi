@@ -43,10 +43,10 @@ public class PickUpServiceImpl implements PickUpService {
     public PickUpOrderModel doPickUp(PickUpForm pickupForm) {
         Long orderId = pickupForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, pickupForm.getUserId());
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待取车】
-        if(!OrderStatus.PICK_UP.equals(status)) return null;
+        if (!OrderStatus.PICK_UP.equals(status)) return null;
         OrderPickUpInfo pickUpInfo = new OrderPickUpInfo();
         BeanUtils.copyProperties(pickupForm, pickUpInfo);
         if (pickUpDao.insertSelective(pickUpInfo) == 1) {
@@ -55,13 +55,13 @@ public class PickUpServiceImpl implements PickUpService {
 
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime giveBackTime = LocalDateTime.ofInstant(orderInfo.getGiveBackTime().toInstant(), ZoneId.systemDefault());
-            long durationSeconds = Duration.between(now,giveBackTime).getSeconds();
-            if (durationSeconds-3600>10) {//剩余时间不足1小时，不需要添加任务
+            long durationSeconds = Duration.between(now, giveBackTime).getSeconds();
+            if (durationSeconds - 3600 > 10) {//剩余时间不足1小时，不需要添加任务
                 //设置还车1小时前提醒任务
-                redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY+orderId, durationSeconds-3600, orderId.toString());
+                redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY + orderId, durationSeconds - 3600, orderId.toString());
             }
             //设置还车到点提醒任务
-            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY, durationSeconds, orderId.toString());
+            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY + orderId, durationSeconds, orderId.toString());
 
             String[] pictures = pickupForm.getPictures();
             if (pictures != null && pictures.length > 0) {//添加图片资源
@@ -84,7 +84,7 @@ public class PickUpServiceImpl implements PickUpService {
 
         PickUpOrderModel model = new PickUpOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
-        if(orderInfo == null) return null;
+        if (orderInfo == null) return null;
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
         model.setOrderTime(orderInfo.getGmtCreate());

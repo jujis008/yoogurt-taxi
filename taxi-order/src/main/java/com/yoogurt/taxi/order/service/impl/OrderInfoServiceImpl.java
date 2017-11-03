@@ -83,18 +83,18 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
 
 
             //设置交车前1小时提醒任务
-            if (durationSeconds-3600>10) {//如果接单时，距离交车时间不足一小时，就不用发通知了
-                redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY+ rentId,durationSeconds-3600, rentId.toString());
+            if (durationSeconds - 3600 > 10) {//如果接单时，距离交车时间不足一小时，就不用发通知了
+                redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + rentId, durationSeconds - 3600, rentId.toString());
             }
 
             //设置交车到点提醒任务
-            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY+ rentId,durationSeconds, rentId.toString());
+            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY + rentId, durationSeconds, rentId.toString());
 
             //设置交车超时，最大违约任务
             OrderHandoverRule rule = handoverRuleService.getRuleInfo();
             BigDecimal divide = orderInfo.getAmount().divide(rule.getPrice(), BigDecimal.ROUND_FLOOR);
             long seconds = TimeUnit.valueOf(rule.getUnit()).toSeconds(divide.longValue()) + durationSeconds;
-            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY+ rentId, seconds, rentId.toString());
+            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY + rentId, seconds, rentId.toString());
 
             //已接单，通知对方
             super.push(orderInfo, UserType.getEnumsByCode(orderForm.getUserType()).equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_RENT, new HashMap<>());
@@ -247,6 +247,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
 
     /**
      * 指定用户id和订单状态，获取相应的订单列表，并按交车时间升序排列。
+     *
      * @param userId   用户id
      * @param userType 用户类型
      * @param status   订单状态，可以传入多个
