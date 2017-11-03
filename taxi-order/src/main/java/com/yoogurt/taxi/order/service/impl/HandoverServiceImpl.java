@@ -14,7 +14,6 @@ import com.yoogurt.taxi.dal.model.order.HandoverOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.order.dao.HandoverDao;
 import com.yoogurt.taxi.order.form.HandoverForm;
-import com.yoogurt.taxi.order.mq.NotificationSender;
 import com.yoogurt.taxi.order.service.DisobeyService;
 import com.yoogurt.taxi.order.service.HandoverRuleService;
 import com.yoogurt.taxi.order.service.HandoverService;
@@ -85,7 +84,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
                 handoverInfo.setUnit(unit);
                 handoverInfo.setTime(minutes);
                 //计算违约金
-                BigDecimal fineMoney = ruleService.calculate(rule, minutes).getAmount();
+                BigDecimal fineMoney = ruleService.calculate(rule, minutes, orderInfo.getAmount()).getAmount();
                 handoverInfo.setFineMoney(fineMoney);
                 String description = "交车超时" + minutes + "分钟，缴纳违约金￥" + fineMoney.doubleValue();
                 OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
@@ -101,9 +100,9 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
             orderInfoService.modifyStatus(orderId, status.next());
 
             //取消交车提醒相关任务
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY);
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY);
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY);
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY +orderId);
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY +orderId);
+            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY +orderId);
 
             //向代理司机发送已交车的通知
             super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER, new HashMap<>());
