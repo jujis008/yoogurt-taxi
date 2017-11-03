@@ -5,8 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * 支付渠道（balance-余额支付，alipay-支付宝 APP 支付，upacp-银联支付，wx-微信 APP 支付,wx_pub-微信公众号支付）
- * @version V1.0
+ *
  * @author liu.weihao
+ * @version V1.0
  */
 @Getter
 public enum PayChannel {
@@ -59,6 +60,35 @@ public enum PayChannel {
             case ALIPAY:
             case WX:
             case WX_PUB:
+            case UPACP:
+            case UPACP_WAP:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isWx() {
+        switch (this) {
+            case WX:
+            case WX_PUB:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isAlipay() {
+        switch (this) {
+            case ALIPAY:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isBank() {
+        switch (this) {
             case UPACP:
             case UPACP_WAP:
                 return true;
