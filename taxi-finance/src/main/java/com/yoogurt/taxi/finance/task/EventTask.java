@@ -21,4 +21,8 @@ public class EventTask {
 
 	private Event event;
 
+
+	public EventTask(String taskId) {
+		this.taskId = taskId;
+	}
 }
