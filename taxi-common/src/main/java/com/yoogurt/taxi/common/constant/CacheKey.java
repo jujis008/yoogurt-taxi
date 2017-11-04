@@ -74,6 +74,11 @@ public final class CacheKey {
     public static final String VERIFY_CODE_KEY = "E_VERIFY_CODE#";
 
     /**
+     * 任务对象缓存的hash key
+     */
+    public static final String TASK_HASH_KEY = "T_TASK#";
+
+    /**
      * 支付相关的缓存，以Map形式存储
      */
     public static final String PAY_MAP = "P_PAY_MAP";
@@ -84,9 +89,14 @@ public final class CacheKey {
     public static final String PAYMENT_HASH_KEY = "P_PAYMENT#";
 
     /**
-     * 任务对象缓存的hash key
+     * 回调相关的缓存，以Map形式存储
      */
-    public static final String TASK_HASH_KEY = "P_TASK#";
+    public static final String NOTIFY_MAP = "P_NOTIFY_MAP";
+
+    /**
+     * 回调事件的缓存，以Map形式存储
+     */
+    public static final String EVENT_HASH_KEY = "P_EVENT#";
 
     /**
      * 退款相关的缓存，以Map形式存储
