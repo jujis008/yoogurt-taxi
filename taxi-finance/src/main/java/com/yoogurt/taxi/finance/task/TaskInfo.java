@@ -23,7 +23,7 @@ public class TaskInfo implements Serializable {
     private String taskId;
 
     /**
-     * [RabbitMQ]消息交换机
+     * [RabbitMQ]消息交换机，默认使用 X-Exchange-Pay
      */
     @JsonIgnore
     private String exchangeName = "X-Exchange-Pay";
@@ -32,13 +32,13 @@ public class TaskInfo implements Serializable {
      * [RabbitMQ]消息路由的key
      */
     @JsonIgnore
-    private String routingKey = "topic.task.pay";
+    private String routingKey;
 
     /**
      * [RabbitMQ]任务队列名称，由数字或字母组成，不允许特殊字符。
      */
     @JsonIgnore
-    private String queueName = "X-Queue-Pay";
+    private String queueName;
 
     /**
      * 是否需要重试，默认true
