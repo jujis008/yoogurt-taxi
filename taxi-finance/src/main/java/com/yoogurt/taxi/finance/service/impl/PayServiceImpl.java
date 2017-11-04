@@ -5,7 +5,7 @@ import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.form.PayForm;
-import com.yoogurt.taxi.finance.mq.PayTaskSender;
+import com.yoogurt.taxi.finance.mq.TaskSender;
 import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.PayTask;
 import com.yoogurt.taxi.finance.task.TaskInfo;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class PayServiceImpl extends PaymentServiceImpl implements PayService {
 
     @Autowired
-    private PayTaskSender sender;
+    private TaskSender<PayTask> payTaskSender;
 
     @Autowired
     private RedisHelper redis;
@@ -98,7 +98,10 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
 
     private TaskInfo buildTask() {
         String taskId = "pt_" + RandomUtils.getPrimaryKey();
-        return new TaskInfo(taskId);
+        TaskInfo taskInfo = new TaskInfo(taskId);
+        taskInfo.setQueueName("X-Queue-Pay");
+        taskInfo.setRoutingKey("topic.task.pay");
+        return taskInfo;
     }
 
     private PayTask doSubmit(PayForm form, String taskId, boolean isRetry) {
@@ -113,7 +116,7 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
         }
         //重新设置任务信息缓存
         redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId, task);
-        sender.send(task);
+        payTaskSender.send(task);
         return task;
     }
 }
