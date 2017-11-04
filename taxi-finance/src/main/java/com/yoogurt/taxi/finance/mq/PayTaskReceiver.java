@@ -2,7 +2,7 @@ package com.yoogurt.taxi.finance.mq;
 
 import com.yoogurt.taxi.dal.enums.TaskStatus;
 import com.yoogurt.taxi.finance.task.PayTask;
-import com.yoogurt.taxi.finance.task.PayTaskRunner;
+import com.yoogurt.taxi.finance.task.impl.EventTaskRunner;
 import com.yoogurt.taxi.finance.task.TaskInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class PayTaskReceiver {
 
     @Autowired
-    private PayTaskRunner runner;
+    private EventTaskRunner runner;
 
     @RabbitHandler
     public void receive(@Payload PayTask payTask) {

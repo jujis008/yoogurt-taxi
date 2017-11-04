@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
-public class PayTaskRunnerImpl implements TaskRunner<PayTask> {
+public class PayTaskRunner implements TaskRunner<PayTask> {
 
     @Autowired
     private ApplicationContext context;
