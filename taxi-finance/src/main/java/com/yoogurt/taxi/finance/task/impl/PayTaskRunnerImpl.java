@@ -9,8 +9,8 @@ import com.yoogurt.taxi.dal.enums.TaskStatus;
 import com.yoogurt.taxi.finance.service.PayChannelService;
 import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.PayTask;
-import com.yoogurt.taxi.finance.task.PayTaskRunner;
 import com.yoogurt.taxi.finance.task.TaskInfo;
+import com.yoogurt.taxi.finance.task.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
-public class PayTaskRunnerImpl implements PayTaskRunner {
+public class PayTaskRunnerImpl implements TaskRunner<PayTask> {
 
     @Autowired
     private ApplicationContext context;

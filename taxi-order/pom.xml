@@ -24,6 +24,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.yoogurt.taxi.finance</groupId>
+            <artifactId>taxi-finance</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-ribbon</artifactId>
         </dependency>
