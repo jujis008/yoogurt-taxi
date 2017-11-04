@@ -100,9 +100,9 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
             orderInfoService.modifyStatus(orderId, status.next());
 
             //取消交车提醒相关任务
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY + orderId);
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY + orderId);
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + orderId);
+            redisHelper.del(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY + orderId);
+            redisHelper.del(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY + orderId);
+            redisHelper.del(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + orderId);
 
             //向代理司机发送已交车的通知
             super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER, new HashMap<>());

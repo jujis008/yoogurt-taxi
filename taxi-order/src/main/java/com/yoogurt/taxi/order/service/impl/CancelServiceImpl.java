@@ -46,7 +46,7 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
     @Override
     public CancelOrderModel doCancel(CancelForm cancelForm) {
         Long orderId = cancelForm.getOrderId();
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, cancelForm.getUserId());
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //已完成的订单不可取消了
         if (OrderStatus.FINISH.equals(status)) return null;
@@ -122,14 +122,18 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
             rentInfoService.modifyStatus(orderInfo.getRentId(), RentStatus.CANCELED);
             //修改订单状态
             orderInfoService.modifyStatus(orderId, OrderStatus.CANCELED);
-            //后台取消，需要通知双方
-            if (!cancelForm.isFromApp()) {
-                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL, new HashMap<>());
-                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
-            } else {
+            if (cancelForm.isInternal()) {
+                //超时自动取消，需要通知双方
+                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_HANDOVER_UNFINISHED_REMINDER, new HashMap<>());
+                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER_UNFINISHED_REMINDER, new HashMap<>());
+            } else if (cancelForm.isFromApp()) {
                 //对于App客户端，操作者通常是责任方，除非无责取消
                 //通知对方，订单已取消
                 super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
+            } else {
+                //后台取消，需要通知双方
+                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL, new HashMap<>());
+                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
             }
             return (CancelOrderModel) info(orderId, cancelForm.getUserId());
         }

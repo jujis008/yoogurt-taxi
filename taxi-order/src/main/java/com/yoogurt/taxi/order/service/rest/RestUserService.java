@@ -19,7 +19,7 @@ public interface RestUserService {
     RestResult<UserInfo> getUserInfoById(@PathVariable(name = "userId") Long userId);
 
     @RequestMapping(value = "/rest/user/driver/id/{id}", method = RequestMethod.GET)
-    RestResult<DriverInfo> getDriverInfoById(@PathVariable(name = "driverId") Long driverId);
+    RestResult<DriverInfo> getDriverInfoById(@PathVariable(name = "id") Long id);
 
     @RequestMapping(value = "/rest/user/driver/userId/{userId}", method = RequestMethod.GET)
     RestResult<DriverInfo> getDriverInfoByUserId(@PathVariable(name = "userId") Long userId);

@@ -259,6 +259,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public ResponseObj saveUnitInfo(UserInfo userInfo, DriverInfo driverInfo, CarInfo carInfo) {
+        if (userInfo != null) {
+            userDao.updateByIdSelective(userInfo);
+        }
+        if (driverInfo != null) {
+            driverDao.updateByIdSelective(driverInfo);
+        }
+        if (carInfo != null) {
+            carDao.updateByIdSelective(carInfo);
+        }
+        return ResponseObj.success();
+    }
+
+    @Override
     public ResponseObj saveUser(UserForm form) {
         UserInfo userInfo = new UserInfo();
         BeanUtilsExtends.copyProperties(userInfo,form);

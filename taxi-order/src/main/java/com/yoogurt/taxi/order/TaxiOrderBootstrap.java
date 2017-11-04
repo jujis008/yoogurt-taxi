@@ -51,7 +51,7 @@ public class TaxiOrderBootstrap {
         RedisHelper helper = context.getBean(RedisHelper.class);
         RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
         RedisConnectionFactory connectionFactory = helper.getConnectionFactory();
-        String pattern = "__keyevent@1__:expired";
+        String pattern = "__keyevent@*__:expired";
         log.info("设置监听器，pattern为"+pattern);
         listenerContainer.addMessageListener(listener, new PatternTopic(pattern));
         listenerContainer.setConnectionFactory(connectionFactory);

@@ -40,21 +40,6 @@ public class RedisHelper {
         return redisTemplate.getConnectionFactory();
     }
 
-    public RedisConnection getExpireMessageConnection() {
-        RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
-        connection.select(1);
-        return connection;
-    }
-
-    public void setExForOrder(String key, long seconds, String value) {
-        RedisConnection expireMessageConnection = getExpireMessageConnection();
-        expireMessageConnection.setEx(key.getBytes(), seconds, value.getBytes());
-    }
-
-    public void delExForOrder(String key) {
-        RedisConnection expireMessageConnection = getExpireMessageConnection();
-        expireMessageConnection.del(key.getBytes());
-    }
 
     /**
      * 获取缓存内容
@@ -124,8 +109,8 @@ public class RedisHelper {
      * @param value
      * @param expirySeconds
      */
-    public void set(String key, Object value, int expirySeconds) {
-        redisTemplate.opsForValue().set(key, value, expirySeconds, TimeUnit.SECONDS);
+    public void set(String key, Object value, long expirySeconds) {
+        redisTemplate.opsForValue().set(key, value.toString(), expirySeconds, TimeUnit.SECONDS);
     }
 
     /**

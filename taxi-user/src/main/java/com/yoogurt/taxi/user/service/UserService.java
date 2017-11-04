@@ -3,6 +3,8 @@ package com.yoogurt.taxi.user.service;
 import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.beans.CarInfo;
+import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
 import com.yoogurt.taxi.dal.enums.UserStatus;
@@ -111,6 +113,8 @@ public interface UserService {
     ResponseObj InsertUser(UserInfo userInfo);
 
     ResponseObj modifyUser(UserInfo userInfo);
+
+    ResponseObj saveUnitInfo(UserInfo userInfo, DriverInfo driverInfo, CarInfo carInfo);
 
     ResponseObj saveUser(UserForm form);
 

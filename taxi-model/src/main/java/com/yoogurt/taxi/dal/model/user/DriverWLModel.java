@@ -23,4 +23,9 @@ public class DriverWLModel {
             this.statusName = userStatus.getName();
         }
     }
+
+    public static void main(String[] args){
+        long ss = (long) Math.pow(2,53);
+        System.out.println(String.valueOf(ss).length());
+    }
 }

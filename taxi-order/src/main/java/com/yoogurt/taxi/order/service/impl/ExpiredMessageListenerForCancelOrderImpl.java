@@ -71,14 +71,17 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
         if (key.startsWith(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY)) {
             Long rentId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY, ""));
             log.info("[" + rentId + "]交车1小时前提醒");
-            RentInfo rentInfo = rentInfoService.getRentInfo(rentId, null);
-            if (rentInfo == null) return;
+            OrderInfo orderInfo = orderInfoService.getOrderInfo(rentId,null);
+            if (orderInfo == null) return;
             SendType sendType = SendType.ORDER_HANDOVER_REMINDER1;
             UserType userType = UserType.USER_APP_OFFICE;
             String title = Constants.OFFICIAL_APP_NAME;
             PushPayload payload = new PushPayload(userType, sendType, title);
-            payload.addUserId(rentInfo.getUserId());
+            payload.addUserId(orderInfo.getOfficialUserId());
             payload.setContent(String.format(sendType.getMessage(), rentId));
+            Map<String, Object> extras = new HashMap<>();
+            extras.put("orderId", rentId);
+            payload.setExtras(extras);
             sender.send(payload);
             return;
         }
@@ -87,21 +90,24 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
         if (key.startsWith(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY)) {
             Long rentId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY, ""));
             log.info("[" + rentId + "]交车提醒");
-            RentInfo rentInfo = rentInfoService.getRentInfo(rentId, null);
-            if (rentInfo == null) return;
+            OrderInfo orderInfo = orderInfoService.getOrderInfo(rentId,null);
+            if (orderInfo == null) return;
             SendType sendType = SendType.ORDER_HANDOVER_REMINDER;
             UserType userType = UserType.USER_APP_OFFICE;
             String title = Constants.OFFICIAL_APP_NAME;
             PushPayload payload = new PushPayload(userType, sendType, title);
-            payload.addUserId(rentInfo.getUserId());
+            payload.addUserId(orderInfo.getOfficialUserId());
             payload.setContent(String.format(sendType.getMessage(), rentId));
+            Map<String, Object> extras = new HashMap<>();
+            extras.put("orderId", rentId);
+            payload.setExtras(extras);
             sender.send(payload);
             return;
         }
 
         //车主未交车，最大程度违约（租金用完）
         if (key.startsWith(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY)) {
-            Long orderId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY, ""));
+            Long orderId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY, ""));
             log.info("[" + orderId + "]自动取消订单");
             CancelForm cancelForm = new CancelForm();
             cancelForm.setReason("车主未按预定时间交车，系统自动取消订单");

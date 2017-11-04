@@ -5,6 +5,7 @@ import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.dal.beans.CommonResource;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.OrderPickUpInfo;
+import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.dal.model.order.PickUpOrderModel;
@@ -55,13 +56,13 @@ public class PickUpServiceImpl implements PickUpService {
 
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime giveBackTime = LocalDateTime.ofInstant(orderInfo.getGiveBackTime().toInstant(), ZoneId.systemDefault());
-            long durationSeconds = Duration.between(now, giveBackTime).getSeconds();
+            long durationSeconds =  Duration.between(now, giveBackTime).getSeconds();
             if (durationSeconds - 3600 > 10) {//剩余时间不足1小时，不需要添加任务
                 //设置还车1小时前提醒任务
-                redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY + orderId, durationSeconds - 3600, orderId.toString());
+                redisHelper.set(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY+ orderId, orderId, durationSeconds - 3600);
             }
             //设置还车到点提醒任务
-            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY + orderId, durationSeconds, orderId.toString());
+            redisHelper.set(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY + orderId, orderId, durationSeconds);
 
             String[] pictures = pickupForm.getPictures();
             if (pictures != null && pictures.length > 0) {//添加图片资源

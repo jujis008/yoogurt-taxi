@@ -93,8 +93,8 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
             orderInfoService.modifyStatus(orderId, status.next());
 
             //清除还车提醒任务
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY + orderId);
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY + orderId);
+            redisHelper.del(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY + orderId);
+            redisHelper.del(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY + orderId);
 
             //已还车，通知正式司机
             super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK, new HashMap<>());

@@ -116,30 +116,30 @@ public final class CacheKey {
     /**
      * 租单超时取消key标识，采用redis的keyspace notifications功能实现定时功能
      */
-    public static final String MESSAGE_ORDER_TIMEOUT_KEY = "E_ORDER_TIMEOUT#";
+    public static final String MESSAGE_ORDER_TIMEOUT_KEY = "@E_ORDER_TIMEOUT#";
 
     /**
      * 订单交车前1小时，通知车主交车
      */
-    public static final String MESSAGE_ORDER_HANDOVER_REMINDER1_KEY = "E_ORDER_HANDOVER_REMINDER1_KEY#";
+    public static final String MESSAGE_ORDER_HANDOVER_REMINDER1_KEY = "@E_ORDER_HANDOVER_REMINDER1_KEY#";
 
     /**
      *订单交车到期提醒，通知车主
      */
-    public static final String MESSAGE_ORDER_HANDOVER_REMINDER_KEY = "E_ORDER_HANDOVER_REMINDER_KEY#";
+    public static final String MESSAGE_ORDER_HANDOVER_REMINDER_KEY = "@E_ORDER_HANDOVER_REMINDER_KEY#";
 
     /**
      * 订单交车过期提醒，通知双方
      */
-    public static final String MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY = "E_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY#";
+    public static final String MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY = "@E_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY#";
 
     /**
      * 还车前1小时提醒，通知司机
      */
-    public static final String MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY = "E_ORDER_GIVE_BACK_REMINDER1_KEY#";
+    public static final String MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY = "@E_ORDER_GIVE_BACK_REMINDER1_KEY#";
 
     /**
      * 还车到期提醒，通知司机
      */
-    public static final String MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY = "E_ORDER_GIVE_BACK_REMINDER_KEY#";
+    public static final String MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY = "@E_ORDER_GIVE_BACK_REMINDER_KEY#";
 }

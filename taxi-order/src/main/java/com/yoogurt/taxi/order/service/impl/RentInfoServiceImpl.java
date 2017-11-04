@@ -127,7 +127,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime handoverDateTime = LocalDateTime.ofInstant(rentInfo.getHandoverTime().toInstant(), ZoneId.systemDefault());
             long seconds = Duration.between(currentDateTime, handoverDateTime).getSeconds();
-            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+rentInfo.getRentId(),seconds,rentInfo.getRentId().toString());
+            redisHelper.set(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+rentInfo.getRentId(),rentInfo.getRentId(),seconds);
         }
         return obj;
     }
@@ -140,7 +140,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         if (!RentStatus.WAITING.getCode().equals(rentInfo.getStatus())) return null;
         rentInfo.setStatus(RentStatus.CANCELED.getCode());
         if (modifyStatus(cancelForm.getRentId(), RentStatus.CANCELED)) {
-            redisHelper.delExForOrder(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+cancelForm.getRentId());
+            redisHelper.del(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+cancelForm.getRentId());
             return rentInfo;
         }
         return null;

@@ -81,21 +81,20 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             LocalDateTime handoverDateTime = LocalDateTime.ofInstant(orderInfo.getHandoverTime().toInstant(), ZoneId.systemDefault());
             long durationSeconds = Duration.between(now, handoverDateTime).getSeconds();
 
-
+            redisHelper.del(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+rentId);
             //设置交车前1小时提醒任务
             if (durationSeconds - 3600 > 10) {//如果接单时，距离交车时间不足一小时，就不用发通知了
-                redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + rentId, durationSeconds - 3600, rentId.toString());
+                redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + rentId,rentId,durationSeconds - 3600);
             }
 
             //设置交车到点提醒任务
-            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY + rentId, durationSeconds, rentId.toString());
+            redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY + rentId, rentId ,durationSeconds);
 
             //设置交车超时，最大违约任务
             OrderHandoverRule rule = handoverRuleService.getRuleInfo();
             BigDecimal divide = orderInfo.getAmount().divide(rule.getPrice(), BigDecimal.ROUND_FLOOR);
-            long seconds = TimeUnit.valueOf(rule.getUnit()).toSeconds(divide.longValue()) + durationSeconds;
-            redisHelper.setExForOrder(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY + rentId, seconds, rentId.toString());
-
+            long seconds = (TimeUnit.valueOf(rule.getUnit()).toSeconds(divide.longValue()) + durationSeconds);
+            redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY + rentId, rentId, seconds);
             //已接单，通知对方
             super.push(orderInfo, UserType.getEnumsByCode(orderForm.getUserType()).equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_RENT, new HashMap<>());
             OrderModel model = new OrderModel();
