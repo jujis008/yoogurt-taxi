@@ -30,11 +30,25 @@ public class Event<T extends Notify> {
 	/**
 	 * 回调重试的次数
 	 */
-	private int retryTimes;
+	private int retryTimes = 0;
 
 	/**
 	 * 回调对象。
 	 */
 	private T data;
 
+	public Event() {
+		this.created = System.currentTimeMillis();
+	}
+
+	public Event(String eventId) {
+		this();
+		this.eventId = eventId;
+	}
+
+	public Event(String eventId, T data) {
+		this();
+		this.eventId = eventId;
+		this.data = data;
+	}
 }
