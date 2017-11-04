@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-@Service
+@Service("payTaskRunner")
 public class PayTaskRunner implements TaskRunner<PayTask> {
 
     @Autowired
