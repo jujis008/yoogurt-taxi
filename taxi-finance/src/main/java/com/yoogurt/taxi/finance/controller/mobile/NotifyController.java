@@ -44,11 +44,11 @@ public abstract class NotifyController<Channel extends PayChannelService, Notify
      * @param taskId 发起支付任务的ID
      * @return ResponseObj
      */
-    @RequestMapping(value = "/result/{taskId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj queryResult(@PathVariable(name = "taskId") String taskId) {
-        Event<com.yoogurt.taxi.dal.bo.Notify> event = notify.queryResult(taskId);
-        return ResponseObj.success(event);
-    }
+//    @RequestMapping(value = "/result/{taskId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+//    public ResponseObj queryResult(@PathVariable(name = "taskId") String taskId) {
+//        Event<com.yoogurt.taxi.dal.bo.Notify> event = notify.queryResult(taskId);
+//        return ResponseObj.success(event);
+//    }
 
     /**
      * 获取回调事件对象
@@ -56,10 +56,10 @@ public abstract class NotifyController<Channel extends PayChannelService, Notify
      * @param eventId 事件对象ID
      * @return ResponseObj
      */
-    @RequestMapping(value = "/event/{eventId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getEventTask(@PathVariable(name = "eventId") String eventId) {
-
-        Event<com.yoogurt.taxi.dal.bo.Notify> event = notify.queryResult(eventId);
-        return ResponseObj.success(event);
-    }
+//    @RequestMapping(value = "/event/{eventId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+//    public ResponseObj getEventTask(@PathVariable(name = "eventId") String eventId) {
+//
+//        Event<com.yoogurt.taxi.dal.bo.Notify> event = notify.queryResult(eventId);
+//        return ResponseObj.success(event);
+//    }
 }
