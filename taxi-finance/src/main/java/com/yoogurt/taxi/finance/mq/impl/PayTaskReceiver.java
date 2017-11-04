@@ -1,9 +1,10 @@
-package com.yoogurt.taxi.finance.mq;
+package com.yoogurt.taxi.finance.mq.impl;
 
 import com.yoogurt.taxi.dal.enums.TaskStatus;
+import com.yoogurt.taxi.finance.mq.TaskReceiver;
 import com.yoogurt.taxi.finance.task.PayTask;
-import com.yoogurt.taxi.finance.task.impl.EventTaskRunner;
 import com.yoogurt.taxi.finance.task.TaskInfo;
+import com.yoogurt.taxi.finance.task.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -15,12 +16,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RabbitListener(queues = "X-Queue-Pay")
-public class PayTaskReceiver {
+public class PayTaskReceiver implements TaskReceiver<PayTask> {
 
     @Autowired
-    private EventTaskRunner runner;
+    private TaskRunner<PayTask> payTaskRunner;
 
     @RabbitHandler
+    @Override
     public void receive(@Payload PayTask payTask) {
         if (payTask == null) return;
         TaskInfo task = payTask.getTask();
@@ -30,6 +32,6 @@ public class PayTaskReceiver {
         log.info("[" + DateTime.now().toString("yyyy-MM-dd HH:mm:ss") + "] 收到支付任务，开始执行......");
         //记录任务开始的时间戳
         task.setStartTimestamp(System.currentTimeMillis());
-        runner.run(payTask);
+        payTaskRunner.run(payTask);
     }
 }
