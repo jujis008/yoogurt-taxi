@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class AmqpConfig {
+public class FinanceAmqpConfig {
 
     @Autowired
     private ConnectionFactory connectionFactory;
