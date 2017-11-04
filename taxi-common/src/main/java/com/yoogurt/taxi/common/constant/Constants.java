@@ -55,7 +55,7 @@ public final class Constants {
     /**
      * 支付任务最大重试次数
      */
-    public static final int MAX_PAY_TASK_RETRY_TIMES = 5;
+    public static final int MAX_TASK_RETRY_TIMES = 5;
 
     /**
      * 为了保证API的幂等性，每次请求需要有一个唯一的REQUEST_ID，
