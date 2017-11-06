@@ -5,8 +5,10 @@ import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
+import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.mq.TaskSender;
 import com.yoogurt.taxi.finance.service.NotifyService;
+import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.EventTask;
 import com.yoogurt.taxi.finance.task.TaskInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +16,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Slf4j
 @Service
 public abstract class NotifyServiceImpl implements NotifyService {
+
+    @Autowired
+    private PayService payService;
 
     @Autowired
     private TaskSender<EventTask> eventTaskSender;
@@ -107,7 +114,7 @@ public abstract class NotifyServiceImpl implements NotifyService {
         return taskInfo;
     }
 
-    private EventTask doSubmit(Event event, String taskId, boolean isRetry) {
+    private EventTask  doSubmit(Event event, String taskId, boolean isRetry) {
         final EventTask task;
         if (isRetry && StringUtils.isNoneBlank(taskId)) {
             task = getTask(taskId);
@@ -115,7 +122,16 @@ public abstract class NotifyServiceImpl implements NotifyService {
         } else {
             TaskInfo taskInfo = buildTask();
             taskId = taskInfo.getTaskId();
-            task = new EventTask(taskId, taskInfo, event);
+            task = new EventTask(taskId);
+            task.setEvent(event);
+            task.setTask(taskInfo);
+            Map metadata = event.getData().getMetadata();
+            if (metadata.get("payId") != null) {
+                String payId = metadata.get("payId").toString();
+                Payment payment = payService.getPayment(payId);
+                payment.setTransactionNo(event.getData().getTransactionNo());
+                task.setPayment(payment);
+            }
         }
         //重新设置任务信息缓存
         redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId, task);
