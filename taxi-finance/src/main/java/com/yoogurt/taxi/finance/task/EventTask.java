@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.finance.task;
 
 import com.yoogurt.taxi.dal.doc.finance.Event;
+import com.yoogurt.taxi.dal.doc.finance.Payment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,8 @@ public class EventTask {
 	private TaskInfo task;
 
 	private Event event;
+
+	private Payment payment;
 
 
 	public EventTask(String taskId) {
