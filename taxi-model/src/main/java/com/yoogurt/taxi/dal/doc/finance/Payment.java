@@ -106,6 +106,11 @@ public class Payment implements Serializable {
 	private Long paidTime;
 
 	/**
+	 * 实际支付金额
+	 */
+	private Long paidAmount;
+
+	/**
 	 * 支付渠道返回的交易流水号，部分渠道返回该字段为空
 	 */
 	private String transactionNo;
