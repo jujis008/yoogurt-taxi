@@ -32,11 +32,6 @@ public class AlipayNotify extends Notify {
 	private String version;
 
 	/**
-	 * 支付宝交易凭证号
-	 */
-	private String tradeNo;
-
-	/**
 	 * 商户业务ID，主要是退款通知中返回退款申请的流水号
 	 */
 	private String outBizNo;
@@ -143,8 +138,8 @@ public class AlipayNotify extends Notify {
 			put("sign_type", "signType");
 			put("trade_no", "transactionNo");
 
-			put("notifyType", "notify_type");
-			put("notifyId", "notify_id");
+			put("notify_type", "notifyType");
+			put("notify_id", "notifyId");
 			put("out_biz_no", "outBizNo");
 			put("buyer_id", "buyerId");
 			put("buyer_logon_id", "buyerLogonId");
