@@ -11,4 +11,6 @@ public interface TaskRunner<T> {
 	 */
 	void run(T task);
 
+
+	T retry(T task);
 }

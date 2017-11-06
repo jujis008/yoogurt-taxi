@@ -69,7 +69,7 @@ public class PayTaskRunner implements TaskRunner<PayTask> {
             } else if (task.isNeedRetry()) {//触发任务重试
                 if (task.canRetry()) {
                     log.warn("[" + task.getTaskId() + "]任务执行失败!!");
-                    payService.retry(taskId); //重试
+                    retry(payTask); //重试
                 } else {
                     //状态码
                     task.setStatusCode(TaskStatus.EXECUTE_FAILED.getCode());
@@ -83,6 +83,12 @@ public class PayTaskRunner implements TaskRunner<PayTask> {
                 }
             }
         });
+    }
+
+    @Override
+    public PayTask retry(PayTask task) {
+
+        return payService.retry(task.getTaskId()); //重试
     }
 
 }
