@@ -2,9 +2,10 @@ package com.yoogurt.taxi.notification.service.Impl;
 
 import com.gexin.rp.sdk.base.IPushResult;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.Message;
 import com.yoogurt.taxi.dal.beans.PushDevice;
+import com.yoogurt.taxi.dal.doc.notification.Message;
 import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.notification.bo.Transmission;
 import com.yoogurt.taxi.notification.bo.TransmissionPayload;
@@ -13,7 +14,7 @@ import com.yoogurt.taxi.notification.dao.PushDeviceDao;
 import com.yoogurt.taxi.notification.factory.GeTuiFactory;
 import com.yoogurt.taxi.notification.form.UserBindingForm;
 import com.yoogurt.taxi.notification.helper.PushHelper;
-import com.yoogurt.taxi.notification.service.MessageService;
+import com.yoogurt.taxi.notification.service.MsgService;
 import com.yoogurt.taxi.notification.service.PushService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ public class PushServiceImpl implements PushService {
     private PushDeviceDao deviceDao;
 
     @Autowired
-    private MessageService messageService;
+    private MsgService msgService;
 
     @Override
     public PushDevice getDeviceInfo(String clientId, Long userId) {
@@ -137,12 +139,10 @@ public class PushServiceImpl implements PushService {
      * <p class="detail">
      * 功能：群推消息，含ANDROID和iOS设备，需要设置推送内容，仅支持普通消息。
      * </p>
-     *
-     * @param userType 用户类型，必填项
+     *  @param userType 用户类型，必填项
      * @param title    消息标题
      * @param content  推送内容
-     * @param persist  是否将推送消息持久化到数据库，可以在消息中心里面看到
-     * @return 推送结果
+     * @param persist  是否将推送消息持久化到数据库，可以在消息中心里面看到  @return 推送结果
      * @author weihao.liu
      */
     @Override
@@ -157,13 +157,11 @@ public class PushServiceImpl implements PushService {
      * <p class="detail">
      * 功能：群推消息，指定设备类型，需要设置推送内容，仅支持普通消息。
      * </p>
-     *
-     * @param userType   用户类型，必填项
+     *  @param userType   用户类型，必填项
      * @param deviceType 设备类型
      * @param title      消息标题
      * @param content    推送内容
-     * @param persist    是否持久化到数据库，可以在消息中心里面看到
-     * @return 推送结果
+     * @param persist    是否持久化到数据库，可以在消息中心里面看到  @return 推送结果
      * @author weihao.liu
      */
     @Override
@@ -177,15 +175,13 @@ public class PushServiceImpl implements PushService {
      * <p class="detail">
      * 功能：单个推送消息，指定用户和消息发送类型
      * </p>
-     *
-     * @param userId   推送的用户id
+     *  @param userId   推送的用户id
      * @param userType 用户类型，必填项
      * @param sendType 推送类型 {@link SendType}
      * @param title    消息标题
      * @param content  推送通知内容
      * @param extras   额外的参数，用于客户端后台逻辑处理
-     * @param persist  是否持久化到数据库，可以在消息中心里面看到
-     * @return 推送结果
+     * @param persist  是否持久化到数据库，可以在消息中心里面看到   @return 推送结果
      * @author weihao.liu
      */
     @Override
@@ -202,15 +198,13 @@ public class PushServiceImpl implements PushService {
      * <p class="detail">
      * 功能：批量推送给指定的用户群
      * </p>
-     *
-     * @param userIds  多个用户id
+     *  @param userIds  多个用户id
      * @param userType 用户类型
      * @param sendType 发送类型
      * @param title    消息标题
      * @param content  发送内容
      * @param extras   额外信息
-     * @param persist  是否持久化到数据库，可以在消息中心里面看到
-     * @return 推送结果
+     * @param persist  是否持久化到数据库，可以在消息中心里面看到   @return 推送结果
      * @author weihao.liu
      */
     @Override
@@ -308,7 +302,7 @@ public class PushServiceImpl implements PushService {
                 return ResponseObj.fail(StatusCode.BIZ_FAILED, "推送消息失败");
             }
             if (persist) {//持久化到数据库
-                persistMessage(userIds, title, content, sendType.getCode());
+                persistMessage(userIds, title, content, extras, sendType);
             }
         } catch (Exception e) {
             log.error("Message push failed: {}", e);
@@ -317,19 +311,22 @@ public class PushServiceImpl implements PushService {
         return ResponseObj.success();
     }
 
-    private boolean persistMessage(List<Long> userIds, String title, String content, Integer type) {
-        if (CollectionUtils.isEmpty(userIds)) return false;
+    private void persistMessage(List<Long> userIds, String title, String content, Map<String, Object> extras, SendType sendType) {
+        if (CollectionUtils.isEmpty(userIds)) return;
         List<Message> messages = new ArrayList<>();
         for (Long userId : userIds) {
             Message msg = new Message();
+            msg.setMessageId(RandomUtils.getPrimaryKey());
             msg.setToUserId(userId);
             msg.setTitle(title);
             msg.setContent(content);
-            msg.setType(type);
+            msg.setSendType(sendType);
             msg.setStatus(10);
+            msg.setExtras(extras);
+            msg.setGmtCreate(new Date());
             messages.add(msg);
         }
-        return messageService.addMessages(messages) == userIds.size();
+        msgService.addMessages(messages);
     }
 
     private List<PushDevice> getDeviceByUserIds(List<Long> userIds) {

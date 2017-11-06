@@ -56,7 +56,7 @@ public class PushTests {
             put("orderId", 17101609512257244L);
         }});
         payload.addUserId(userId);
-        ResponseObj obj = pushService.pushMessage(payload.getUserIds(), payload.getUserType(), payload.getSendType(), payload.getMsgType(), payload.getDeviceType(), payload.getTitle(), payload.getContent(), payload.getExtras(), false);
+        ResponseObj obj = pushService.pushMessage(payload.getUserIds(), payload.getUserType(), payload.getSendType(), payload.getMsgType(), payload.getDeviceType(), payload.getTitle(), payload.getContent(), payload.getExtras(), true);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }
 

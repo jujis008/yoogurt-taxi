@@ -179,6 +179,13 @@ public class UserWebController extends BaseController {
         return loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
     }
 
+    @RequestMapping(value = "/logout", method = RequestMethod.DELETE, produces = {"application/json;charset=utf-8"})
+    public ResponseObj logout() {
+        Long userId = super.getUserId();
+        redisHelper.del(CacheKey.SESSION_USER_KEY+userId);
+        return ResponseObj.success();
+    }
+
     /**
      * 获取司机分页列表
      *

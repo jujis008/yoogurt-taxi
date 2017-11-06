@@ -1,7 +1,6 @@
 package com.yoogurt.taxi.order;
 
 import com.yoogurt.taxi.dal.bo.PushPayload;
-import com.yoogurt.taxi.dal.enums.MsgType;
 import com.yoogurt.taxi.dal.enums.SendType;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.mq.NotificationSender;

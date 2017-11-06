@@ -56,6 +56,15 @@ public enum SendType {
         this.message = message;
     }
 
+    public static SendType getEnumByCode(int code) {
+        for (SendType sendType:SendType.values()) {
+            if (sendType.code==code) {
+                return sendType;
+            }
+        }
+        return null;
+    }
+
     public static SendType getEnumByType(String type) {
 
         if (!StringUtils.isBlank(type)) {

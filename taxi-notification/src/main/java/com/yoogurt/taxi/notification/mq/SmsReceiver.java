@@ -22,7 +22,7 @@ public class SmsReceiver {
     @Autowired
     private SmsConfig smsConfig;
 
-    @RabbitHandler
+    @RabbitHandler()
     public void receive(@Payload SmsPayload payload) {
         log.info(DateTime.now().toString("yyyy-MM-dd HH:mm:ss") + "收到消息：" + payload.toString());
 

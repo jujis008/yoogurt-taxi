@@ -57,6 +57,11 @@ public class RandomUtils {
      */
     public static long getPrimaryKey(){
         DateTime dateTime = new DateTime();
-        return Long.valueOf(dateTime.toString("yyMMddHHmmssSSS") + getRandNum(1));
+        return Long.valueOf(dateTime.toString("yyMMddHHmmssSSS"));
+    }
+
+    public static void main(String[] args){
+        System.out.println(getPrimaryKey());
+        System.out.println(String.valueOf(getPrimaryKey()).length());
     }
 }
