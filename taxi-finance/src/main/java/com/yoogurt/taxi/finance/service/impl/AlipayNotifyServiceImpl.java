@@ -5,10 +5,12 @@ import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.bo.AlipayNotify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
+import com.yoogurt.taxi.dal.enums.EventType;
 import com.yoogurt.taxi.dal.enums.PayChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -35,14 +37,16 @@ public class AlipayNotifyServiceImpl extends NotifyServiceImpl {
             BeanUtils.populate(notify, parameterMap);
             notify.setChannel(PayChannel.ALIPAY.getName());
             notify.setAmount(new Money(parameterMap.get("total_amount").toString()).getCent());
-            notify.setNotifyTimestamp(DateTime.parse(parameterMap.get("notify_time").toString()).getMillis());
-            notify.setPaidTimestamp(DateTime.parse(notify.getGmtPayment()).getMillis());
+            notify.setNotifyTimestamp(DateTime.parse(parameterMap.get("notify_time").toString(), DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")).getMillis());
+            notify.setPaidTimestamp(DateTime.parse(notify.getGmtPayment(), DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")).getMillis());
             //回传参数
             if (parameterMap.get("passback_params") != null) {
                 ObjectMapper mapper = new ObjectMapper();
                 notify.setMetadata(mapper.readValue(parameterMap.get("passback_params").toString(), Map.class));
             }
-            return new Event<>(eventId, notify);
+            Event<AlipayNotify> event = new Event<>(eventId, notify);
+            event.setEventType(EventType.PAY_SUCCEEDED.getCode());
+            return event;
         } catch (Exception e) {
             log.error("回调参数解析发生异常, {}", e);
         }
