@@ -138,17 +138,24 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
     /**
      * 解析回调请求的参数
      *
-     * @param request 回调请求对象
+     * @param request      回调请求对象
+     * @param attributeMap 原始参数(key)与系统接收的参数(value)之间的映射关系
      * @return 参数键值对
      */
     @Override
-    public Map<String, Object> parameterResolve(HttpServletRequest request) {
+    public Map<String, Object> parameterResolve(HttpServletRequest request, Map<String, Object> attributeMap) {
         Map<String, Object> parameterMap = new HashMap<>();
         Enumeration<String> parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
             String name = parameterNames.nextElement();
             String value = request.getParameter(name);
-            parameterMap.put(name, value);
+            if (attributeMap != null && attributeMap.get(name) != null) {
+
+                parameterMap.put(attributeMap.get(name).toString(), value);
+            } else {
+
+                parameterMap.put(name, value);
+            }
         }
         return parameterMap;
     }

@@ -1,11 +1,14 @@
 package com.yoogurt.taxi.finance.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
-import com.yoogurt.taxi.dal.bo.AlipayNotify;
 import com.yoogurt.taxi.dal.bo.WxNotify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
+import com.yoogurt.taxi.dal.enums.PayChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -32,6 +35,19 @@ public class WxNotifyServiceImpl extends NotifyServiceImpl {
         try {
             //将Map中的参数注入到
             BeanUtils.populate(notify, parameterMap);
+            notify.setChannel(PayChannel.WX.getName());
+            notify.setCharset("UTF-8");
+            notify.setSignType("MD5");
+            notify.setSign(parameterMap.get("sign").toString());
+            notify.setAmount(Long.valueOf(parameterMap.get("total_fee").toString()));
+            long timestamp = DateTime.parse(notify.getTimeEnd(), DateTimeFormat.forPattern("yyyyMMddHHmmss")).getMillis();
+            notify.setNotifyTimestamp(timestamp);
+            notify.setPaidTimestamp(timestamp);
+            //回传参数
+            if (parameterMap.get("attach") != null) {
+                ObjectMapper mapper = new ObjectMapper();
+                notify.setMetadata(mapper.readValue(parameterMap.get("attach").toString(), Map.class));
+            }
             return event;
         } catch (Exception e) {
             log.error("回调参数解析发生异常, {}", e);

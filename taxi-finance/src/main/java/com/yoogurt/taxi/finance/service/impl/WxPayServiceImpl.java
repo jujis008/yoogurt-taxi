@@ -21,9 +21,7 @@ import net.sf.json.xml.XMLSerializer;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -192,10 +190,11 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
      * 解析回调请求的参数
      *
      * @param request 回调请求对象
+     * @param attributeMap
      * @return 参数键值对
      */
     @Override
-    public Map<String, Object> parameterResolve(HttpServletRequest request) {
+    public Map<String, Object> parameterResolve(HttpServletRequest request, Map<String, Object> attributeMap) {
         String rawData = getRawData(request);
         if (StringUtils.isBlank(rawData)) return null;
         try {

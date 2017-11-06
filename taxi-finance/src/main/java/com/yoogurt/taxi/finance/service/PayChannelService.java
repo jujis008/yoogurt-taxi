@@ -34,7 +34,8 @@ public interface PayChannelService {
      * 解析回调请求的参数
      *
      * @param request 回调请求对象
+     * @param attributeMap
      * @return 参数键值对
      */
-    Map<String, Object> parameterResolve(HttpServletRequest request);
+    Map<String, Object> parameterResolve(HttpServletRequest request, Map<String, Object> attributeMap);
 }
