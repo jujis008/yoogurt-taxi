@@ -34,4 +34,16 @@ public class PushMobileController extends BaseController {
         }
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "设备绑定失败");
     }
+
+    @RequestMapping(value = "/unbinding", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
+    public ResponseObj unbinding(@Valid @RequestBody UserBindingForm bindingForm, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
+        }
+        PushDevice device = pushService.unBinding(bindingForm.getClientId(), super.getUserId());
+        if (device != null) {
+            return ResponseObj.success(device);
+        }
+        return ResponseObj.fail(StatusCode.BIZ_FAILED, "设备解绑失败");
+    }
 }
