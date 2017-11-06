@@ -55,4 +55,11 @@ public class OrderPayment extends SuperModel{
      */
     private Integer status;
 
+    public OrderPayment() {
+    }
+
+    public OrderPayment(String payId, Long orderId) {
+        this.payId = payId;
+        this.orderId = orderId;
+    }
 }
