@@ -133,6 +133,9 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
             PushPayload payload = new PushPayload(userType, sendType, title);
             payload.addUserId(orderInfo.getAgentUserId());
             payload.setContent(String.format(sendType.getMessage(), orderInfo.getAgentUserId()));
+            Map<String, Object> extras = new HashMap<>();
+            extras.put("orderId", orderId);
+            payload.setExtras(extras);
             sender.send(payload);
             return;
         }
@@ -149,6 +152,9 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
             PushPayload payload = new PushPayload(userType, sendType, title);
             payload.addUserId(orderInfo.getAgentUserId());
             payload.setContent(String.format(sendType.getMessage(), orderInfo.getAgentUserId()));
+            Map<String, Object> extras = new HashMap<>();
+            extras.put("orderId", orderId);
+            payload.setExtras(extras);
             sender.send(payload);
         }
     }

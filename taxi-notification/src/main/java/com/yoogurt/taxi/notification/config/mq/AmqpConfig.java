@@ -14,9 +14,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AmqpConfig {
 
-    @Autowired
-    private ConnectionFactory connectionFactory;
-
     private final static String NOTIFICATION_EXCHANGE_NAME = "X-Exchange-Notification";
 
     private final static String NOTIFICATION_QUEUE_NAME = "X-Queue-Notification";
@@ -26,6 +23,9 @@ public class AmqpConfig {
     private final static String NOTIFICATION_TOPIC = "topic.notification.#";
 
     private final static String NOTIFICATION_SMS_TOPIC = "topic.sms.#";
+
+    @Autowired
+    private ConnectionFactory connectionFactory;
 
     /**
      * 创建消息队列
@@ -81,4 +81,5 @@ public class AmqpConfig {
         factory.setMessageConverter(new Jackson2JsonMessageConverter());
         return factory;
     }
+
 }

@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.user.controller.mobile;
 
+import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
@@ -69,6 +70,13 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
         return loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
+    }
+
+    @RequestMapping(value = "/logout", method = RequestMethod.DELETE, produces = {"application/json;charset=utf-8"})
+    public ResponseObj logout() {
+        Long userId = super.getUserId();
+        redisHelper.del(CacheKey.SESSION_USER_KEY+userId);
+        return ResponseObj.success();
     }
 
     @RequestMapping(value = "/i/reset/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})

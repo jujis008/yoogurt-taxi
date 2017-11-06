@@ -40,12 +40,10 @@ public interface PushService {
      * <p class="detail">
      * 功能：群推消息，含ANDROID和iOS设备，需要设置推送内容，仅支持普通消息。
      * </p>
-     *
-     * @param userType 用户类型，必填项
+     *  @param userType 用户类型，必填项
      * @param title    标题
      * @param content  推送内容
-     * @param persist  是否将推送消息持久化到数据库，可以在消息中心里面看到
-     * @return 推送结果
+     * @param persist  是否将推送消息持久化到数据库，可以在消息中心里面看到  @return 推送结果
      * @author weihao.liu
      */
     ResponseObj pushMessage(UserType userType, String title, String content, boolean persist);
@@ -55,13 +53,11 @@ public interface PushService {
      * <p class="detail">
      * 功能：群推消息，指定设备类型，需要设置推送内容，仅支持普通消息。
      * </p>
-     *
-     * @param userType   用户类型，必填项
+     *  @param userType   用户类型，必填项
      * @param deviceType 设备类型
      * @param title      标题
      * @param content    推送内容
-     * @param persist    是否持久化到数据库，可以在消息中心里面看到
-     * @return 推送结果
+     * @param persist    是否持久化到数据库，可以在消息中心里面看到  @return 推送结果
      * @author weihao.liu
      */
     ResponseObj pushMessage(UserType userType, DeviceType deviceType, String title, String content, boolean persist);
@@ -70,15 +66,13 @@ public interface PushService {
      * <p class="detail">
      * 功能：单个推送消息，指定用户和消息发送类型
      * </p>
-     *
-     * @param userId   推送的用户id
+     *  @param userId   推送的用户id
      * @param userType 用户类型，必填项
      * @param sendType 推送类型 {@link SendType}
      * @param title    标题
      * @param content  推送通知内容
      * @param extras   额外的参数，用于客户端后台逻辑处理
-     * @param persist  是否持久化到数据库，可以在消息中心里面看到
-     * @return 推送结果
+     * @param persist  是否持久化到数据库，可以在消息中心里面看到   @return 推送结果
      * @author weihao.liu
      */
     ResponseObj pushMessage(Long userId, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist);
@@ -87,15 +81,13 @@ public interface PushService {
      * <p class="detail">
      * 功能：批量推送给指定的用户群
      * </p>
-     *
-     * @param userIds  多个用户id
+     *  @param userIds  多个用户id
      * @param userType 用户类型，必填项
      * @param sendType 发送类型
      * @param title    标题
      * @param content  发送内容
      * @param extras   额外信息
-     * @param persist  是否持久化到数据库，可以在消息中心里面看到
-     * @return 推送结果
+     * @param persist  是否持久化到数据库，可以在消息中心里面看到   @return 推送结果
      * @author weihao.liu
      */
     ResponseObj pushMessage(List<Long> userIds, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist);
