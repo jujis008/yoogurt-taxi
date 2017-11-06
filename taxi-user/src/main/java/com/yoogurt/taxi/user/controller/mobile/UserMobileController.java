@@ -1,6 +1,5 @@
 package com.yoogurt.taxi.user.controller.mobile;
 
-import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
@@ -21,7 +20,6 @@ import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.service.*;
 import com.yoogurt.taxi.user.service.rest.RestOrderService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
