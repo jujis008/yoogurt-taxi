@@ -5,10 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Id;
+import java.io.Serializable;
 
 @Setter
 @Getter
-public class Event<T extends Notify> {
+public class Event<T extends Notify> implements Serializable {
 
 	@Id
 	private String eventId;
@@ -38,7 +39,7 @@ public class Event<T extends Notify> {
 	private T data;
 
 	public Event() {
-		this.created = System.currentTimeMillis();
+
 	}
 
 	public Event(String eventId) {

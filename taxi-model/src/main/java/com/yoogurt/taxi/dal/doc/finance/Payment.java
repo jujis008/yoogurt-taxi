@@ -27,12 +27,12 @@ public class Payment implements Serializable {
 	/**
 	 * 接口版本号
 	 */
-	private String version = "v0.1";
+	private String version;
 
 	/**
 	 * 接口名称
 	 */
-	private String method = "yoogurt.taxi.finance.pay";
+	private String method;
 
 	/**
 	 * 发送请求的时间戳
@@ -126,7 +126,7 @@ public class Payment implements Serializable {
 	private String message;
 
 	public Payment() {
-		this.created = System.currentTimeMillis();
+
 	}
 
 	public Payment(String payId) {

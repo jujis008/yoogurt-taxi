@@ -3,11 +3,12 @@ package com.yoogurt.taxi.dal.bo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Setter
 @Getter
-public abstract class Notify {
+public abstract class Notify implements Serializable {
 
 	/**
 	 * 支付渠道，
