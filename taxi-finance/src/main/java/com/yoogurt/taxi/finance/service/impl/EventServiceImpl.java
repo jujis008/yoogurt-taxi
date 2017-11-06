@@ -6,6 +6,7 @@ import com.yoogurt.taxi.finance.service.EventService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,7 +19,8 @@ public class EventServiceImpl extends EventTaskServiceImpl implements EventServi
     @Override
     public Event getEvent(String eventId) {
         if (StringUtils.isBlank(eventId)) return null;
-        return eventDao.findOne(eventId);
+        Event event = new Event(eventId);
+        return eventDao.findOne(Example.of(event));
     }
 
     @Override

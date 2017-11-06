@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -27,7 +28,8 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
     @Override
     public Payment getPayment(String payId) {
         if(StringUtils.isBlank(payId)) return null;
-        return paymentDao.findOne(payId);
+        Payment payment = new Payment(payId);
+        return paymentDao.findOne(Example.of(payment));
     }
 
     /**
@@ -83,6 +85,9 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
         String payId = "pay_" + RandomUtils.getPrimaryKey();
         Payment payment = new Payment(payId);
         BeanUtils.copyProperties(form, payment);
+        payment.setMethod("yoogurt.taxi.finance.pay");
+        payment.setVersion("v1.0");
+        payment.setCreated(System.currentTimeMillis());
         return payment;
     }
 }

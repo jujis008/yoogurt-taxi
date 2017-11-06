@@ -6,6 +6,7 @@ import com.yoogurt.taxi.finance.task.PayTask;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,7 +19,8 @@ public class PayTaskServiceImpl implements PayTaskService {
     @Override
     public PayTask getPayTask(String taskId) {
         if(StringUtils.isBlank(taskId)) return null;
-        return payTaskDao.findOne(taskId);
+        PayTask task = new PayTask(taskId);
+        return payTaskDao.findOne(Example.of(task));
     }
 
     @Override
