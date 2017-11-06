@@ -3,6 +3,8 @@ package com.yoogurt.taxi.dal.bo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Setter
 @Getter
 public abstract class Notify {
@@ -17,6 +19,11 @@ public abstract class Notify {
 	 * 回调的时间戳
 	 */
 	private long notifyTimestamp;
+
+	/**
+	 * 支付时间
+	 */
+	private long paidTimestamp;
 
 	/**
 	 * 编码方式
@@ -43,4 +50,17 @@ public abstract class Notify {
 	 */
 	private long amount;
 
+	/**
+	 * 第三方平台支付流水号
+	 */
+	private String transactionNo;
+
+	/**
+	 * 请求元数据，支付的时候以JSON格式传入，第三方平台原样返回。
+	 * 一定要将发起支付的payId带过去。
+	 */
+	private Map metadata;
+
+
+	abstract Map<String, Object> attributeMap();
 }

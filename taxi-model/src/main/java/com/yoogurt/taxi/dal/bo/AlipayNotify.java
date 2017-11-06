@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -107,22 +108,22 @@ public class AlipayNotify extends Notify {
 	/**
 	 * 该笔交易创建的时间。格式为yyyy-MM-dd HH:mm:ss
 	 */
-	private Date gmtCreate;
+	private String gmtCreate;
 
 	/**
 	 * 该笔交易的买家付款时间。格式为yyyy-MM-dd HH:mm:ss
 	 */
-	private Date gmtPayment;
+	private String gmtPayment;
 
 	/**
 	 * 该笔交易的退款时间。格式为yyyy-MM-dd HH:mm:ss.S
 	 */
-	private Date gmtRefund;
+	private String gmtRefund;
 
 	/**
 	 * 该笔交易结束时间。格式为yyyy-MM-dd HH:mm:ss
 	 */
-	private Date gmtClose;
+	private String gmtClose;
 
 	/**
 	 * 支付成功的各个渠道金额信息
@@ -130,13 +131,37 @@ public class AlipayNotify extends Notify {
 	private String fundBillList;
 
 	/**
-	 * 公共回传参数
-	 */
-	private String passbackParams;
-
-	/**
 	 * 本交易支付时所使用的所有优惠券信息
 	 */
 	private String voucherDetailList;
 
+	@Override
+	public Map<String, Object> attributeMap() {
+		return new HashMap<String, Object>(){{
+			put("app_id", "appId");
+			put("out_trade_no", "orderNo");
+			put("sign_type", "signType");
+			put("trade_no", "transactionNo");
+
+			put("notifyType", "notify_type");
+			put("notifyId", "notify_id");
+			put("out_biz_no", "outBizNo");
+			put("buyer_id", "buyerId");
+			put("buyer_logon_id", "buyerLogonId");
+			put("sellerId", "sellerId");
+			put("seller_email", "sellerEmail");
+			put("trade_status", "tradeStatus");
+			put("receipt_amount", "receiptAmount");
+			put("invoice_amount", "invoiceAmount");
+			put("buyer_pay_amount", "buyerPayAmount");
+			put("point_amount", "pointAmount");
+			put("refund_fee", "refundFee");
+			put("gmt_create", "gmtCreate");
+			put("gmt_payment", "gmtPayment");
+			put("gmt_refund", "gmtRefund");
+			put("gmt_close", "gmtClose");
+			put("fund_bill_list", "fundBillList");
+			put("voucher_detail_list", "voucherDetailList");
+		}};
+	}
 }

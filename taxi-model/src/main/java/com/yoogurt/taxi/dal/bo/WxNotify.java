@@ -3,6 +3,9 @@ package com.yoogurt.taxi.dal.bo;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Setter
 @Getter
 public class WxNotify extends Notify {
@@ -57,6 +60,9 @@ public class WxNotify extends Notify {
 	 */
 	private long cashFee;
 
+	/**
+	 * 货币类型，符合ISO4217标准的三位字母代码，默认人民币：CNY
+	 */
 	private String cashFeeType;
 
 	/**
@@ -68,13 +74,6 @@ public class WxNotify extends Notify {
 	 * 代金券或立减优惠使用数量
 	 */
 	private Integer couponCount;
-
-	/**
-	 * 微信支付流水号
-	 */
-	private String transactionId;
-
-	private String attach;
 
 	/**
 	 * 支付完成时间，格式为yyyyMMddHHmmss
@@ -89,4 +88,32 @@ public class WxNotify extends Notify {
 
 	private String errCodeDes;
 
+	@Override
+    public Map<String, Object> attributeMap() {
+		return new HashMap<String, Object>(){{
+			put("appid", "appId");
+			put("out_trade_no", "orderNo");
+			put("transaction_id", "transactionNo");
+
+			put("mch_id", "mchId");
+			put("device_info", "deviceInfo");
+			put("out_biz_no", "outBizNo");
+			put("nonce_str", "nonceStr");
+			put("result_code", "resultCode");
+			put("err_code", "errCode");
+			put("err_code_des", "errCodeDes");
+			put("openid", "openId");
+			put("is_subscribe", "isSubscribe");
+			put("trade_type", "tradeType");
+			put("bank_type", "bankType");
+			put("fee_type", "feeType");
+			put("cash_fee", "cashFee");
+			put("cash_fee_type", "cashFeeType");
+			put("coupon_fee", "couponFee");
+			put("coupon_count", "couponCount");
+			put("time_end", "timeEnd");
+			put("return_code", "returnCode");
+			put("return_msg", "returnMsg");
+		}};
+	}
 }
