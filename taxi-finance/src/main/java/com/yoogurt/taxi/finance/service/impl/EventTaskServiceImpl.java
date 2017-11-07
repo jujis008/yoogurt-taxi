@@ -39,7 +39,8 @@ public class EventTaskServiceImpl implements EventTaskService {
     public boolean deleteEventTask(String taskId) {
         if (StringUtils.isBlank(taskId)) return false;
         try {
-            eventTaskDao.delete(taskId);
+            EventTask task = new EventTask(taskId);
+            eventTaskDao.delete(task);
         } catch (Exception e) {
             log.error("删除回调任务信息异常, {}", e);
             return false;

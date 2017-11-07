@@ -66,7 +66,8 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
     public boolean deletePayment(String payId) {
         if(StringUtils.isBlank(payId)) return false;
         try {
-            paymentDao.delete(payId);
+            Payment payment = new Payment(payId);
+            paymentDao.delete(payment);
         } catch (Exception e) {
             log.error("删除支付对象异常:{}", e);
             return false;

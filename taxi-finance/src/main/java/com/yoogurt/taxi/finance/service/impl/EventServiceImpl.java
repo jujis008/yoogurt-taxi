@@ -39,7 +39,8 @@ public class EventServiceImpl extends EventTaskServiceImpl implements EventServi
     public boolean deleteEvent(String eventId) {
         if (StringUtils.isBlank(eventId)) return false;
         try {
-            eventDao.delete(eventId);
+            Event event = new Event(eventId);
+            eventDao.delete(event);
         } catch (Exception e) {
             log.error("删除回调事件异常, {}", e);
             return false;

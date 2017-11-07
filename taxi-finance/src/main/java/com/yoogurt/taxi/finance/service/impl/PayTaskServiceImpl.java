@@ -39,7 +39,8 @@ public class PayTaskServiceImpl implements PayTaskService {
     public boolean deletePayTask(String taskId) {
         if(StringUtils.isBlank(taskId)) return false;
         try {
-            payTaskDao.delete(taskId);
+            PayTask payTask = new PayTask(taskId);
+            payTaskDao.delete(payTask);
         } catch (Exception e) {
             log.error("删除支付任务信息异常, {}", e);
             return false;
