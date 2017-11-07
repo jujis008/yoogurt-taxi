@@ -5,6 +5,8 @@ import com.yoogurt.taxi.order.service.ExpiredMessageListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
@@ -23,13 +25,13 @@ import java.net.InetAddress;
 @Slf4j
 @EnableFeignClients
 @EnableTransactionManagement
-@SpringBootApplication
+@SpringBootApplication(exclude = { MongoAutoConfiguration.class, MongoDataAutoConfiguration.class })
 @EnableEurekaClient
 @EnableHystrix
 @ComponentScan({"com.yoogurt.taxi"})
 public class TaxiOrderBootstrap {
 
-	public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
 
         ConfigurableApplicationContext context = SpringApplication.run(TaxiOrderBootstrap.class, args);
         ConfigurableEnvironment env = context.getEnvironment();
@@ -45,7 +47,7 @@ public class TaxiOrderBootstrap {
                 env.getProperty("server.port"));
 
         redisSubscribe(context);
-	}
+    }
 
     private static void redisSubscribe(ConfigurableApplicationContext context) {
 
@@ -54,11 +56,11 @@ public class TaxiOrderBootstrap {
         RedisMessageListenerContainer listenerContainer = new RedisMessageListenerContainer();
         RedisConnectionFactory connectionFactory = helper.getConnectionFactory();
         String pattern = "__keyevent@*__:expired";
-        log.info("设置监听器，pattern为"+pattern);
+        log.info("设置监听器，pattern为" + pattern);
         listenerContainer.addMessageListener(listener, new PatternTopic(pattern));
         listenerContainer.setConnectionFactory(connectionFactory);
         RedisConnection connection = connectionFactory.getConnection();
         connection.pSubscribe(listener, pattern.getBytes());
-        log.info("开启订阅，订阅pattern为"+pattern);
+        log.info("开启订阅，订阅pattern为" + pattern);
     }
 }

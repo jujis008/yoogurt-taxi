@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yoogurt.taxi.dal.enums.SendType;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.util.Date;
 import java.util.Map;
 

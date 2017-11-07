@@ -2,10 +2,8 @@ package com.yoogurt.taxi.dal.doc.finance;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Map;
 

@@ -3,6 +3,8 @@ package com.yoogurt.taxi.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
@@ -18,7 +20,7 @@ import java.net.InetAddress;
 @EnableEurekaClient
 @EnableHystrix
 @EnableTransactionManagement
-@SpringBootApplication
+@SpringBootApplication(exclude = { MongoAutoConfiguration.class, MongoDataAutoConfiguration.class })
 @ComponentScan({"com.yoogurt.taxi"})
 public class TaxiUserBootstrap {
 
