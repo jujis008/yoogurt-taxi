@@ -27,7 +27,7 @@ public class FinanceAmqpConfig {
     private final static String TOPIC = "topic.task.#";
 
     /** 回调专用 route key */
-    private final static String TOPIC_TASK_NOTIFY = "topic.task.notify.#";
+    private final static String TOPIC_TASK_NOTIFY = "topic.notify.#";
 
     /**
      * 创建消息交换机（exchange）
@@ -87,11 +87,9 @@ public class FinanceAmqpConfig {
     RabbitTemplate rabbitTemplate() {
         RabbitTemplate rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.setConnectionFactory(connectionFactory);
-        rabbitTemplate.setQueue(PAY_QUEUE_NAME);
-        rabbitTemplate.setExchange(PAY_EXCHANGE_NAME);
         //默认用的是SimpleMessageConverter，这对于复杂对象（对象中会嵌套其他对象）的情况下，会出现序列化问题
         //改用Jackson，实际上是把对象序列化成JSON格式，较为通用
-        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+        rabbitTemplate.setMessageConverter(new HessianMessageConverter());
         return rabbitTemplate;
     }
 
@@ -103,7 +101,7 @@ public class FinanceAmqpConfig {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setMessageConverter(new Jackson2JsonMessageConverter());
+        factory.setMessageConverter(new HessianMessageConverter());
         return factory;
     }
 }
