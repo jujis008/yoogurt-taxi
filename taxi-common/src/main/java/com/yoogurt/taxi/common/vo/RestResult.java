@@ -69,14 +69,14 @@ public class RestResult<T> implements Serializable {
         return this.status == StatusCode.INFO_SUCCESS.getStatus();
     }
 
-    public static RestResult fail() {
-        RestResult result = new RestResult();
+    public static <T> RestResult<T> fail() {
+        RestResult<T> result = new RestResult<>();
         result.setStatus(StatusCode.BIZ_FAILED.getStatus());
         result.setMessage(StatusCode.BIZ_FAILED.getDetail());
         return result;
     }
 
-    public static <T> RestResult<T>  fail(StatusCode statusCode, String message) {
+    public static <T> RestResult<T> fail(StatusCode statusCode, String message) {
         int status = StatusCode.BIZ_FAILED.getStatus();
         if (statusCode != null) {
             status = statusCode.getStatus();
