@@ -4,6 +4,7 @@ import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.dal.enums.MessageQueue;
 import com.yoogurt.taxi.finance.config.AmqpConfig;
 import com.yoogurt.taxi.finance.form.PayForm;
 import com.yoogurt.taxi.finance.mq.TaskSender;
@@ -100,9 +101,7 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     private TaskInfo buildTask() {
         String taskId = "pt_" + RandomUtils.getPrimaryKey();
         TaskInfo taskInfo = new TaskInfo(taskId);
-        taskInfo.setExchangeName(AmqpConfig.PAY_DIRECT_EXCHANGE_NAME);
-        taskInfo.setQueueName(AmqpConfig.PAY_QUEUE_NAME);
-        taskInfo.setRoutingKey(AmqpConfig.TOPIC);
+        taskInfo.setMessageQueue(MessageQueue.PAY_QUEUE);
         return taskInfo;
     }
 
