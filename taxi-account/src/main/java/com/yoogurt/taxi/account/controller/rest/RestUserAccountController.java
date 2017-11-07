@@ -51,7 +51,7 @@ public class RestUserAccountController {
 
     @RequestMapping(value = "/modification",method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public RestResult updateAccount(@Valid @RequestBody ModificationVo voObject) {
-        TradeType tradeType = TradeType.getEnumsBycode(voObject.getType());
+        TradeType tradeType = TradeType.getEnumsByCode(voObject.getType());
         if (tradeType == null) {
             return RestResult.fail(StatusCode.BIZ_FAILED,"错误的交易类型");
         }
@@ -94,9 +94,11 @@ public class RestUserAccountController {
         switch (tradeType) {
             case FINE_IN:
             case FINE_OUT:
+            case OUTCOME:
                 condition.setDestinationType(DestinationType.BALANCE);
                 condition.setPayment(Payment.BALANCE);
             case INCOME:
+            case REFUND:
                 condition.setDestinationType(DestinationType.BALANCE);
                 condition.setPayment(Payment.getEnumsBycode(voObject.getPayment()));
         }

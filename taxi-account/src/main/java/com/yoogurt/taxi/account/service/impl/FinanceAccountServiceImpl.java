@@ -278,6 +278,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     financeBillService.insertBill(money, condition, Payment.BALANCE, BillStatus.SUCCESS, BillType.BALANCE);
                     return ResponseObj.success(financeAccount);
                 case FINE_OUT://罚款
+                case OUTCOME:
                     Money balance = new Money(financeAccount.getBalance());//余额
                     Money deposit = new Money(financeAccount.getReceivedDeposit());//剩余押金
                     if (!money.greaterThan(balance)) {//余额充足，从余额里扣
@@ -296,6 +297,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     }
                     return ResponseObj.success(financeAccount);
                 case INCOME://订单收入,余额增加
+                case REFUND://订单退款，余额增加
                     financeAccount.setBalance(new Money(financeAccount.getBalance()).add(money).getAmount());
                     /*更新或插入账户*/
                     financeAccountDao.updateById(financeAccount);

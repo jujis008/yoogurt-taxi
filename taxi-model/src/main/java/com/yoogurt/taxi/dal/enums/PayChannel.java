@@ -78,6 +78,15 @@ public enum PayChannel {
         }
     }
 
+    public boolean isBalance() {
+        switch (this) {
+            case BALANCE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public boolean isAlipay() {
         switch (this) {
             case ALIPAY:

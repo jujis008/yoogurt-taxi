@@ -2,22 +2,17 @@ package com.yoogurt.taxi.order.service.impl;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
-import com.yoogurt.taxi.dal.beans.OrderHandoverInfo;
-import com.yoogurt.taxi.dal.beans.OrderHandoverRule;
-import com.yoogurt.taxi.dal.beans.OrderInfo;
-import com.yoogurt.taxi.dal.enums.DisobeyType;
-import com.yoogurt.taxi.dal.enums.OrderStatus;
-import com.yoogurt.taxi.dal.enums.SendType;
-import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.common.utils.RandomUtils;
+import com.yoogurt.taxi.dal.beans.*;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.order.HandoverOrderModel;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
+import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.order.dao.HandoverDao;
 import com.yoogurt.taxi.order.form.HandoverForm;
-import com.yoogurt.taxi.order.service.DisobeyService;
-import com.yoogurt.taxi.order.service.HandoverRuleService;
-import com.yoogurt.taxi.order.service.HandoverService;
-import com.yoogurt.taxi.order.service.OrderInfoService;
+import com.yoogurt.taxi.order.service.*;
+import com.yoogurt.taxi.order.service.rest.RestAccountService;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @Service("handoverService")
 public class HandoverServiceImpl extends AbstractOrderBizService implements HandoverService {
@@ -44,6 +40,12 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
 
     @Autowired
     private RedisHelper redisHelper;
+
+    @Autowired
+    private OrderPaymentService paymentService;
+
+    @Autowired
+    private RestAccountService restAccountService;
 
     /**
      * 正式司机确认交车
@@ -96,6 +98,19 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
             }
         }
         if (handoverDao.insertSelective(handoverInfo) == 1) {
+            if (!orderInfo.getIsPaid()) {//未支付
+                //代理司机扣款，扣款顺序：余额》》押金
+                ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
+                        .userId(orderInfo.getAgentUserId())
+                        .outUserId(orderInfo.getAgentUserId())
+                        .inUserId(orderInfo.getOfficialUserId())
+                        .money(orderInfo.getAmount())
+                        .payment(Payment.BALANCE.getCode())
+                        .type(TradeType.OUTCOME.getCode()).build();
+                restAccountService.updateAccount(vo);
+
+                orderInfoService.modifyPayStatus(orderId);//订单修改成已支付
+            }
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
 

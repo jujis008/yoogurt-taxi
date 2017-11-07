@@ -12,7 +12,8 @@ public enum Payment {
     ALIPAY(3,"支付宝"),
     WEIXIN(4,"微信"),
     BANK(5,"银行"),
-    OTHERS(6,"其它"),
+    PLATFORM(7,"平台"),
+//    OTHERS(6,"其它"),
     ;
 
     private Integer code;
