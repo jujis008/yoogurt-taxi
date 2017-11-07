@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.InetAddress;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Slf4j
 @EnableEurekaClient
+@EnableTransactionManagement
 @SpringBootApplication
 @ComponentScan({"com.yoogurt.taxi"})
 public class TaxiFinanceBootstrap {

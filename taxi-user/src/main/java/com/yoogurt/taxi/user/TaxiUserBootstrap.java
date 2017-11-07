@@ -9,6 +9,7 @@ import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.net.InetAddress;
 
@@ -16,6 +17,7 @@ import java.net.InetAddress;
 @EnableFeignClients
 @EnableEurekaClient
 @EnableHystrix
+@EnableTransactionManagement
 @SpringBootApplication
 @ComponentScan({"com.yoogurt.taxi"})
 public class TaxiUserBootstrap {

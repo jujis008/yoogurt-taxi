@@ -12,6 +12,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.net.InetAddress;
 
@@ -21,6 +22,7 @@ import java.net.InetAddress;
 @EnableEurekaClient
 @EnableFeignClients
 @EnableDiscoveryClient
+@EnableTransactionManagement
 @SpringBootApplication
 @ComponentScan({"com.yoogurt.taxi"})
 public class TaxiGatewayBootstrap {

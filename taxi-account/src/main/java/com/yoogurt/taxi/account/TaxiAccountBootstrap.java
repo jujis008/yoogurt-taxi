@@ -9,12 +9,14 @@ import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.net.InetAddress;
 
 @Slf4j
 @EnableFeignClients
 @EnableHystrix
+@EnableTransactionManagement
 @SpringBootApplication
 @EnableEurekaClient
 @ComponentScan(basePackages = "com.yoogurt.taxi")

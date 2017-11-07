@@ -7,11 +7,13 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.net.InetAddress;
 
 @Slf4j
 @EnableEurekaClient
+@EnableTransactionManagement
 @SpringBootApplication
 public class TaxiNotificationBootstrap {
 
