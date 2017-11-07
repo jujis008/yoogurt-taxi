@@ -8,8 +8,10 @@ import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.dal.enums.PayChannel;
+import com.yoogurt.taxi.dal.vo.PaymentVo;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.OrderPaymentService;
+import com.yoogurt.taxi.order.service.rest.RestFinanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class EventTaskRunner {
 
     @Autowired
     private OrderPaymentService paymentService;
+
+    @Autowired
+    private RestFinanceService financeService;
 
     /**
      * 通过第三方交易平台，执行特定的任务
@@ -64,16 +69,21 @@ public class EventTaskRunner {
         payment.setPayChannel(payChannel.getName());
         payment.setTransactionNo(notify.getTransactionNo());
         payment.setStatus(20); //支付完成
-//            payment.setAmount(new Money(notify.getAmount()).getAmount());
+        payment.setAmount(new Money(notify.getAmount()).getAmount());
         payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
         paymentService.addPayment(payment);
         /********************  插入订单的支付记录  The End***********************/
 
         /********************  更新payment对象  *******************************/
-//        payInfo.setPaid(true);
-//        payInfo.setPaidTime(notify.getNotifyTimestamp());
-//        payInfo.setPaidAmount(paidMoney.getCent());
-//        payService.updatePayment(payInfo);
+        try {
+            financeService.updatePayment(PaymentVo.builder()
+                    .payId(payInfo.getPayId())
+                    .paidAmount(paidMoney.getCent())
+                    .paidTime(notify.getNotifyTimestamp())
+                    .build());
+        } catch (Exception e) {
+            log.error("更新支付对象异常, {}", e);
+        }
         /********************  更新payment对象  The End***********************/
     }
 
