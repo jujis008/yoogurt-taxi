@@ -1,9 +1,10 @@
 package com.yoogurt.taxi.finance.mq.impl;
 
 import com.yoogurt.taxi.dal.enums.TaskStatus;
+import com.yoogurt.taxi.finance.config.AmqpConfig;
 import com.yoogurt.taxi.finance.mq.TaskReceiver;
 import com.yoogurt.taxi.finance.task.PayTask;
-import com.yoogurt.taxi.finance.task.TaskInfo;
+import com.yoogurt.taxi.dal.bo.TaskInfo;
 import com.yoogurt.taxi.finance.task.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RabbitListener(queues = "X-Queue-Pay")
+@RabbitListener(queues = AmqpConfig.PAY_QUEUE_NAME)
 public class PayTaskReceiver implements TaskReceiver<PayTask> {
 
     @Autowired

@@ -142,4 +142,8 @@ public final class CacheKey {
      * 还车到期提醒，通知司机
      */
     public static final String MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY = "@E_ORDER_GIVE_BACK_REMINDER_KEY#";
+
+    public static void main(String[] args){
+        System.out.println(System.currentTimeMillis());
+    }
 }

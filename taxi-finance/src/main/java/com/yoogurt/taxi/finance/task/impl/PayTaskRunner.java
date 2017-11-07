@@ -9,7 +9,7 @@ import com.yoogurt.taxi.dal.enums.TaskStatus;
 import com.yoogurt.taxi.finance.service.PayChannelService;
 import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.PayTask;
-import com.yoogurt.taxi.finance.task.TaskInfo;
+import com.yoogurt.taxi.dal.bo.TaskInfo;
 import com.yoogurt.taxi.finance.task.TaskRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -6,11 +6,12 @@ import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.finance.config.AmqpConfig;
 import com.yoogurt.taxi.finance.mq.TaskSender;
 import com.yoogurt.taxi.finance.service.NotifyService;
 import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.EventTask;
-import com.yoogurt.taxi.finance.task.TaskInfo;
+import com.yoogurt.taxi.dal.bo.TaskInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,8 +110,9 @@ public abstract class NotifyServiceImpl implements NotifyService {
     private TaskInfo buildTask() {
         String taskId = "pt_" + RandomUtils.getPrimaryKey();
         TaskInfo taskInfo = new TaskInfo(taskId);
-        taskInfo.setQueueName("X-Queue-Pay-Notify");
-        taskInfo.setRoutingKey("topic.notify.pay");
+        taskInfo.setExchangeName(AmqpConfig.NOTIFY_TOPIC_EXCHANGE_NAME);
+        taskInfo.setQueueName(AmqpConfig.PAY_NOTIFY_QUEUE_NAME);
+        taskInfo.setRoutingKey(AmqpConfig.getPaymentNotifyTopic());
         return taskInfo;
     }
 

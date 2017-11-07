@@ -5,10 +5,6 @@ spring:
     config:
       uri: http://peer1:9998
       fail-fast: true
-#  rabbitmq:
-#    listener:
-#      simple:
-#        default-requeue-rejected: false
 logging:
   level: debug
   path: ./log/taxi-notification

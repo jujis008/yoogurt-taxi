@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.finance.task;
 
+import com.yoogurt.taxi.dal.bo.TaskInfo;
 import com.yoogurt.taxi.finance.form.PayForm;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

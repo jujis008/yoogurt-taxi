@@ -1,9 +1,7 @@
-package com.yoogurt.taxi.finance.task;
+package com.yoogurt.taxi.dal.doc.finance;
 
 import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.bo.TaskInfo;
-import com.yoogurt.taxi.dal.doc.finance.Event;
-import com.yoogurt.taxi.dal.doc.finance.Payment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

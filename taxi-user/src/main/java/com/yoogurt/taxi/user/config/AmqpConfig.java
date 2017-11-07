@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.account.config;
+package com.yoogurt.taxi.user.config;
 
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;

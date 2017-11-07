@@ -4,11 +4,12 @@ import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.finance.config.AmqpConfig;
 import com.yoogurt.taxi.finance.form.PayForm;
 import com.yoogurt.taxi.finance.mq.TaskSender;
 import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.task.PayTask;
-import com.yoogurt.taxi.finance.task.TaskInfo;
+import com.yoogurt.taxi.dal.bo.TaskInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,8 +100,9 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     private TaskInfo buildTask() {
         String taskId = "pt_" + RandomUtils.getPrimaryKey();
         TaskInfo taskInfo = new TaskInfo(taskId);
-        taskInfo.setQueueName("X-Queue-Pay");
-        taskInfo.setRoutingKey("topic.task.pay");
+        taskInfo.setExchangeName(AmqpConfig.PAY_DIRECT_EXCHANGE_NAME);
+        taskInfo.setQueueName(AmqpConfig.PAY_QUEUE_NAME);
+        taskInfo.setRoutingKey(AmqpConfig.TOPIC);
         return taskInfo;
     }
 

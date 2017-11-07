@@ -1,30 +1,28 @@
 package com.yoogurt.taxi.finance.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class FinanceAmqpConfig {
+public class AmqpConfig {
 
     @Autowired
     private ConnectionFactory connectionFactory;
 
-    private final static String PAY_EXCHANGE_NAME = "X-Exchange-Pay";
+    public final static String PAY_DIRECT_EXCHANGE_NAME = "X-Exchange-Pay";
 
-    private final static String PAY_NOTIFY_QUEUE_NAME = "X-Queue-Pay-Notify";
+    public final static String NOTIFY_TOPIC_EXCHANGE_NAME = "X-Exchange-Notify";
 
-    private final static String PAY_QUEUE_NAME = "X-Queue-Pay";
+    public final static String PAY_NOTIFY_QUEUE_NAME = "X-Queue-Pay-Notify";
 
-    private final static String TOPIC = "topic.task.#";
+    public final static String PAY_QUEUE_NAME = "X-Queue-Pay";
+
+    public final static String TOPIC = "topic.task.pay";
 
     /** 回调专用 route key */
     private final static String TOPIC_TASK_NOTIFY = "topic.notify.#";
@@ -34,11 +32,20 @@ public class FinanceAmqpConfig {
      *
      * @return TopicExchange
      */
-    @Bean
-    TopicExchange exchange() {
-        return new TopicExchange(PAY_EXCHANGE_NAME);
+    @Bean("directExchange")
+    DirectExchange directExchange() {
+        return new DirectExchange(PAY_DIRECT_EXCHANGE_NAME);
     }
 
+    /**
+     * 创建消息交换机（exchange）
+     *
+     * @return TopicExchange
+     */
+    @Bean("topicExchange")
+    TopicExchange topicExchange() {
+        return new TopicExchange(NOTIFY_TOPIC_EXCHANGE_NAME);
+    }
     /**
      * 创建支付消息队列
      *
@@ -53,12 +60,12 @@ public class FinanceAmqpConfig {
      * 交换机和支付消息队列的绑定，并指定route key
      *
      * @param payQueue    消息队列
-     * @param exchange 消息交换机
+     * @param directExchange 消息交换机
      * @return Binding
      */
     @Bean
-    Binding payQueueBinding(Queue payQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(payQueue).to(exchange).with(TOPIC);
+    Binding payQueueBinding(Queue payQueue, DirectExchange directExchange) {
+        return BindingBuilder.bind(payQueue).to(directExchange).with(TOPIC);
     }
 
     /**
@@ -75,12 +82,12 @@ public class FinanceAmqpConfig {
      * 交换机和回调消息队列的绑定，并指定route key
      *
      * @param notifyQueue    消息队列
-     * @param exchange 消息交换机
+     * @param topicExchange 消息交换机
      * @return Binding
      */
     @Bean
-    Binding notifyQueueBinding(Queue notifyQueue, TopicExchange exchange) {
-        return BindingBuilder.bind(notifyQueue).to(exchange).with(TOPIC_TASK_NOTIFY);
+    Binding notifyQueueBinding(Queue notifyQueue, TopicExchange topicExchange) {
+        return BindingBuilder.bind(notifyQueue).to(topicExchange).with(TOPIC_TASK_NOTIFY);
     }
 
     @Bean
@@ -103,5 +110,9 @@ public class FinanceAmqpConfig {
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(new HessianMessageConverter());
         return factory;
+    }
+
+    public static String getPaymentNotifyTopic() {
+        return "topic.notify.pay";
     }
 }

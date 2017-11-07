@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.finance.task;
+package com.yoogurt.taxi.dal.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.common.constant.Constants;
@@ -6,6 +6,7 @@ import com.yoogurt.taxi.dal.enums.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class TaskInfo implements Serializable {
 
