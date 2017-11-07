@@ -8,25 +8,15 @@ import java.util.List;
 
 public interface OrderPaymentService {
 
-	/**
-	 * 获取订单的支付记录
-	 */
-	List<OrderPayment> getPayments(Long orderId);
+    /**
+     * 获取订单的支付记录
+     */
+    List<OrderPayment> getPayments(Long orderId);
 
-	OrderPayment getPayment(String payId);
+    OrderPayment getPayment(String payId);
 
-	Boolean addPayment(OrderPayment payment);
+    OrderPayment addPayment(OrderPayment payment);
 
-	OrderPayment buildPayment(PayForm form);
-
-	/**
-	 * 处理订单支付回调事件
-	 */
-	OrderPayment callback(WebhookForm form);
-
-	/**
-	 * 修改支付信息
-	 */
-	Boolean modifyPayment(OrderPayment payment);
+    OrderPayment modifyPayment(OrderPayment payment);
 
 }

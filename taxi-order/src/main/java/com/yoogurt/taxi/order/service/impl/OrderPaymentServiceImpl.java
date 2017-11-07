@@ -5,6 +5,7 @@ import com.yoogurt.taxi.order.dao.OrderPaymentDao;
 import com.yoogurt.taxi.order.form.PayForm;
 import com.yoogurt.taxi.order.form.WebhookForm;
 import com.yoogurt.taxi.order.service.OrderPaymentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,8 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
     /**
      * 获取订单的支付记录
      *
-     * @param orderId
+     * @param orderId 订单ID
+     * @return 支付记录列表
      */
     @Override
     public List<OrderPayment> getPayments(Long orderId) {
@@ -30,36 +32,21 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 
     @Override
     public OrderPayment getPayment(String payId) {
+        if (StringUtils.isBlank(payId)) return null;
+        return paymentDao.selectById(payId);
+    }
+
+    @Override
+    public OrderPayment addPayment(OrderPayment payment) {
+        if (payment == null) return null;
+        if (paymentDao.insertSelective(payment) == 1) return payment;
         return null;
     }
 
     @Override
-    public Boolean addPayment(OrderPayment payment) {
-        return null;
-    }
-
-    @Override
-    public OrderPayment buildPayment(PayForm form) {
-        return null;
-    }
-
-    /**
-     * 处理订单支付回调事件
-     *
-     * @param form
-     */
-    @Override
-    public OrderPayment callback(WebhookForm form) {
-        return null;
-    }
-
-    /**
-     * 修改支付信息
-     *
-     * @param payment
-     */
-    @Override
-    public Boolean modifyPayment(OrderPayment payment) {
+    public OrderPayment modifyPayment(OrderPayment payment) {
+        if (payment == null) return null;
+        if (paymentDao.updateByIdSelective(payment) == 1) return payment;
         return null;
     }
 }
