@@ -1,9 +1,8 @@
 package com.yoogurt.taxi.finance.mq.impl;
 
 import com.yoogurt.taxi.dal.doc.finance.EventTask;
-import com.yoogurt.taxi.dal.enums.MessageQueue;
+import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.finance.mq.TaskSender;
-import com.yoogurt.taxi.dal.bo.TaskInfo;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

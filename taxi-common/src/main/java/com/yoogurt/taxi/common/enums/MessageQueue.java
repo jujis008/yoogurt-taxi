@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.dal.enums;
+package com.yoogurt.taxi.common.enums;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;

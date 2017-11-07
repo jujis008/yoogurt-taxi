@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.notification.mq;
 
 import com.yoogurt.taxi.dal.bo.SmsPayload;
-import com.yoogurt.taxi.dal.enums.MessageQueue;
+import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.dal.model.ucpaas.TemplateSms;
 import com.yoogurt.taxi.notification.config.SmsConfig;
 import com.yoogurt.taxi.notification.service.SmsService;

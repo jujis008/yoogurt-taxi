@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.user.config;
+package com.yoogurt.taxi.common.converter;
 
 import com.yoogurt.taxi.common.utils.SerializeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class HessianMessageConverter implements MessageConverter {
      */
     @Override
     public Object fromMessage(Message message) throws MessageConversionException {
-        
+
         return SerializeUtils.deserialize(message.getBody());
     }
 }

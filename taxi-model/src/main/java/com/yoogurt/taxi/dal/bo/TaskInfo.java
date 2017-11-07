@@ -2,7 +2,7 @@ package com.yoogurt.taxi.dal.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.common.constant.Constants;
-import com.yoogurt.taxi.dal.enums.MessageQueue;
+import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.dal.enums.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
