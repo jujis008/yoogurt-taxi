@@ -1,11 +1,13 @@
 package com.yoogurt.taxi.dal.vo;
 
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 
 @Data
+@Builder
 public class PaymentVo {
 
     @NotBlank(message = "请指定支付对象")
