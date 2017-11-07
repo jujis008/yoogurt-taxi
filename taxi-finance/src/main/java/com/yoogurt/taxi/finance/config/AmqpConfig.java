@@ -16,13 +16,13 @@ public class AmqpConfig {
 
     public final static String PAY_DIRECT_EXCHANGE_NAME = "X-Exchange-Pay";
 
-    public final static String NOTIFY_TOPIC_EXCHANGE_NAME = "X-Exchange-Notify";
-
-    public final static String PAY_NOTIFY_QUEUE_NAME = "X-Queue-Pay-Notify";
-
     public final static String PAY_QUEUE_NAME = "X-Queue-Pay";
 
     public final static String TOPIC = "topic.task.pay";
+
+    public final static String NOTIFY_TOPIC_EXCHANGE_NAME = "X-Exchange-Notify";
+
+    public final static String PAY_NOTIFY_QUEUE_NAME = "X-Queue-Pay-Notify";
 
     /** 回调专用 route key */
     private final static String TOPIC_TASK_NOTIFY = "topic.notify.#";

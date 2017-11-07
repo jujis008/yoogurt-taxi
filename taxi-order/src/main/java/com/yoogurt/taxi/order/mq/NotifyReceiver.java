@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -20,7 +21,7 @@ public class NotifyReceiver {
     private EventTaskRunner eventTaskRunner;
 
     @RabbitHandler
-    public void receive(EventTask eventTask) {
+    public void receive(@Payload EventTask eventTask) {
 
         if (eventTask == null) return;
         TaskInfo task = eventTask.getTask();
