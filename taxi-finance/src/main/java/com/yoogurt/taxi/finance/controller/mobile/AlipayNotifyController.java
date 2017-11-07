@@ -47,7 +47,7 @@ public class AlipayNotifyController {
         //参数解析&映射
         Map<String, Object> parameterMap = alipayService.parameterResolve(request, new AlipayNotify().attributeMap());
         //event对象解析
-        Event event = alipayNotifyService.eventParse(parameterMap);
+        Event<AlipayNotify> event = (Event<AlipayNotify>) alipayNotifyService.eventParse(parameterMap);
         if (event != null) {
 
             EventTask eventTask = alipayNotifyService.submit(event);

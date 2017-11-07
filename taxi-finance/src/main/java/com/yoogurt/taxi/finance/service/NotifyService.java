@@ -17,15 +17,15 @@ public interface NotifyService {
      * @param parameterMap 回调请求
      * @return EventTask
      */
-    Event eventParse(Map<String, Object> parameterMap);
+    Event<? extends Notify> eventParse(Map<String, Object> parameterMap);
 
     /**
      * 提交一个回调任务
      *
-     * @param task 回调任务
+     * @param event 回调事件
      * @return EventTask。如果提交失败，将会返回null
      */
-    EventTask submit(Event task);
+    EventTask submit(Event<? extends Notify> event);
 
     /**
      * 获取一个回调任务

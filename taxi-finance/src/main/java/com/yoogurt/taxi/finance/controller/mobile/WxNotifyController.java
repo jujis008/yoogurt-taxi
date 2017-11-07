@@ -43,7 +43,7 @@ public class WxNotifyController {
         //参数解析&映射
         Map<String, Object> parameterMap = wxPayService.parameterResolve(request, new WxNotify().attributeMap());
         //event对象解析
-        Event event = wxNotifyService.eventParse(parameterMap);
+        Event<WxNotify> event = (Event<WxNotify>) wxNotifyService.eventParse(parameterMap);
 
         if (event != null) {
             EventTask eventTask = wxNotifyService.submit(event);

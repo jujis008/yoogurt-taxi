@@ -2,6 +2,7 @@ package com.yoogurt.taxi.finance.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
+import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.bo.WxNotify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.enums.PayChannel;
@@ -24,7 +25,7 @@ public class WxNotifyServiceImpl extends NotifyServiceImpl {
      * @return EventTask
      */
     @Override
-    public Event eventParse(Map<String, Object> parameterMap) {
+    public Event<? extends Notify> eventParse(Map<String, Object> parameterMap) {
         if (parameterMap == null || parameterMap.isEmpty()) return null;
         //生成一个eventId
         String eventId = "event_" + RandomUtils.getPrimaryKey();

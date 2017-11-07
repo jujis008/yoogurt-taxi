@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.finance.task;
 
+import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class EventTask implements Serializable {
 
 	private TaskInfo task;
 
-	private Event event;
+	private Event<? extends Notify> event;
 
 	private Payment payment;
 

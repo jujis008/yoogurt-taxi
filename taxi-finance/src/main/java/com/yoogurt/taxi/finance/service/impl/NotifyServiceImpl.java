@@ -35,14 +35,14 @@ public abstract class NotifyServiceImpl implements NotifyService {
     /**
      * 提交一个回调任务
      *
-     * @param task 回调任务
+     * @param event 回调事件
      * @return EventTask。如果提交失败，将会返回null
      */
     @Override
-    public EventTask submit(Event task) {
+    public EventTask submit(Event<? extends Notify> event) {
 
         try {
-            return doSubmit(task, null, false);
+            return doSubmit(event, null, false);
         } catch (Exception e) {
             log.error("提交回调任务失败, {}", e);
         }
@@ -110,11 +110,11 @@ public abstract class NotifyServiceImpl implements NotifyService {
         String taskId = "pt_" + RandomUtils.getPrimaryKey();
         TaskInfo taskInfo = new TaskInfo(taskId);
         taskInfo.setQueueName("X-Queue-Pay-Notify");
-        taskInfo.setRoutingKey("topic.task.notify.pay");
+        taskInfo.setRoutingKey("topic.notify.pay");
         return taskInfo;
     }
 
-    private EventTask  doSubmit(Event event, String taskId, boolean isRetry) {
+    private EventTask doSubmit(Event<? extends Notify> event, String taskId, boolean isRetry) {
         final EventTask task;
         if (isRetry && StringUtils.isNoneBlank(taskId)) {
             task = getTask(taskId);
