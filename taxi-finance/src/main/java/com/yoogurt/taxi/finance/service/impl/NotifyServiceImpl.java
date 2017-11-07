@@ -126,7 +126,7 @@ public abstract class NotifyServiceImpl implements NotifyService {
             eventTask.setPayment(payment);
         }
         //重新设置任务信息缓存
-        redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId, eventTask);
+        redis.put(CacheKey.NOTIFY_MAP, CacheKey.TASK_HASH_KEY + taskId, eventTask);
         eventTaskSender.send(eventTask);
         return eventTask;
     }
