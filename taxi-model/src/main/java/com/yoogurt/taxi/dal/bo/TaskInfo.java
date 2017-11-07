@@ -2,6 +2,7 @@ package com.yoogurt.taxi.dal.bo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.common.constant.Constants;
+import com.yoogurt.taxi.dal.enums.MessageQueue;
 import com.yoogurt.taxi.dal.enums.TaskStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,19 +29,7 @@ public class TaskInfo implements Serializable {
      * [RabbitMQ]消息交换机，默认使用 X-Exchange-Pay
      */
     @JsonIgnore
-    private String exchangeName = "X-Exchange-Pay";
-
-    /**
-     * [RabbitMQ]消息路由的key
-     */
-    @JsonIgnore
-    private String routingKey;
-
-    /**
-     * [RabbitMQ]任务队列名称，由数字或字母组成，不允许特殊字符。
-     */
-    @JsonIgnore
-    private String queueName;
+    private MessageQueue messageQueue;
 
     /**
      * 是否需要重试，默认true
