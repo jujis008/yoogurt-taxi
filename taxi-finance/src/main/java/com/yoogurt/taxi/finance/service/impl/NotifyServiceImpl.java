@@ -117,27 +117,27 @@ public abstract class NotifyServiceImpl implements NotifyService {
     }
 
     private EventTask doSubmit(Event<? extends Notify> event, String taskId, boolean isRetry) {
-        final EventTask task;
+        final EventTask eventTask;
         if (isRetry && StringUtils.isNoneBlank(taskId)) {
-            task = getTask(taskId);
-            if(task != null) task.getTask().doRetry();
+            eventTask = getTask(taskId);
+            if(eventTask != null) eventTask.getTask().doRetry();
         } else {
-            TaskInfo taskInfo = buildTask();
-            taskId = taskInfo.getTaskId();
-            task = new EventTask(taskId);
-            task.setEvent(event);
-            task.setTask(taskInfo);
+            TaskInfo task = buildTask();
+            taskId = task.getTaskId();
+            eventTask = new EventTask(taskId);
+            eventTask.setEvent(event);
+            eventTask.setTask(task);
             Map metadata = event.getData().getMetadata();
             if (metadata.get("payId") != null) {
                 String payId = metadata.get("payId").toString();
                 Payment payment = payService.getPayment(payId);
                 payment.setTransactionNo(event.getData().getTransactionNo());
-                task.setPayment(payment);
+                eventTask.setPayment(payment);
             }
         }
         //重新设置任务信息缓存
-        redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId, task);
-        eventTaskSender.send(task);
-        return task;
+        redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId, eventTask);
+        eventTaskSender.send(eventTask);
+        return eventTask;
     }
 }
