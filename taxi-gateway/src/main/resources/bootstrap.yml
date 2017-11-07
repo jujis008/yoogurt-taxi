@@ -5,6 +5,9 @@ spring:
     config:
       uri: http://peer1:9998
       fail-fast: true
+    loadbalancer:
+      retry:
+        enabled: true
 management:
   security:
     enabled: false

@@ -266,6 +266,9 @@ public class PushServiceImpl implements PushService {
             TransmissionPayload payload = new TransmissionPayload(config, transmission);
             log.info("PUSH: " + transmission.toJSON());
             IPushResult pushResult = null;
+            if (persist) {//持久化到数据库
+                persistMessage(userIds, title, content, extras, sendType);
+            }
             if(CollectionUtils.isNotEmpty(userIds)) {
                 String clientId;
                 if (userIds.size() == 1) {//如果只有一个用户，则退化成单推
@@ -300,9 +303,6 @@ public class PushServiceImpl implements PushService {
             if (!response.get("result").toString().equals("ok")) {
 
                 return ResponseObj.fail(StatusCode.BIZ_FAILED, "推送消息失败");
-            }
-            if (persist) {//持久化到数据库
-                persistMessage(userIds, title, content, extras, sendType);
             }
         } catch (Exception e) {
             log.error("Message push failed: {}", e);

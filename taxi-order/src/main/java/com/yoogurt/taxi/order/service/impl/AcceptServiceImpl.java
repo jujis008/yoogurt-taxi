@@ -59,28 +59,30 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
             //获取代理司机的支付信息
-            List<OrderPayment> payments = paymentService.getPayments(orderId);
-            if (CollectionUtils.isNotEmpty(payments)) {
-                OrderPayment payment = payments.get(0);
-                //支付渠道
-                PayChannel channel = PayChannel.getChannelByName(payment.getPayChannel());
-                if (channel != null) {
-                    //正式司机增加收入
-                    ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
-                            .userId(orderInfo.getOfficialUserId())
-                            .outUserId(orderInfo.getAgentUserId())
-                            .inUserId(orderInfo.getOfficialUserId())
-                            .money(orderInfo.getAmount())
-                            .type(TradeType.INCOME.getCode()).build();
-                    if (channel.isWx()) {
-                        vo.setPayment(Payment.WEIXIN.getCode());
-                    } else if (channel.isAlipay()) {
-                        vo.setPayment(Payment.ALIPAY.getCode());
-                    } else {
-                        vo.setPayment(Payment.BANK.getCode());
+            if (orderInfo.getIsPaid()) {
+                ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
+                        .userId(orderInfo.getOfficialUserId())
+                        .outUserId(orderInfo.getAgentUserId())
+                        .inUserId(orderInfo.getOfficialUserId())
+                        .money(orderInfo.getAmount())
+                        .type(TradeType.INCOME.getCode()).build();
+                List<OrderPayment> payments = paymentService.getPayments(orderId);
+                if (CollectionUtils.isNotEmpty(payments)) {
+                    OrderPayment payment = payments.get(0);
+                    PayChannel channel = PayChannel.getChannelByName(payment.getPayChannel());
+                    if (channel != null) {
+                        if (channel.isWx()) {
+                            vo.setPayment(Payment.WEIXIN.getCode());
+                        } else if (channel.isAlipay()) {
+                            vo.setPayment(Payment.ALIPAY.getCode());
+                        } else {
+                            vo.setPayment(Payment.BANK.getCode());
+                        }
                     }
-                    accountService.updateAccount(vo);
+                } else {
+                    vo.setPayment(Payment.BALANCE.getCode());
                 }
+                accountService.updateAccount(vo);
             }
             //添加图片资源
             String[] pictures = acceptForm.getPictures();

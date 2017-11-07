@@ -6,7 +6,9 @@ public enum TradeType {
     FINE_OUT(30,"罚款"),
     FINE_IN(40,"补偿"),
     INCOME(50,"收入"),
-    OTHERS(60,"其它")
+    OUTCOME(60,"支出"),
+    REFUND(70,"退款"),
+//    OTHERS(80,"其它")
     ;
 
     private Integer code;
@@ -17,7 +19,7 @@ public enum TradeType {
         this.name = name;
     }
 
-    public static TradeType getEnumsBycode(Integer code) {
+    public static TradeType getEnumsByCode(Integer code) {
         for (TradeType enums:TradeType.values()) {
             if (enums.code.equals(code)) {
                 return enums;

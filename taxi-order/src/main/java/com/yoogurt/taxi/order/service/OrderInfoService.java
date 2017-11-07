@@ -92,4 +92,10 @@ public interface OrderInfoService extends OrderBizService {
      * @return 保存后的订单信息
      */
     OrderInfo saveOrderInfo(OrderInfo orderInfo, boolean add);
+
+    /**
+     *  将订单修改成已支付
+     * @param orderId 订单id
+     */
+    void modifyPayStatus(Long orderId);
 }

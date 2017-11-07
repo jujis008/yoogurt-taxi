@@ -77,8 +77,8 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
                         .outUserId(0L)
                         .inUserId(orderInfo.getAgentUserId())
                         .money(orderInfo.getAmount())
-                        .payment(Payment.OTHERS.getCode())
-                        .type(TradeType.OTHERS.getCode()).build();
+                        .payment(Payment.PLATFORM.getCode())
+                        .type(TradeType.REFUND.getCode()).build();
                 restAccountService.updateAccount(vo);
             }
             //添加一条车主的违约记录

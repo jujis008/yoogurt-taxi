@@ -32,6 +32,12 @@
         <dependency>
             <groupId>com.dx.ss.lib</groupId>
             <artifactId>docx</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.xmlbeans</groupId>
+                    <artifactId>xmlbeans</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

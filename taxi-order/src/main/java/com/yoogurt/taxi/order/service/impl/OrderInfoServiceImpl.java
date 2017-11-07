@@ -244,6 +244,15 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         return orderInfo;
     }
 
+    @Override
+    public void modifyPayStatus(Long orderId) {
+        OrderInfo orderInfo = getOrderInfo(orderId, null);
+        if (orderInfo != null) {
+            orderInfo.setIsPaid(true);
+            saveOrderInfo(orderInfo, false);
+        }
+    }
+
     /**
      * 指定用户id和订单状态，获取相应的订单列表，并按交车时间升序排列。
      *

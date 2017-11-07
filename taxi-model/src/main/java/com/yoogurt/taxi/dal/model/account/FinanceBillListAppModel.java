@@ -25,7 +25,7 @@ public class FinanceBillListAppModel {
 
     public void setTradeType(Integer type) {
         this.tradeType = type;
-        this.tradeTypeName = TradeType.getEnumsBycode(type).getName();
+        this.tradeTypeName = TradeType.getEnumsByCode(type).getName();
     }
 
     public void setBillStatus(Integer status) {

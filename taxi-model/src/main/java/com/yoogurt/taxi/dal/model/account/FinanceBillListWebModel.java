@@ -30,6 +30,6 @@ public class FinanceBillListWebModel {
 
     public void setTradeType(Integer tradeType) {
         this.tradeType = tradeType;
-        this.tradeTypeName = TradeType.getEnumsBycode(tradeType).getName();
+        this.tradeTypeName = TradeType.getEnumsByCode(tradeType).getName();
     }
 }
