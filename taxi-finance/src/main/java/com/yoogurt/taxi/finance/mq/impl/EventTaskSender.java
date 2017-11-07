@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.finance.mq.impl;
 
 import com.yoogurt.taxi.dal.doc.finance.EventTask;
+import com.yoogurt.taxi.dal.enums.MessageQueue;
 import com.yoogurt.taxi.finance.mq.TaskSender;
 import com.yoogurt.taxi.dal.bo.TaskInfo;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -17,8 +18,8 @@ public class EventTaskSender implements TaskSender<EventTask> {
     public void send(EventTask eventTask) {
         if (eventTask != null) {
 
-            TaskInfo task = eventTask.getTask();
-            rabbitTemplate.convertAndSend(task.getExchangeName(), task.getRoutingKey(), eventTask);
+            MessageQueue messageQueue = eventTask.getTask().getMessageQueue();
+            rabbitTemplate.convertAndSend(messageQueue.getExchange(), messageQueue.getRoutingKey(), eventTask);
         }
     }
 }
