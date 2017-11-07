@@ -1,8 +1,8 @@
 package com.yoogurt.taxi.finance.service.impl;
 
+import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.finance.dao.EventTaskDao;
 import com.yoogurt.taxi.finance.service.EventTaskService;
-import com.yoogurt.taxi.finance.task.EventTask;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

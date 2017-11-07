@@ -2,7 +2,7 @@ package com.yoogurt.taxi.finance.service;
 
 import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
-import com.yoogurt.taxi.finance.task.EventTask;
+import com.yoogurt.taxi.dal.doc.finance.EventTask;
 
 import java.util.Map;
 
