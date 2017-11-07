@@ -1,16 +1,13 @@
 package com.yoogurt.taxi.account.mq;
 
 import com.yoogurt.taxi.dal.bo.PushPayload;
+import com.yoogurt.taxi.dal.enums.MessageQueue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationSender {
-
-    private final static String EXCHANGE = "X-Exchange-Notification";
-
-    private final static String ROUTING_KEY = "topic.notification.push.account";
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -20,6 +17,6 @@ public class NotificationSender {
      * @param payload 消息负载
      */
     public void send(PushPayload payload) {
-        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, payload);
+        rabbitTemplate.convertAndSend(MessageQueue.SMS_NOTIFICATION_QUEUE.getExchange(), MessageQueue.SMS_NOTIFICATION_QUEUE.getRoutingKey(), payload);
     }
 }

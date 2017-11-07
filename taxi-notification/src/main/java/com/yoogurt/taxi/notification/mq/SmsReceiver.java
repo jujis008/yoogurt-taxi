@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.notification.mq;
 
 import com.yoogurt.taxi.dal.bo.SmsPayload;
+import com.yoogurt.taxi.dal.enums.MessageQueue;
 import com.yoogurt.taxi.dal.model.ucpaas.TemplateSms;
 import com.yoogurt.taxi.notification.config.SmsConfig;
 import com.yoogurt.taxi.notification.service.SmsService;
@@ -15,10 +16,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@RabbitListener(queues = "X-Queue-Notification-SMS")
+@RabbitListener(queues = MessageQueue.SMS_QUEUE_NAME)
 public class SmsReceiver {
+
     @Autowired
     private SmsService smsService;
+
     @Autowired
     private SmsConfig smsConfig;
 
@@ -28,7 +31,7 @@ public class SmsReceiver {
 
         TemplateSms templateSms = new TemplateSms();
         templateSms.setParam(payload.getParam());
-        templateSms.setTo(StringUtils.join(payload.getPhoneNumbers(),","));
+        templateSms.setTo(StringUtils.join(payload.getPhoneNumbers(), ","));
         switch (payload.getType()) {
             case VALID:
                 templateSms.setTemplateId(smsConfig.getValidTemplateId());
@@ -42,6 +45,6 @@ public class SmsReceiver {
         }
         templateSms.setAppId(smsConfig.getAppId());
         String s = smsService.templateSMS(templateSms);
-        log.info("短信发送结果："+s);
+        log.info("短信发送结果：" + s);
     }
 }

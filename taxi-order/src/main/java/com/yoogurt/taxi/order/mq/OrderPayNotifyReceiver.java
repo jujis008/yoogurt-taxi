@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RabbitListener(queues = MessageQueue.ORDER_NOTIFY_QUEUE_NAME)
-public class NotifyReceiver {
+public class OrderPayNotifyReceiver {
 
     @Autowired
     private EventTaskRunner eventTaskRunner;

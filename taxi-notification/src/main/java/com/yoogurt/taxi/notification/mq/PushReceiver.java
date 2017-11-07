@@ -2,6 +2,7 @@ package com.yoogurt.taxi.notification.mq;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.bo.PushPayload;
+import com.yoogurt.taxi.dal.enums.MessageQueue;
 import com.yoogurt.taxi.notification.service.PushService;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@RabbitListener(queues = "X-Queue-Notification")
+@RabbitListener(queues = MessageQueue.NOTIFICATION_QUEUE_NAME)
 public class PushReceiver {
 
     @Autowired
