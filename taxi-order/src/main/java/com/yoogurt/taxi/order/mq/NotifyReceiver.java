@@ -2,6 +2,7 @@ package com.yoogurt.taxi.order.mq;
 
 import com.yoogurt.taxi.dal.bo.TaskInfo;
 import com.yoogurt.taxi.dal.doc.finance.EventTask;
+import com.yoogurt.taxi.dal.enums.MessageQueue;
 import com.yoogurt.taxi.dal.enums.TaskStatus;
 import com.yoogurt.taxi.order.mq.task.EventTaskRunner;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RabbitListener(queues = "X-Queue-Pay-Notify")
+@RabbitListener(queues = MessageQueue.ORDER_NOTIFY_QUEUE_NAME)
 public class NotifyReceiver {
 
     @Autowired

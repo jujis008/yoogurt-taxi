@@ -7,6 +7,7 @@ import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.dal.enums.MessageQueue;
 import com.yoogurt.taxi.finance.config.AmqpConfig;
 import com.yoogurt.taxi.finance.mq.TaskSender;
 import com.yoogurt.taxi.finance.service.NotifyService;
@@ -106,38 +107,46 @@ public abstract class NotifyServiceImpl implements NotifyService {
         return null;
     }
 
-
-    private TaskInfo buildTask() {
-        String taskId = "pt_" + RandomUtils.getPrimaryKey();
-        TaskInfo taskInfo = new TaskInfo(taskId);
-        taskInfo.setExchangeName(AmqpConfig.NOTIFY_TOPIC_EXCHANGE_NAME);
-        taskInfo.setQueueName(AmqpConfig.PAY_NOTIFY_QUEUE_NAME);
-        taskInfo.setRoutingKey(AmqpConfig.getPaymentNotifyTopic());
-        return taskInfo;
-    }
-
     private EventTask doSubmit(Event<? extends Notify> event, String taskId, boolean isRetry) {
         final EventTask eventTask;
         if (isRetry && StringUtils.isNoneBlank(taskId)) {
             eventTask = getTask(taskId);
             if(eventTask != null) eventTask.getTask().doRetry();
         } else {
-            TaskInfo task = buildTask();
-            taskId = task.getTaskId();
+            Map metadata = event.getData().getMetadata();
+            taskId = "pt_" + RandomUtils.getPrimaryKey();
+            TaskInfo task = new TaskInfo(taskId);
+            task.setMessageQueue(buildMessageQueue(metadata));
+
             eventTask = new EventTask(taskId);
             eventTask.setEvent(event);
             eventTask.setTask(task);
-            Map metadata = event.getData().getMetadata();
-            if (metadata.get("payId") != null) {
-                String payId = metadata.get("payId").toString();
-                Payment payment = payService.getPayment(payId);
-                payment.setTransactionNo(event.getData().getTransactionNo());
-                eventTask.setPayment(payment);
-            }
+
+            Payment payment = buildPayment(metadata);
+            payment.setTransactionNo(event.getData().getTransactionNo());
+            eventTask.setPayment(payment);
         }
         //重新设置任务信息缓存
         redis.put(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId, eventTask);
         eventTaskSender.send(eventTask);
         return eventTask;
+    }
+
+    private Payment buildPayment(Map metadata) {
+        if(metadata == null || metadata.isEmpty()) return null;
+        if (metadata.get("payId") != null) {
+            String payId = metadata.get("payId").toString();
+            return payService.getPayment(payId);
+        }
+        return null;
+    }
+
+    private MessageQueue buildMessageQueue(Map metadata) {
+        if(metadata == null || metadata.isEmpty()) return null;
+        if (metadata.get("biz") != null) {
+            String biz = metadata.get("biz").toString();
+            return MessageQueue.getEnumsByBiz(biz);
+        }
+        return null;
     }
 }

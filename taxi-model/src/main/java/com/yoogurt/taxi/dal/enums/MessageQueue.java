@@ -17,8 +17,13 @@ public enum MessageQueue {
     /**
      * 订单回调专用
      */
-    ORDER_NOTIFY_QUEUE(getNotifyExchange(), "X-Queue-Pay-Notify", "topic.notify.charge", "order_notify"),
-    ;
+    ORDER_NOTIFY_QUEUE(getNotifyExchange(), "X-Queue-Pay-Notify", "topic.notify.charge", "order_notify"),;
+
+    public static final String PAY_QUEUE_NAME = "X-Queue-Pay";
+
+    public static final String CHARGE_NOTIFY_QUEUE_NAME = "X-Queue-Charge-Notify";
+
+    public static final String ORDER_NOTIFY_QUEUE_NAME = "X-Queue-Pay-Notify";
 
     private String exchange;
 
@@ -36,7 +41,7 @@ public enum MessageQueue {
     }
 
     public static MessageQueue getEnumsByBiz(String biz) {
-        if(StringUtils.isNoneBlank(biz)) {
+        if (StringUtils.isNoneBlank(biz)) {
             for (MessageQueue queue : MessageQueue.values()) {
                 if (biz.equals(queue.getBiz())) {
                     return queue;
