@@ -109,7 +109,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
                 Map<String, Object> credential = BeanRefUtils.toMap(alipay);
                 credential.put("order_str", encodedContent);
                 payment.setCredential(credential);
-//                return ResponseObj.success(payment);
+                return ResponseObj.success(payment);
             } catch (Exception e) {
                 log.error("支付宝生成签名发生异常，{}", e);
             }
