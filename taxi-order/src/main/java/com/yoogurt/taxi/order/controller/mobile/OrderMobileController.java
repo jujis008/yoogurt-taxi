@@ -1,9 +1,13 @@
 package com.yoogurt.taxi.order.controller.mobile;
 
+import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.controller.BaseController;
+import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.common.enums.StatusCode;
+import com.yoogurt.taxi.common.utils.CommonUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
 import com.yoogurt.taxi.dal.condition.order.WarningOrderCondition;
@@ -102,6 +106,24 @@ public class OrderMobileController extends BaseController {
             return ResponseObj.success(model, extras);
         }
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车出现问题，请稍后再试");
+    }
+
+    @RequestMapping(value = "/payment", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
+    public ResponseObj doPay(@Valid @RequestBody PayForm form, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
+        }
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(form.getOrderId(), super.getUserId());
+        if(orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单记录不存在");
+        Map<String, Object> map = new HashMap<>();
+        map.put("orderNo", orderInfo.getOrderId());
+        map.put("subject", "替你开-" + CommonUtils.convertName(orderInfo.getOfficialDriverName(), "师傅"));
+        map.put("body", "【" + orderInfo.getOrderId() + "】代理司机支付租金￥" + orderInfo.getAmount().doubleValue());
+        map.put("amount", new Money(orderInfo.getAmount()).getCent());
+        map.put("metadata", new HashMap<String, Object>() {{
+            put("biz", MessageQueue.ORDER_NOTIFY_QUEUE.getBiz());
+        }});
+        return ResponseObj.success(map);
     }
 
     @RequestMapping(value = "/pickup", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
