@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.finance.controller.mobile;
 
+import com.yoogurt.taxi.common.utils.RSA;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.bo.AlipayNotify;
 import com.yoogurt.taxi.dal.bo.Notify;
@@ -44,6 +45,12 @@ public class AlipayNotifyController {
     public void alipayNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
+        //回调验签
+        if (!alipayService.signVerify(request, RSA.RSA2_ALGORITHMS, RSA.getDefaultCharset())) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.write("非法的回调请求");
+            return;
+        }
         //参数解析&映射
         Map<String, Object> parameterMap = alipayService.parameterResolve(request, new AlipayNotify().attributeMap());
         //event对象解析

@@ -40,11 +40,16 @@ public class WxNotifyController {
 
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
+        //回调验签
+        if (!wxPayService.signVerify(request, "MD5", "UTF-8")) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.write("非法的回调请求");
+            return;
+        }
         //参数解析&映射
         Map<String, Object> parameterMap = wxPayService.parameterResolve(request, new WxNotify().attributeMap());
         //event对象解析
         Event<WxNotify> event = (Event<WxNotify>) wxNotifyService.eventParse(parameterMap);
-
         if (event != null) {
             EventTask eventTask = wxNotifyService.submit(event);
             if (eventTask != null) {//回调成功
