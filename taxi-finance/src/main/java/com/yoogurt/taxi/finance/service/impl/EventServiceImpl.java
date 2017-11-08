@@ -19,8 +19,7 @@ public class EventServiceImpl extends EventTaskServiceImpl implements EventServi
     @Override
     public Event getEvent(String eventId) {
         if (StringUtils.isBlank(eventId)) return null;
-        Event event = new Event(eventId);
-        return eventDao.findOne(Example.of(event));
+        return eventDao.findOne(eventId);
     }
 
     @Override
@@ -39,8 +38,7 @@ public class EventServiceImpl extends EventTaskServiceImpl implements EventServi
     public boolean deleteEvent(String eventId) {
         if (StringUtils.isBlank(eventId)) return false;
         try {
-            Event event = new Event(eventId);
-            eventDao.delete(event);
+            eventDao.delete(eventId);
         } catch (Exception e) {
             log.error("删除回调事件异常, {}", e);
             return false;

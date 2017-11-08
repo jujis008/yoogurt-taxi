@@ -28,8 +28,7 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
     @Override
     public Payment getPayment(String payId) {
         if(StringUtils.isBlank(payId)) return null;
-        Payment payment = new Payment(payId);
-        return paymentDao.findOne(Example.of(payment));
+        return paymentDao.findOne(payId);
     }
 
     /**
@@ -66,8 +65,7 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
     public boolean deletePayment(String payId) {
         if(StringUtils.isBlank(payId)) return false;
         try {
-            Payment payment = new Payment(payId);
-            paymentDao.delete(payment);
+            paymentDao.delete(payId);
         } catch (Exception e) {
             log.error("删除支付对象异常:{}", e);
             return false;

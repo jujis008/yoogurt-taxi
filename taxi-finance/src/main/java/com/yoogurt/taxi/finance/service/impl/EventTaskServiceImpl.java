@@ -19,8 +19,7 @@ public class EventTaskServiceImpl implements EventTaskService {
     @Override
     public EventTask getEventTask(String taskId) {
         if (StringUtils.isBlank(taskId)) return null;
-        EventTask task = new EventTask(taskId);
-        return eventTaskDao.findOne(Example.of(task));
+        return eventTaskDao.findOne(taskId);
     }
 
     @Override
@@ -39,8 +38,7 @@ public class EventTaskServiceImpl implements EventTaskService {
     public boolean deleteEventTask(String taskId) {
         if (StringUtils.isBlank(taskId)) return false;
         try {
-            EventTask task = new EventTask(taskId);
-            eventTaskDao.delete(task);
+            eventTaskDao.delete(taskId);
         } catch (Exception e) {
             log.error("删除回调任务信息异常, {}", e);
             return false;

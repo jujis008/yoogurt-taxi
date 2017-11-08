@@ -3,8 +3,8 @@ package com.yoogurt.taxi.dal.doc.finance;
 import com.yoogurt.taxi.dal.bo.Notify;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
-import javax.persistence.Id;
 import java.io.Serializable;
 
 @Setter

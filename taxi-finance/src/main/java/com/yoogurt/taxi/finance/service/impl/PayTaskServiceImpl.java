@@ -19,8 +19,7 @@ public class PayTaskServiceImpl implements PayTaskService {
     @Override
     public PayTask getPayTask(String taskId) {
         if(StringUtils.isBlank(taskId)) return null;
-        PayTask task = new PayTask(taskId);
-        return payTaskDao.findOne(Example.of(task));
+        return payTaskDao.findOne(taskId);
     }
 
     @Override
@@ -39,8 +38,7 @@ public class PayTaskServiceImpl implements PayTaskService {
     public boolean deletePayTask(String taskId) {
         if(StringUtils.isBlank(taskId)) return false;
         try {
-            PayTask payTask = new PayTask(taskId);
-            payTaskDao.delete(payTask);
+            payTaskDao.delete(taskId);
         } catch (Exception e) {
             log.error("删除支付任务信息异常, {}", e);
             return false;
