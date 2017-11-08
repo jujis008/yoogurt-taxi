@@ -8,12 +8,10 @@ public interface CommentTagStatisticService {
 
     /**
      * 记录本次评价标签的使用情况
-     *
-     * @param userId 被评价的用户id
+     *  @param userId 被评价的用户id
      * @param tagIds 一组评价标签id
-     * @param tagNames 一组评价标签名称
      */
-    void record(Long userId, Long[] tagIds, String[] tagNames);
+    void record(Long userId, Long[] tagIds);
 
     /**
      * 获取司机评价标签统计信息

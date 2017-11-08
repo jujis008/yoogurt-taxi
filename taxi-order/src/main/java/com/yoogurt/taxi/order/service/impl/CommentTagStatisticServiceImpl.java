@@ -1,9 +1,12 @@
 package com.yoogurt.taxi.order.service.impl;
 
+import com.yoogurt.taxi.dal.beans.CommentTag;
 import com.yoogurt.taxi.dal.beans.CommentTagStatistic;
+import com.yoogurt.taxi.order.dao.CommentTagDao;
 import com.yoogurt.taxi.order.dao.CommentTagStatisticDao;
 import com.yoogurt.taxi.order.service.CommentTagStatisticService;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -17,16 +20,18 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
     @Autowired
     private CommentTagStatisticDao statisticDao;
 
+    @Autowired
+    private CommentTagDao commentTagDao;
+
     /**
      * 记录本次评价标签的使用情况
      *
      * @param userId 被评价的用户id
      * @param tagIds 一组评价标签id
-     * @param tagNames 一组评价标签名称
      */
     @Override
-    public void record(Long userId, Long[] tagIds, String[] tagNames) {
-        List<CommentTagStatistic> statistics = buildStatistic(userId, tagIds, tagNames);
+    public void record(Long userId, Long[] tagIds) {
+        List<CommentTagStatistic> statistics = buildStatistic(userId, tagIds);
         if (CollectionUtils.isNotEmpty(statistics)) {
             statistics.forEach(statistic -> statisticDao.saveStatistic(statistic));
         }
@@ -40,22 +45,23 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
      */
     @Override
     public List<CommentTagStatistic> getStatistic(Long userId) {
-        if(userId == null || userId <= 0) return null;
+        if (userId == null || userId <= 0) return null;
         Example ex = new Example(CommentTagStatistic.class);
         ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE).andEqualTo("userId", userId);
         return statisticDao.selectByExample(ex);
     }
 
-    private List<CommentTagStatistic> buildStatistic(Long userId, Long[] tagIds, String[] tagNames) {
+    private List<CommentTagStatistic> buildStatistic(Long userId, Long[] tagIds) {
         List<CommentTagStatistic> statistics = new ArrayList<>();
-        if(userId == null || tagIds == null || tagIds.length == 0 || tagNames == null || tagNames.length == 0) return statistics;
+        if (userId == null || tagIds == null || tagIds.length == 0) return statistics;
         //长度不对应
-        if(tagIds.length != tagNames.length) return statistics;
-        for (int i = 0, len = tagIds.length; i < len; i++) {
+        for (Long tagId : tagIds) {
 
             CommentTagStatistic statistic = new CommentTagStatistic(userId);
-            statistic.setTagId(tagIds[i]);
-            statistic.setTagName(tagNames[i]);
+            CommentTag commentTag = commentTagDao.selectById(tagId);
+            if (commentTag == null) continue;
+            statistic.setTagId(tagId);
+            BeanUtils.copyProperties(commentTag, statistic);
             statistic.setCounter(1);
             statistics.add(statistic);
         }
@@ -63,7 +69,7 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
     }
 
     private CommentTagStatistic addStatistic(CommentTagStatistic statistic) {
-        if(statistic == null) return null;
+        if (statistic == null) return null;
         if (statisticDao.insertSelective(statistic) == 1) {
             return statistic;
         }

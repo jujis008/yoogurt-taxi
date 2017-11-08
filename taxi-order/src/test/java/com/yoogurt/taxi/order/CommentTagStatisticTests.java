@@ -1,7 +1,6 @@
 package com.yoogurt.taxi.order;
 
 import com.yoogurt.taxi.dal.beans.CommentTagStatistic;
-import com.yoogurt.taxi.order.form.CommentForm;
 import com.yoogurt.taxi.order.service.CommentTagStatisticService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -24,7 +23,7 @@ public class CommentTagStatisticTests {
 
     @Test
     public void recordTest() {
-        statisticService.record(8888L, new Long[]{1L, 2L}, new String[]{"驾驶平稳", "爱护车辆"});
+        statisticService.record(8888L, new Long[]{1L, 2L});
     }
 
     @Test

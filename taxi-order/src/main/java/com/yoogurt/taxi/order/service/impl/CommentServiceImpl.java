@@ -143,7 +143,7 @@ public class CommentServiceImpl implements CommentService {
 
     private void commentStatisticRecord(Long userId, Long[] tagIds, String[] tagNames) {
         try {
-            statisticService.record(userId, tagIds, tagNames);
+            statisticService.record(userId, tagIds);
         } catch (Exception e){
             log.error("评价标签统计异常, {}", e);
         }
