@@ -181,6 +181,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
     @Override
     public boolean signVerify(HttpServletRequest request, String signType, String charset) {
         Map<String, Object> params = parameterResolve(request, null);
+        log.info("支付回调参数：" + params.toString());
         String sign = params.remove("sign").toString();
         log.info("支付宝回传签名：" + sign);
         params.remove("sign_type");
@@ -192,7 +193,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
             String value = (String) params.get(key);
             content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
         }
-        FinanceAlipaySettings settings = getAlipaySettings(params.get("app_id").toString());
+        FinanceAlipaySettings settings = getAlipaySettingsByAppId(params.get("app_id").toString());
         if (settings == null) {
             log.error("找不到应用配置");
             return false;
