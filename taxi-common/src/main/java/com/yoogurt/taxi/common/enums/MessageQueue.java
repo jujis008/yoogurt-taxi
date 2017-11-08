@@ -9,7 +9,7 @@ public enum MessageQueue {
     /**
      * 支付专用
      */
-    PAY_QUEUE(getPayExchange(), "X-Queue-Pay", "topic.task.pay", "order_pay"),
+    PAY_QUEUE(getPayExchange(), "X-Queue-Pay", "topic.task.pay", "payment"),
     /**
      * 充值回调专用
      */
