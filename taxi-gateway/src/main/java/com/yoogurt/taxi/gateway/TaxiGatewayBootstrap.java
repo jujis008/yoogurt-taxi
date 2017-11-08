@@ -26,7 +26,6 @@ import java.net.InetAddress;
 @EnableFeignClients
 @EnableDiscoveryClient
 @EnableTransactionManagement
-@EnableAutoConfiguration
 @SpringBootApplication(exclude = { MongoAutoConfiguration.class, MongoDataAutoConfiguration.class })
 @ComponentScan({"com.yoogurt.taxi"})
 public class TaxiGatewayBootstrap {
