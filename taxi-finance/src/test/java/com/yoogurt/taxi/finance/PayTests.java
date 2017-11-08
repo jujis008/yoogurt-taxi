@@ -59,6 +59,7 @@ public class PayTests {
     public void getPaymentTest() {
         Payment payment = payService.queryResult("pt_17102711315495101");
         Assert.assertNotNull(payment);
+
     }
 
     @Test
@@ -67,6 +68,6 @@ public class PayTests {
         payment.setPayId("21436547");
         payment.setAppId("app_driver");
         Payment result = payService.addPayment(payment);
-        Assert.assertNotNull(payment);
+        Assert.assertNotNull(result);
     }
 }
