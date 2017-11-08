@@ -7,6 +7,7 @@ import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.finance.service.NotifyService;
 import com.yoogurt.taxi.finance.service.PayChannelService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ import java.util.Map;
  * （通知频率为15/15/30/180/1800/1800/1800/1800/3600，单位：秒）
  * 注意：同样的通知可能会多次发送给商户系统。商户系统必须能够正确处理重复的通知。
  */
+@Slf4j
 @RestController
 @RequestMapping("/webhooks/finance")
 public class WxNotifyController {
@@ -49,10 +51,13 @@ public class WxNotifyController {
         //参数解析&映射
         Map<String, Object> parameterMap = wxPayService.parameterResolve(request, new WxNotify().attributeMap());
         //event对象解析
-        Event<WxNotify> event = (Event<WxNotify>) wxNotifyService.eventParse(parameterMap);
+        Event<? extends Notify> event = wxNotifyService.eventParse(parameterMap);
+
         if (event != null) {
+            log.info("[WxNotifyController]接收到微信回调：\n" + event.toString());
             EventTask eventTask = wxNotifyService.submit(event);
             if (eventTask != null) {//回调成功
+                log.info("[WxNotifyController]微信回调任务提交成功：\n" + event.toString());
                 response.setStatus(HttpServletResponse.SC_OK);
                 out.write("success");
                 return;
