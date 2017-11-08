@@ -60,6 +60,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
 
     @Override
     public FinanceAlipaySettings getAlipaySettingsByAppId(String alipayAppId) {
+        if (StringUtils.isBlank(alipayAppId)) return null;
         FinanceAlipaySettings settings = new FinanceAlipaySettings();
         settings.setAlipayAppId(alipayAppId);
         return alipaySettingsDao.selectOne(settings);
