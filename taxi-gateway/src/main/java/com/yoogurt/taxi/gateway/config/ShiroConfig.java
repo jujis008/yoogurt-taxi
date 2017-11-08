@@ -100,6 +100,8 @@ public class ShiroConfig {
         chains.put("/hystrix", "anon");
         //token颁发接口
         chains.put("/token/**", "anon");
+        //匿名接口
+        chains.put("/anon/**", "anon");
 
         // noSessionCreation: 要求shiro不创建session
         chains.put("/**.html", "noSessionCreation");
@@ -115,7 +117,7 @@ public class ShiroConfig {
         chains.put("/web/**", "userTokenFilter,urlPrivilegeFilter");
 
         // <!-- 过滤链定义，从上向下顺序执行，一般将 /** 放在最下边 -->
-        chains.put("/**", "userTokenFilter");
+        chains.put("/**", "user");
 
         bean.setFilterChainDefinitionMap(chains);
 
