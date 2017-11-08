@@ -74,6 +74,14 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     }
 
     @Override
+    public FinanceWxSettings getWxSettingsByAppId(String wxAppId) {
+        if (StringUtils.isBlank(wxAppId)) return null;
+        FinanceWxSettings settings = new FinanceWxSettings();
+        settings.setWxAppId(wxAppId);
+        return wxSettingsDao.selectOne(settings);
+    }
+
+    @Override
     public CompletableFuture<ResponseObj> doTask(final PayTask payTask) {
         if (payTask == null) return null;
         final PayForm payParams = payTask.getPayParams();

@@ -10,4 +10,6 @@ public interface WxPayService extends PayChannelService {
 
     FinanceWxSettings getWxSettings(String appId);
 
+    FinanceWxSettings getWxSettingsByAppId(String wxAppId);
+
 }
