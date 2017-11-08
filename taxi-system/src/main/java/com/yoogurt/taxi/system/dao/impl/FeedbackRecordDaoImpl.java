@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.List;
-
 @Repository
 public class FeedbackRecordDaoImpl extends BaseDao<FeedbackRecordMapper, FeedbackRecord> implements FeedbackRecordDao {
     @Autowired

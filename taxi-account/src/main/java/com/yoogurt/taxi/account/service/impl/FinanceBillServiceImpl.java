@@ -25,8 +25,10 @@ import com.yoogurt.taxi.dal.model.account.WithdrawBillDetailModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.HashMap;
@@ -79,6 +81,28 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     }
 
     @Override
+    public int chargeSuccess(Long billNo) {
+        Example example = new Example(FinanceBill.class);
+        example.createCriteria().andEqualTo("billNo",billNo)
+                .andEqualTo("billStatus",BillStatus.PENDING.getCode());
+        List<FinanceBill> financeBillList = financeBillDao.selectByExample(example);
+        if (CollectionUtils.isEmpty(financeBillList)) {
+            return 0;
+        }
+        FinanceBill financeBill = financeBillList.get(0);
+        financeBill.setBillStatus(BillStatus.SUCCESS.getCode());
+        financeBillDao.updateById(financeBill);
+        FinanceRecord record = new FinanceRecord();
+        record.setStatus(BillStatus.SUCCESS.getCode());
+        record.setBillNo(billNo);
+        record.setBillId(financeBill.getId());
+        record.setRemark("充值成功");
+        financeRecordService.save(record);
+        return 1;
+    }
+
+    @Override
+    @Transactional
     public ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus, BillType billType) {
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(condition.getUserId());
         if (!userInfoRestResult.isSuccess()) {

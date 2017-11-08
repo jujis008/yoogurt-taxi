@@ -27,21 +27,8 @@
         <javaClientGenerator targetPackage="${targetMapperPackage}" targetProject="${targetJavaProject}"
                              type="XMLMAPPER"/>
 
-        <table tableName="finance_alipay_settings">
+        <table tableName="access_record">
             <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
-        <table tableName="finance_app_channel">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-        </table>
-        <table tableName="finance_app_settings">
-            <generatedKey column="app_id" sqlStatement="Mysql"/>
-        </table>
-        <table tableName="finance_pay_channel">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-        </table>
-        <table tableName="finance_wx_settings">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
-        </table>
-
     </context>
 </generatorConfiguration>

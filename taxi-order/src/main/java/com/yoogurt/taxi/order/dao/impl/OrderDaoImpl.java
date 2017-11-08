@@ -30,6 +30,12 @@ public class OrderDaoImpl extends BaseDao<OrderInfoMapper, OrderInfo> implements
     }
 
     @Override
+    public Page<OrderModel> getWebOrderList(OrderListCondition condition) {
+        PageHelper.startPage(condition.getPageNum(), condition.getPageSize(), "gmt_modify DESC");
+        return orderInfoMapper.getWebOrderList(condition);
+    }
+
+    @Override
     public List<CancelModel> getCancelOrders(Long orderId, Long userId, Integer userType) {
         return orderInfoMapper.getCancelOrders(orderId, userId, userType);
     }

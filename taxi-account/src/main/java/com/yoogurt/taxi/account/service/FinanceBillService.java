@@ -48,6 +48,8 @@ public interface FinanceBillService {
      */
     int updateStatus(Long id, BillStatus billStatus);
 
+    int chargeSuccess(Long billNo);
+
     ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus, BillType billType);
 
     Pager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition);

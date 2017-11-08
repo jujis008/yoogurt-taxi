@@ -12,9 +12,9 @@ import lombok.Setter;
 public class WarningOrderCondition {
 
     /**
-     * 待取车
+     * 待交车
      */
-    private Integer status = OrderStatus.PICK_UP.getCode();
+    private Integer status = OrderStatus.HAND_OVER.getCode();
 
     /**
      * 未支付
