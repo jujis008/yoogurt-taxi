@@ -94,6 +94,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 if (settings == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "该应用暂不支持微信支付");
                 Payment payment = payService.buildPayment(payParams);
                 final PrePayInfo pay = buildPrePayInfo(settings, payTask.getPayParams(), payment);
+                if(pay == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "微信预下单失败");
                 final Document document = BeanRefUtils.toXml(pay, "xml", pay.parameterMap(), "key");
                 //控制台输出请求参数
                 CommonUtils.xmlOutput(document);
@@ -211,7 +212,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
      * 解析回调请求的参数
      *
      * @param request      回调请求对象
-     * @param attributeMap
+     * @param attributeMap 原始参数与实体类属性的映射关系
      * @return 参数键值对
      */
     @Override
@@ -259,7 +260,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         String sign = DigestUtils.md5Hex(content.toString()).toUpperCase();    //拼接支付密钥
         log.info("回调参数签名结果：" + sign);
         boolean verify = sign.equals(wxSign);
-        log.error("验签结果：" + verify);
+        log.info("验签结果：" + verify);
         return verify;
     }
 
