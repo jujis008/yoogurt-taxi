@@ -241,6 +241,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     public boolean signVerify(HttpServletRequest request, String signType, String charset) {
         Map<String, Object> params = parameterResolve(request, null);
         String wxSign = params.remove("sign").toString();
+        log.info("微信回传签名：" + wxSign);
         StringBuilder content = new StringBuilder();
         List<String> keys = new ArrayList<>(params.keySet());
         Collections.sort(keys);
@@ -249,7 +250,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
             String value = (String) params.get(key);
             content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
         }
-        FinanceWxSettings settings = getWxSettings(params.get("appid").toString());
+        FinanceWxSettings settings = getWxSettingsByAppId(params.get("appid").toString());
         if (settings == null) {
             log.error("找不到应用配置");
             return false;
