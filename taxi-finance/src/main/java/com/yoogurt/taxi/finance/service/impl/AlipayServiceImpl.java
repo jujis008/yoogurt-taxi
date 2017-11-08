@@ -182,6 +182,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
     public boolean signVerify(HttpServletRequest request, String signType, String charset) {
         Map<String, Object> params = parameterResolve(request, null);
         String sign = params.remove("sign").toString();
+        log.info("支付宝回传签名：" + sign);
         params.remove("sign_type");
         StringBuilder content = new StringBuilder();
         List<String> keys = new ArrayList<>(params.keySet());
