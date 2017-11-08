@@ -193,6 +193,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
             String value = (String) params.get(key);
             content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
         }
+        log.info(content.toString());
         FinanceAlipaySettings settings = getAlipaySettingsByAppId(params.get("app_id").toString());
         if (settings == null) {
             log.error("找不到应用配置");
