@@ -101,7 +101,7 @@ public class ShiroConfig {
         //token颁发接口
         chains.put("/token/**", "anon");
         //匿名接口
-        chains.put("/anon/**", "anon");
+        chains.put("/**/i/**", "anon");
 
         // noSessionCreation: 要求shiro不创建session
         chains.put("/**.html", "noSessionCreation");
