@@ -40,8 +40,7 @@ public class OrderWebController extends BaseController{
         if (!UserType.getEnumsByCode(super.getUser().getType()).isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
-        condition.setFromApp(false);
-        return ResponseObj.success(orderInfoService.getOrderList(condition));
+        return ResponseObj.success(orderInfoService.getWebOrderList(condition));
     }
 
     @RequestMapping(value = "info/orderId/{orderId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})

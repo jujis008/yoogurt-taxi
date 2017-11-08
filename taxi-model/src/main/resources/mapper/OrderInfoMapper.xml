@@ -66,6 +66,46 @@
         <result column="gmt_create" jdbcType="TIMESTAMP" property="orderTime"/>
     </resultMap>
 
+    <select id="getWebOrderList" parameterType="com.yoogurt.taxi.dal.condition.order.OrderListCondition" resultMap="OrderModel">
+        SELECT order_id, rent_id, agent_user_id, agent_driver_id, agent_driver_name, agent_driver_phone,
+            handover_time, give_back_time, company, address, lng, lat, price, amount, car_id, plate_number,
+            official_user_id, official_driver_id, official_driver_name, official_driver_phone,
+            is_commented, is_paid, status, gmt_create
+        FROM order_info
+        WHERE is_deleted=0
+        <if test="orderId != null and orderId > 0">
+            AND order_id=#{orderId}
+        </if>
+
+        <if test="userId != null and userType != null">
+            <if test="userType == 20">
+                AND agent_user_id=#{userId}
+            </if>
+            <if test="userType == 30">
+                AND official_user_id=#{userId}
+            </if>
+        </if>
+
+        <if test="driverName != null and driverName != ''">
+            AND (agent_driver_name=#{driverName} OR official_driver_name=#{driverName})
+        </if>
+
+        <if test="phone != null and phone != ''">
+            AND (agent_driver_phone=#{phone} OR official_driver_phone=#{phone})
+        </if>
+
+        <if test="status != null and status > 0">
+            AND status=#{status}
+        </if>
+
+        <if test="startTime != null">
+            <![CDATA[ AND handover_time >= #{startTime} ]]>
+        </if>
+
+        <if test="endTime != null">
+            <![CDATA[ AND give_back_time <= #{endTime} ]]>
+        </if>
+    </select>
     <select id="getOrderList" parameterType="map" resultMap="OrderModel">
         SELECT order_id, rent_id, agent_user_id, agent_driver_id, agent_driver_name, agent_driver_phone,
             handover_time, give_back_time, company, address, lng, lat, price, amount, car_id, plate_number,

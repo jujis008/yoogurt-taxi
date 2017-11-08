@@ -117,6 +117,17 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     }
 
     /**
+     * @param condition 查询条件
+     * @return 后台订单列表
+     * @author wudeyou
+     */
+    @Override
+    public Pager<OrderModel> getWebOrderList(OrderListCondition condition) {
+        Page<OrderModel> webOrderList = orderDao.getWebOrderList(condition);
+        return webPagerFactory.generatePager(webOrderList);
+    }
+
+    /**
      * 获取取消订单列表
      *
      * @param orderId  订单ID

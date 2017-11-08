@@ -30,6 +30,14 @@ public interface OrderInfoService extends OrderBizService {
     Pager<OrderModel> getOrderList(OrderListCondition condition);
 
     /**
+     *
+     * @param condition 查询条件
+     * @author wudeyou
+     * @return 后台订单列表
+     */
+    Pager<OrderModel> getWebOrderList(OrderListCondition condition);
+
+    /**
      * 获取取消订单列表
      *
      * @param orderId  订单ID

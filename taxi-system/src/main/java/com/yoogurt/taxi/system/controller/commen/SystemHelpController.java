@@ -28,7 +28,7 @@ public class SystemHelpController extends BaseController{
 
 
     @RequestMapping(value = "/oss/token",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
-    public ResponseObj getOssTocken() {
+    public ResponseObj getOssToken() {
         String accessKeyId = ossConfig.getAccessKeyId();
         String accessKeySecret = ossConfig.getAccessKeySecret();
         String roleArn = ossConfig.getRoleArn();
