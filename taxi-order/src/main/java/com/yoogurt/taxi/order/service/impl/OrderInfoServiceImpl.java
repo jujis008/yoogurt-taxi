@@ -30,6 +30,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
@@ -68,6 +69,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     private RedisHelper redisHelper;
 
 
+    @Transactional
     @Override
     public ResponseObj placeOrder(PlaceOrderForm orderForm) {
         ResponseObj obj = buildOrderInfo(orderForm);
