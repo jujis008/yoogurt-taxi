@@ -2,6 +2,7 @@ package com.yoogurt.taxi.dal.doc.finance;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 @Getter
 @Setter
+@ToString
 public class Payment implements Serializable {
 
 	/**

@@ -9,4 +9,6 @@ public interface AlipayService extends PayChannelService {
     FinanceAlipaySettings updateAlipaySettings(FinanceAlipaySettings settings);
 
     FinanceAlipaySettings getAlipaySettings(String appId);
+
+    FinanceAlipaySettings getAlipaySettingsByAppId(String alipayAppId);
 }

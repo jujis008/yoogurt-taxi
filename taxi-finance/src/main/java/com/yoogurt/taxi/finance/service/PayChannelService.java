@@ -12,6 +12,7 @@ public interface PayChannelService {
 
     /**
      * 执行支付任务（异步）
+     *
      * @param payTask 支付任务信息
      * @return
      */
@@ -33,9 +34,19 @@ public interface PayChannelService {
     /**
      * 解析回调请求的参数
      *
-     * @param request 回调请求对象
-     * @param attributeMap
+     * @param request      回调请求对象
+     * @param attributeMap 参数与实体类属性的映射
      * @return 参数键值对
      */
     Map<String, Object> parameterResolve(HttpServletRequest request, Map<String, Object> attributeMap);
+
+    /**
+     * 签名验证
+     *
+     * @param request   请求体，需要从中获取参数
+     * @param signType  签名类型
+     * @param charset   编码方式
+     * @return 是否通过
+     */
+    boolean signVerify(HttpServletRequest request, String signType, String charset);
 }

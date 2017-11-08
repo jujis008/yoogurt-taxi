@@ -22,10 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -62,6 +59,14 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
     }
 
     @Override
+    public FinanceAlipaySettings getAlipaySettingsByAppId(String alipayAppId) {
+        if (StringUtils.isBlank(alipayAppId)) return null;
+        FinanceAlipaySettings settings = new FinanceAlipaySettings();
+        settings.setAlipayAppId(alipayAppId);
+        return alipaySettingsDao.selectOne(settings);
+    }
+
+    @Override
     public CompletableFuture<ResponseObj> doTask(final PayTask payTask) {
         if (payTask == null) return null;
         final PayForm payParams = payTask.getPayParams();
@@ -87,7 +92,12 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
                 alipay.setOrderNo(payParams.getOrderNo());
                 alipay.setTotalAmount(new Money(payParams.getAmount()).getAmount());
                 alipay.setNotifyUrl(getNotifyUrl());
-                alipay.setPassbackParams(mapper.writeValueAsString(payParams.getMetadata()));
+                Map<String, Object> metadata = payParams.getMetadata();
+                if (metadata == null) {
+                    metadata = new HashMap<>();
+                }
+                metadata.put("payId", payment.getPayId());
+                alipay.setPassbackParams(mapper.writeValueAsString(metadata));
                 //biz_content 转换成 JSON格式，null字段去掉
                 alipay.setBizContent(mapper.writeValueAsString(alipay));
                 //将支付参数按ASCII升序排列
@@ -158,6 +168,38 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
             }
         }
         return parameterMap;
+    }
+
+    /**
+     * 签名验证
+     *
+     * @param request   请求体，需要从中获取参数
+     * @param signType  签名类型
+     * @param charset   编码方式
+     * @return 是否通过
+     */
+    @Override
+    public boolean signVerify(HttpServletRequest request, String signType, String charset) {
+        Map<String, Object> params = parameterResolve(request, null);
+        String sign = params.remove("sign").toString();
+        log.info("支付宝回传签名：" + sign);
+        params.remove("sign_type");
+        StringBuilder content = new StringBuilder();
+        List<String> keys = new ArrayList<>(params.keySet());
+        Collections.sort(keys);
+        for (int i = 0; i < keys.size(); i++) {
+            String key = keys.get(i);
+            String value = (String) params.get(key);
+            content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
+        }
+        FinanceAlipaySettings settings = getAlipaySettings(params.get("app_id").toString());
+        if (settings == null) {
+            log.error("找不到应用配置");
+            return false;
+        }
+        boolean verify = RSA.verify(content.toString(), sign, RSA.RSA2_ALGORITHMS, settings.getPublicKey(), "UTF-8");
+        log.info("验签结果：" + verify);
+        return verify;
     }
 
     @Override

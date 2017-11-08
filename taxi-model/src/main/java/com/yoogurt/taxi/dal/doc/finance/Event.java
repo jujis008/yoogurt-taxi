@@ -3,12 +3,14 @@ package com.yoogurt.taxi.dal.doc.finance;
 import com.yoogurt.taxi.dal.bo.Notify;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 
 @Setter
 @Getter
+@ToString
 public class Event<T extends Notify> implements Serializable {
 
 	@Id

@@ -19,6 +19,10 @@ import java.security.spec.X509EncodedKeySpec;
 @Slf4j
 public class RSA {
 
+    private static String DEFAULT_CHARSET = "UTF-8";
+
+    private String charset = DEFAULT_CHARSET;
+
     public static final String RSA_ALGORITHMS = "SHA1withRSA";
 
     public static final String RSA2_ALGORITHMS = "SHA256withRSA";
@@ -132,5 +136,17 @@ public class RSA {
         keyBytes = Base64.decodeBase64(key);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
         return keyFactory.generatePrivate(keySpec);
+    }
+
+    public static String getDefaultCharset() {
+        return DEFAULT_CHARSET;
+    }
+
+    public String getCharset() {
+        return charset;
+    }
+
+    public void setCharset(String charset) {
+        this.charset = charset;
     }
 }

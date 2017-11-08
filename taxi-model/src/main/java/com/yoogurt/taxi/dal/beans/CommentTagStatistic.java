@@ -27,6 +27,16 @@ public class CommentTagStatistic extends SuperModel {
     @Column(name = "tag_name")
     private String tagName;
 
+    /**
+     * 评价标签含义是否积极正面
+     */
+    private Boolean positive;
+
+    /**
+     * 标签类型：10-通用，20-代理司机端，30-正式司机端
+     */
+    private Integer type;
+
     private Integer counter;
 
     public CommentTagStatistic(Long userId) {

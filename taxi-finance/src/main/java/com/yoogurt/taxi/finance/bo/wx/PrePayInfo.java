@@ -56,6 +56,9 @@ public final class PrePayInfo implements Serializable {
 	/** 商户支付密钥，设置路径：微信商户平台(pay.weixin.qq.com)-->账户设置-->API安全-->密钥设置 */
 	private String key;
 
+	/** 附加数据 */
+	private String attach;
+
 	/** 签名类型，默认为MD5，支持HMAC-SHA256和MD5 */
 	private String signType;
 

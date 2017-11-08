@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.finance.controller.mobile;
 
+import com.yoogurt.taxi.common.utils.RSA;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.bo.AlipayNotify;
 import com.yoogurt.taxi.dal.bo.Notify;
@@ -7,6 +8,7 @@ import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.finance.service.NotifyService;
 import com.yoogurt.taxi.finance.service.PayChannelService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,7 @@ import java.util.Map;
  * 如果商户反馈给支付宝的字符不是success这7个字符，支付宝服务器会不断重发通知，直到超过24小时22分钟。
  * 一般情况下，25小时以内完成8次通知（通知的间隔频率一般是：4m,10m,10m,1h,2h,6h,15h）。
  */
+@Slf4j
 @RestController
 @RequestMapping("/webhooks/finance")
 public class AlipayNotifyController {
@@ -44,14 +47,21 @@ public class AlipayNotifyController {
     public void alipayNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
+        //回调验签
+        if (!alipayService.signVerify(request, RSA.RSA2_ALGORITHMS, RSA.getDefaultCharset())) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.write("非法的回调请求");
+            return;
+        }
         //参数解析&映射
         Map<String, Object> parameterMap = alipayService.parameterResolve(request, new AlipayNotify().attributeMap());
         //event对象解析
-        Event<AlipayNotify> event = (Event<AlipayNotify>) alipayNotifyService.eventParse(parameterMap);
+        Event<? extends Notify> event = alipayNotifyService.eventParse(parameterMap);
         if (event != null) {
-
+            log.info("[AlipayNotifyController]接收到支付宝回调：\n" + event.toString());
             EventTask eventTask = alipayNotifyService.submit(event);
             if (eventTask != null) {//回调成功
+                log.info("[AlipayNotifyController]支付宝回调任务提交成功：\n" + eventTask.toString());
                 response.setStatus(HttpServletResponse.SC_OK);
                 out.write("success");
                 return;
