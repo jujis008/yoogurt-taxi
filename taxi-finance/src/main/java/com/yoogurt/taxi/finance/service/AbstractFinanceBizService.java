@@ -12,12 +12,12 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
     /**
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
      *
-     * @param params       需要排序并参与字符拼接的参数组
+     * @param params       参与字符拼接的参数组
      * @param parameterMap 字段对应的请求参数，传入null，或者字段名对应的value为null，则以字段名为准
      * @param skipAttrs    从params中跳过的属性
      * @return 拼接后字符串
      */
-    protected String parameterAssemble(SortedMap<String, Object> params, Map<String, Object> parameterMap, String... skipAttrs) {
+    protected String parameterAssemble(Map<String, Object> params, Map<String, Object> parameterMap, String... skipAttrs) {
 
         List<String> skipList = new ArrayList<>();
         if (skipAttrs != null && skipAttrs.length > 0) {
@@ -25,7 +25,7 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
         }
         int i = 0;
         StringBuilder str = new StringBuilder();
-        Set<Map.Entry<String, Object>> entrySet = params.entrySet();//所有参与传参的参数按照accsii排序（升序）
+        Set<Map.Entry<String, Object>> entrySet = params.entrySet();
         for (Map.Entry<String, Object> entry : entrySet) {
             String key = entry.getKey();
             Object value = entry.getValue();
