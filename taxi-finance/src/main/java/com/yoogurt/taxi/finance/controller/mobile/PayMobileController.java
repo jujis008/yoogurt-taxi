@@ -52,6 +52,7 @@ public class PayMobileController extends BaseController {
             extras = new HashMap<>();
         }
         extras.put("trade_type", "APP"); //APP支付
+        payForm.setExtras(extras);
         PayTask task = payService.submit(payForm);
         if (task != null) {
 
