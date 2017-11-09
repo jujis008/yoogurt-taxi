@@ -290,7 +290,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
             log.error("获取微信回调参数发生异常, {}", e);
         } finally {
             try {
-                if (stream != null) stream.close();
+//                if (stream != null) stream.close();
                 if (br != null) br.close();
             } catch (IOException e) {
                 log.error("关闭流发生异常, {}", e);
