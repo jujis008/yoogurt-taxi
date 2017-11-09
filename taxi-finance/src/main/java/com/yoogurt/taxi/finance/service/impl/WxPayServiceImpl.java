@@ -1,10 +1,7 @@
 package com.yoogurt.taxi.finance.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.utils.BeanRefUtils;
-import com.yoogurt.taxi.common.utils.CommonUtils;
 import com.yoogurt.taxi.common.utils.XmlUtil;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceWxSettings;
@@ -97,13 +94,12 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 if (pay == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "微信预下单失败");
                 final Document document = BeanRefUtils.toXml(pay, "xml", pay.parameterMap(), "key");
                 //控制台输出请求参数
-                CommonUtils.xmlOutput(document);
+                log.info(document.asXML());
                 final ResponseEntity<String> prepayResult = restTemplate.postForEntity(URL_UNIFIED_ORDER, document.asXML(), String.class);
+                //控制台输出请求结果
                 log.info("微信预下单请求响应：\n" + prepayResult.getBody());
                 //请求正常
                 if (prepayResult.getStatusCode().equals(HttpStatus.OK)) {
-                    //控制台输出请求结果
-                    CommonUtils.xmlOutput(DocumentHelper.parseText(prepayResult.getBody()));
                     //转换成JSON格式
                     XMLSerializer serializer = new XMLSerializer();
                     final JSONObject jsonObject = (JSONObject) serializer.read(prepayResult.getBody().replaceAll("^<\\?.*", "").replaceAll("\\r|\\t|\\n|\\s", ""));
