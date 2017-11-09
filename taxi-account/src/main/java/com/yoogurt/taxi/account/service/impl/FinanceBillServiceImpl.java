@@ -6,6 +6,7 @@ import com.yoogurt.taxi.account.service.FinanceBillService;
 import com.yoogurt.taxi.account.service.FinanceRecordService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
+import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.common.helper.excel.BankReceiptOfMerchantsModel;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
@@ -148,8 +149,11 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         financeRecordService.save(financeRecord);
         Map<String, Object> map = new HashMap<>();
         map.put("billNo",billNo);
-        map.put("subject","押金充值");
-        map.put("body","替你开押金充值");
+        map.put("subject","替你开-押金充值");
+        map.put("body","["+financeBill.getBillNo()+"]押金充值￥" + money.getAmount().doubleValue());
+        map.put("metadata", new HashMap<String, Object>() {{
+            put("biz", MessageQueue.CHARGE_NOTIFY_QUEUE.getBiz());
+        }});
         return ResponseObj.success(map);
     }
 
