@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -46,8 +47,15 @@ public class WxNotifyServiceImpl extends NotifyServiceImpl {
             notify.setPaidTimestamp(timestamp);
             //回传参数
             if (parameterMap.get("attach") != null) {
-                ObjectMapper mapper = new ObjectMapper();
-                notify.setMetadata(mapper.readValue(parameterMap.get("attach").toString(), Map.class));
+                Map<String, Object> metadata = new HashMap<>();
+                String attach = parameterMap.get("attach").toString();
+                String[] extras = attach.split("&");
+                for (String str : extras) {
+                    String[] pairs = str.split("=");
+                    if(pairs.length != 2) continue;
+                    metadata.put(pairs[0], pairs[1]);
+                }
+                notify.setMetadata(metadata);
             }
             return event;
         } catch (Exception e) {

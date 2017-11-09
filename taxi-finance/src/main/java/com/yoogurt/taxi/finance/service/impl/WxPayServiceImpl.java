@@ -94,7 +94,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 if (settings == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "该应用暂不支持微信支付");
                 Payment payment = payService.buildPayment(payParams);
                 final PrePayInfo pay = buildPrePayInfo(settings, payTask.getPayParams(), payment);
-                if(pay == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "微信预下单失败");
+                if (pay == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "微信预下单失败");
                 final Document document = BeanRefUtils.toXml(pay, "xml", pay.parameterMap(), "key");
                 //控制台输出请求参数
                 CommonUtils.xmlOutput(document);
@@ -167,14 +167,12 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                     .timeStart(now.toString("yyyyMMddHHmmss"))
                     .timeExpire(now.plusMinutes(5).toString("yyyyMMddHHmmss"))
                     .build();
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
             Map<String, Object> metadata = payParams.getMetadata();
             if (metadata == null) {
                 metadata = new HashMap<>();
             }
             metadata.put("payId", payment.getPayId());
-            pay.setAttach(mapper.writeValueAsString(metadata));
+            pay.setAttach(parameterAssemble(metadata, null));
             SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay, "key");
             String sign = sign(parameters, pay.parameterMap(), "MD5", settings.getApiSecret(), super.getCharset(), "sign");
             pay.setSign(sign);
