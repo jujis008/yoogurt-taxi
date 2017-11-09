@@ -183,7 +183,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
         log.info("支付回调参数：" + params.toString());
         String sign = params.remove("sign").toString();
         log.info("支付宝回传签名：" + sign);
-        params.remove("sign_type");
+        signType = params.remove("sign_type").toString();
         StringBuilder content = new StringBuilder();
         List<String> keys = new ArrayList<>(params.keySet());
         Collections.sort(keys);
@@ -200,6 +200,8 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
         }
         boolean verify = RSA.verify(content.toString(), sign, RSA.RSA2_ALGORITHMS, settings.getPublicKey(), "UTF-8");
         log.info("验签结果：" + verify);
+        params.put("sign", sign);//验签后，将签名回传进去
+        params.put("signType", signType);
         return verify;
     }
 

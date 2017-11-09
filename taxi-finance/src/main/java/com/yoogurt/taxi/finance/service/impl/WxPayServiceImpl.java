@@ -234,7 +234,6 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
      */
     @Override
     public boolean signVerify(Map<String, Object> parameterMap, String signType, String charset) {
-//
         log.info("微信回调：{}", parameterMap);
         String wxSign = parameterMap.remove("sign").toString();
         StringBuilder content = new StringBuilder();
@@ -258,6 +257,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         log.info("系统签名结果：" + sign);
         boolean verify = sign.equals(wxSign);
         log.info("验签结果：" + verify);
+        parameterMap.put("sign", sign);//验签后，将签名回传进去
         return verify;
     }
 
