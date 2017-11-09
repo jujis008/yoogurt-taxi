@@ -22,6 +22,9 @@ public class RestPayController {
         payment.setPaid(true);
         payment.setPaidAmount(paymentVo.getPaidAmount());
         payment.setPaidTime(paymentVo.getPaidTime());
+        payment.setTransactionNo(paymentVo.getTransactionNo());
+        payment.setStatusCode("SUCCESS");
+        payment.setMessage("支付成功");
         if (payService.updatePayment(payment) != null) {
             return RestResult.success(payment);
         }

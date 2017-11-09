@@ -19,4 +19,7 @@ public class PaymentVo {
     @NotNull(message = "请指定支付金额")
     private Long paidAmount;
 
+    @NotNull(message = "请指定交易流水号")
+    private String transactionNo;
+
 }

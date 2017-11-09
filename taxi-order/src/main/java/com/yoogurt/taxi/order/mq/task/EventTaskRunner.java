@@ -80,6 +80,7 @@ public class EventTaskRunner {
                     .payId(payInfo.getPayId())
                     .paidAmount(paidMoney.getCent())
                     .paidTime(notify.getNotifyTimestamp())
+                    .transactionNo(notify.getTransactionNo())
                     .build());
         } catch (Exception e) {
             log.error("更新支付对象异常, {}", e);

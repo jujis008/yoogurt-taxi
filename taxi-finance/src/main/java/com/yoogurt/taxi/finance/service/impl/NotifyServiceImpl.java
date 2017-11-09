@@ -1,17 +1,17 @@
 package com.yoogurt.taxi.finance.service.impl;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.TaskInfo;
 import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
-import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.finance.mq.TaskSender;
 import com.yoogurt.taxi.finance.service.NotifyService;
 import com.yoogurt.taxi.finance.service.PayService;
-import com.yoogurt.taxi.dal.bo.TaskInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,10 +120,7 @@ public abstract class NotifyServiceImpl implements NotifyService {
             eventTask = new EventTask(taskId);
             eventTask.setEvent(event);
             eventTask.setTask(task);
-
-            Payment payment = buildPayment(metadata);
-            payment.setTransactionNo(event.getData().getTransactionNo());
-            eventTask.setPayment(payment);
+            eventTask.setPayment(buildPayment(metadata));
         }
         //重新设置任务信息缓存
         redis.put(CacheKey.NOTIFY_MAP, CacheKey.TASK_HASH_KEY + taskId, eventTask);
