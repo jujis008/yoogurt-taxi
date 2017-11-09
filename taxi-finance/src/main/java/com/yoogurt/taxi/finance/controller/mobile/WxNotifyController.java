@@ -56,8 +56,11 @@ public class WxNotifyController {
         Set<String> keySet = params.keySet();
         //参数解析&映射
         for (String key : keySet) {
-            if(attributeMap.get(key) == null) continue;
-            parameterMap.put(attributeMap.get(key).toString(), params.get(key));
+            if (attributeMap.get(key) == null) {
+                parameterMap.put(key, params.get(key));
+            } else {
+                parameterMap.put(attributeMap.get(key).toString(), params.get(key));
+            }
         }
         //event对象解析
         Event<? extends Notify> event = wxNotifyService.eventParse(parameterMap);
