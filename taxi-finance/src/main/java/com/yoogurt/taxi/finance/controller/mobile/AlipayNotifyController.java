@@ -47,8 +47,9 @@ public class AlipayNotifyController {
     public void alipayNotify(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
+        Map<String, Object> params = alipayService.parameterResolve(request, null);
         //回调验签
-        if (!alipayService.signVerify(request, RSA.RSA2_ALGORITHMS, RSA.getDefaultCharset())) {
+        if (!alipayService.signVerify(params, RSA.RSA2_ALGORITHMS, RSA.getDefaultCharset())) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.write("非法的回调请求");
             return;

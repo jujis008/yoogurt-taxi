@@ -173,14 +173,13 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
     /**
      * 签名验证
      *
-     * @param request   请求体，需要从中获取参数
-     * @param signType  签名类型
-     * @param charset   编码方式
+     * @param params   请求参数
+     * @param signType 签名类型
+     * @param charset  编码方式
      * @return 是否通过
      */
     @Override
-    public boolean signVerify(HttpServletRequest request, String signType, String charset) {
-        Map<String, Object> params = parameterResolve(request, null);
+    public boolean signVerify(Map<String, Object> params, String signType, String charset) {
         log.info("支付回调参数：" + params.toString());
         String sign = params.remove("sign").toString();
         log.info("支付宝回传签名：" + sign);

@@ -227,26 +227,26 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     /**
      * 签名验证
      *
-     * @param request  请求体，需要从中获取参数
+     * @param parameterMap  请求体，需要从中获取参数
      * @param signType 签名类型
      * @param charset  编码方式
      * @return 是否通过
      */
     @Override
-    public boolean signVerify(HttpServletRequest request, String signType, String charset) {
-        Map<String, Object> params = parameterResolve(request, null);
-        log.info("微信回调：{}", params);
-        String wxSign = params.remove("sign").toString();
+    public boolean signVerify(Map<String, Object> parameterMap, String signType, String charset) {
+//
+        log.info("微信回调：{}", parameterMap);
+        String wxSign = parameterMap.remove("sign").toString();
         StringBuilder content = new StringBuilder();
-        List<String> keys = new ArrayList<>(params.keySet());
+        List<String> keys = new ArrayList<>(parameterMap.keySet());
         Collections.sort(keys);
         for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
-            String value = (String) params.get(key);
+            String value = parameterMap.get(key).toString();
             content.append(i == 0 ? "" : "&").append(key).append("=").append(value);
         }
 
-        FinanceWxSettings settings = getWxSettingsByAppId(params.get("appid").toString());
+        FinanceWxSettings settings = getWxSettingsByAppId(parameterMap.get("appid").toString());
         if (settings == null) {
             log.error("找不到应用配置");
             return false;
@@ -290,7 +290,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
             log.error("获取微信回调参数发生异常, {}", e);
         } finally {
             try {
-//                if (stream != null) stream.close();
+                if (stream != null) stream.close();
                 if (br != null) br.close();
             } catch (IOException e) {
                 log.error("关闭流发生异常, {}", e);

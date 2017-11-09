@@ -18,7 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 对后台通知交互时，如果微信收到商户的应答不是成功或超时，微信认为通知失败，
@@ -42,17 +44,23 @@ public class WxNotifyController {
 
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
+        Map<String, Object> params = wxPayService.parameterResolve(request, null);
         //回调验签
-        if (!wxPayService.signVerify(request, "MD5", "UTF-8")) {
+        if (!wxPayService.signVerify(params, "MD5", "UTF-8")) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.write("非法的回调请求");
             return;
         }
+        Map<String, Object> attributeMap = new WxNotify().attributeMap();
+        Map<String, Object> parameterMap = new HashMap<>();
+        Set<String> keySet = params.keySet();
         //参数解析&映射
-        Map<String, Object> parameterMap = wxPayService.parameterResolve(request, new WxNotify().attributeMap());
+        for (String key : keySet) {
+            if(attributeMap.get(key) == null) continue;
+            parameterMap.put(attributeMap.get(key).toString(), params.get(key));
+        }
         //event对象解析
         Event<? extends Notify> event = wxNotifyService.eventParse(parameterMap);
-
         if (event != null) {
             log.info("[WxNotifyController]接收到微信回调：\n" + event.toString());
             EventTask eventTask = wxNotifyService.submit(event);

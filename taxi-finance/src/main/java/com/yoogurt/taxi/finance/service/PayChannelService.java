@@ -43,10 +43,10 @@ public interface PayChannelService {
     /**
      * 签名验证
      *
-     * @param request   请求体，需要从中获取参数
+     * @param parameterMap   请求体，需要从中获取参数
      * @param signType  签名类型
      * @param charset   编码方式
      * @return 是否通过
      */
-    boolean signVerify(HttpServletRequest request, String signType, String charset);
+    boolean signVerify(Map<String, Object> parameterMap, String signType, String charset);
 }
