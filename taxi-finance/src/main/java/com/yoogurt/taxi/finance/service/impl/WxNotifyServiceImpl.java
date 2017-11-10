@@ -48,14 +48,18 @@ public class WxNotifyServiceImpl extends NotifyServiceImpl {
             //回传参数
             if (parameterMap.get("attach") != null) {
                 Map<String, Object> metadata = new HashMap<>();
+                String orderNo = "";
                 String attach = parameterMap.get("attach").toString();
                 String[] extras = attach.split("&");
                 for (String str : extras) {
                     String[] pairs = str.split("=");
                     if(pairs.length != 2) continue;
                     metadata.put(pairs[0], pairs[1]);
+                    if ("orderId".equals(pairs[0])) { //解析attach数据中的订单id
+                        orderNo = pairs[1];
+                    }
                 }
-                notify.setOrderNo(metadata.get("orderId").toString());
+                notify.setOrderNo(orderNo);
                 notify.setMetadata(metadata);
             }
             return event;
