@@ -82,15 +82,23 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     }
 
     @Override
-    public int chargeSuccessOrFailure(Long billNo, BillStatus billStatus) {
+    public FinanceBill getFinanceBillByBillNo(Long billNo) {
         Example example = new Example(FinanceBill.class);
         example.createCriteria().andEqualTo("billNo",billNo)
                 .andEqualTo("billStatus",BillStatus.PENDING.getCode());
         List<FinanceBill> financeBillList = financeBillDao.selectByExample(example);
         if (CollectionUtils.isEmpty(financeBillList)) {
+            return null;
+        }
+        return financeBillList.get(0);
+    }
+
+    @Override
+    public int chargeSuccessOrFailure(Long billNo, BillStatus billStatus) {
+        FinanceBill financeBill = getFinanceBillByBillNo(billNo);
+        if (financeBill == null) {
             return 0;
         }
-        FinanceBill financeBill = financeBillList.get(0);
         if (billStatus == BillStatus.SUCCESS) {
             financeBill.setBillStatus(billStatus.getCode());
             financeBillDao.updateById(financeBill);

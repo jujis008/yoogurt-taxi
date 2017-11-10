@@ -1,14 +1,18 @@
 package com.yoogurt.taxi.account;
 
+import com.yoogurt.taxi.account.mq.task.ChargeNotifyTaskRunner;
 import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.beans.UserInfo;
+import com.yoogurt.taxi.dal.bo.WxNotify;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.enums.BillType;
+import com.yoogurt.taxi.dal.doc.finance.Event;
+import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.dal.enums.DestinationType;
+import com.yoogurt.taxi.dal.enums.PayChannel;
 import com.yoogurt.taxi.dal.enums.Payment;
 import com.yoogurt.taxi.dal.enums.TradeType;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +30,22 @@ public class FinanceTest {
     private FinanceAccountService financeAccountService;
     @Autowired
     private RestUserService restUserService;
+    @Autowired
+    private ChargeNotifyTaskRunner chargeNotifyTaskRunner;
+
+    @Test
+    public void testRun() {
+        EventTask eventTask = new EventTask();
+        eventTask.setTaskId("1232132132121");
+        Event<WxNotify> event = new Event<>();
+        WxNotify notify = new WxNotify();
+        notify.setOrderNo("17110110035969066");
+        notify.setChannel(PayChannel.WX.getName());
+        notify.setAmount(1);
+        event.setData(notify);
+        eventTask.setEvent(event);
+        chargeNotifyTaskRunner.run(eventTask);
+    }
 
     @Test
     public void test() {
