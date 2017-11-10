@@ -16,10 +16,7 @@ import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.beans.FinanceRecord;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.account.*;
-import com.yoogurt.taxi.dal.enums.BillStatus;
-import com.yoogurt.taxi.dal.enums.BillType;
-import com.yoogurt.taxi.dal.enums.Payment;
-import com.yoogurt.taxi.dal.enums.TradeType;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListAppModel;
 import com.yoogurt.taxi.dal.model.account.FinanceBillListWebModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillDetailModel;
@@ -100,15 +97,33 @@ public class FinanceBillServiceImpl implements FinanceBillService {
             return 0;
         }
         if (billStatus == BillStatus.SUCCESS) {
-            financeBill.setBillStatus(billStatus.getCode());
-            financeBillDao.updateById(financeBill);
-            FinanceRecord record = new FinanceRecord();
-            record.setStatus(billStatus.getCode());
-            record.setBillNo(billNo);
-            record.setBillId(financeBill.getId());
-            record.setRemark("充值成功");
-            financeRecordService.save(record);
+//            financeBill.setBillStatus(billStatus.getCode());
+//            financeBillDao.updateById(financeBill);
+//            FinanceRecord record = new FinanceRecord();
+//            record.setStatus(billStatus.getCode());
+//            record.setBillNo(billNo);
+//            record.setBillId(financeBill.getId());
+//            record.setRemark("充值成功");
+//            financeRecordService.save(record);
+
+            AccountUpdateCondition condition = new AccountUpdateCondition();
+            condition.setPayment(Payment.getEnumsBycode(financeBill.getPayment()));
+            condition.setDestinationType(DestinationType.getEnumsBycode(financeBill.getDestinationType()));
+            condition.setTradeType(TradeType.CHARGE);
+            condition.setUserId(financeBill.getUserId());
+            condition.setMoney(new Money(financeBill.getAmount()));
+            condition.setChangeType(null);
+            condition.setBillId(financeBill.getId());
+            condition.setDraweeAccount(financeBill.getDraweeAccount());
+            condition.setDraweeName(financeBill.getDraweeName());
+            condition.setDraweePhone(financeBill.getDraweePhone());
+            condition.setPayeeAccount(financeBill.getPayeeAccount());
+            condition.setPayeeName(financeBill.getPayeeName());
+            condition.setPayeePhone(financeBill.getPayeePhone());
+            condition.setContextId(billNo);
+            financeAccountService.updateAccount(condition);
             log.info("充值成功："+billNo);
+
         }
         if (billStatus == BillStatus.FAIL) {
             financeBillDao.deleteById(financeBill.getId());
