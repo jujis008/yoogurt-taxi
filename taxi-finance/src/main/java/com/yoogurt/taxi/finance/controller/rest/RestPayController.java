@@ -4,7 +4,7 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.dal.vo.PaymentVo;
-import com.yoogurt.taxi.finance.service.PayService;
+import com.yoogurt.taxi.pay.service.PayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

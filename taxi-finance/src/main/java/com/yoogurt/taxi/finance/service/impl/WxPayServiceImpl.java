@@ -9,11 +9,11 @@ import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.bo.wx.PrePayInfo;
 import com.yoogurt.taxi.finance.bo.wx.PrePayResult;
 import com.yoogurt.taxi.finance.dao.WxSettingsDao;
-import com.yoogurt.taxi.finance.form.PayForm;
-import com.yoogurt.taxi.finance.service.AbstractFinanceBizService;
-import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.service.WxPayService;
-import com.yoogurt.taxi.finance.task.PayTask;
+import com.yoogurt.taxi.pay.doc.PayTask;
+import com.yoogurt.taxi.pay.params.PayParams;
+import com.yoogurt.taxi.pay.service.PayService;
+import com.yoogurt.taxi.pay.service.impl.AbstractFinanceBizService;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import net.sf.json.xml.XMLSerializer;
@@ -81,7 +81,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     @Override
     public CompletableFuture<ResponseObj> doTask(final PayTask payTask) {
         if (payTask == null) return null;
-        final PayForm payParams = payTask.getPayParams();
+        final PayParams payParams = payTask.getPayParams();
         if (payParams == null) return null;
         final String appId = payParams.getAppId();
         if (StringUtils.isBlank(appId)) return null;
@@ -129,10 +129,11 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                         return ResponseObj.success(payment);
                     }
                 }
+                return ResponseObj.fail(StatusCode.BIZ_FAILED, "[" + prepayResult.getStatusCode() + ": " + prepayResult.getStatusCodeValue() + "微信预下单请求失败");
             } catch (Exception e) {
                 log.error("微信预下单请求发生异常, {}", e);
+                return ResponseObj.fail(StatusCode.SYS_ERROR, e.toString());
             }
-            return ResponseObj.fail(StatusCode.SYS_ERROR, StatusCode.SYS_ERROR.getDetail());
         });
     }
 
@@ -144,7 +145,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
      * @param payment   支付对象
      * @return 预下单对象
      */
-    private PrePayInfo buildPrePayInfo(FinanceWxSettings settings, PayForm payParams, Payment payment) {
+    private PrePayInfo buildPrePayInfo(FinanceWxSettings settings, PayParams payParams, Payment payment) {
         try {
             Map<String, Object> extras = payParams.getExtras();
             DateTime now = DateTime.now();
@@ -228,9 +229,9 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     /**
      * 签名验证
      *
-     * @param parameterMap  请求体，需要从中获取参数
-     * @param signType 签名类型
-     * @param charset  编码方式
+     * @param parameterMap 请求体，需要从中获取参数
+     * @param signType     签名类型
+     * @param charset      编码方式
      * @return 是否通过
      */
     @Override

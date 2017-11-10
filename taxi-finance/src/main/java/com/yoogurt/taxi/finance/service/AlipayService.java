@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.finance.service;
 
 import com.yoogurt.taxi.dal.beans.FinanceAlipaySettings;
+import com.yoogurt.taxi.pay.service.PayChannelService;
 
 public interface AlipayService extends PayChannelService {
 

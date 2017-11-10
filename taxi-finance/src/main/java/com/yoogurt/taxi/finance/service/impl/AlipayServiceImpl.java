@@ -11,11 +11,11 @@ import com.yoogurt.taxi.dal.beans.FinanceAlipaySettings;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.finance.bo.alipay.Alipay;
 import com.yoogurt.taxi.finance.dao.AlipaySettingsDao;
-import com.yoogurt.taxi.finance.form.PayForm;
-import com.yoogurt.taxi.finance.service.AbstractFinanceBizService;
 import com.yoogurt.taxi.finance.service.AlipayService;
-import com.yoogurt.taxi.finance.service.PayService;
-import com.yoogurt.taxi.finance.task.PayTask;
+import com.yoogurt.taxi.pay.doc.PayTask;
+import com.yoogurt.taxi.pay.params.PayParams;
+import com.yoogurt.taxi.pay.service.PayService;
+import com.yoogurt.taxi.pay.service.impl.AbstractFinanceBizService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
     @Override
     public CompletableFuture<ResponseObj> doTask(final PayTask payTask) {
         if (payTask == null) return null;
-        final PayForm payParams = payTask.getPayParams();
+        final PayParams payParams = payTask.getPayParams();
         if (payParams == null) return null;
         final String appId = payParams.getAppId();
         if (StringUtils.isBlank(appId)) return null;
@@ -122,8 +122,8 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
                 return ResponseObj.success(payment);
             } catch (Exception e) {
                 log.error("支付宝生成签名发生异常，{}", e);
+                return ResponseObj.fail(StatusCode.SYS_ERROR, e.toString());
             }
-            return ResponseObj.fail();
         });
     }
 

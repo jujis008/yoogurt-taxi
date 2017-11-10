@@ -6,6 +6,7 @@ import com.yoogurt.taxi.dal.bo.WxNotify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.dal.enums.EventType;
 import com.yoogurt.taxi.dal.enums.PayChannel;
+import com.yoogurt.taxi.pay.service.impl.NotifyServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
 import org.joda.time.DateTime;

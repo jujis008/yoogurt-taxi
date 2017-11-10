@@ -1,6 +1,5 @@
 package com.yoogurt.taxi.finance.bo.alipay;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.joda.time.DateTime;

@@ -21,6 +21,7 @@
         <module>taxi-finance</module>
         <module>taxi-system</module>
         <module>taxi-notification</module>
+        <module>taxi-pay</module>
     </modules>
 
     <parent>

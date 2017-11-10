@@ -2,10 +2,10 @@ package com.yoogurt.taxi.finance;
 
 import com.yoogurt.taxi.common.utils.XmlUtil;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
-import com.yoogurt.taxi.finance.form.PayForm;
-import com.yoogurt.taxi.finance.service.PayService;
 import com.yoogurt.taxi.finance.service.WxPayService;
-import com.yoogurt.taxi.finance.task.PayTask;
+import com.yoogurt.taxi.pay.doc.PayTask;
+import com.yoogurt.taxi.pay.params.PayParams;
+import com.yoogurt.taxi.pay.service.PayService;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -33,7 +33,7 @@ public class PayTests {
 
     @Test
     public void submitTaskTest() {
-        PayForm form = new PayForm();
+        PayParams form = new PayParams();
         form.setAppId("app_driver");
         form.setAmount(1000L);
         form.setBody("来自Junit测试");
@@ -61,7 +61,7 @@ public class PayTests {
     @Test
     public void test() {
         PayTask payTask = new PayTask();
-        PayForm payForm = new PayForm();
+        PayParams payForm = new PayParams();
         payForm.setAmount(100L);
         payForm.setBody("充值");
         payForm.setChannel("APP");
@@ -104,25 +104,4 @@ public class PayTests {
         Assert.assertNotNull(result);
     }
 
-    public static void main(String[] args) throws DocumentException {
-        String xml = "<xml>\n" +
-                "    <sign>3E4C41DF3BE8FEC6D8B1C0DAF155801B</sign>\n" +
-                "    <sign_type>MD5</sign_type>\n" +
-                "    <nonce_str>69e7d89bab5449a6bf16fa1cf60a04b1</nonce_str>\n" +
-                "    <mch_id>1491121432</mch_id>\n" +
-                "    <trade_type>APP</trade_type>\n" +
-                "    <body>充值</body>\n" +
-                "    <spbill_create_ip>127.0.0.1</spbill_create_ip>\n" +
-                "    <total_fee>100</total_fee>\n" +
-                "    <time_start>20171109151328</time_start>\n" +
-                "    <time_expire>20171109151828</time_expire>\n" +
-                "    <out_trade_no>1234567898</out_trade_no>\n" +
-                "    <attach>payId=pay_171109151328849&amp;type=order</attach>\n" +
-                "    <notify_url>http://api.yoogate.cn/webhooks/finance/i/wx</notify_url>\n" +
-                "    <appid>wx1956547190b7d0ef</appid>\n" +
-                "</xml>";
-        Document document = DocumentHelper.parseText(xml);
-        Map<String, Object> map = XmlUtil.toMap(new HashMap<>(), document.getRootElement());
-        System.out.println(map.get("attach").toString());
-    }
 }

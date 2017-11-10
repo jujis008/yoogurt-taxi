@@ -7,9 +7,9 @@ import com.yoogurt.taxi.common.utils.RegUtil;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.dal.enums.PayChannel;
-import com.yoogurt.taxi.finance.form.PayForm;
-import com.yoogurt.taxi.finance.service.PayService;
-import com.yoogurt.taxi.finance.task.PayTask;
+import com.yoogurt.taxi.pay.doc.PayTask;
+import com.yoogurt.taxi.pay.params.PayParams;
+import com.yoogurt.taxi.pay.service.PayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -39,21 +39,21 @@ public class PayMobileController extends BaseController {
      * 提交一个支付任务
      */
     @RequestMapping(value = "/task", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
-    public ResponseObj submitPayTask(@Valid @RequestBody PayForm payForm, BindingResult result) {
+    public ResponseObj submitPayTask(@Valid @RequestBody PayParams payParams, BindingResult result) {
 
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         //表单字段进一步验证
-        ResponseObj validateResult = validatePayForm(payForm);
+        ResponseObj validateResult = validatePayForm(payParams);
         if(!validateResult.isSuccess()) return validateResult;
-        Map<String, Object> extras = payForm.getExtras();
+        Map<String, Object> extras = payParams.getExtras();
         if (extras == null) {
             extras = new HashMap<>();
         }
         extras.put("trade_type", "APP"); //APP支付
-        payForm.setExtras(extras);
-        PayTask task = payService.submit(payForm);
+        payParams.setExtras(extras);
+        PayTask task = payService.submit(payParams);
         if (task != null) {
 
             return ResponseObj.success(task);
@@ -98,7 +98,7 @@ public class PayMobileController extends BaseController {
         return ResponseObj.success(payment);
     }
 
-    private ResponseObj validatePayForm(PayForm payForm) {
+    private ResponseObj validatePayForm(PayParams payForm) {
         if (!METHOD.equals(payForm.getMethod())) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "method error");
         }
