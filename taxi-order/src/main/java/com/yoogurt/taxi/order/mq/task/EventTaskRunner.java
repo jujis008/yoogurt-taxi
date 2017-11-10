@@ -57,47 +57,55 @@ public class EventTaskRunner {
         if (StringUtils.isBlank(orderNo)) return;
         Long orderId = Long.valueOf(orderNo);
         /********************  更新订单的支付状态  ********************************/
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
-        if (orderInfo == null || orderInfo.getIsPaid() || !paidMoney.getAmount().equals(orderInfo.getAmount())) return;
-        orderInfo.setIsPaid(true);
-        orderInfoService.saveOrderInfo(orderInfo, false);
-        /********************  更新订单的支付状态  The End  ***********************/
+        synchronized (orderNo.intern()) {
+            OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
+            if (orderInfo == null || orderInfo.getIsPaid() || !paidMoney.getAmount().equals(orderInfo.getAmount()))
+                //订单不存在
+                //订单已支付
+                //支付金额不吻合
+                return;
+            orderInfo.setIsPaid(true);
+            orderInfoService.saveOrderInfo(orderInfo, false);
+            log.info("更改订单支付状态成功！");
+            /********************  更新订单的支付状态  The End  ***********************/
 
-        /********************  操作订单的支付记录  ********************************/
-        Payment payInfo = eventTask.getPayment();
-        List<OrderPayment> payments = paymentService.getPayments(orderId, 10);
-        if (CollectionUtils.isEmpty(payments)) {//没有支付记录，则主动创建一条
-            OrderPayment payment = new OrderPayment(payInfo.getPayId(), orderId);
-            payment.setSubject(payInfo.getSubject());
-            payment.setBody(payInfo.getBody());
-            payment.setOrderId(orderId);
-            payment.setPayChannel(payChannel.getName());
-            payment.setTransactionNo(notify.getTransactionNo());
-            payment.setStatus(20); //支付完成
-            payment.setAmount(new Money(notify.getAmount()).getAmount());
-            payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
-            paymentService.addPayment(payment);
-        } else { //有支付记录，更新第一条记录
-            OrderPayment payment = payments.get(0);
-            payment.setTransactionNo(notify.getTransactionNo());
-            payment.setStatus(20); //支付完成
-            payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
-            paymentService.modifyPayment(payment);
-        }
-        /********************  操作订单的支付记录  The End***********************/
+            /********************  操作订单的支付记录  ********************************/
+            Payment payInfo = eventTask.getPayment();
+            List<OrderPayment> payments = paymentService.getPayments(orderId, 10);
+            if (CollectionUtils.isEmpty(payments)) {//没有支付记录，则主动创建一条
+                OrderPayment payment = new OrderPayment(payInfo.getPayId(), orderId);
+                payment.setSubject(payInfo.getSubject());
+                payment.setBody(payInfo.getBody());
+                payment.setOrderId(orderId);
+                payment.setPayChannel(payChannel.getName());
+                payment.setTransactionNo(notify.getTransactionNo());
+                payment.setStatus(20); //支付完成
+                payment.setAmount(new Money(notify.getAmount()).getAmount());
+                payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
+                paymentService.addPayment(payment);
+            } else { //有支付记录，更新第一条记录
+                OrderPayment payment = payments.get(0);
+                payment.setTransactionNo(notify.getTransactionNo());
+                payment.setStatus(20); //支付完成
+                payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
+                paymentService.modifyPayment(payment);
+            }
+            log.info("订单支付记录操作成功！");
+            /********************  操作订单的支付记录  The End***********************/
 
-        /********************  更新payment对象  *******************************/
-        try {
-            financeService.updatePayment(PaymentVo.builder()
-                    .payId(payInfo.getPayId())
-                    .paidAmount(paidMoney.getCent())
-                    .paidTime(notify.getNotifyTimestamp())
-                    .transactionNo(notify.getTransactionNo())
-                    .build());
-        } catch (Exception e) {
-            log.error("更新支付对象异常, {}", e);
+            /********************  更新payment对象  *******************************/
+            try {
+                financeService.updatePayment(PaymentVo.builder()
+                        .payId(payInfo.getPayId())
+                        .paidAmount(paidMoney.getCent())
+                        .paidTime(notify.getNotifyTimestamp())
+                        .transactionNo(notify.getTransactionNo())
+                        .build());
+            } catch (Exception e) {
+                log.error("更新支付对象异常, {}", e);
+            }
+            /********************  更新payment对象  The End***********************/
         }
-        /********************  更新payment对象  The End***********************/
     }
 
 }

@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Service("orderInfoService")
@@ -68,29 +69,46 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     @Autowired
     private RedisHelper redisHelper;
 
+    private ReentrantLock lock = new ReentrantLock(); //下单专用锁
 
     @Transactional
     @Override
     public ResponseObj placeOrder(PlaceOrderForm orderForm) {
-        ResponseObj obj = buildOrderInfo(orderForm);
-        OrderInfo orderInfo = (OrderInfo) obj.getBody();
-        if (obj.isSuccess() && orderDao.insertSelective(orderInfo) == 1) {
+        boolean success = false;
+        OrderInfo orderInfo;
+        ResponseObj obj;
+        lock.lock();
+        try {
+            obj = buildOrderInfo(orderForm);
+            if (obj.isSuccess()) {
+                orderInfo = (OrderInfo) obj.getBody();
+                if (orderDao.insertSelective(orderInfo) == 1) {
+                    //更改租单状态 --> 已接单
+                    Long rentId = orderForm.getRentId();
+                    success = rentInfoService.modifyStatus(rentId, RentStatus.RENT);
+                }
+            } else {// 下单校验不成功，直接返回
+                return obj;
+            }
+        } finally {
+            lock.unlock();
+        }
+        if (orderInfo != null && success) {
             //更改租单状态 --> 已接单
             Long rentId = orderForm.getRentId();
-            rentInfoService.modifyStatus(rentId, RentStatus.RENT);
 
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime handoverDateTime = LocalDateTime.ofInstant(orderInfo.getHandoverTime().toInstant(), ZoneId.systemDefault());
             long durationSeconds = Duration.between(now, handoverDateTime).getSeconds();
 
-            redisHelper.del(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+rentId);
+            redisHelper.del(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY + rentId);
             //设置交车前1小时提醒任务
             if (durationSeconds - 3600 > 10) {//如果接单时，距离交车时间不足一小时，就不用发通知了
-                redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + rentId,rentId,durationSeconds - 3600);
+                redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + rentId, rentId, durationSeconds - 3600);
             }
 
             //设置交车到点提醒任务
-            redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY + rentId, rentId ,durationSeconds);
+            redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY + rentId, rentId, durationSeconds);
 
             //设置交车超时，最大违约任务
             OrderHandoverRule rule = handoverRuleService.getRuleInfo();
