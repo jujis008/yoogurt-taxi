@@ -154,20 +154,21 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                     .notifyUrl(getNotifyUrl()) //通知url必须为直接可访问的url，不能携带参数
                     .mchId(settings.getMerchantId())
                     .body(payParams.getBody())
-                    .outTradeNo(payParams.getOrderNo())
+                    .outTradeNo(payment.getPayId()) //这里用payId是因为微信不接受商户传来的重复的订单号，用户发起支付，取消后又发起支付，会发生此情况
                     .totalFee(payParams.getAmount())
                     .spbillCreateIp(payParams.getClientIp())
                     .tradeType((extras != null && extras.get("trade_type") != null) ? extras.get("trade_type").toString() : "APP")
                     .key(settings.getApiSecret())
                     .signType("MD5")
                     .timeStart(now.toString("yyyyMMddHHmmss"))
-                    .timeExpire(now.plusMinutes(5).toString("yyyyMMddHHmmss"))
+                    .timeExpire(now.plusMinutes(5).toString("yyyyMMddHHmmss")) //5分钟过期
                     .build();
             Map<String, Object> metadata = payParams.getMetadata();
             if (metadata == null) {
                 metadata = new HashMap<>();
             }
             metadata.put("payId", payment.getPayId());
+            metadata.put("orderId", payParams.getOrderNo()); //真正的订单号作为附加数据传入，回调时再解析出来注入
             pay.setAttach(parameterAssemble(metadata, null));
             SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay, "key");
             String sign = sign(parameters, pay.parameterMap(), "MD5", settings.getApiSecret(), super.getCharset(), "sign");
