@@ -90,6 +90,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         return financeBillList.get(0);
     }
 
+    @Transactional
     @Override
     public int chargeSuccessOrFailure(Long billNo, BillStatus billStatus) {
         FinanceBill financeBill = getFinanceBillByBillNo(billNo);
