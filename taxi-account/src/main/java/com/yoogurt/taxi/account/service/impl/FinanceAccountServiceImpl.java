@@ -101,7 +101,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                 financeAccount = createAccount(RandomUtils.getPrimaryKey(), new Money(0), userId);
             }
             Payment payment = condition.getPayment();
-            if (condition.getChangeType() == null) {
+            if (condition.getChangeType() != null) {
                 //判断账户的有效性
                 ResponseObj responseObj = this.validateAccount(financeAccount, tradeType, money, payment);
                 if (!responseObj.isSuccess()) {
