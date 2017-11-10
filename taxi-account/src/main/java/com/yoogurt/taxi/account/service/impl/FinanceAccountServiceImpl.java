@@ -246,7 +246,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     if (financeBill == null) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "充值记录不存在");
                     }
-                    if (financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
+                    if (!financeBill.getBillStatus().equals(BillStatus.PENDING.getCode())) {
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "该充值记录已处理");
                     }
                     if (!financeBill.getAmount().equals(money.getAmount())) {
@@ -269,6 +269,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
                     financeRecord.setBillId(financeBill.getId());
                     financeRecord.setBillNo(financeBill.getBillNo());
                     financeRecord.setStatus(BillStatus.SUCCESS.getCode());
+                    financeRecord.setRemark("充值成功");
                     financeRecordService.save(financeRecord);
                     return ResponseObj.success(financeAccount);
                 case FINE_IN://补偿,余额增加

@@ -39,7 +39,7 @@ public class FinanceTest {
         eventTask.setTaskId("1232132132121");
         Event<WxNotify> event = new Event<>();
         WxNotify notify = new WxNotify();
-        notify.setOrderNo("17110110035969066");
+        notify.setOrderNo("17110110004581100");
         notify.setChannel(PayChannel.WX.getName());
         notify.setAmount(1);
         event.setData(notify);
