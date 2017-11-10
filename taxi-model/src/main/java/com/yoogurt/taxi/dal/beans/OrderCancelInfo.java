@@ -27,7 +27,7 @@ public class OrderCancelInfo extends SuperModel {
     private Long ruleId;
 
     /**
-     * 10-正式司机，20-代理司机，30-无责
+     * 10-车主，20-司机，30-无责
      */
     @Column(name = "responsible_party")
     private Integer responsibleParty;

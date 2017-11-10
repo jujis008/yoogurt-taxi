@@ -61,7 +61,7 @@ public class OrderDisobeyInfo extends SuperModel{
     private BigDecimal fineMoney;
 
     /**
-     * 10-正式司机交车超时，20-代理司机还车超时，30-司机取消(无责取消不记录违约)
+     * 10-车主交车超时，20-司机还车超时，30-司机取消(无责取消不记录违约)
      */
     private Integer type;
 

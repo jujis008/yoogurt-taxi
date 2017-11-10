@@ -66,7 +66,7 @@ public class UserWebController extends BaseController {
     }
 
     /**
-     * 代理司机导入
+     * 司机导入
      *
      * @param file excel源文件
      * @return ResponseObj
@@ -108,7 +108,7 @@ public class UserWebController extends BaseController {
     }
 
     /**
-     * 正式司机导入
+     * 车主导入
      *
      * @param file 源文件
      * @return ResponseObj

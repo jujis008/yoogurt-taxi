@@ -76,16 +76,16 @@ public abstract class AbstractOrderBizService implements OrderBizService {
                 payload.setContent(String.format(message, orderId));
                 break;
             case ORDER_HANDOVER: //已交车
-            case ORDER_HANDOVER_REMINDER: // 交车时间到，提醒正式司机
-            case ORDER_HANDOVER_REMINDER1: // 交车前1小时，提醒正式司机
+            case ORDER_HANDOVER_REMINDER: // 交车时间到，提醒车主
+            case ORDER_HANDOVER_REMINDER1: // 交车前1小时，提醒车主
             case ORDER_HANDOVER_UNFINISHED_REMINDER: // 未在规定时间完成交车
-            case ORDER_GIVE_BACK: //已还车，提醒正式司机
-            case ORDER_GIVE_BACK_REMINDER: //还车时间到，提醒代理司机
-            case ORDER_GIVE_BACK_REMINDER1: //还车前1小时，提醒代理司机
-            case ORDER_FINISH: //订单结束，提醒代理司机
+            case ORDER_GIVE_BACK: //已还车，提醒车主
+            case ORDER_GIVE_BACK_REMINDER: //还车时间到，提醒司机
+            case ORDER_GIVE_BACK_REMINDER1: //还车前1小时，提醒司机
+            case ORDER_FINISH: //订单结束，提醒司机
             case ORDER_TIMEOUT: //订单无人接单，提醒发单者
             case ORDER_CANCEL: //订单被取消
-            case TRAFFIC_VIOLATION: //正式司机录入违章记录，提醒代理司机
+            case TRAFFIC_VIOLATION: //车主录入违章记录，提醒司机
                 payload.setContent(String.format(message, orderId));
                 break;
         }
