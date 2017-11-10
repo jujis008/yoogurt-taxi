@@ -1,10 +1,10 @@
 package com.yoogurt.taxi.finance.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.bo.WxNotify;
 import com.yoogurt.taxi.dal.doc.finance.Event;
+import com.yoogurt.taxi.dal.enums.EventType;
 import com.yoogurt.taxi.dal.enums.PayChannel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.BeanUtils;
@@ -62,6 +62,7 @@ public class WxNotifyServiceImpl extends NotifyServiceImpl {
                 notify.setOrderNo(orderNo);
                 notify.setMetadata(metadata);
             }
+            event.setEventType(EventType.PAY_SUCCEEDED.getCode());
             return event;
         } catch (Exception e) {
             log.error("回调参数解析发生异常, {}", e);
