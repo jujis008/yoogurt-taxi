@@ -55,6 +55,7 @@ public class WxNotifyServiceImpl extends NotifyServiceImpl {
                     if(pairs.length != 2) continue;
                     metadata.put(pairs[0], pairs[1]);
                 }
+                notify.setOrderNo(metadata.get("orderId").toString());
                 notify.setMetadata(metadata);
             }
             return event;

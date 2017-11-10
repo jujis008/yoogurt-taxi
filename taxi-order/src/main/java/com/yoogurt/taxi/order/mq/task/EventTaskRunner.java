@@ -13,6 +13,7 @@ import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.OrderPaymentService;
 import com.yoogurt.taxi.order.service.rest.RestFinanceService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 执行回调任务
@@ -53,26 +55,36 @@ public class EventTaskRunner {
         Money paidMoney = new Money(notify.getAmount());
         String orderNo = notify.getOrderNo();
         if (StringUtils.isBlank(orderNo)) return;
+        Long orderId = Long.valueOf(orderNo);
         /********************  更新订单的支付状态  ********************************/
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(Long.valueOf(orderNo), null);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
         if (orderInfo == null || orderInfo.getIsPaid() || !paidMoney.getAmount().equals(orderInfo.getAmount())) return;
         orderInfo.setIsPaid(true);
         orderInfoService.saveOrderInfo(orderInfo, false);
         /********************  更新订单的支付状态  The End  ***********************/
 
-        /********************  插入订单的支付记录  ********************************/
+        /********************  操作订单的支付记录  ********************************/
         Payment payInfo = eventTask.getPayment();
-        OrderPayment payment = new OrderPayment(payInfo.getPayId(), Long.valueOf(orderNo));
-        payment.setSubject(payInfo.getSubject());
-        payment.setBody(payInfo.getBody());
-        payment.setOrderId(Long.valueOf(orderNo));
-        payment.setPayChannel(payChannel.getName());
-        payment.setTransactionNo(notify.getTransactionNo());
-        payment.setStatus(20); //支付完成
-        payment.setAmount(new Money(notify.getAmount()).getAmount());
-        payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
-        paymentService.addPayment(payment);
-        /********************  插入订单的支付记录  The End***********************/
+        List<OrderPayment> payments = paymentService.getPayments(orderId, 10);
+        if (CollectionUtils.isEmpty(payments)) {//没有支付记录，则主动创建一条
+            OrderPayment payment = new OrderPayment(payInfo.getPayId(), orderId);
+            payment.setSubject(payInfo.getSubject());
+            payment.setBody(payInfo.getBody());
+            payment.setOrderId(orderId);
+            payment.setPayChannel(payChannel.getName());
+            payment.setTransactionNo(notify.getTransactionNo());
+            payment.setStatus(20); //支付完成
+            payment.setAmount(new Money(notify.getAmount()).getAmount());
+            payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
+            paymentService.addPayment(payment);
+        } else { //有支付记录，更新第一条记录
+            OrderPayment payment = payments.get(0);
+            payment.setTransactionNo(notify.getTransactionNo());
+            payment.setStatus(20); //支付完成
+            payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
+            paymentService.modifyPayment(payment);
+        }
+        /********************  操作订单的支付记录  The End***********************/
 
         /********************  更新payment对象  *******************************/
         try {

@@ -154,7 +154,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                     .notifyUrl(getNotifyUrl()) //通知url必须为直接可访问的url，不能携带参数
                     .mchId(settings.getMerchantId())
                     .body(payParams.getBody())
-                    .outTradeNo(payParams.getOrderNo())
+                    .outTradeNo(payment.getPayId())
                     .totalFee(payParams.getAmount())
                     .spbillCreateIp(payParams.getClientIp())
                     .tradeType((extras != null && extras.get("trade_type") != null) ? extras.get("trade_type").toString() : "APP")
@@ -168,6 +168,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                 metadata = new HashMap<>();
             }
             metadata.put("payId", payment.getPayId());
+            metadata.put("orderId", payParams.getOrderNo());
             pay.setAttach(parameterAssemble(metadata, null));
             SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay, "key");
             String sign = sign(parameters, pay.parameterMap(), "MD5", settings.getApiSecret(), super.getCharset(), "sign");

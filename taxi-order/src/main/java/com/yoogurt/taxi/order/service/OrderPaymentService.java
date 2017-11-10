@@ -1,8 +1,6 @@
 package com.yoogurt.taxi.order.service;
 
 import com.yoogurt.taxi.dal.beans.OrderPayment;
-import com.yoogurt.taxi.order.form.PayForm;
-import com.yoogurt.taxi.order.form.WebhookForm;
 
 import java.util.List;
 
@@ -11,7 +9,7 @@ public interface OrderPaymentService {
     /**
      * 获取订单的支付记录
      */
-    List<OrderPayment> getPayments(Long orderId);
+    List<OrderPayment> getPayments(Long orderId, Integer status);
 
     OrderPayment getPayment(String payId);
 
@@ -19,4 +17,5 @@ public interface OrderPaymentService {
 
     OrderPayment modifyPayment(OrderPayment payment);
 
+    boolean deletePayment(String payId);
 }

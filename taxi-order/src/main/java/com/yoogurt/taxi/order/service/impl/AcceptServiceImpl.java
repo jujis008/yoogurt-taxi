@@ -66,7 +66,7 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
                         .inUserId(orderInfo.getOfficialUserId())
                         .money(orderInfo.getAmount())
                         .type(TradeType.INCOME.getCode()).build();
-                List<OrderPayment> payments = paymentService.getPayments(orderId);
+                List<OrderPayment> payments = paymentService.getPayments(orderId, 20);
                 if (CollectionUtils.isNotEmpty(payments)) {
                     OrderPayment payment = payments.get(0);
                     PayChannel channel = PayChannel.getChannelByName(payment.getPayChannel());
