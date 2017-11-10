@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 /**
  * Description:
@@ -81,6 +82,8 @@ public class BaseController {
     public ResponseObj exceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
         log.error("error: " + request.getRequestURI());
         log.error("捕获到异常：", e);
-        return ResponseObj.fail(StatusCode.SYS_ERROR, e.toString());
+        return ResponseObj.fail(StatusCode.SYS_ERROR, StatusCode.SYS_ERROR.getDetail(), new HashMap<String, Object>(){{
+            put("error", e.toString());
+        }});
     }
 }
