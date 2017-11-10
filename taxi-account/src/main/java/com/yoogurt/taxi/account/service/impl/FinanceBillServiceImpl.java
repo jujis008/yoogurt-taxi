@@ -97,14 +97,6 @@ public class FinanceBillServiceImpl implements FinanceBillService {
             return 0;
         }
         if (billStatus == BillStatus.SUCCESS) {
-//            financeBill.setBillStatus(billStatus.getCode());
-//            financeBillDao.updateById(financeBill);
-//            FinanceRecord record = new FinanceRecord();
-//            record.setStatus(billStatus.getCode());
-//            record.setBillNo(billNo);
-//            record.setBillId(financeBill.getId());
-//            record.setRemark("充值成功");
-//            financeRecordService.save(record);
 
             AccountUpdateCondition condition = new AccountUpdateCondition();
             condition.setPayment(Payment.getEnumsBycode(financeBill.getPayment()));
