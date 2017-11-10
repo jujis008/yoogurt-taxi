@@ -108,10 +108,12 @@ public class FinanceBillServiceImpl implements FinanceBillService {
             record.setBillId(financeBill.getId());
             record.setRemark("充值成功");
             financeRecordService.save(record);
+            log.info("充值成功："+billNo);
         }
         if (billStatus == BillStatus.FAIL) {
             financeBillDao.deleteById(financeBill.getId());
             financeRecordService.deleteByBillNo(billNo);
+            log.info("充值取消："+billNo);
         }
         return 1;
     }
