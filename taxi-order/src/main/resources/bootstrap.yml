@@ -5,9 +5,6 @@ spring:
     config:
       uri: http://peer1:9998
       fail-fast: true
-    loadbalancer:
-      retry:
-        enabled: true
 logging:
   level: debug
   path: ./log/taxi-order

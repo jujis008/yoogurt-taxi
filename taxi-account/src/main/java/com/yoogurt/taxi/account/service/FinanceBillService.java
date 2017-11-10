@@ -48,7 +48,7 @@ public interface FinanceBillService {
      */
     int updateStatus(Long id, BillStatus billStatus);
 
-    int chargeSuccess(Long billNo);
+    int chargeSuccessOrFailure(Long billNo, BillStatus billStatus);
 
     ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus, BillType billType);
 

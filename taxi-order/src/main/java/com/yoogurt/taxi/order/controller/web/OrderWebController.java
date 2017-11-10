@@ -6,6 +6,7 @@ import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.*;
 import com.yoogurt.taxi.dal.condition.order.*;
+import com.yoogurt.taxi.dal.enums.DisobeyType;
 import com.yoogurt.taxi.dal.enums.ResponsibleParty;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.CancelOrderModel;
@@ -53,7 +54,8 @@ public class OrderWebController extends BaseController{
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
         OrderAcceptInfo acceptInfo = acceptService.getAcceptInfo(orderId);
         OrderPickUpInfo pickUpInfo = pickUpService.getPickUpInfo(orderId);
-        List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null, null);
+        DisobeyType[] types = new DisobeyType[0];
+        List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null, types);
         Map<String,Object> map = new HashMap<>();
         map.put("orderInfo",orderInfo);
         if (acceptInfo != null) {

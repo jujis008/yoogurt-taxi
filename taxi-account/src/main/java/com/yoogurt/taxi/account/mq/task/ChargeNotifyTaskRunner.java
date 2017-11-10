@@ -30,6 +30,6 @@ public class ChargeNotifyTaskRunner {
         Money paidMoney = new Money(notify.getAmount());
         String orderNo = notify.getOrderNo();
         if (StringUtils.isBlank(orderNo)) return;
-        financeBillService.chargeSuccess(Long.valueOf(orderNo));
+        financeBillService.chargeSuccessOrFailure(Long.valueOf(orderNo), BillStatus.SUCCESS);
     }
 }

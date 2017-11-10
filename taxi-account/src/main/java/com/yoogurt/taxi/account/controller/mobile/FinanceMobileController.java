@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.account.controller.mobile;
 
 import com.yoogurt.taxi.account.form.ChargeDepositForm;
+import com.yoogurt.taxi.account.form.PatchForm;
 import com.yoogurt.taxi.account.form.WithdrawForm;
 import com.yoogurt.taxi.account.service.FinanceAccountService;
 import com.yoogurt.taxi.account.service.FinanceBillService;
@@ -136,6 +137,20 @@ public class FinanceMobileController extends BaseController {
     }
 
     /**
+     * 取消充值
+     * @param form 表单对象
+     * @return
+     */
+    @RequestMapping(value = "/cancelCharge", method = RequestMethod.DELETE, produces = {"application/json;charset=utf-8"})
+    public ResponseObj cancelCharge(@RequestBody PatchForm form) {
+        if (form.getBillNo() == null) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,"账单号不能为空");
+        }
+        financeBillService.chargeSuccessOrFailure(form.getBillNo(), BillStatus.FAIL);
+        return ResponseObj.success();
+    }
+
+    /**
      * 提现：payment=1表示押金提现，payment=2表示余额提现
      *
      * @param form 表单
@@ -205,7 +220,7 @@ public class FinanceMobileController extends BaseController {
     }
 
     @RequestMapping(value = "/i/withdraw/rule", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getWithrawRule() {
+    public ResponseObj getWithdrawRule() {
         Map<String,Object> map = new HashMap<>();
         map.put("weekday", Constants.withdraw_day_of_week);
         map.put("startTime",Constants.withdraw_start_time);

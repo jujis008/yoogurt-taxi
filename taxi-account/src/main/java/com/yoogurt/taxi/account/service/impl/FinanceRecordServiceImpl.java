@@ -40,6 +40,13 @@ public class FinanceRecordServiceImpl implements FinanceRecordService {
     }
 
     @Override
+    public int deleteByBillNo(Long billNo) {
+        Example example = new Example(FinanceRecord.class);
+        example.createCriteria().andEqualTo("billNo",billNo);
+        return financeRecordDao.deleteByExample(example);
+    }
+
+    @Override
     public FinanceRecord get(Long id) {
         return financeRecordDao.selectById(id);
     }

@@ -82,7 +82,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     }
 
     @Override
-    public int chargeSuccess(Long billNo) {
+    public int chargeSuccessOrFailure(Long billNo, BillStatus billStatus) {
         Example example = new Example(FinanceBill.class);
         example.createCriteria().andEqualTo("billNo",billNo)
                 .andEqualTo("billStatus",BillStatus.PENDING.getCode());
@@ -91,14 +91,20 @@ public class FinanceBillServiceImpl implements FinanceBillService {
             return 0;
         }
         FinanceBill financeBill = financeBillList.get(0);
-        financeBill.setBillStatus(BillStatus.SUCCESS.getCode());
-        financeBillDao.updateById(financeBill);
-        FinanceRecord record = new FinanceRecord();
-        record.setStatus(BillStatus.SUCCESS.getCode());
-        record.setBillNo(billNo);
-        record.setBillId(financeBill.getId());
-        record.setRemark("充值成功");
-        financeRecordService.save(record);
+        if (billStatus == BillStatus.SUCCESS) {
+            financeBill.setBillStatus(billStatus.getCode());
+            financeBillDao.updateById(financeBill);
+            FinanceRecord record = new FinanceRecord();
+            record.setStatus(billStatus.getCode());
+            record.setBillNo(billNo);
+            record.setBillId(financeBill.getId());
+            record.setRemark("充值成功");
+            financeRecordService.save(record);
+        }
+        if (billStatus == BillStatus.FAIL) {
+            financeBillDao.deleteById(financeBill.getId());
+            financeRecordService.deleteByBillNo(billNo);
+        }
         return 1;
     }
 
