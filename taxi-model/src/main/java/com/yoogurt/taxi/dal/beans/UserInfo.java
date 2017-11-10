@@ -2,6 +2,7 @@ package com.yoogurt.taxi.dal.beans;
 
 import com.yoogurt.taxi.dal.annotation.Domain;
 import com.yoogurt.taxi.dal.common.SuperModel;
+import com.yoogurt.taxi.dal.enums.UserType;
 import lombok.Getter;
 import lombok.Setter;
 

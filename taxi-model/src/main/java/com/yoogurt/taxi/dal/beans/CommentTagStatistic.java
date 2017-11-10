@@ -33,7 +33,7 @@ public class CommentTagStatistic extends SuperModel {
     private Boolean positive;
 
     /**
-     * 标签类型：10-通用，20-代理司机端，30-正式司机端
+     * 标签类型：10-通用，20-司机端，30-车主端
      */
     private Integer type;
 

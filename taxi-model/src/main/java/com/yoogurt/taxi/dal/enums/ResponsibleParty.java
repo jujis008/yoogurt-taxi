@@ -3,13 +3,13 @@ package com.yoogurt.taxi.dal.enums;
 import lombok.Getter;
 
 /**
- * 取消订单违约责任方：10-正式司机，20-代理司机，30-无责
+ * 取消订单违约责任方：10-车主，20-司机，30-无责
  */
 @Getter
 public enum ResponsibleParty {
 
-    OFFICIAL(10, 30, "正式司机"),
-    AGENT(20, 20, "代理司机"),
+    OFFICIAL(10, 30, "车主"),
+    AGENT(20, 20, "司机"),
     NONE(30, 0, "无责"),
     ;
 

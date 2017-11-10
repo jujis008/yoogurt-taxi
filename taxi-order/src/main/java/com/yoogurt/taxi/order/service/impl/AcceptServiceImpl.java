@@ -58,7 +58,7 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
         if (acceptDao.insertSelective(acceptInfo) == 1) {
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
-            //获取代理司机的支付信息
+            //获取司机的支付信息
             if (orderInfo.getIsPaid()) {
                 ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
                         .userId(orderInfo.getOfficialUserId())
@@ -94,7 +94,7 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
             statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getOfficialUserId()).orderCount(1).build());
             statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getAgentUserId()).orderCount(1).build());
 
-            //订单已结束，通知代理司机
+            //订单已结束，通知司机
             super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_FINISH, new HashMap<>());
             return (AcceptOrderModel) info(orderId, acceptForm.getUserId());
         }

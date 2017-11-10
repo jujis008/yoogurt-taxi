@@ -27,7 +27,7 @@ public class WarningOrderCondition {
     private Boolean isDeleted = Boolean.FALSE;
 
     /**
-     * 代理司机
+     * 司机
      */
     private Long agentUserId;
 }

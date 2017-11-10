@@ -104,12 +104,12 @@ public final class CacheKey {
     public static final String REFUND_MAP = "E_REFUND_MAP";
 
     /**
-     * 正式司机导入相关的缓存，以map形式存储，{phoneNumber，password}, 仅供测试使用
+     * 车主导入相关的缓存，以map形式存储，{phoneNumber，password}, 仅供测试使用
      */
     public static final String PHONE_PASSWORD_HASH_MAP_OFFICE = "P_PHONE_PASSWORD_OFFICE_MAP";
 
     /**
-     * 代理司机导入相关的缓存，以map形式存储，{phoneNumber，password}，仅供测试使用
+     * 司机导入相关的缓存，以map形式存储，{phoneNumber，password}，仅供测试使用
      */
     public static final String PHONE_PASSWORD_HASH_MAP_AGENT = "P_PHONE_PASSWORD_AGENT_MAP";
 

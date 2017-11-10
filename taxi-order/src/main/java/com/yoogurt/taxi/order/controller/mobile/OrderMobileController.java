@@ -97,7 +97,7 @@ public class OrderMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUser().getType())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有正式司机才能进行交车操作");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有车主才能进行交车操作");
         }
         HandoverOrderModel model = handoverService.doHandover(form);
         if (model != null) {
@@ -118,7 +118,7 @@ public class OrderMobileController extends BaseController {
         Map<String, Object> map = new HashMap<>();
         map.put("orderNo", orderInfo.getOrderId());
         map.put("subject", "替你开-" + CommonUtils.convertName(orderInfo.getOfficialDriverName(), "师傅"));
-        map.put("body", "【" + orderInfo.getOrderId() + "】代理司机支付租金￥" + orderInfo.getAmount().doubleValue());
+        map.put("body", "【" + orderInfo.getOrderId() + "】司机支付租金￥" + orderInfo.getAmount().doubleValue());
         map.put("amount", new Money(orderInfo.getAmount()).getCent());
         map.put("metadata", new HashMap<String, Object>() {{
             put("biz", MessageQueue.ORDER_NOTIFY_QUEUE.getBiz());
@@ -132,7 +132,7 @@ public class OrderMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         if (!UserType.USER_APP_AGENT.getCode().equals(super.getUser().getType())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有代理司机才能进行取车操作");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有司机才能进行取车操作");
         }
         PickUpOrderModel model = pickUpService.doPickUp(form);
         if (model != null) {
@@ -149,7 +149,7 @@ public class OrderMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         if (!UserType.USER_APP_AGENT.getCode().equals(super.getUser().getType())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有代理司机才能进行还车操作");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有司机才能进行还车操作");
         }
         GiveBackOrderModel model = giveBackService.doGiveBack(form);
         if (model != null) {
@@ -166,7 +166,7 @@ public class OrderMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUser().getType())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有正式司机才能进行收车操作");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有车主才能进行收车操作");
         }
         AcceptOrderModel model = acceptService.doAccept(form);
         if (model != null) {
@@ -187,7 +187,7 @@ public class OrderMobileController extends BaseController {
         Integer userType = user.getType();
         form.setUserType(userType);
         form.setResponsibleParty(ResponsibleParty.getEnumsByType(userType).getCode());
-        form.setReason(UserType.USER_APP_OFFICE.getCode().equals(userType) ? "正式司机手动取消" : "代理司机手动取消");
+        form.setReason(UserType.USER_APP_OFFICE.getCode().equals(userType) ? "车主手动取消" : "司机手动取消");
 
         CancelOrderModel model = cancelService.doCancel(form);
         if (model != null) {

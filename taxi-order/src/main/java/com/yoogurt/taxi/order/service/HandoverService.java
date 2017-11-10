@@ -8,7 +8,7 @@ import com.yoogurt.taxi.order.form.HandoverForm;
 public interface HandoverService extends OrderBizService {
 
 	/**
-	 * 正式司机确认交车
+	 * 车主确认交车
 	 */
 	HandoverOrderModel doHandover(HandoverForm handoverForm);
 

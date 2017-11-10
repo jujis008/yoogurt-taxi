@@ -22,8 +22,8 @@ public class RentPOICondition extends PeriodCondition {
 
     /**
      * 用户类型：
-     * 代理司机类型意味着只能看代理司机发布的求租信息；
-     * 正式司机类型意味着只能看正式司机发布的出租信息。
+     * 司机类型意味着只能看司机发布的求租信息；
+     * 车主类型意味着只能看车主发布的出租信息。
      */
     private Integer userType;
 

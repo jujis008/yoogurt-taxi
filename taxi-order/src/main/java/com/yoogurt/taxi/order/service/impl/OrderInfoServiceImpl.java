@@ -380,7 +380,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             log.warn("[REST]{}", driverResult.getMessage());
             return ResponseObj.fail(StatusCode.BIZ_FAILED, driverResult.getMessage());
         }
-        //租单信息不包含车辆，说明是代理司机发布的求租信息
+        //租单信息不包含车辆，说明是司机发布的求租信息
         if (rentInfo.getCarId() == null) {
             RestResult<List<CarInfo>> carResult = userService.getCarInfoByUserId(userId);
             if (!carResult.isSuccess()) {
@@ -435,7 +435,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
 
     private void buildDriverInfo(OrderInfo order, RentInfo rent, DriverInfo driver, UserInfo user) {
         if (rent.getUserType().equals(UserType.USER_APP_AGENT.getCode())) {
-            //代理司机发单，正式司机接单
+            //司机发单，车主接单
             order.setAgentUserId(rent.getUserId());
             order.setAgentDriverId(rent.getDriverId());
             order.setAgentDriverPhone(rent.getMobile());
@@ -446,7 +446,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             order.setOfficialDriverId(driver.getId());
             order.setOfficialDriverPhone(driver.getMobile());
         } else if (rent.getUserType().equals(UserType.USER_APP_OFFICE.getCode())) {
-            //正式司机发单，代理司机接单
+            //车主发单，司机接单
             order.setOfficialUserId(rent.getUserId());
             order.setOfficialDriverId(rent.getDriverId());
             order.setOfficialDriverPhone(rent.getMobile());

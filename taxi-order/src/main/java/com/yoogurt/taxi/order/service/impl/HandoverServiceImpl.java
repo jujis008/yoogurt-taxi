@@ -48,7 +48,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
     private RestAccountService restAccountService;
 
     /**
-     * 正式司机确认交车
+     * 车主确认交车
      *
      * @param handoverForm 交车信息
      * @return 交车相关信息
@@ -99,7 +99,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
         }
         if (handoverDao.insertSelective(handoverInfo) == 1) {
             if (!orderInfo.getIsPaid()) {//未支付
-                //代理司机扣款，扣款顺序：余额》》押金
+                //司机扣款，扣款顺序：余额》》押金
                 ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
                         .userId(orderInfo.getAgentUserId())
                         .outUserId(orderInfo.getAgentUserId())
@@ -119,7 +119,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
             redisHelper.del(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY + orderId);
             redisHelper.del(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + orderId);
 
-            //向代理司机发送已交车的通知
+            //向司机发送已交车的通知
             super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER, new HashMap<>());
             return (HandoverOrderModel) info(orderId, handoverForm.getUserId());
         }

@@ -4,10 +4,7 @@ import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
-import com.yoogurt.taxi.dal.beans.OrderInfo;
-import com.yoogurt.taxi.dal.beans.OrderTrafficViolationInfo;
-import com.yoogurt.taxi.dal.beans.RentInfo;
+import com.yoogurt.taxi.dal.beans.*;
 import com.yoogurt.taxi.dal.condition.order.*;
 import com.yoogurt.taxi.dal.enums.ResponsibleParty;
 import com.yoogurt.taxi.dal.enums.UserType;
@@ -15,11 +12,15 @@ import com.yoogurt.taxi.dal.model.order.CancelOrderModel;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.form.CancelForm;
 import com.yoogurt.taxi.order.service.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("web/order")
@@ -34,6 +35,10 @@ public class OrderWebController extends BaseController{
     private CancelService cancelService;
     @Autowired
     private DisobeyService disobeyService;
+    @Autowired
+    private AcceptService   acceptService;
+    @Autowired
+    private PickUpService   pickUpService;
 
     @RequestMapping(value = "list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public ResponseObj getList(OrderListCondition condition) {
@@ -46,7 +51,21 @@ public class OrderWebController extends BaseController{
     @RequestMapping(value = "info/orderId/{orderId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public ResponseObj getDetail(@PathVariable(name = "orderId") Long orderId) {
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
-        return ResponseObj.success(orderInfo);
+        OrderAcceptInfo acceptInfo = acceptService.getAcceptInfo(orderId);
+        OrderPickUpInfo pickUpInfo = pickUpService.getPickUpInfo(orderId);
+        List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null, null);
+        Map<String,Object> map = new HashMap<>();
+        map.put("orderInfo",orderInfo);
+        if (acceptInfo != null) {
+            map.put("acceptInfo",acceptInfo);
+        }
+        if (pickUpInfo != null) {
+            map.put("pickUpInfo",pickUpInfo);
+        }
+        if (CollectionUtils.isNotEmpty(disobeyList)) {
+            map.put("disobeyList",disobeyList);
+        }
+        return ResponseObj.success(map);
     }
 
     @RequestMapping(value = "cancel",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})

@@ -300,7 +300,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         DriverInfo driverInfo = driverResult.getBody();
         rentInfo.setDriverId(driverInfo.getId());
 
-        //如果是正式司机，需要注入车辆相关信息
+        //如果是车主，需要注入车辆相关信息
         if (user.getType().equals(UserType.USER_APP_OFFICE.getCode())) {
             RestResult<List<CarInfo>> carInfo = userService.getCarInfoByUserId(userId);
             if (!carInfo.isSuccess()) {
@@ -309,8 +309,8 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
             }
             List<CarInfo> carList = carInfo.getBody();
             if (CollectionUtils.isEmpty(carList)) {
-                log.info("正式司机的车辆信息未录入");
-                return ResponseObj.fail(StatusCode.BIZ_FAILED, "正式司机的车辆信息未录入");
+                log.info("车主的车辆信息未录入");
+                return ResponseObj.fail(StatusCode.BIZ_FAILED, "车主的车辆信息未录入");
             }
             buildCarInfo(rentInfo, carList.get(0));
         }

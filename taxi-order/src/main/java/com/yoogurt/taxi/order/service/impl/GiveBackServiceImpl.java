@@ -96,7 +96,7 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
             redisHelper.del(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY + orderId);
             redisHelper.del(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY + orderId);
 
-            //已还车，通知正式司机
+            //已还车，通知车主
             super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_GIVE_BACK, new HashMap<>());
             return (GiveBackOrderModel) info(orderId, giveBackForm.getUserId());
         }
