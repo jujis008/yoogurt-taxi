@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.finance.controller.mobile;
 
+import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.utils.RSA;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.bo.AlipayNotify;
@@ -29,7 +30,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/webhooks/finance")
-public class AlipayNotifyController {
+public class AlipayNotifyController extends BaseController {
 
     @Autowired
     private NotifyService alipayNotifyService;

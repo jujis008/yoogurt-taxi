@@ -2,19 +2,28 @@ package com.yoogurt.taxi.common.controller;
 
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.constant.CacheKey;
+import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.helper.ServletHelper;
 import com.yoogurt.taxi.common.helper.TokenHelper;
+import com.yoogurt.taxi.common.vo.ResponseObj;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Description:
  * 公共Controller，所有Controller继承于此
+ *
  * @Author Eric Lau
  * @Date 2017/8/28.
  */
+@Slf4j
+@ControllerAdvice
 public class BaseController {
 
     @Autowired
@@ -25,6 +34,7 @@ public class BaseController {
 
     /**
      * 从请求中获取UserID
+     *
      * @return userId
      */
     public Long getUserId() {
@@ -33,6 +43,7 @@ public class BaseController {
 
     /**
      * 从请求中获取userName
+     *
      * @return username
      */
     public String getUserName() {
@@ -41,6 +52,7 @@ public class BaseController {
 
     /**
      * 从请求中获取用户类型
+     *
      * @return 用户类型
      */
     public Integer getUserType() {
@@ -55,12 +67,20 @@ public class BaseController {
 
     /**
      * 从缓存中获取{@link SessionUser} SessionUser
+     *
      * @return SessionUser
      */
     public SessionUser getUser() {
         Long userId = getUserId();
-        if(userId == null) return null;
+        if (userId == null) return null;
         Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
-        return obj != null ? (SessionUser) obj: null;
+        return obj != null ? (SessionUser) obj : null;
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    public ResponseObj exceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
+        log.error("error: " + request.getRequestURI());
+        log.error("捕获到异常：", e);
+        return ResponseObj.fail(StatusCode.SYS_ERROR, e.toString());
     }
 }

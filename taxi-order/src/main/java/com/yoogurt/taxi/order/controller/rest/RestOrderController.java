@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.order.controller.rest;
 
+import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.CommentTagStatistic;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/rest/order")
-public class RestOrderController {
+public class RestOrderController extends BaseController {
 
     @Autowired
     private OrderInfoService orderInfoService;

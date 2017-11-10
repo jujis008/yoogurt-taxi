@@ -1,5 +1,6 @@
 package com.yoogurt.taxi.finance.controller.mobile;
 
+import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.bo.WxNotify;
@@ -31,7 +32,7 @@ import java.util.Set;
 @Slf4j
 @RestController
 @RequestMapping("/webhooks/finance")
-public class WxNotifyController {
+public class WxNotifyController extends BaseController {
 
     @Autowired
     private NotifyService wxNotifyService;

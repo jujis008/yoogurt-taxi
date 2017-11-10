@@ -2,6 +2,7 @@ package com.yoogurt.taxi.notification.controller;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.constant.Constants;
+import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/c/notification/sms")
-public class SmsController {
+public class SmsController extends BaseController {
     @Autowired
     private SmsService smsService;
     @Autowired
