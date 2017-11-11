@@ -42,7 +42,7 @@ public class AuthorityServiceTest {
     public void getAuthorityWebList() {
         AuthorityWLCondition condition = new AuthorityWLCondition();
         condition.setAuthorityGroup("");
-        condition.setAuthorityName("");
+        condition.setAuthorityName("tt");
         condition.setUri("");
         Pager<AuthorityWLModel> authorityWebList = authorityInfoService.getAuthorityWebList(condition);
         System.out.println(ResponseObj.success(authorityWebList));

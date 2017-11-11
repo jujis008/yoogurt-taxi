@@ -33,8 +33,17 @@
         </collection>
     </resultMap>
     <select id="getAuthorityWebList" resultMap="AuthorityWLModelMap"
-            parameterType="com.yoogurt.taxi.dal.condition.user.UserWLCondition">
+            parameterType="com.yoogurt.taxi.dal.condition.user.AuthorityWLCondition">
     SELECT id,uri,authority_name,authority_group,remark,gmt_modify FROM authority_info WHERE is_deleted=0
+        <if test="uri != null and uri != ''">
+            AND uri LIKE concat('%',#{uri},'%')
+        </if>
+        <if test="authorityName != null and authorityName != ''">
+            AND authority_name LIKE concat('%',#{authorityName},'%')
+        </if>
+        <if test="authorityGroup != null and authorityGroup != ''">
+            AND authority_group LIKE concat('%',#{authorityGroup})
+        </if>
     </select>
     <select id="getAllAuthorities" resultMap="GroupAuthorityLModelMap">
         SELECT id,authority_group,authority_name FROM authority_info WHERE is_deleted=0
