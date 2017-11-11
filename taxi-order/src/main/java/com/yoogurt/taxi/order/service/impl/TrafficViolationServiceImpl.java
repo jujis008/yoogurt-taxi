@@ -134,7 +134,7 @@ public class TrafficViolationServiceImpl extends AbstractOrderBizService impleme
      * @return 是否允许录入违章信息
      */
     @Override
-    public ResponseObj isAllowed(Long orderId, Long userId) {
+    public ResponseObj isAllowed(String orderId, String userId) {
         OrderAcceptInfo acceptInfo = acceptService.getAcceptInfo(orderId);
         if (acceptInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单暂未结束");
         int days = Days.daysBetween(new DateTime(), new DateTime((acceptInfo.getGmtCreate()))).getDays();
@@ -181,7 +181,7 @@ public class TrafficViolationServiceImpl extends AbstractOrderBizService impleme
     }
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
         return null;
     }
 }

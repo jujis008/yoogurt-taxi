@@ -11,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CommentListCondition {
 
-    private Long orderId;
+    private String orderId;
 
-    private Long fromUserId;
+    private String fromUserId;
 
-    private Long toUserId;
+    private String toUserId;
 }

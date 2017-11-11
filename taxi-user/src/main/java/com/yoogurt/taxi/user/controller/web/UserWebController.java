@@ -181,7 +181,7 @@ public class UserWebController extends BaseController {
 
     @RequestMapping(value = "/logout", method = RequestMethod.DELETE, produces = {"application/json;charset=utf-8"})
     public ResponseObj logout() {
-        Long userId = super.getUserId();
+        String userId = super.getUserId();
         redisHelper.del(CacheKey.SESSION_USER_KEY+userId);
         return ResponseObj.success();
     }
@@ -207,7 +207,7 @@ public class UserWebController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/driver/detail/driverId/{driverId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getOfficeDriverDetail(@PathVariable(name = "driverId") Long driverId) {
+    public ResponseObj getOfficeDriverDetail(@PathVariable(name = "driverId") String driverId) {
         Map<String, Object> map = new HashMap<>();
         DriverInfo driverInfo = driverService.getDriverInfo(driverId);
         List<CarInfo> carInfoList = carService.getCarByDriverId(driverId);
@@ -233,7 +233,7 @@ public class UserWebController extends BaseController {
     @RequestMapping(value = "/loginPassword", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj resetPassword(@RequestBody UserForm form) {
         String newPassword = RandomUtils.getRandNum(6);
-        Long userId = form.getUserId();
+        String userId = form.getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
         userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
         redisHelper.set(CacheKey.VERIFY_CODE_KEY + userInfo.getUsername(), newPassword, 5 * 60);
@@ -361,7 +361,7 @@ public class UserWebController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/userId/{userId}", method = RequestMethod.DELETE, produces = {"application/json;charset=utf-8"})
-    public ResponseObj removeUser(@PathVariable(name = "userId") Long userId) {
+    public ResponseObj removeUser(@PathVariable(name = "userId") String userId) {
         return userService.removeUser(userId);
     }
 

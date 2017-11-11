@@ -24,7 +24,7 @@ public class AcceptTests {
         AcceptForm acceptForm = new AcceptForm();
         acceptForm.setCarStatus(Boolean.FALSE);
         acceptForm.setDescription("大灯有裂缝");
-        acceptForm.setOrderId(17092615073534929L);
+        acceptForm.setOrderId("17101612021383517");
         acceptForm.setPictures(new String[]{"http://yoogurt.aliyun-hz.com/xxxx/p/test.jpg", "http://yoogurt.aliyun-hz.com/xxxx/p/test2.jpg"});
         AcceptOrderModel model = acceptService.doAccept(acceptForm);
         Assert.assertNotNull("收车失败！", model);

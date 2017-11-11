@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public abstract class OrderForm {
 
     @NotNull(message = "请指定租单")
-    private Long orderId;
+    private String orderId;
 
-    private Long userId;
+    private String userId;
 }

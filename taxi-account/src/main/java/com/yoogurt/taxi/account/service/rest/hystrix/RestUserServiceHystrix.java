@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class RestUserServiceHystrix implements RestUserService {
 
     @Override
-    public RestResult<UserInfo> getUserInfoById(Long userId) {
+    public RestResult<UserInfo> getUserInfoById(String userId) {
         return RestResult.fail(StatusCode.REST_FAIL, "获取用户资料失败");
     }
 

@@ -36,7 +36,7 @@ public class OrderDaoImpl extends BaseDao<OrderInfoMapper, OrderInfo> implements
     }
 
     @Override
-    public List<CancelModel> getCancelOrders(Long orderId, Long userId, Integer userType) {
+    public List<CancelModel> getCancelOrders(String orderId, String userId, Integer userType) {
         return orderInfoMapper.getCancelOrders(orderId, userId, userType);
     }
 

@@ -53,11 +53,11 @@ public class RandomUtils {
 
     /**
      * 生成主键ID
-     * @return 主键ID，long类型
+     * @return 主键ID，String类型
      */
-    public static long getPrimaryKey(){
+    public static String getPrimaryKey(){
         DateTime dateTime = new DateTime();
-        return Long.valueOf(dateTime.toString("yyMMddHHmmssSSS"));
+        return dateTime.toString("yyMMddHHmmssSSS")+RandomUtils.getRandNum(3);
     }
 
     public static void main(String[] args){

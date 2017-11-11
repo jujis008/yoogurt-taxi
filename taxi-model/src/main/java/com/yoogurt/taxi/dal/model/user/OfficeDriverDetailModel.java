@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class OfficeDriverDetailModel extends AgentDriverDetailModel{
-    private Long id;
+    private String id;
     private String plateNumber;
     private String carPicture;
     private String vehicleType;

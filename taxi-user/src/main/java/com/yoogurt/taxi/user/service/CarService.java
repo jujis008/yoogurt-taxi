@@ -8,7 +8,7 @@ import java.util.List;
 public interface CarService {
     ResponseObj saveCarInfo(CarInfo carInfo);
     CarInfo getCarInfo(Long carId);
-    List<CarInfo> getCarByUserId(Long userId);
-    List<CarInfo> getCarByDriverId(Long driverId);
+    List<CarInfo> getCarByUserId(String userId);
+    List<CarInfo> getCarByDriverId(String driverId);
     ResponseObj removeCar(Long carId);
 }

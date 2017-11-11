@@ -20,16 +20,16 @@ public class OrderInfo extends SuperModel{
      */
     @Id
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     @Column(name = "rent_id")
-    private Long rentId;
+    private String rentId;
 
     @Column(name = "agent_user_id")
-    private Long agentUserId;
+    private String agentUserId;
 
     @Column(name = "agent_driver_id")
-    private Long agentDriverId;
+    private String agentDriverId;
 
     @Column(name = "agent_driver_name")
     private String agentDriverName;
@@ -82,10 +82,10 @@ public class OrderInfo extends SuperModel{
     private Integer status;
 
     @Column(name = "official_user_id")
-    private Long officialUserId;
+    private String officialUserId;
 
     @Column(name = "official_driver_id")
-    private Long officialDriverId;
+    private String officialDriverId;
 
     @Column(name = "official_driver_name")
     private String officialDriverName;
@@ -115,7 +115,7 @@ public class OrderInfo extends SuperModel{
     public OrderInfo() {
     }
 
-    public OrderInfo(Long orderId) {
+    public OrderInfo(String orderId) {
         this.orderId = orderId;
         this.status = OrderStatus.HAND_OVER.getCode();
         this.isPaid = false;

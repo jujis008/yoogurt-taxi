@@ -21,7 +21,7 @@ public class SessionUser implements Serializable{
     /**
      * 用户id
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 用户登录名
@@ -57,12 +57,12 @@ public class SessionUser implements Serializable{
         this.loginTime = new Date();
     }
 
-    public SessionUser(Long userId) {
+    public SessionUser(String userId) {
         this();
         this.userId = userId;
     }
 
-    public SessionUser(Long userId, String username) {
+    public SessionUser(String userId, String username) {
         this(userId);
         this.username = username;
     }

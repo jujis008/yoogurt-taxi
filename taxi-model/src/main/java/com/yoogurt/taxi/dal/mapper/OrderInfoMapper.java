@@ -13,9 +13,9 @@ import java.util.List;
 
 public interface OrderInfoMapper extends Mapper<OrderInfo> {
 
-    Page<OrderModel> getOrderList(@Param("orderId") Long orderId, @Param("userId") Long userId, @Param("userType") Integer userType,
+    Page<OrderModel> getOrderList(@Param("orderId") String orderId, @Param("userId") String userId, @Param("userType") Integer userType,
                                   @Param("phone") String phone, @Param("driverName") String driverName, @Param("status") Integer status,
                                   @Param("startTime") Date startTime, @Param("endTime") Date endTime);
     Page<OrderModel> getWebOrderList(OrderListCondition condition);
-    List<CancelModel> getCancelOrders(@Param("orderId") Long orderId, @Param("userId") Long userId, @Param("userType") Integer userType);
+    List<CancelModel> getCancelOrders(@Param("orderId") String orderId, @Param("userId") String userId, @Param("userType") Integer userType);
 }

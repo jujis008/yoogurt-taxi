@@ -45,7 +45,7 @@ public interface OrderInfoService extends OrderBizService {
      * @param userType 用户类型
      * @return 取消订单列表
      */
-    List<CancelModel> getCancelOrders(Long orderId, Long userId, Integer userType);
+    List<CancelModel> getCancelOrders(String orderId, String userId, Integer userType);
 
     /**
      * 获取订单列表
@@ -55,7 +55,7 @@ public interface OrderInfoService extends OrderBizService {
      * @param status   用户状态
      * @return 订单列表
      */
-    List<OrderInfo> getOrderList(Long userId, Integer userType, Integer... status);
+    List<OrderInfo> getOrderList(String userId, Integer userType, Integer... status);
 
     /**
      * 获取告警订单列表
@@ -72,7 +72,7 @@ public interface OrderInfoService extends OrderBizService {
      * @param userId  用户ID，传入不为空时，表示要验证订单的所有者
      * @return 订单基本信息，返回null表示订单不存在
      */
-    OrderInfo getOrderInfo(Long orderId, Long userId);
+    OrderInfo getOrderInfo(String orderId, String userId);
 
     /**
      * 订单详情接口
@@ -81,7 +81,7 @@ public interface OrderInfoService extends OrderBizService {
      * @param userId  用户id
      * @return 订单详细信息
      */
-    Map<String, Object> getOrderDetails(Long orderId, Long userId);
+    Map<String, Object> getOrderDetails(String orderId, String userId);
 
     /**
      * 修改订单状态
@@ -90,7 +90,7 @@ public interface OrderInfoService extends OrderBizService {
      * @param status  修改后的订单状态
      * @return true-修改成功，false-修改失败
      */
-    boolean modifyStatus(Long orderId, OrderStatus status);
+    boolean modifyStatus(String orderId, OrderStatus status);
 
     /**
      * 保存订单信息
@@ -105,5 +105,5 @@ public interface OrderInfoService extends OrderBizService {
      *  将订单修改成已支付
      * @param orderId 订单id
      */
-    void modifyPayStatus(Long orderId);
+    void modifyPayStatus(String orderId);
 }

@@ -80,7 +80,7 @@ public class OrderMobileController extends BaseController {
     }
 
     @RequestMapping(value = "/info/{orderId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getOrderDetails(@PathVariable(name = "orderId") Long orderId) {
+    public ResponseObj getOrderDetails(@PathVariable(name = "orderId") String orderId) {
 
         Map<String, Object> extras = new HashMap<>();
         extras.put("timestamp", System.currentTimeMillis());
@@ -201,7 +201,7 @@ public class OrderMobileController extends BaseController {
     }
 
     @RequestMapping(value = "/cancel/info/orderId/{orderId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getCancelOrderInfo(@PathVariable(name = "orderId") Long orderId) {
+    public ResponseObj getCancelOrderInfo(@PathVariable(name = "orderId") String orderId) {
         SessionUser user = super.getUser();
         List<CancelModel> cancelList = orderInfoService.getCancelOrders(orderId, user.getUserId(), user.getType());
         if (CollectionUtils.isNotEmpty(cancelList)) {

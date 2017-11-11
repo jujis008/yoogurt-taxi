@@ -11,11 +11,11 @@ import java.util.Date;
 @Setter
 public class RentInfoModel {
 
-	private Long rentId;
+	private String rentId;
 
-	private Long userId;
+	private String userId;
 
-	private Long driverId;
+	private String driverId;
 
 	private String driverName;
 

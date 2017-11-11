@@ -11,8 +11,8 @@ import java.util.Date;
 @Getter
 @Setter
 public class AgentDriverDetailModel {
-    private Long userId;
-    private Long driverId;
+    private String userId;
+    private String driverId;
     private String name;
     private Integer userStatus;
     private String userStatusName;

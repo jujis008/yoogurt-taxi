@@ -6,5 +6,5 @@ import tk.mybatis.mapper.common.Mapper;
 
 public interface OrderCommentInfoMapper extends Mapper<OrderCommentInfo> {
 
-    Double getAvgScore(@Param("userId") Long uesrId);
+    Double getAvgScore(@Param("userId") String uesrId);
 }

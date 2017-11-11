@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public class RentCancelForm {
 
     @NotNull(message = "请指定租单")
-    private Long rentId;
+    private String rentId;
 
-    private Long userId;
+    private String userId;
 }

@@ -36,15 +36,14 @@ public class RentInfoTests {
         rentForm.setLat(30.20684012);
         rentForm.setLng(120.36450212);
         rentForm.setPrice(new BigDecimal(125));
-        rentForm.setUserId(350098098587428185L);
+        rentForm.setUserId("17101612021383517");
         ResponseObj result = rentInfoService.addRentInfo(rentForm);
         Assert.assertNotNull(result.getMessage(), result.getBody());
     }
 
     @Test
     public void getRentInfo() {
-        Long rentId = 17092516275957311L;
-        RentInfo rentInfo = rentInfoService.getRentInfo(rentId, 8888L);
+        RentInfo rentInfo = rentInfoService.getRentInfo("17101612021383517", "17101612021383517");
         Assert.assertNotNull("租单信息不存在", rentInfo);
     }
 

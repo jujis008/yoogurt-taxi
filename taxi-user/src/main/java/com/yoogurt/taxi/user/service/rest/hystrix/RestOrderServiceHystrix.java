@@ -10,7 +10,7 @@ import java.util.Map;
 @Service
 public class RestOrderServiceHystrix implements RestOrderService {
     @Override
-    public RestResult<Map<String, Object>> statistics(Long userId) {
+    public RestResult<Map<String, Object>> statistics(String userId) {
         return RestResult.fail(StatusCode.REST_FAIL, "获取订单统计信息失败");
     }
 }

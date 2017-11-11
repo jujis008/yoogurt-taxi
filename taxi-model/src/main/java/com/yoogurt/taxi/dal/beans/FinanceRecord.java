@@ -27,7 +27,7 @@ public class FinanceRecord extends SuperModel{
      * 账单号
      */
     @Column(name = "bill_no")
-    private Long billNo;
+    private String billNo;
 
     /**
      * 交易状态：10-待处理，20-处理中，30-处理成功，40-失败，50拒绝

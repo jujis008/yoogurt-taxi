@@ -18,7 +18,7 @@ public interface DisobeyService {
 	 */
 	Pager<OrderDisobeyInfo> getDisobeyList(DisobeyListCondition condition);
 
-	List<OrderDisobeyInfo> getDisobeyList(Long orderId, Long userId, DisobeyType... types);
+	List<OrderDisobeyInfo> getDisobeyList(String orderId, String userId, DisobeyType... types);
 
 	OrderDisobeyInfo getDisobeyInfo(Long id);
 

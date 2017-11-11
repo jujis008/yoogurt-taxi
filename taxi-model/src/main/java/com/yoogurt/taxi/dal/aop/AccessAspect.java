@@ -65,7 +65,7 @@ public class AccessAspect{
 
     public static void main(String[] args) throws IllegalAccessException {
         UserInfo userInfo = new UserInfo();
-        userInfo.setUserId(1232131L);
+        userInfo.setUserId("1232131");
         userInfo.setUsername("吴德友");
         Object annotionObjId = getAnnotionObjId(userInfo);
         System.out.println(JSON.toJSONString(annotionObjId));

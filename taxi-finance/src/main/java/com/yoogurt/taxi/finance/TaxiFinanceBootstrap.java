@@ -25,7 +25,7 @@ import java.util.List;
 @EnableHystrix
 @EnableTransactionManagement
 @SpringBootApplication
-@ComponentScan({"com.yoogurt.taxi"})
+@ComponentScan(basePackages = {"com.yoogurt.taxi"})
 public class TaxiFinanceBootstrap {
 
 	public static void main(String[] args) throws Exception {

@@ -28,7 +28,7 @@ public class PushDevice extends SuperModel {
      * 绑定的用户id
      */
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     /**
      * 设备类型：android-安卓，iOS-苹果

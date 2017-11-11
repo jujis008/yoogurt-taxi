@@ -12,7 +12,5 @@ public interface HandoverService extends OrderBizService {
 	 */
 	HandoverOrderModel doHandover(HandoverForm handoverForm);
 
-//	HandoverOrderModel getHandoverInfo(Long orderId);
-
-	OrderHandoverInfo getHandoverInfo(Long orderId);
+	OrderHandoverInfo getHandoverInfo(String orderId);
 }

@@ -9,7 +9,5 @@ public interface GiveBackService extends OrderBizService {
 
 	GiveBackOrderModel doGiveBack(GiveBackForm giveBackForm);
 
-//	GiveBackOrderModel getGiveBackInfo(Long orderId);
-
-	OrderGiveBackInfo getGiveBackInfo(Long orderId);
+	OrderGiveBackInfo getGiveBackInfo(String orderId);
 }

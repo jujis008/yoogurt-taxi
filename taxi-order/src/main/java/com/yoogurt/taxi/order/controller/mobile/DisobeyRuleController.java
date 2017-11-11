@@ -52,7 +52,7 @@ public class DisobeyRuleController extends BaseController {
     }
 
     @RequestMapping(value = "/disobey/rules/{orderId}/{type}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getRule(@PathVariable(name = "orderId") Long orderId, @PathVariable(name = "type") String type) {
+    public ResponseObj getRule(@PathVariable(name = "orderId") String orderId, @PathVariable(name = "type") String type) {
         Map<String, Object> extras = new HashMap<>();
         extras.put("type", type);
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, super.getUserId());

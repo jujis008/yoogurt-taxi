@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     private SmsSender   smsSender;
 
     @Override
-    public UserInfo getUserByUserId(Long id) {
+    public UserInfo getUserByUserId(String id) {
         return userDao.selectById(id);
     }
 
@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseObj modifyLoginPassword(Long userId, String oldPassword, String newPassword) {
+    public ResponseObj modifyLoginPassword(String userId, String oldPassword, String newPassword) {
         UserInfo user = userDao.selectById(userId);
         if (user == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "用户不存在");
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseObj modifyHeadPicture(Long userId, String avatar) {
+    public ResponseObj modifyHeadPicture(String userId, String avatar) {
         UserInfo user = userDao.selectById(userId);
         if (user == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "用户不存在");
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseObj resetLoginPwd(Long userId, String password) {
+    public ResponseObj resetLoginPwd(String userId, String password) {
         UserInfo user = userDao.selectById(userId);
         user.setLoginPassword(Encipher.encrypt(password));
         userDao.updateById(user);
@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseObj payPwdSetting(Long userId, String payPassword) {
+    public ResponseObj payPwdSetting(String userId, String payPassword) {
         UserInfo user = userDao.selectById(userId);
         if (Encipher.matches(payPassword, user.getLoginPassword())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交易密码不能和登录密码相同");
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseObj modifyPayPwd(Long userId, String oldPassword, String newPassword) {
+    public ResponseObj modifyPayPwd(String userId, String oldPassword, String newPassword) {
         UserInfo user = userDao.selectById(userId);
         if (!Encipher.matches(oldPassword, user.getPayPassword())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "旧密码错误");
@@ -198,7 +198,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ResponseObj modifyUserName(Long userId, String password, String phoneCode, String phoneNumber) {
+    public ResponseObj modifyUserName(String userId, String password, String phoneCode, String phoneNumber) {
         UserInfo user = userDao.selectById(userId);
         if (user == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "账号异常");
@@ -230,14 +230,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void modifyUserStatus(Long userId, UserStatus userStatus) {
+    public void modifyUserStatus(String userId, UserStatus userStatus) {
         UserInfo user = userDao.selectById(userId);
         user.setStatus(userStatus.getCode());
         userDao.updateById(user);
     }
 
     @Override
-    public ResponseObj removeUser(Long userId) {
+    public ResponseObj removeUser(String userId) {
         UserInfo user = userDao.selectById(userId);
         if (user != null) {
             user.setIsDeleted(Boolean.TRUE);
@@ -319,7 +319,7 @@ public class UserServiceImpl implements UserService {
             phoneCodeMap.put(phoneNumber,originPassword);
 
             UserInfo userInfo = new UserInfo();
-            Long userId = RandomUtils.getPrimaryKey();
+            String userId = RandomUtils.getPrimaryKey();
             userInfo.setUserId(userId);
             userInfo.setUsername(phoneNumber);
             userInfo.setName(map1.get("name").toString());
@@ -328,14 +328,10 @@ public class UserServiceImpl implements UserService {
             userInfo.setUserFrom(UserFrom.IMPORT.getCode());
             userInfo.setType(UserType.USER_APP_AGENT.getCode());
             userInfo.setIsDeleted(Boolean.FALSE);
-            userInfo.setGmtModify(new Date());
-            userInfo.setModifier(0L);
-            userInfo.setGmtCreate(new Date());
-            userInfo.setCreator(0L);
             userInfoList.add(userInfo);
 
             DriverInfo driverInfo = new DriverInfo();
-            Long driverId = RandomUtils.getPrimaryKey();
+            String driverId = RandomUtils.getPrimaryKey();
             driverInfo.setIdCard(map1.get("idCard").toString());
             driverInfo.setDrivingLicense(map1.get("drivingLicense").toString());
             driverInfo.setUserId(userId);
@@ -343,12 +339,8 @@ public class UserServiceImpl implements UserService {
             driverInfo.setMobile(map1.get("phoneNumber").toString());
             driverInfo.setGender(UserGender.SECRET.getCode());
             driverInfo.setIsDeleted(Boolean.FALSE);
-            driverInfo.setGmtModify(new Date());
             driverInfo.setServiceNumber(map1.get("serviceNumber").toString());
-            driverInfo.setModifier(0L);
             driverInfo.setId(driverId);
-            driverInfo.setGmtCreate(new Date());
-            driverInfo.setCreator(0L);
             driverInfoList.add(driverInfo);
 
             if (dbUsernameList.contains(phoneNumber)) {
@@ -389,7 +381,7 @@ public class UserServiceImpl implements UserService {
             String phoneNumber = map1.get("phoneNumber").toString();
             String originPassword = RandomUtils.getRandNum(6);
             UserInfo userInfo = new UserInfo();
-            Long userId = RandomUtils.getPrimaryKey();
+            String userId = RandomUtils.getPrimaryKey();
             userInfo.setUserId(userId);
             userInfo.setUsername(phoneNumber);
             userInfo.setName(map1.get("name").toString());
@@ -402,13 +394,9 @@ public class UserServiceImpl implements UserService {
             userInfo.setUserFrom(UserFrom.IMPORT.getCode());
             userInfo.setType(UserType.USER_APP_OFFICE.getCode());
             userInfo.setIsDeleted(Boolean.FALSE);
-            userInfo.setGmtModify(new Date());
-            userInfo.setModifier(0L);
-            userInfo.setGmtCreate(new Date());
-            userInfo.setCreator(0L);
             userInfoList.add(userInfo);
 
-            Long driverId = RandomUtils.getPrimaryKey();
+            String driverId = RandomUtils.getPrimaryKey();
             DriverInfo driverInfo = new DriverInfo();
             driverInfo.setId(driverId);
             driverInfo.setIdCard(map1.get("idCard").toString());
@@ -419,10 +407,6 @@ public class UserServiceImpl implements UserService {
             driverInfo.setServiceNumber(map1.get("serviceNumber").toString());
             driverInfo.setGender(UserGender.SECRET.getCode());
             driverInfo.setIsDeleted(Boolean.FALSE);
-            driverInfo.setGmtModify(new Date());
-            driverInfo.setModifier(0L);
-            driverInfo.setGmtCreate(new Date());
-            driverInfo.setCreator(0L);
             driverInfoList.add(driverInfo);
 
             CarInfo carInfo = new CarInfo();
@@ -434,10 +418,6 @@ public class UserServiceImpl implements UserService {
             carInfo.setCompany(map1.get("company").toString());
             carInfo.setDriverId(driverId);
             carInfo.setIsDeleted(Boolean.FALSE);
-            carInfo.setGmtModify(new Date());
-            carInfo.setModifier(0L);
-            carInfo.setGmtCreate(new Date());
-            carInfo.setCreator(0L);
             carInfoList.add(carInfo);
 
             if (dbUsernameList.contains(phoneNumber)) {

@@ -56,7 +56,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
     @Transactional
     @Override
     public HandoverOrderModel doHandover(HandoverForm handoverForm) {
-        Long orderId = handoverForm.getOrderId();
+        String orderId = handoverForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, handoverForm.getUserId());
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待交车】
@@ -127,7 +127,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
     }
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
         HandoverOrderModel model = new HandoverOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
         if (orderInfo == null) return null;
@@ -148,7 +148,7 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
     }
 
     @Override
-    public OrderHandoverInfo getHandoverInfo(Long orderId) {
+    public OrderHandoverInfo getHandoverInfo(String orderId) {
         return handoverDao.selectById(orderId);
     }
 

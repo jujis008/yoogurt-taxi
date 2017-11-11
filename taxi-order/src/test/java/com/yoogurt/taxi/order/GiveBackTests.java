@@ -27,7 +27,7 @@ public class GiveBackTests {
         form.setLat(30.231651);
         form.setLng(120.564112154);
         form.setRealGiveBackAddress("杭州湾大酒店");
-        form.setOrderId(17092615073534929L);
+        form.setOrderId("17101612021383517");
         GiveBackOrderModel model = giveBackService.doGiveBack(form);
         Assert.assertNotNull("还车失败！", model);
     }

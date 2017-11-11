@@ -38,7 +38,7 @@ public class RestUserController extends BaseController {
     private CarService carService;
 
     @RequestMapping(value = "/driver/id/{id}",method = RequestMethod.GET)
-    public RestResult<DriverInfo> driverInfo(@PathVariable(name = "id") Long id) {
+    public RestResult<DriverInfo> driverInfo(@PathVariable(name = "id") String id) {
 
         DriverInfo driverInfo = driverService.getDriverInfo(id);
         if (driverInfo == null) {
@@ -48,7 +48,7 @@ public class RestUserController extends BaseController {
     }
 
     @RequestMapping(value = "/driver/userId/{userId}",method = RequestMethod.GET)
-    public RestResult<DriverInfo> driverInfoByUserId(@PathVariable(name = "userId") Long userId) {
+    public RestResult<DriverInfo> driverInfoByUserId(@PathVariable(name = "userId") String userId) {
         DriverInfo driverInfo = driverService.getDriverByUserId(userId);
         if (driverInfo == null) {
             return RestResult.fail(StatusCode.BIZ_FAILED,"找不到司机信息");
@@ -57,7 +57,7 @@ public class RestUserController extends BaseController {
     }
 
     @RequestMapping(value = "/authorities/userId/{userId}", method = RequestMethod.GET)
-    public RestResult<List<AuthorityModel>> authorities(@PathVariable(name = "userId") Long userId) {
+    public RestResult<List<AuthorityModel>> authorities(@PathVariable(name = "userId") String userId) {
         List<AuthorityModel> authorities = Lists.newArrayList();
         UserRoleInfo userRoleInfo = userRoleService.getUserRoleInfo(userId, null);
         if (userRoleInfo != null) {
@@ -67,7 +67,7 @@ public class RestUserController extends BaseController {
     }
 
     @RequestMapping(value = "/userId/{userId}", method = RequestMethod.GET)
-    public RestResult<UserInfo> userInfo(@PathVariable(name = "userId") Long userId) {
+    public RestResult<UserInfo> userInfo(@PathVariable(name = "userId") String userId) {
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (userInfo == null) {
             return RestResult.fail(StatusCode.BIZ_FAILED,"用户信息不存在");
@@ -90,13 +90,13 @@ public class RestUserController extends BaseController {
     }
 
     @RequestMapping(value = "/car/userId/{userId}", method = RequestMethod.GET)
-    public RestResult<List<CarInfo>> carInfoByUserId(@PathVariable(name = "userId") Long userId) {
+    public RestResult<List<CarInfo>> carInfoByUserId(@PathVariable(name = "userId") String userId) {
         List<CarInfo> carList = carService.getCarByUserId(userId);
         return RestResult.success(carList);
     }
 
     @RequestMapping(value = "/car/driverId/{driverId}", method = RequestMethod.GET)
-    public RestResult<List<CarInfo>> carInfoByDriverId(@PathVariable(name = "driverId") Long driverId) {
+    public RestResult<List<CarInfo>> carInfoByDriverId(@PathVariable(name = "driverId") String driverId) {
         return RestResult.success(carService.getCarByDriverId(driverId));
     }
 }

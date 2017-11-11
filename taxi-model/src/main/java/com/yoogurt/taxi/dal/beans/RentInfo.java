@@ -17,13 +17,13 @@ import javax.persistence.*;
 public class RentInfo extends SuperModel{
     @Id
     @Column(name = "rent_id")
-    private Long rentId;
+    private String rentId;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Column(name = "driver_id")
-    private Long driverId;
+    private String driverId;
 
     @Column(name = "driver_name")
     private String driverName;
@@ -84,7 +84,7 @@ public class RentInfo extends SuperModel{
     public RentInfo() {
     }
 
-    public RentInfo(Long rentId) {
+    public RentInfo(String rentId) {
         this.rentId = rentId;
         this.status = RentStatus.WAITING.getCode();
     }

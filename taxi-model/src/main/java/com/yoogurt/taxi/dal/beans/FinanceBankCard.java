@@ -21,7 +21,7 @@ public class FinanceBankCard extends SuperModel{
     private String cardName;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     /**
      * 卡号

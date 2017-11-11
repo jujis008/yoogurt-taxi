@@ -9,7 +9,5 @@ public interface PickUpService extends OrderBizService {
 
 	PickUpOrderModel doPickUp(PickUpForm pickupForm);
 
-//	PickUpOrderModel getPickUpInfo(Long orderId);
-
-	OrderPickUpInfo getPickUpInfo(Long orderId);
+	OrderPickUpInfo getPickUpInfo(String orderId);
 }

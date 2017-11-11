@@ -30,7 +30,7 @@ public class AddressServiceTest {
         userAddress.setIsPrimary(Boolean.TRUE);
         userAddress.setLat(36.21235677458841);
         userAddress.setLng(12.548354862588);
-        userAddress.setUserId(1L);
+        userAddress.setUserId("1");
         userAddressService.saveUserAddress(userAddress);
         System.out.println(ResponseObj.success());
     }

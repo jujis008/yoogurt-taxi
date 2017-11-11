@@ -66,7 +66,7 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
     }
 
     @Override
-    public List<OrderDisobeyInfo> getDisobeyList(Long orderId, Long userId, DisobeyType... types) {
+    public List<OrderDisobeyInfo> getDisobeyList(String orderId, String userId, DisobeyType... types) {
         List<OrderDisobeyInfo> disobeyInfoList = Lists.newArrayList();
         if (orderId == null && userId == null && (types == null || types.length == 0)) return disobeyInfoList;
         Example ex = new Example(OrderDisobeyInfo.class);
@@ -98,7 +98,7 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
             UserType userType = UserType.getEnumsByCode(disobey.getUserType());
             //更新账户
             if (disobey.getFineMoney().doubleValue() > 0) {
-                ModificationVo vo = ModificationVo.builder().contextId(disobey.getId())
+                ModificationVo vo = ModificationVo.builder().contextId(disobey.getId().toString())
                         .userId(disobey.getUserId())
                         .outUserId(disobey.getUserId())
                         .inUserId(userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getOfficialUserId() : orderInfo.getAgentUserId())
@@ -145,7 +145,7 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
         } else if (userType.equals(UserType.USER_APP_AGENT)) {
             disobey.setUserId(orderInfo.getAgentUserId());
         } else {
-            disobey.setUserId(0L);
+            disobey.setUserId("0");
         }
         disobey.setRuleId(ruleId);
         disobey.setFineMoney(fineMoney);
@@ -232,7 +232,7 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
     }
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
 
         return null;
     }

@@ -17,7 +17,7 @@ public class OrderPickUpInfo extends SuperModel{
      */
     @Id
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     /**
      * 车辆状态：false-异常，true-正常

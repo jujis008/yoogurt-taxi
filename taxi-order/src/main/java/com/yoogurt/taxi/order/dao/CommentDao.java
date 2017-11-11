@@ -7,5 +7,5 @@ import org.apache.ibatis.annotations.Param;
 
 public interface CommentDao extends IDao<OrderCommentInfoMapper, OrderCommentInfo> {
 
-    Double getAvgScore(@Param("userId") Long userId);
+    Double getAvgScore(@Param("userId") String userId);
 }

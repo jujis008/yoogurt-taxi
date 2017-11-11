@@ -17,7 +17,7 @@ public class OrderAcceptInfo extends SuperModel{
      */
     @Id
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     /**
      * 0-异常，1-正常

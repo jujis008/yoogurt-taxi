@@ -21,7 +21,7 @@ public class PickUpTests {
     @Test
     public void doPickUpTest() {
         PickUpForm form = new PickUpForm();
-        form.setOrderId(17092615073534929L);
+        form.setOrderId("17101612021383517");
         form.setCarStatus(Boolean.FALSE);
         form.setDescription("胎气不足");
         form.setPictures(new String[]{"http://yoogurt.aliyun-hz.com/xxxx/zzzz/test.jpg", "http://yoogurt.aliyun-hz.com/xxxx/zzzz/test2.jpg"});

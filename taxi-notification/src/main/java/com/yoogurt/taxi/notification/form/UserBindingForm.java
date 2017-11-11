@@ -30,5 +30,5 @@ public class UserBindingForm {
     private String osVersion;
 
 
-    private Long userId;
+    private String userId;
 }

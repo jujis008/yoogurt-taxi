@@ -5,13 +5,10 @@ import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
-import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
-import com.yoogurt.taxi.dal.enums.OrderStatus;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.UserStatus;
-import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestAccountService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +41,7 @@ public class OrderStatisticsController extends BaseController {
 
         Map<String, Object> map = new HashMap<>();
 
-        Long userId = super.getUserId();
+        String userId = super.getUserId();
         List<RentInfo> rentList = rentInfoService.getRentList(userId, RentStatus.WAITING.getCode(), RentStatus.RENT.getCode());
         map.put("maxRentCount", Constants.MAX_RENT_COUNT);
         map.put("rentCount", rentList.size());

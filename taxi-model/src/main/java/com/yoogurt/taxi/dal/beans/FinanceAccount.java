@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class FinanceAccount extends SuperModel{
     @Id
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     private String name;
 
@@ -29,7 +29,7 @@ public class FinanceAccount extends SuperModel{
      * 账号
      */
     @Column(name = "account_no")
-    private Long accountNo;
+    private String accountNo;
 
     /**
      * 余额

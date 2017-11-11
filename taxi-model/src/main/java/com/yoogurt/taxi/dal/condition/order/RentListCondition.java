@@ -25,7 +25,7 @@ public class RentListCondition extends SortWithPageableCondition {
     /**
      * 指定发布人的ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 用户类型：

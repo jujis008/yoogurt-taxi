@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class OrderCommentModel {
 
-	private Long driverId;
+	private String driverId;
 
 	private Long tagId;
 

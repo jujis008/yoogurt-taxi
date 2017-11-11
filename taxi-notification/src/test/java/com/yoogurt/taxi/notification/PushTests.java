@@ -28,21 +28,20 @@ public class PushTests {
 
     @Test
     public void bindDeviceTest() {
-        Long userId = 8888L;
         UserBindingForm form = new UserBindingForm();
         form.setClientId("Ko0Pkj980Wsz3yyj9ki7098mcn932");
         form.setDeviceName("ONE MX4");
         form.setDeviceType("Android");
         form.setOsVersion("6.1.9");
-        form.setUserId(userId);
+        form.setUserId("8888");
         PushDevice device = pushService.binding(form);
         Assert.assertNotNull("绑定失败", device);
-        Assert.assertEquals("解绑失败", userId, device.getUserId());
+        Assert.assertEquals("解绑失败", "8888", device.getUserId());
     }
 
     @Test
     public void unbindDeviceTest() {
-        PushDevice device = pushService.unBinding("p0j_097oKJw5ur1o2pi09KS", 8888L);
+        PushDevice device = pushService.unBinding("p0j_097oKJw5ur1o2pi09KS", "8888");
         Assert.assertNotNull("解绑失败", device);
         Assert.assertNull("解绑失败", device.getUserId());
     }
@@ -50,12 +49,11 @@ public class PushTests {
     @Test
     public void pushTest() {
         String message = SendType.ORDER_FINISH.getMessage();
-        Long userId = 17092815473727752L;
         PushPayload payload = new PushPayload(UserType.USER_APP_OFFICE, SendType.ORDER_FINISH, Constants.OFFICIAL_APP_NAME, String.format(message, 17101609512257244L));
         payload.setExtras(new HashMap<String, Object>(){{
             put("orderId", 17101609512257244L);
         }});
-        payload.addUserId(userId);
+        payload.addUserId("8888");
         ResponseObj obj = pushService.pushMessage(payload.getUserIds(), payload.getUserType(), payload.getSendType(), payload.getMsgType(), payload.getDeviceType(), payload.getTitle(), payload.getContent(), payload.getExtras(), true);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }

@@ -12,16 +12,16 @@ import java.util.Date;
 @Getter
 @Setter
 public class AgentDriverForm {
-    @NotNull(message = "用户id不能为空")
-    private Long userId;
+    @NotBlank(message = "用户id不能为空")
+    private String userId;
     @NotBlank(message = "姓名不能为空")
     private String name;
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "(\\+\\d+)?1[34578]\\d{9}$",message = "手机号格式有误")
     private String username;
 
-    @NotNull(message = "司机id不能为空")
-    private Long driverId;
+    @NotBlank(message = "司机id不能为空")
+    private String driverId;
 //    @NotBlank(message = "手机号不能为空")
 //    @Pattern(regexp = "(\\+\\d+)?1[34578]\\d{9}$",message = "手机号格式有误")
 //    private String mobile;

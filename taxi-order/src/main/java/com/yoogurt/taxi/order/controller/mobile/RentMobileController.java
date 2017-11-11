@@ -101,7 +101,7 @@ public class RentMobileController extends BaseController {
      * @return ResponseObj
      */
     @RequestMapping(value = "/rent/info/{rentId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getRentInfo(@PathVariable(name = "rentId") Long rentId) {
+    public ResponseObj getRentInfo(@PathVariable(name = "rentId") String rentId) {
 
         RentInfo rentInfo = rentInfoService.getRentInfo(rentId, super.getUserId());
         if(rentInfo != null) {

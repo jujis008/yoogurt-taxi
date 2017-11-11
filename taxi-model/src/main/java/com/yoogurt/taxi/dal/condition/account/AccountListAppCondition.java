@@ -7,6 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccountListAppCondition extends PageableCondition {
-    private Long userId;
+    private String userId;
     private Integer billType;
 }

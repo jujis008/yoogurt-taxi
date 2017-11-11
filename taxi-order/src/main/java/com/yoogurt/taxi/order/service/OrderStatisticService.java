@@ -12,7 +12,7 @@ public interface OrderStatisticService {
 	 * @param userId 用户id
 	 * @return 订单统计信息，如果没有统计信息，会返回null。
 	 */
-	OrderStatistic getOrderStatistics(Long userId);
+	OrderStatistic getOrderStatistics(String userId);
 
 	/**
 	 * 记录订单统计信息

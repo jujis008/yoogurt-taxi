@@ -8,5 +8,5 @@ public interface FinanceBankCardService {
     int save(FinanceBankCard bankCard);
     int remove(Long id);
     FinanceBankCard get(Long id);
-    List<FinanceBankCard> getList(Long userId);
+    List<FinanceBankCard> getList(String userId);
 }

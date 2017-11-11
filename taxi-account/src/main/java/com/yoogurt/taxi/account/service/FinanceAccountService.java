@@ -14,8 +14,8 @@ import java.util.Date;
 import java.util.List;
 
 public interface FinanceAccountService {
-    FinanceAccount get(Long userId);
-    FinanceAccount createAccount(Long accountNo, Money receivableDeposit, Long userId);
+    FinanceAccount get(String userId);
+    FinanceAccount createAccount(String accountNo, Money receivableDeposit, String userId);
 
     /**
      * 更新账户，具体功能有：1.充值（提现申请），2.提现（回调，即将冻结金额扣除，账户不动）

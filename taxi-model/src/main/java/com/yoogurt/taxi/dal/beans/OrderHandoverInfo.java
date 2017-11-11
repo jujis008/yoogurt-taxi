@@ -18,7 +18,7 @@ public class OrderHandoverInfo extends SuperModel{
      */
     @Id
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     /**
      * 如果没有违约，规则id为0

@@ -49,9 +49,8 @@ public class FinanceTest {
 
     @Test
     public void test() {
-        Long userId = 17092815464198161L;
-        FinanceAccount financeAccount = financeAccountService.get(userId);
-        UserInfo userInfo = restUserService.getUserInfoById(userId).getBody();
+        FinanceAccount financeAccount = financeAccountService.get("17092815464198161");
+        UserInfo userInfo = restUserService.getUserInfoById("17092815464198161").getBody();
         /**充值*/
         AccountUpdateCondition condition = new AccountUpdateCondition();
         condition.setTradeType(TradeType.CHARGE);
@@ -63,7 +62,7 @@ public class FinanceTest {
         condition.setMoney(new Money("3000"));
         condition.setPayment(Payment.ALIPAY);
         condition.setTransactionNo("123123213213");
-        condition.setUserId(userId);
+        condition.setUserId("17092815464198161");
 //        /**提现*/
 //        condition.setTradeType(TradeType.WITHDRAW);
 //        condition.setBillId(17092815834356415L);

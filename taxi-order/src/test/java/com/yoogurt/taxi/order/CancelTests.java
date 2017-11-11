@@ -23,7 +23,7 @@ public class CancelTests {
     @Test
     public void doCancelTest() {
         CancelForm cancelForm = new CancelForm();
-        cancelForm.setOrderId(17092711405325650L);
+        cancelForm.setOrderId("17101612021383517");
         cancelForm.setReason("不要脸");
         cancelForm.setResponsibleParty(ResponsibleParty.AGENT.getCode());
         cancelForm.setFromApp(false);

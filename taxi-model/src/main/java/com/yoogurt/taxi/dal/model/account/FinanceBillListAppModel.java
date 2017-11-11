@@ -13,8 +13,8 @@ import java.util.Date;
 @Getter
 public class FinanceBillListAppModel {
     private Long id;
-    private Long billNo;
-    private Long contextId;
+    private String billNo;
+    private String contextId;
     private BigDecimal amount;
     private Integer tradeType;
     private String tradeTypeName;

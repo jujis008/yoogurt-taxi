@@ -36,7 +36,7 @@ public class ChargeNotifyTaskRunner {
         if (payChannel == null || StringUtils.isBlank(payChannel.getServiceName())) return;
         log.info(payChannel.getDetail());
         String orderNo = notify.getOrderNo();
-        FinanceBill financeBill = financeBillService.getFinanceBillByBillNo(Long.valueOf(orderNo));
+        FinanceBill financeBill = financeBillService.getFinanceBillByBillNo(orderNo);
         Money paidMoney = new Money(notify.getAmount());
         if (financeBill == null) {
             return;
@@ -45,7 +45,7 @@ public class ChargeNotifyTaskRunner {
             return;
         }
         if (StringUtils.isBlank(orderNo)) return;
-        int i = financeBillService.chargeSuccessOrFailure(Long.valueOf(orderNo), BillStatus.SUCCESS);
+        int i = financeBillService.chargeSuccessOrFailure(orderNo, BillStatus.SUCCESS);
         if (i>0) {
             /********************  更新payment对象  *******************************/
             try {

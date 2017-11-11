@@ -42,7 +42,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public DriverInfo getDriverInfo(Long driverId) {
+    public DriverInfo getDriverInfo(String driverId) {
         DriverInfo driverInfo = driverDao.selectById(driverId);
         return driverInfo;
     }
@@ -55,7 +55,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public ResponseObj removeDriver(Long driverId) {
+    public ResponseObj removeDriver(String driverId) {
         DriverInfo driverInfo = driverDao.selectById(driverId);
         if (driverInfo != null) {
             driverInfo.setIsDeleted(Boolean.TRUE);
@@ -81,7 +81,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public DriverInfo getDriverByUserId(Long userId) {
+    public DriverInfo getDriverByUserId(String userId) {
         Example example = new Example(DriverInfo.class);
         example.createCriteria().andEqualTo("userId", userId)
                 .andEqualTo("isDeleted",Boolean.FALSE);

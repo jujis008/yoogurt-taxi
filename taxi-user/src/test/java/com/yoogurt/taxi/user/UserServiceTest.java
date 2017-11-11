@@ -47,33 +47,33 @@ public class UserServiceTest {
     @Test
     @Ignore
     public void getUserByUserId() {
-        UserInfo user = userService.getUserByUserId(6666L);
+        UserInfo user = userService.getUserByUserId("666");
         System.out.println(ResponseObj.success(user).toJSON());
     }
 
     @Test
     @Ignore
     public void modifyHeadPicture() {
-        userService.modifyHeadPicture(6666L, "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1484342823,356366591&fm=27&gp=0.jpg");
+        userService.modifyHeadPicture("666", "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1484342823,356366591&fm=27&gp=0.jpg");
     }
 
     @Test
     @Ignore
     public void modifyLoginPassword() {
-        ResponseObj obj = userService.modifyLoginPassword(6666L, "e10adc3949ba59abbe56e057f20f883e", "c33367701511b4f6020ec61ded352059");
+        ResponseObj obj = userService.modifyLoginPassword("666", "e10adc3949ba59abbe56e057f20f883e", "c33367701511b4f6020ec61ded352059");
         System.out.println(obj.toJSON());
     }
 
     @Test
     public void modifyPayPwd() {
-        ResponseObj responseObj = userService.modifyPayPwd(6666L, "e10adc3949ba59abbe56e057f20f883e", "c33367701511b4f6020ec61ded352059");
+        ResponseObj responseObj = userService.modifyPayPwd("666", "e10adc3949ba59abbe56e057f20f883e", "c33367701511b4f6020ec61ded352059");
         System.out.println(responseObj.toJSON());
     }
 
     @Test
     @Ignore
     public void modifyUserName() {
-        Long userid = 6666L;
+        String userid = "666";
         String password = "c33367701511b4f6020ec61ded352059";
         String phoneCode = RandomUtils.getRandNum(6);
         String phoneNumber = "17364517746";

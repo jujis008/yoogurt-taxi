@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class MessageCondition extends PeriodWithPageableCondition {
 
-    private Long userId;
+    private String userId;
 
     private Integer type;
 }

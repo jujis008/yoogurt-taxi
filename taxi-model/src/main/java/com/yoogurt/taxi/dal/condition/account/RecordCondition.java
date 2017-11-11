@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 @Setter
 @Getter
 public class RecordCondition {
-    private Long userId;
+    private String userId;
     private BigDecimal amount;
-    private Long transactionNo;
+    private String transactionNo;
     private Integer type;
     private String remark;
 }

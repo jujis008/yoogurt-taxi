@@ -51,7 +51,7 @@ public class ShiroRealm extends AuthorizingRealm{
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
 
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        final Long userId = Long.valueOf(principals.getPrimaryPrincipal().toString());
+        final String userId = principals.getPrimaryPrincipal().toString();
         final RestResult<List<AuthorityModel>> obj = authorityService.getAuthoritiesByUserId(userId);
         if (obj.getBody() != null) {
             List<AuthorityModel> authorities = obj.getBody();
@@ -91,7 +91,7 @@ public class ShiroRealm extends AuthorizingRealm{
             //grantCode不存在，或者已失效
             if (obj == null || !obj.toString().equals(token.getGrantCode())) return null;
 
-            Long userId = token.getUserId();
+            String userId = token.getUserId();
             String from = token.getFrom();
             String username = token.getUsername();
 

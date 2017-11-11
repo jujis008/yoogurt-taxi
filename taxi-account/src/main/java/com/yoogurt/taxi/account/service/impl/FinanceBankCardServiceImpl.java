@@ -39,7 +39,7 @@ public class FinanceBankCardServiceImpl implements FinanceBankCardService{
     }
 
     @Override
-    public List<FinanceBankCard> getList(Long userId) {
+    public List<FinanceBankCard> getList(String userId) {
         Example example = new Example(FinanceBankCard.class);
         example.setOrderByClause(" is_primary desc");
         Example.Criteria criteria = example.createCriteria();

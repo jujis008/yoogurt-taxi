@@ -38,7 +38,7 @@ public class BaseController {
      *
      * @return userId
      */
-    public Long getUserId() {
+    public String getUserId() {
         return tokenHelper.getUserId(ServletHelper.getRequest());
     }
 
@@ -72,7 +72,7 @@ public class BaseController {
      * @return SessionUser
      */
     public SessionUser getUser() {
-        Long userId = getUserId();
+        String userId = getUserId();
         if (userId == null) return null;
         Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
         return obj != null ? (SessionUser) obj : null;

@@ -7,8 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DriverWLModel {
-    private Long id;
-    private Long userId;
+    private String id;
+    private String userId;
     private String username;
     private String name;
     private String idCard;
@@ -24,8 +24,4 @@ public class DriverWLModel {
         }
     }
 
-    public static void main(String[] args){
-        long ss = (long) Math.pow(2,53);
-        System.out.println(String.valueOf(ss).length());
-    }
 }

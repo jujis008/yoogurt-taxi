@@ -17,7 +17,7 @@ public class UserAuthenticationToken extends UsernamePasswordToken {
     /**
      * 用户id
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 登录成功后，获取到的授权码。
@@ -52,7 +52,7 @@ public class UserAuthenticationToken extends UsernamePasswordToken {
     public UserAuthenticationToken() {
     }
 
-    public UserAuthenticationToken(Long userId, String username) {
+    public UserAuthenticationToken(String userId, String username) {
         this.userId = userId;
         super.setUsername(username);
     }

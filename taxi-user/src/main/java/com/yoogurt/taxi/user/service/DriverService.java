@@ -6,8 +6,8 @@ import com.yoogurt.taxi.dal.condition.user.DriverWLCondition;
 
 public interface DriverService {
     ResponseObj saveDriverInfo(DriverInfo driverInfo);
-    DriverInfo getDriverInfo(Long driverId);
+    DriverInfo getDriverInfo(String driverId);
     ResponseObj getDriverWebList(DriverWLCondition condition);
-    ResponseObj removeDriver(Long driverId);
-    DriverInfo getDriverByUserId(Long userId);
+    ResponseObj removeDriver(String driverId);
+    DriverInfo getDriverByUserId(String userId);
 }

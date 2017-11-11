@@ -26,7 +26,7 @@ public class MessageTests {
     public void addMessageTest() {
         Message message = new Message();
 //        message.setMessageId(1283193L);
-        message.setToUserId(8889L);
+        message.setToUserId("8888");
         message.setTitle("这里是标题");
         message.setContent("这里是内容");
         message.setStatus(10);
@@ -38,7 +38,7 @@ public class MessageTests {
     @Test
     public void listMessageTest() {
         MessageCondition condition = new MessageCondition();
-        condition.setUserId(8888L);
+        condition.setUserId("8888");
         List<Message> messages = msgService.getMessages(condition);
         Gson gson = new Gson();
         log.info(gson.toJson(messages));

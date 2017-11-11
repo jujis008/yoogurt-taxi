@@ -49,7 +49,7 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
     @Transactional
     @Override
     public GiveBackOrderModel doGiveBack(GiveBackForm giveBackForm) {
-        Long orderId = giveBackForm.getOrderId();
+        String orderId = giveBackForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, giveBackForm.getUserId());
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待还车】
@@ -104,12 +104,12 @@ public class GiveBackServiceImpl extends AbstractOrderBizService implements Give
     }
 
     @Override
-    public OrderGiveBackInfo getGiveBackInfo(Long orderId) {
+    public OrderGiveBackInfo getGiveBackInfo(String orderId) {
         return giveBackDao.selectById(orderId);
     }
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
         GiveBackOrderModel model = new GiveBackOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
         if (orderInfo == null) return null;

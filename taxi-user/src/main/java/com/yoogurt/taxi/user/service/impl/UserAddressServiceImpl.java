@@ -18,7 +18,7 @@ public class UserAddressServiceImpl implements UserAddressService {
     private UserAddressDao userAddressDao;
 
     @Override
-    public ResponseObj getUserAddressListByUserId(Long userId, String keywords) {
+    public ResponseObj getUserAddressListByUserId(String userId, String keywords) {
         Example example = new Example(UserAddress.class);
         example.setOrderByClause("is_primary desc,gmt_modify desc");
         Example.Criteria criteria = example.createCriteria();

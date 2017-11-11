@@ -30,7 +30,7 @@ public class DriverDaoImpl extends BaseDao<DriverInfoMapper,DriverInfo> implemen
     }
 
     @Override
-    public List<DriverInfo> getDriverByUserId(Long userId) {
+    public List<DriverInfo> getDriverByUserId(String userId) {
         Example example = new Example(DriverInfo.class);
         example.createCriteria().andEqualTo("userId",userId);
         return driverInfoMapper.selectByExample(example);

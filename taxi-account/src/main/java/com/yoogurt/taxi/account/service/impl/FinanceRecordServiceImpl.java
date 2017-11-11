@@ -40,7 +40,7 @@ public class FinanceRecordServiceImpl implements FinanceRecordService {
     }
 
     @Override
-    public int deleteByBillNo(Long billNo) {
+    public int deleteByBillNo(String billNo) {
         Example example = new Example(FinanceRecord.class);
         example.createCriteria().andEqualTo("billNo",billNo);
         return financeRecordDao.deleteByExample(example);
@@ -52,7 +52,7 @@ public class FinanceRecordServiceImpl implements FinanceRecordService {
     }
 
     @Override
-    public List<FinanceRecord> getBillRecord(Long userId, Long billId, Long billNo) {
+    public List<FinanceRecord> getBillRecord(String userId, Long billId, String billNo) {
         Example example = new Example(FinanceRecord.class);
         example.setOrderByClause(" gmt_create desc");
         Example.Criteria criteria = example.createCriteria();

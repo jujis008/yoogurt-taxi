@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface RestUserService {
 
     @RequestMapping(value = "/rest/user/userId/{userId}", method = RequestMethod.GET)
-    RestResult<UserInfo> getUserInfoById(@PathVariable(name = "userId") Long userId);
+    RestResult<UserInfo> getUserInfoById(@PathVariable(name = "userId") String userId);
 
 //    @RequestMapping(value = "/rest/user/driver/id/{id}", method = RequestMethod.GET)
 //    RestResult<DriverInfo> getDriverInfoById(@PathVariable(name = "driverId") Long driverId);

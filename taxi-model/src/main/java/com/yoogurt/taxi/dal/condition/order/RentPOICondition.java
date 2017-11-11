@@ -4,6 +4,7 @@ import com.yoogurt.taxi.common.condition.PeriodCondition;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,7 @@ public class RentPOICondition extends PeriodCondition {
     /**
      * 指定发布人的ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 用户类型：
@@ -62,7 +63,7 @@ public class RentPOICondition extends PeriodCondition {
     public RentPOICondition() {
     }
 
-    public RentPOICondition(Long userId, Double maxLng, Double minLng, Double maxLat, Double minLat, Integer status, Integer distance) {
+    public RentPOICondition(String userId, Double maxLng, Double minLng, Double maxLat, Double minLat, Integer status, Integer distance) {
         this.userId = userId;
         this.maxLng = maxLng;
         this.minLng = minLng;
@@ -84,7 +85,7 @@ public class RentPOICondition extends PeriodCondition {
      */
     @Override
     public boolean validate() {
-        return super.validate() && (userId == null || userId > 0)
+        return super.validate() && (StringUtils.isBlank(userId))
                 && (minLng == null || maxLng == null || minLng <= maxLng)
                 && (minLat == null || maxLat == null || minLat <= maxLat);
     }

@@ -6,10 +6,10 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="order_id" jdbcType="BIGINT" property="orderId" />
-    <result column="input_user_id" jdbcType="BIGINT" property="inputUserId" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="driver_id" jdbcType="BIGINT" property="driverId" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="input_user_id" jdbcType="VARCHAR" property="inputUserId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="driver_id" jdbcType="VARCHAR" property="driverId" />
     <result column="driver_name" jdbcType="VARCHAR" property="driverName" />
     <result column="user_type" jdbcType="INTEGER" property="userType" />
     <result column="mobile" jdbcType="VARCHAR" property="mobile" />
@@ -23,8 +23,8 @@
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-    <result column="creator" jdbcType="BIGINT" property="creator"/>
+    <result column="creator" jdbcType="VARCHAR" property="creator"/>
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-    <result column="modifier" jdbcType="BIGINT" property="modifier"/>
+    <result column="modifier" jdbcType="VARCHAR" property="modifier"/>
   </resultMap>
 </mapper>

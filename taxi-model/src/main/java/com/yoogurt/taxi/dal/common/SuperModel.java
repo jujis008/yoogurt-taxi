@@ -40,7 +40,7 @@ public class SuperModel implements Serializable{
      */
     @Column(name = "creator")
     @JsonIgnore
-    private Long creator;
+    private String creator;
 
     /**
      * 最后修改时间
@@ -53,5 +53,5 @@ public class SuperModel implements Serializable{
      */
     @Column(name = "modifier")
     @JsonIgnore
-    private Long modifier;
+    private String modifier;
 }

@@ -29,5 +29,5 @@ public class WarningOrderCondition {
     /**
      * 司机
      */
-    private Long agentUserId;
+    private String agentUserId;
 }

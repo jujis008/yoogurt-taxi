@@ -19,7 +19,7 @@ import java.util.Map;
 @ToString
 public class PushPayload implements Serializable {
 
-    private List<Long> userIds;
+    private List<String> userIds;
 
     private UserType userType;
 
@@ -72,7 +72,7 @@ public class PushPayload implements Serializable {
         }
     }
 
-    public void addUserId(Long userId) {
+    public void addUserId(String userId) {
         if (userId != null) {
             this.userIds.add(userId);
         }

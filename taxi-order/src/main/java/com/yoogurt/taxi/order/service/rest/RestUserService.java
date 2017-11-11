@@ -16,14 +16,14 @@ import java.util.List;
 public interface RestUserService {
 
     @RequestMapping(value = "/rest/user/userId/{userId}", method = RequestMethod.GET)
-    RestResult<UserInfo> getUserInfoById(@PathVariable(name = "userId") Long userId);
+    RestResult<UserInfo> getUserInfoById(@PathVariable(name = "userId") String userId);
 
     @RequestMapping(value = "/rest/user/driver/id/{id}", method = RequestMethod.GET)
-    RestResult<DriverInfo> getDriverInfoById(@PathVariable(name = "id") Long id);
+    RestResult<DriverInfo> getDriverInfoById(@PathVariable(name = "id") String id);
 
     @RequestMapping(value = "/rest/user/driver/userId/{userId}", method = RequestMethod.GET)
-    RestResult<DriverInfo> getDriverInfoByUserId(@PathVariable(name = "userId") Long userId);
+    RestResult<DriverInfo> getDriverInfoByUserId(@PathVariable(name = "userId") String userId);
 
     @RequestMapping(value = "/rest/user/car/userId/{userId}", method = RequestMethod.GET)
-    RestResult<List<CarInfo>> getCarInfoByUserId(@PathVariable(name = "userId") Long userId);
+    RestResult<List<CarInfo>> getCarInfoByUserId(@PathVariable(name = "userId") String userId);
 }

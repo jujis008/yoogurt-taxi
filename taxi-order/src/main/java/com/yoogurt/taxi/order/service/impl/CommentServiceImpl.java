@@ -47,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public ResponseObj doComment(CommentForm commentForm) {
 
-        Long orderId = commentForm.getOrderId();
+        String orderId = commentForm.getOrderId();
         //检查订单是否存在
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, commentForm.getUserId());
         if(orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
@@ -59,7 +59,7 @@ public class CommentServiceImpl implements CommentService {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "评论对象有误");
         }
         //获取评价对象id
-        Long toCommentUseId = UserType.USER_APP_OFFICE.getCode().equals(commentForm.getUserType()) ? orderInfo.getAgentUserId() : orderInfo.getOfficialUserId();
+        String toCommentUseId = UserType.USER_APP_OFFICE.getCode().equals(commentForm.getUserType()) ? orderInfo.getAgentUserId() : orderInfo.getOfficialUserId();
         //检查该用户有没有提交评论
         CommentListCondition condition = new CommentListCondition();
         condition.setOrderId(commentForm.getOrderId());
@@ -112,8 +112,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Double getAvgScore(Long userId) {
-        if(userId == null || userId <= 0) return 0.00;
+    public Double getAvgScore(String userId) {
+        if(StringUtils.isBlank(userId)) return 0.00;
         return commentDao.getAvgScore(userId);
     }
 
@@ -122,7 +122,7 @@ public class CommentServiceImpl implements CommentService {
      * @param userId 被评论者的id
      * @return 平均分
      */
-    private double calculateAvgScore(Long userId) {
+    private double calculateAvgScore(String userId) {
         CommentListCondition condition = new CommentListCondition();
         condition.setToUserId(userId);
         List<OrderCommentInfo> comments = getComments(condition);
@@ -135,13 +135,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private boolean isAllowed(OrderInfo orderInfo, CommentForm commentForm) {
-        Long fromUserId = commentForm.getUserId();
+        String fromUserId = commentForm.getUserId();
         Integer userType = commentForm.getUserType();
         return UserType.USER_APP_OFFICE.getCode().equals(userType) && orderInfo.getOfficialUserId().equals(fromUserId)
                 || UserType.USER_APP_AGENT.getCode().equals(userType) && orderInfo.getAgentUserId().equals(fromUserId);
     }
 
-    private void commentStatisticRecord(Long userId, Long[] tagIds, String[] tagNames) {
+    private void commentStatisticRecord(String userId, Long[] tagIds, String[] tagNames) {
         try {
             statisticService.record(userId, tagIds);
         } catch (Exception e){
@@ -149,7 +149,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
-    private void orderStatisticRecord(Long userId, Integer score) {
+    private void orderStatisticRecord(String userId, Integer score) {
         try {
             OrderStatisticForm form = OrderStatisticForm.builder()
                     .userId(userId)

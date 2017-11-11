@@ -17,7 +17,7 @@ public class Message {
      * 消息id
      */
     @Id
-    private Long messageId;
+    private String messageId;
 
     /**
      * 通知标题
@@ -42,7 +42,7 @@ public class Message {
     /**
      * 接收者userId（系统消息为空）
      */
-    private Long toUserId;
+    private String toUserId;
 
     /**
      * 额外参数

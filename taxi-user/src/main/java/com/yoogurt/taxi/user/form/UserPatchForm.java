@@ -8,6 +8,6 @@ import lombok.Setter;
 public class UserPatchForm {
     private String avatar;
     private String password;
-    private Long userId;
+    private String userId;
     private Integer userStatus;
 }

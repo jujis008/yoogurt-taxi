@@ -16,7 +16,7 @@ public class UserInfo extends SuperModel {
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private String userId;
 
     /**
      * 工号

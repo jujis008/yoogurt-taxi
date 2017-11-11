@@ -32,7 +32,7 @@ public class DisobeyTests {
 
     @Test
     public void addDisobeyTest() {
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(17092711405325650L, 8888L);
+        OrderInfo orderInfo = orderInfoService.getOrderInfo("17101612021383517", "17101612021383517");
         OrderDisobeyInfo disobeyInfo = disobeyService.buildDisobeyInfo(
                 orderInfo,
                 UserType.USER_APP_OFFICE,
@@ -52,7 +52,7 @@ public class DisobeyTests {
     public void getDisobeyListTest() {
 
         DisobeyListCondition condition = new DisobeyListCondition();
-        condition.setOrderId(17092711405325650L);
+        condition.setOrderId("17101612021383517");
         Pager<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(condition);
         Assert.assertEquals(1, disobeyList.getDataList().size());
     }

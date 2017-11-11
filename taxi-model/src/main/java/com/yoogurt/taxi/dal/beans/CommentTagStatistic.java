@@ -18,7 +18,7 @@ import javax.persistence.*;
 public class CommentTagStatistic extends SuperModel {
     @Id
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Id
     @Column(name = "tag_id")
@@ -39,7 +39,7 @@ public class CommentTagStatistic extends SuperModel {
 
     private Integer counter;
 
-    public CommentTagStatistic(Long userId) {
+    public CommentTagStatistic(String userId) {
         this.userId = userId;
     }
 }

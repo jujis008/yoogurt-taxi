@@ -16,5 +16,5 @@ public interface OrderDao extends IDao<OrderInfoMapper, OrderInfo> {
 
     Page<OrderModel> getWebOrderList(OrderListCondition condition);
 
-    List<CancelModel> getCancelOrders(Long orderId, Long userId, Integer userType);
+    List<CancelModel> getCancelOrders(String orderId, String userId, Integer userType);
 }

@@ -25,6 +25,6 @@ public interface TrafficViolationService {
 	/**
 	 * 判断是否可以录入违章信息，交易结束后20天内可以提交
 	 */
-	ResponseObj isAllowed(Long orderId, Long userId);
+	ResponseObj isAllowed(String orderId, String userId);
 
 }

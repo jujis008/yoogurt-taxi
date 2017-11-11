@@ -45,7 +45,7 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
     @Transactional
     @Override
     public CancelOrderModel doCancel(CancelForm cancelForm) {
-        Long orderId = cancelForm.getOrderId();
+        String orderId = cancelForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //已完成的订单不可取消了
@@ -74,7 +74,7 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
                 //退款到司机账户，记录为平台支出
                 ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
                         .userId(orderInfo.getAgentUserId())
-                        .outUserId(0L)
+                        .outUserId("0")
                         .inUserId(orderInfo.getAgentUserId())
                         .money(orderInfo.getAmount())
                         .payment(Payment.PLATFORM.getCode())
@@ -141,12 +141,12 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
     }
 
     @Override
-    public OrderCancelInfo getCancelInfo(Long orderId) {
+    public OrderCancelInfo getCancelInfo(String orderId) {
         return cancelDao.selectById(orderId);
     }
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
         CancelOrderModel model = new CancelOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
         if (orderInfo == null) return null;

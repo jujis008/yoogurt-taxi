@@ -28,7 +28,7 @@ public abstract class AbstractOrderBizService implements OrderBizService {
     @Autowired
     private NotificationSender sender;
 
-    public ResponseObj isAllowed(Long userId) {
+    public ResponseObj isAllowed(String userId) {
 
         RestResult<FinanceAccount> accountResult = accountService.getAccountByUserId(userId);
         if (!accountResult.isSuccess()) {
@@ -56,10 +56,10 @@ public abstract class AbstractOrderBizService implements OrderBizService {
     public void push(OrderInfo orderInfo, UserType userType, SendType sendType, Map<String, Object> extras) {
 
         if (orderInfo == null || userType == null || sendType == null) return;
-        Long orderId = orderInfo.getOrderId();
+        String orderId = orderInfo.getOrderId();
         String message = sendType.getMessage();
         String title = userType.equals(UserType.USER_APP_AGENT) ? Constants.AGENT_APP_NAME : Constants.OFFICIAL_APP_NAME;
-        Long userId = userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getAgentUserId() : orderInfo.getOfficialUserId();
+        String userId = userType.equals(UserType.USER_APP_AGENT) ? orderInfo.getAgentUserId() : orderInfo.getOfficialUserId();
         PushPayload payload = new PushPayload(userType, sendType, title);
         if (extras == null) {
             extras = new HashMap<>();

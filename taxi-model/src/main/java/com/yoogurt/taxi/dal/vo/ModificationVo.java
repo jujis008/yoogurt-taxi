@@ -10,16 +10,16 @@ import java.math.BigDecimal;
 @Builder
 public class ModificationVo {
 
-    private Long contextId;
+    private String contextId;
 
     @NotNull(message = "账单用户id不能为空")
-    private Long userId;
+    private String userId;
 
     @NotNull(message = "收款人id不能为空")
-    private Long inUserId;
+    private String inUserId;
 
     @NotNull(message = "付款人id不能为空")
-    private Long outUserId;
+    private String outUserId;
 
     @NotNull(message = "交易金额不能为空")
     private BigDecimal money;

@@ -14,22 +14,22 @@ import java.util.List;
 public class RestUserServiceHystrix implements RestUserService {
 
     @Override
-    public RestResult<UserInfo> getUserInfoById(Long userId) {
+    public RestResult<UserInfo> getUserInfoById(String userId) {
         return RestResult.fail(StatusCode.REST_FAIL, "获取用户资料失败");
     }
 
     @Override
-    public RestResult<DriverInfo> getDriverInfoById(Long driverId) {
+    public RestResult<DriverInfo> getDriverInfoById(String driverId) {
         return RestResult.fail(StatusCode.REST_FAIL, "获取司机信息失败");
     }
 
     @Override
-    public RestResult<DriverInfo> getDriverInfoByUserId(Long userId) {
+    public RestResult<DriverInfo> getDriverInfoByUserId(String userId) {
         return RestResult.fail(StatusCode.REST_FAIL, "获取司机信息失败");
     }
 
     @Override
-    public RestResult<List<CarInfo>> getCarInfoByUserId(Long userId) {
+    public RestResult<List<CarInfo>> getCarInfoByUserId(String userId) {
         return RestResult.fail(StatusCode.REST_FAIL, "获取车辆信息失败");
     }
 }

@@ -60,7 +60,7 @@ public class FinanceMobileController extends BaseController {
 
     @RequestMapping(value = "/info",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public ResponseObj getAccount() {
-        Long userId = getUserId();
+        String userId = getUserId();
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
         if (!userInfoRestResult.isSuccess()) {
             return ResponseObj.of(userInfoRestResult);
@@ -93,7 +93,7 @@ public class FinanceMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        Long userId = getUserId();
+        String userId = getUserId();
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
         if (!userInfoRestResult.isSuccess()) {
             return ResponseObj.fail(userInfoRestResult.getStatus(), userInfoRestResult.getMessage());

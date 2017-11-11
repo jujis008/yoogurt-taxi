@@ -6,10 +6,10 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
-    <result column="bill_no" jdbcType="BIGINT" property="billNo" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="bill_no" jdbcType="VARCHAR" property="billNo" />
     <result column="transaction_no" jdbcType="VARCHAR" property="transactionNo" />
-    <result column="context_id" jdbcType="BIGINT" property="contextId" />
+    <result column="context_id" jdbcType="VARCHAR" property="contextId" />
     <result column="amount" jdbcType="DECIMAL" property="amount" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="username" jdbcType="VARCHAR" property="username" />
@@ -30,9 +30,9 @@
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="creator" jdbcType="BIGINT" property="creator" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-    <result column="modifier" jdbcType="BIGINT" property="modifier" />
+    <result column="modifier" jdbcType="VARCHAR" property="modifier" />
   </resultMap>
     <select id="getWithdrawListForExport" resultType="java.util.Map" parameterType="com.yoogurt.taxi.dal.condition.account.ExportBillCondition">
       SELECT payee_account AS payeeAccount,payee_name AS payeeName,

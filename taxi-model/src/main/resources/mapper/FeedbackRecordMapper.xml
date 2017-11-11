@@ -6,7 +6,7 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="phone_model" jdbcType="VARCHAR" property="phoneModel" />
     <result column="system_version" jdbcType="VARCHAR" property="systemVersion" />
@@ -17,8 +17,8 @@
     <result column="is_handle" jdbcType="BIT" property="isHandle" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="creator" jdbcType="BIGINT" property="creator" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-    <result column="modifier" jdbcType="BIGINT" property="modifier" />
+    <result column="modifier" jdbcType="VARCHAR" property="modifier" />
   </resultMap>
 </mapper>

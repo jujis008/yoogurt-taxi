@@ -5,9 +5,9 @@
         <!--
           WARNING - @mbg.generated
         -->
-        <id column="rent_id" jdbcType="BIGINT" property="rentId"/>
-        <result column="user_id" jdbcType="BIGINT" property="userId"/>
-        <result column="driver_id" jdbcType="BIGINT" property="driverId"/>
+        <id column="rent_id" jdbcType="VARCHAR" property="rentId"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="driver_id" jdbcType="VARCHAR" property="driverId"/>
         <result column="driver_name" jdbcType="VARCHAR" property="driverName"/>
         <result column="user_type" jdbcType="INTEGER" property="userType"/>
         <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
@@ -29,9 +29,9 @@
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-        <result column="creator" jdbcType="BIGINT" property="creator"/>
+        <result column="creator" jdbcType="VARCHAR" property="creator"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-        <result column="modifier" jdbcType="BIGINT" property="modifier"/>
+        <result column="modifier" jdbcType="VARCHAR" property="modifier"/>
     </resultMap>
 
     <resultMap id="RentPOIModel" type="com.yoogurt.taxi.dal.model.order.RentInfoModel">

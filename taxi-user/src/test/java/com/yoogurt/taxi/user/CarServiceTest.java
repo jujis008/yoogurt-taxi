@@ -40,7 +40,7 @@ public class CarServiceTest {
 
     @Test
     public void getCarByUserId() {
-        Long userId = 0L;
+        String userId = "0";
         List<CarInfo> carInfoList = carService.getCarByUserId(userId);
         carInfoList.forEach(car-> System.out.println(ResponseObj.success(car).toJSON()));
     }
@@ -57,10 +57,8 @@ public class CarServiceTest {
         CarInfo carInfo = new CarInfo();
         carInfo.setCarPicture("");
         carInfo.setCompany("");
-        carInfo.setDriverId(0L);
         carInfo.setEnergyType(10);
         carInfo.setPlateNumber("");
-        carInfo.setUserId(0L);
         carInfo.setVehicleRegisterTime(new Date());
         carInfo.setVehicleType("");
         carInfo.setVin("");
@@ -68,10 +66,4 @@ public class CarServiceTest {
         System.out.println(responseObj.toJSON());
     }
 
-    @Test
-    public void test() {
-        Long driverId = 0L;
-        List<CarInfo> carInfoList = carService.getCarByDriverId(driverId);
-        carInfoList.forEach(car-> System.out.println(ResponseObj.success(car).toJSON()));
-    }
 }

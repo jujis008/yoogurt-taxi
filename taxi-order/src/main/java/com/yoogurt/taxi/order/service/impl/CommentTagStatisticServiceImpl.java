@@ -6,6 +6,7 @@ import com.yoogurt.taxi.order.dao.CommentTagDao;
 import com.yoogurt.taxi.order.dao.CommentTagStatisticDao;
 import com.yoogurt.taxi.order.service.CommentTagStatisticService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
      * @param tagIds 一组评价标签id
      */
     @Override
-    public void record(Long userId, Long[] tagIds) {
+    public void record(String userId, Long[] tagIds) {
         List<CommentTagStatistic> statistics = buildStatistic(userId, tagIds);
         if (CollectionUtils.isNotEmpty(statistics)) {
             statistics.forEach(statistic -> statisticDao.saveStatistic(statistic));
@@ -44,14 +45,14 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
      * @return 标签使用统计信息
      */
     @Override
-    public List<CommentTagStatistic> getStatistic(Long userId) {
-        if (userId == null || userId <= 0) return null;
+    public List<CommentTagStatistic> getStatistic(String userId) {
+        if (StringUtils.isBlank(userId)) return null;
         Example ex = new Example(CommentTagStatistic.class);
         ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE).andEqualTo("userId", userId);
         return statisticDao.selectByExample(ex);
     }
 
-    private List<CommentTagStatistic> buildStatistic(Long userId, Long[] tagIds) {
+    private List<CommentTagStatistic> buildStatistic(String userId, Long[] tagIds) {
         List<CommentTagStatistic> statistics = new ArrayList<>();
         if (userId == null || tagIds == null || tagIds.length == 0) return statistics;
         //长度不对应

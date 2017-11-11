@@ -20,11 +20,11 @@ public interface RentInfoService {
 
 	Pager<RentInfoModel> getRentListByPage(RentListCondition condition);
 
-	List<RentInfo> getRentInfoList(Long userId, Long orderId, Integer pageNum, Integer pageSize, Integer... status);
+	List<RentInfo> getRentInfoList(String userId, String orderId, Integer pageNum, Integer pageSize, Integer... status);
 
-	List<RentInfo> getRentList(Long userId, Integer... status);
+	List<RentInfo> getRentList(String userId, Integer... status);
 
-	RentInfo getRentInfo(Long rentId, Long userId);
+	RentInfo getRentInfo(String rentId, String userId);
 
 	ResponseObj addRentInfo(RentForm rentForm);
 
@@ -35,9 +35,9 @@ public interface RentInfoService {
 	 * @param rentId
 	 * @return
 	 */
-	RentInfo cancelOverdue(Long rentId);
+	RentInfo cancelOverdue(String rentId);
 
-	boolean modifyStatus(Long rentId, RentStatus status);
+	boolean modifyStatus(String rentId, RentStatus status);
 
 	Pager<RentInfo> getRentListForWebPage(RentWebListCondition condition);
 }

@@ -22,22 +22,22 @@ public class OrderTrafficViolationInfo extends SuperModel{
      * 订单号
      */
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     /**
      * 录入违章的用户ID，通常为车主
      */
     @Column(name = "input_user_id")
-    private Long inputUserId;
+    private String inputUserId;
 
     /**
      * 违章的用户ID，通常为司机
      */
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Column(name = "driver_id")
-    private Long driverId;
+    private String driverId;
 
     @Column(name = "driver_name")
     private String driverName;

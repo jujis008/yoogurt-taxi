@@ -28,7 +28,7 @@ public class RestUserAccountController {
     private RestUserService restUserService;
 
     @RequestMapping(value = "/userId/{userId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") Long userId) {
+    public RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") String userId) {
         FinanceAccount financeAccount = financeAccountService.get(userId);
         if (financeAccount == null) {
             RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);

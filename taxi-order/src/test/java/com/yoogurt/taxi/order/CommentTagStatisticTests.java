@@ -23,12 +23,12 @@ public class CommentTagStatisticTests {
 
     @Test
     public void recordTest() {
-        statisticService.record(8888L, new Long[]{1L, 2L});
+        statisticService.record("17101612021383517", new Long[]{1L, 2L});
     }
 
     @Test
     public void getStatisticTest() {
-        List<CommentTagStatistic> statistics = statisticService.getStatistic(8888L);
+        List<CommentTagStatistic> statistics = statisticService.getStatistic("17101612021383517");
         Assert.assertEquals(2, statistics.size());
     }
 }

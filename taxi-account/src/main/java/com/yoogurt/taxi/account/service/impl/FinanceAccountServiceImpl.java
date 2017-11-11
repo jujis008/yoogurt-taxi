@@ -47,12 +47,12 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
     private NotificationSender notificationSender;
 
     @Override
-    public FinanceAccount get(Long userId) {
+    public FinanceAccount get(String userId) {
         return financeAccountDao.selectById(userId);
     }
 
     @Override
-    public FinanceAccount createAccount(Long accountNo, Money receivableDeposit, Long userId) {
+    public FinanceAccount createAccount(String accountNo, Money receivableDeposit, String userId) {
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
         if (!userInfoRestResult.isSuccess()) {
             return null;
@@ -88,7 +88,7 @@ public class FinanceAccountServiceImpl implements FinanceAccountService {
         if (money.getCent() == 0) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "金额错误");
         }
-        Long userId = condition.getUserId();
+        String userId = condition.getUserId();
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
         if (!userInfoRestResult.isSuccess()) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户不存在");

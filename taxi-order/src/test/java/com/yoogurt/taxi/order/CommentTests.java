@@ -23,8 +23,8 @@ public class CommentTests {
     @Test
     public void doCommentTest() {
         CommentForm commentForm = new CommentForm();
-        commentForm.setOrderId(17101411085522846L);
-        commentForm.setUserId(17092815464356415L);
+        commentForm.setOrderId("17101612021383517");
+        commentForm.setUserId("17101612021383517");
         commentForm.setUserType(30);
         commentForm.setScore(3);
         commentForm.setTagId(new Long[]{1L, 2L});

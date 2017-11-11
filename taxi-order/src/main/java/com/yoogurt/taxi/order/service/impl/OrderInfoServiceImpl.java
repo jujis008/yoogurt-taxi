@@ -19,13 +19,14 @@ import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.order.*;
 import com.yoogurt.taxi.order.dao.OrderDao;
 import com.yoogurt.taxi.order.form.PlaceOrderForm;
-import com.yoogurt.taxi.order.service.*;
+import com.yoogurt.taxi.order.service.HandoverRuleService;
+import com.yoogurt.taxi.order.service.OrderBizService;
+import com.yoogurt.taxi.order.service.OrderInfoService;
+import com.yoogurt.taxi.order.service.RentInfoService;
 import com.yoogurt.taxi.order.service.rest.RestUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -84,7 +85,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
                 orderInfo = (OrderInfo) obj.getBody();
                 if (orderDao.insertSelective(orderInfo) == 1) {
                     //更改租单状态 --> 已接单
-                    Long rentId = orderForm.getRentId();
+                    String rentId = orderForm.getRentId();
                     success = rentInfoService.modifyStatus(rentId, RentStatus.RENT);
                 }
             } else {// 下单校验不成功，直接返回
@@ -95,7 +96,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         }
         if (orderInfo != null && success) {
             //更改租单状态 --> 已接单
-            Long rentId = orderForm.getRentId();
+            String rentId = orderForm.getRentId();
 
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime handoverDateTime = LocalDateTime.ofInstant(orderInfo.getHandoverTime().toInstant(), ZoneId.systemDefault());
@@ -156,13 +157,13 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
      * @return 取消订单列表
      */
     @Override
-    public List<CancelModel> getCancelOrders(Long orderId, Long userId, Integer userType) {
+    public List<CancelModel> getCancelOrders(String orderId, String userId, Integer userType) {
 
         return orderDao.getCancelOrders(orderId, userId, userType);
     }
 
     @Override
-    public OrderInfo getOrderInfo(Long orderId, Long userId) {
+    public OrderInfo getOrderInfo(String orderId, String userId) {
         OrderInfo orderInfo = orderDao.selectById(orderId);
         if (orderInfo == null) return null;
         //用户id不符合
@@ -174,7 +175,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
 
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
         OrderModel model = new OrderModel();
         OrderInfo orderInfo = getOrderInfo(orderId, userId);
         if (orderInfo != null) {
@@ -199,7 +200,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
      * </p>
      */
     @Override
-    public Map<String, Object> getOrderDetails(Long orderId, Long userId) {
+    public Map<String, Object> getOrderDetails(String orderId, String userId) {
         OrderInfo orderInfo = getOrderInfo(orderId, userId);
         if (orderInfo == null) return null;
         Map<String, Object> result = Maps.newHashMap();
@@ -246,8 +247,8 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
      * @return true-修改成功，false-修改失败
      */
     @Override
-    public boolean modifyStatus(Long orderId, OrderStatus status) {
-        if (orderId == null || orderId <= 0 || status == null) return false;
+    public boolean modifyStatus(String orderId, OrderStatus status) {
+        if (StringUtils.isBlank(orderId) || status == null) return false;
         OrderInfo orderInfo = getOrderInfo(orderId, null);
         if (orderInfo == null) return false;
         if (status.getCode().equals(orderInfo.getStatus())) return true; //与原租单状态相同，直接返回true
@@ -276,7 +277,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     }
 
     @Override
-    public void modifyPayStatus(Long orderId) {
+    public void modifyPayStatus(String orderId) {
         OrderInfo orderInfo = getOrderInfo(orderId, null);
         if (orderInfo != null) {
             orderInfo.setIsPaid(true);
@@ -293,7 +294,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
      * @return 租单列表
      */
     @Override
-    public List<OrderInfo> getOrderList(Long userId, Integer userType, Integer... status) {
+    public List<OrderInfo> getOrderList(String userId, Integer userType, Integer... status) {
         Example ex = new Example(OrderInfo.class);
         Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
         if (status != null && status.length > 0) {
@@ -352,7 +353,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             log.warn("该租单信息已被他人接走");
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单信息已被他人接走");
         }
-        Long userId = orderForm.getUserId();
+        String userId = orderForm.getUserId();
         ResponseObj obj = super.isAllowed(userId);
         if (!obj.isSuccess()) return obj;
 
@@ -379,7 +380,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         ResponseObj validateResult = isAllowOrder(rentInfo, orderForm);
         //下单校验未通过
         if (!validateResult.isSuccess()) return validateResult;
-        Long userId = orderForm.getUserId();
+        String userId = orderForm.getUserId();
         //用户信息
         RestResult<UserInfo> userResult = userService.getUserInfoById(userId);
         if (!userResult.isSuccess()) {

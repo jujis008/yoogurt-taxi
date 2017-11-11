@@ -72,7 +72,7 @@ public class UserMobileController extends BaseController {
 
     @RequestMapping(value = "/logout", method = RequestMethod.DELETE, produces = {"application/json;charset=utf-8"})
     public ResponseObj logout() {
-        Long userId = super.getUserId();
+        String userId = super.getUserId();
         redisHelper.del(CacheKey.SESSION_USER_KEY+userId);
         return ResponseObj.success();
     }
@@ -100,7 +100,7 @@ public class UserMobileController extends BaseController {
         if (userInfo == null) {
             return ResponseObj.fail(StatusCode.NOT_LOGIN);
         }
-        Long userId = getUserId();
+        String userId = getUserId();
         UserType userType = UserType.getEnumsByCode(getUserType());
         DriverInfo driverInfo = driverService.getDriverByUserId(userInfo.getUserId());
         RestResult<Map<String, Object>> mapRestResult = restOrderService.statistics(userId);
@@ -135,7 +135,7 @@ public class UserMobileController extends BaseController {
      */
     @RequestMapping(value = "/activeStatus", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj activeStatus() {
-        Long userId = getUserId();
+        String userId = getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (!UserStatus.UN_ACTIVE.getCode().equals(userInfo.getStatus())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户非未激活状态");
@@ -182,7 +182,7 @@ public class UserMobileController extends BaseController {
      * @return ResponseObj
      */
     @RequestMapping(value = "/i/driverInfo/userId/{userId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getDriverInfo(@PathVariable(name = "userId") Long userId) {
+    public ResponseObj getDriverInfo(@PathVariable(name = "userId") String userId) {
         RestResult<Map<String, Object>> statisticsRestResult = restOrderService.statistics(userId);
         if (!statisticsRestResult.isSuccess()) {
             return ResponseObj.of(statisticsRestResult);
@@ -220,7 +220,7 @@ public class UserMobileController extends BaseController {
      */
     @RequestMapping(value = "/activateAccount", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj activateAccount(@RequestBody @Valid ActiveAccountForm activeAccountForm, BindingResult bindingResult) {
-        Long userId = getUserId();
+        String userId = getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (userInfo == null) {
             redisSetting(userId);//设置用户激活失败次数、时间
@@ -260,7 +260,7 @@ public class UserMobileController extends BaseController {
         return ResponseObj.success();
     }
 
-    private void redisSetting(Long userId) {
+    private void redisSetting(String userId) {
         if (redisHelper.get(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId) == null) {
             redisHelper.set(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId, "1", DateUtils.getSurplusSeconds().intValue());
         } else {
@@ -281,7 +281,7 @@ public class UserMobileController extends BaseController {
         if (form.getNewPassword().equals(form.getOldPassword())) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "默认密码不能作为新密码");
         }
-        Long userId = getUserId();
+        String userId = getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (UserStatus.getEnumsByCode(userInfo.getStatus()) != UserStatus.UN_ACTIVE) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "用户不是未激活状态");
@@ -315,7 +315,7 @@ public class UserMobileController extends BaseController {
         if (form.getNewPassword().equals(form.getOldPassword())) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "新旧密码不能相同");
         }
-        Long userId = getUserId();
+        String userId = getUserId();
         return userService.modifyLoginPassword(userId, form.getOldPassword(), form.getNewPassword());
     }
 
@@ -330,7 +330,7 @@ public class UserMobileController extends BaseController {
         if (StringUtils.isBlank(form.getPassword())) {
             return ResponseObj.fail(StatusCode.PARAM_BLANK, "请输入交易密码");
         }
-        Long userId = getUserId();
+        String userId = getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (UserStatus.getEnumsByCode(userInfo.getStatus()) != UserStatus.UN_ACTIVE) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "用户不是未激活状态");
@@ -357,7 +357,7 @@ public class UserMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        Long userId = getUserId();
+        String userId = getUserId();
         DriverInfo driverInfo = driverService.getDriverByUserId(userId);
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (userInfo.getStatus().equals(UserStatus.AUTHENTICATED.getCode())) {
@@ -381,7 +381,7 @@ public class UserMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        Long userId = getUserId();
+        String userId = getUserId();
         if (!UserType.USER_APP_OFFICE.getCode().equals(getUserType())) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
@@ -445,7 +445,7 @@ public class UserMobileController extends BaseController {
      */
     @RequestMapping(value = "/modifyBindPhone", method = RequestMethod.PATCH, produces = {"application/json;charset=UTF-8"})
     public ResponseObj modifyBindPhone(@RequestBody @Valid ModifyBindPhoneForm form) {
-        Long userId = getUserId();
+        String userId = getUserId();
         return userService.modifyUserName(userId, form.getPassword(), form.getPhoneCode(), form.getPhoneNumber());
     }
 

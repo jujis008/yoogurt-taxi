@@ -29,14 +29,4 @@ public class MessageRemove extends SuperModel {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    @Column(name = "gmt_create")
-    private Date gmtCreate;
-
-    private Long creator;
-
-    @Column(name = "gmt_modify")
-    private Date gmtModify;
-
-    private Long modifier;
-
 }

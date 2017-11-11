@@ -11,11 +11,11 @@
     <result column="link_id" jdbcType="VARCHAR" property="linkId" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="type" jdbcType="INTEGER" property="type" />
-    <result column="to_user_id" jdbcType="BIGINT" property="toUserId" />
+    <result column="to_user_id" jdbcType="VARCHAR" property="toUserId" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="creator" jdbcType="BIGINT" property="creator" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-    <result column="modifier" jdbcType="BIGINT" property="modifier" />
+    <result column="modifier" jdbcType="VARCHAR" property="modifier" />
   </resultMap>
 </mapper>

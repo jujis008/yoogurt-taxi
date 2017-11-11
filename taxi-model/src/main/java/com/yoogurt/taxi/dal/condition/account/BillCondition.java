@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BillCondition extends PeriodCondition{
-    private Long userId;
+    private String userId;
 }

@@ -44,7 +44,7 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
         log.info("[redis key expired] " + key);
         //租单超时取消任务
         if (key.startsWith(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY)) {
-            Long rentId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY, ""));
+            String rentId = key.replaceFirst(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY, "");
             //取消订单
             RentInfo rentInfo = rentInfoService.cancelOverdue(rentId);
             if (rentInfo == null) {
@@ -69,7 +69,7 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
 
         //订单交车前1小时通知任务，通知车主
         if (key.startsWith(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY)) {
-            Long rentId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY, ""));
+            String rentId = key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY, "");
             log.info("[" + rentId + "]交车1小时前提醒");
             OrderInfo orderInfo = orderInfoService.getOrderInfo(rentId,null);
             if (orderInfo == null) return;
@@ -88,7 +88,7 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
 
         //订单到交车时间点通知任务，通知车主
         if (key.startsWith(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY)) {
-            Long rentId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY, ""));
+            String rentId = key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY, "");
             log.info("[" + rentId + "]交车提醒");
             OrderInfo orderInfo = orderInfoService.getOrderInfo(rentId,null);
             if (orderInfo == null) return;
@@ -107,7 +107,7 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
 
         //车主未交车，最大程度违约（租金用完）
         if (key.startsWith(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY)) {
-            Long orderId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY, ""));
+            String orderId = key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY, "");
             log.info("[" + orderId + "]自动取消订单");
             CancelForm cancelForm = new CancelForm();
             cancelForm.setReason("车主未按预定时间交车，系统自动取消订单");
@@ -116,14 +116,14 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
             cancelForm.setInternal(true);
             cancelForm.setOrderId(orderId);
             cancelForm.setUserType(UserType.SUPER_ADMIN.getCode());
-            cancelForm.setUserId(0L);
+            cancelForm.setUserId("0");
             cancelService.doCancel(cancelForm);
             return;
         }
 
         //订单还车前一个小时，通知司机
         if (key.startsWith(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY)) {
-            Long orderId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY, ""));
+            String orderId = key.replaceFirst(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY, "");
             log.info("[" + orderId + "]还车一小时前提醒");
             OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
             if (orderInfo == null) return;
@@ -142,7 +142,7 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
 
         //订单到还车时间点，通知司机
         if (key.startsWith(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY)) {
-            Long orderId = Long.valueOf(key.replaceFirst(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY, ""));
+            String orderId = key.replaceFirst(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY, "");
             log.info("[" + orderId + "]还车到点提醒");
             OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
             if (orderInfo == null) return;

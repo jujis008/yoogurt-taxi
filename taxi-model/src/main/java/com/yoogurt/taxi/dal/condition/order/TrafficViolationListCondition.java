@@ -8,9 +8,9 @@ import lombok.Setter;
 @Setter
 public class TrafficViolationListCondition extends PeriodWithPageableCondition {
 
-    private Long orderId;
+    private String orderId;
 
-    private Long userId;
+    private String userId;
 
     private String plateNumber;
 

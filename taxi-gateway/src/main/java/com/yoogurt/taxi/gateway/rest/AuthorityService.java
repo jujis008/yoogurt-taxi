@@ -12,6 +12,6 @@ import java.util.List;
 public interface AuthorityService {
 
     @RequestMapping("/rest/user/authorities/userId/{userId}")
-    RestResult<List<AuthorityModel>> getAuthoritiesByUserId(@PathVariable(name = "userId") Long userId);
+    RestResult<List<AuthorityModel>> getAuthoritiesByUserId(@PathVariable(name = "userId") String userId);
 
 }

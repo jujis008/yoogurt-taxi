@@ -11,12 +11,12 @@ import javax.validation.constraints.NotNull;
 public class PlaceOrderForm {
 
 	@NotNull(message = "请指定发布信息")
-	private Long rentId;
+	private String rentId;
 
 	/**
 	 * 接单用户ID
 	 */
-	private Long userId;
+	private String userId;
 
 	/**
 	 * 接单用户类型

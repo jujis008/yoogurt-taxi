@@ -9,7 +9,7 @@ public interface OrderPaymentService {
     /**
      * 获取订单的支付记录
      */
-    List<OrderPayment> getPayments(Long orderId, Integer status);
+    List<OrderPayment> getPayments(String orderId, Integer status);
 
     OrderPayment getPayment(String payId);
 

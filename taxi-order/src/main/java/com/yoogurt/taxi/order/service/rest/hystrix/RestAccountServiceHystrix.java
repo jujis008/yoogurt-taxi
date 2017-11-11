@@ -9,7 +9,7 @@ import com.yoogurt.taxi.order.service.rest.RestAccountService;
 public class RestAccountServiceHystrix implements RestAccountService {
 
     @Override
-    public RestResult<FinanceAccount> getAccountByUserId(Long userId) {
+    public RestResult<FinanceAccount> getAccountByUserId(String userId) {
         return RestResult.fail(StatusCode.BIZ_FAILED, "获取账户信息异常");
     }
 

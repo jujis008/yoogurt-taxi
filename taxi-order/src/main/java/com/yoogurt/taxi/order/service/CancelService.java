@@ -12,8 +12,6 @@ public interface CancelService extends OrderBizService {
 
 	CancelOrderModel doCancel(CancelForm cancelForm);
 
-//	CancelOrderModel getCancelInfo(Long orderId);
-
-	OrderCancelInfo getCancelInfo(Long orderId);
+	OrderCancelInfo getCancelInfo(String orderId);
 
 }

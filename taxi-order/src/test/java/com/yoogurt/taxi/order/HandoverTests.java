@@ -24,7 +24,7 @@ public class HandoverTests {
     public void doHandoverTest() {
 
         HandoverForm handoverForm = new HandoverForm();
-        handoverForm.setOrderId(17101612021383517L);
+        handoverForm.setOrderId("17101612021383517");
         handoverForm.setRealHandoverAddress("临丁路171号");
         handoverForm.setLat(30.5422331079);
         handoverForm.setLng(120.12348547011);
@@ -34,7 +34,7 @@ public class HandoverTests {
 
     @Test
     public void handoverInfoTest() {
-        OrderHandoverInfo handoverInfo = handoverService.getHandoverInfo(17092615073534929L);
+        OrderHandoverInfo handoverInfo = handoverService.getHandoverInfo("17101612021383517");
         Assert.assertNotNull("交车信息不存在！", handoverInfo);
     }
 }

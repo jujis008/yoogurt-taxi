@@ -5,9 +5,9 @@ import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
-import javax.persistence.*;
 
 @Domain
 @Getter
@@ -22,13 +22,13 @@ public class OrderDisobeyInfo extends SuperModel{
      * 订单号
      */
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Column(name = "driver_id")
-    private Long driverId;
+    private String driverId;
 
     @Column(name = "driver_name")
     private String driverName;
@@ -76,7 +76,7 @@ public class OrderDisobeyInfo extends SuperModel{
     public OrderDisobeyInfo() {
     }
 
-    public OrderDisobeyInfo(Long orderId) {
+    public OrderDisobeyInfo(String orderId) {
         this.orderId = orderId;
     }
 

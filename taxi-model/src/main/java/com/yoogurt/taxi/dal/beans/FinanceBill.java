@@ -19,13 +19,13 @@ public class FinanceBill extends SuperModel{
     private Long id;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     /**
      * 账单编号，与外部系统对接，使用此字段标识
      */
     @Column(name = "bill_no")
-    private Long billNo;
+    private String billNo;
 
     /**
      * 交易流水号
@@ -34,7 +34,7 @@ public class FinanceBill extends SuperModel{
     private String transactionNo;
 
     @Column(name = "context_id")
-    private Long contextId;
+    private String contextId;
 
     /**
      * 交易金额

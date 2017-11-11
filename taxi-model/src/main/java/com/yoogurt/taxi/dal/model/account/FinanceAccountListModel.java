@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class FinanceAccountListModel {
-    private Long userId;
+    private String userId;
     private String name;
     private String username;
     private Integer userType;

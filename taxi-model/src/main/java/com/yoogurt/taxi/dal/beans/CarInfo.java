@@ -24,10 +24,10 @@ public class CarInfo{
      * 用户id
      */
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Column(name = "driver_id")
-    private Long driverId;
+    private String driverId;
 
     /**
      * 车牌号
@@ -124,7 +124,7 @@ public class CarInfo{
      */
     @Column(name = "creator")
     @JsonIgnore
-    private Long creator;
+    private String creator;
 
     /**
      * 最后修改时间
@@ -137,6 +137,6 @@ public class CarInfo{
      */
     @Column(name = "modifier")
     @JsonIgnore
-    private Long modifier;
+    private String modifier;
 
 }

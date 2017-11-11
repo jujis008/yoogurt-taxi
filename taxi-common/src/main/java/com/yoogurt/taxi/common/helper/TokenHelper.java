@@ -62,9 +62,9 @@ public final class TokenHelper {
      * @param username 用户登录名
      * @return jwt 颁发的token
      */
-    public String createToken(Long userId, String username) {
+    public String createToken(String userId, String username) {
         Claims claims = new DefaultClaims();
-        claims.setId(userId.toString());
+        claims.setId(userId);
         claims.setSubject(username);
         claims.setIssuer(CLAIM_KEY_ISS);
         claims.setIssuedAt(new Date());
@@ -76,12 +76,12 @@ public final class TokenHelper {
      * @param token token
      * @return 用户id
      */
-    public Long getUserId(String token) {
+    public String getUserId(String token) {
         if(StringUtils.isBlank(token)) return null;
-        Long userId;
+        String userId;
         try {
             final Claims claims = getClaims(token);
-            userId = Long.valueOf(claims.getId());
+            userId = claims.getId();
         } catch (ExpiredJwtException e) {
             userId = null;
             log.error("token过期:{}", e);
@@ -94,7 +94,7 @@ public final class TokenHelper {
      * @param request request
      * @return userId
      */
-    public Long getUserId(HttpServletRequest request) {
+    public String getUserId(HttpServletRequest request) {
         String authToken = getAuthToken(request);
         if(StringUtils.isBlank(authToken)) return null;
         return getUserId(authToken);

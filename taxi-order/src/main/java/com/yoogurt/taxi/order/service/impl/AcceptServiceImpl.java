@@ -46,7 +46,7 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
     @Transactional
     @Override
     public AcceptOrderModel doAccept(AcceptForm acceptForm) {
-        Long orderId = acceptForm.getOrderId();
+        String orderId = acceptForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, acceptForm.getUserId());
         if (orderInfo == null) return null;
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
@@ -87,7 +87,7 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
             //添加图片资源
             String[] pictures = acceptForm.getPictures();
             if (pictures != null && pictures.length > 0) {
-                List<CommonResource> resources = resourceService.assembleResources(orderId.toString(), "order_accept_info", pictures);
+                List<CommonResource> resources = resourceService.assembleResources(orderId, "order_accept_info", pictures);
                 resourceService.addResources(resources);
             }
             //统计订单数量-双方司机的订单数量各 +1
@@ -102,12 +102,12 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
     }
 
     @Override
-    public OrderAcceptInfo getAcceptInfo(Long orderId) {
+    public OrderAcceptInfo getAcceptInfo(String orderId) {
         return acceptDao.selectById(orderId);
     }
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
         AcceptOrderModel model = new AcceptOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
         if (orderInfo == null) return null;

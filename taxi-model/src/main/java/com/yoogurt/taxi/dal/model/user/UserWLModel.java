@@ -8,7 +8,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class UserWLModel {
-    private Long userId;
+    private String userId;
     private String name;
     private String username;
     private String employeeNo;

@@ -18,7 +18,7 @@ public class OrderGiveBackInfo extends SuperModel{
      */
     @Id
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     @Column(name = "rule_id")
     private Long ruleId;

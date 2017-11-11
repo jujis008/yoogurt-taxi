@@ -8,7 +8,5 @@ public interface AcceptService extends OrderBizService {
 
 	AcceptOrderModel doAccept(AcceptForm acceptForm);
 
-//	AcceptOrderModel getAcceptInfo(Long orderId);
-
-	OrderAcceptInfo getAcceptInfo(Long orderId);
+	OrderAcceptInfo getAcceptInfo(String orderId);
 }

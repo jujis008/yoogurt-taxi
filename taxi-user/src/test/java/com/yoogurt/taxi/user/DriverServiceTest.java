@@ -24,7 +24,7 @@ public class DriverServiceTest {
 
     @Test
     public void getDriverInfo() {
-        Long driverId = 1L;
+        String driverId = "1";
         DriverInfo driverInfo = driverService.getDriverInfo(driverId);
         System.out.println(ResponseObj.success(driverInfo).toJSON());
     }
@@ -59,15 +59,14 @@ public class DriverServiceTest {
         driverInfo.setServiceNumber("");
         driverInfo.setServicePicture("");
         driverInfo.setType(UserType.USER_APP_AGENT.getCode());
-        driverInfo.setUserId(0L);
+        driverInfo.setUserId("0");
         driverService.saveDriverInfo(driverInfo);
         System.out.println(ResponseObj.success());
     }
 
     @Test
     public void removeDriver() {
-        Long driverId = 1L;
-        driverService.removeDriver(driverId);
+        driverService.removeDriver("1");
         System.out.println(ResponseObj.success());
     }
 }

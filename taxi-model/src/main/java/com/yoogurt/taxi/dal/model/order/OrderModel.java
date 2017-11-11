@@ -11,9 +11,9 @@ import java.util.Date;
 @Setter
 public class OrderModel {
 
-	private Long orderId;
+	private String orderId;
 
-	private Long rentId;
+	private String rentId;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm",timezone = "GMT+8")
 	private Date handoverTime;
@@ -31,9 +31,9 @@ public class OrderModel {
 
 	private BigDecimal price;
 
-	private Long agentUserId;
+	private String agentUserId;
 
-	private Long agentDriverId;
+	private String agentDriverId;
 
 	private String agentDriverName;
 
@@ -43,9 +43,9 @@ public class OrderModel {
 
 	private String plateNumber;
 
-	private Long officialUserId;
+	private String officialUserId;
 
-	private Long officialDriverId;
+	private String officialDriverId;
 
 	private String officialDriverName;
 

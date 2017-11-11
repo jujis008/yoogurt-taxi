@@ -3,6 +3,7 @@ package com.yoogurt.taxi.dal.beans;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yoogurt.taxi.dal.annotation.Domain;
+import com.yoogurt.taxi.dal.common.SuperModel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,13 +14,12 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "driver_info")
-public class DriverInfo{
+public class DriverInfo extends SuperModel{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     private String mobile;
 
@@ -89,36 +89,4 @@ public class DriverInfo{
     @JsonIgnore
     private Boolean isAuthentication;
 
-    /**
-     * 是否删除
-     */
-    @Column(name = "is_deleted")
-    @JsonIgnore
-    private Boolean isDeleted;
-
-    /**
-     * 创建时间
-     */
-    @Column(name = "gmt_create")
-    private Date gmtCreate;
-
-    /**
-     * 创建人ID
-     */
-    @Column(name = "creator")
-    @JsonIgnore
-    private Long creator;
-
-    /**
-     * 最后修改时间
-     */
-    @Column(name = "gmt_modify")
-    private Date gmtModify;
-
-    /**
-     * 最后修改人ID
-     */
-    @Column(name = "modifier")
-    @JsonIgnore
-    private Long modifier;
 }

@@ -29,9 +29,9 @@ public class TrafficViolationTests {
     @Test
     public void getTrafficViolationsTest() {
         TrafficViolationListCondition condition = new TrafficViolationListCondition();
-        condition.setOrderId(17101111574981114L);
+        condition.setOrderId("17101612021383517");
         condition.setStatus(TrafficStatus.PENDING.getCode());
-        condition.setUserId(8888L);
+        condition.setUserId("17101612021383517");
         Pager<OrderTrafficViolationInfo> trafficViolations = trafficViolationService.getTrafficViolations(condition);
         Assert.assertTrue(trafficViolations.getDataList().size() == 1);
 
@@ -44,8 +44,8 @@ public class TrafficViolationTests {
         form.setDescription("违规停车");
         form.setHappenTime(new Date());
         form.setType(TrafficType.TRAFFIC.getCode());
-        form.setOrderId(17101111574981114L);
-        form.setUserId(8888L);
+        form.setOrderId("17101612021383517");
+        form.setUserId("17101612021383517");
         ResponseObj obj = trafficViolationService.buildTrafficViolation(form);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }
@@ -57,8 +57,8 @@ public class TrafficViolationTests {
         form.setDescription("违规停车");
         form.setHappenTime(new Date());
         form.setType(TrafficType.TRAFFIC.getCode());
-        form.setOrderId(17101111574981114L);
-        form.setUserId(8888L);
+        form.setOrderId("17101612021383517");
+        form.setUserId("17101612021383517");
         ResponseObj obj = trafficViolationService.buildTrafficViolation(form);
         if (obj.isSuccess()) {
             Assert.assertNotNull("违章记录添加不成功", trafficViolationService.addTrafficViolation((OrderTrafficViolationInfo) obj.getBody()));

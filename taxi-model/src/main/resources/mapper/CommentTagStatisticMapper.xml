@@ -5,15 +5,15 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="user_id" jdbcType="BIGINT" property="userId" />
+    <id column="user_id" jdbcType="VARCHAR" property="userId" />
     <id column="tag_id" jdbcType="BIGINT" property="tagId" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
     <result column="counter" jdbcType="INTEGER" property="counter" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
-    <result column="creator" jdbcType="BIGINT" property="creator"/>
+    <result column="creator" jdbcType="VARCHAR" property="creator"/>
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
-    <result column="modifier" jdbcType="BIGINT" property="modifier"/>
+    <result column="modifier" jdbcType="VARCHAR" property="modifier"/>
   </resultMap>
 
   <insert id="saveStatistic" parameterType="com.yoogurt.taxi.dal.beans.CommentTagStatistic">

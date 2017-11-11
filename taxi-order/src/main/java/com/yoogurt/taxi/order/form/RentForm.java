@@ -14,7 +14,7 @@ import java.util.Date;
 @Setter
 public class RentForm {
 
-    private Long userId;
+    private String userId;
 
     @NotBlank(message = "请指定交班地址")
     private String address;

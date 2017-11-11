@@ -24,7 +24,7 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
      * @return 支付记录列表
      */
     @Override
-    public List<OrderPayment> getPayments(Long orderId, Integer status) {
+    public List<OrderPayment> getPayments(String orderId, Integer status) {
         Example example = new Example(OrderPayment.class);
         example.createCriteria().andEqualTo("orderId", orderId).andEqualTo("status", status);
         example.setOrderByClause("gmt_create DESC");

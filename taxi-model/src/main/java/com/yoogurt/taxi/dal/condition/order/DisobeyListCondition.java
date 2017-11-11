@@ -12,11 +12,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class DisobeyListCondition extends PeriodWithPageableCondition {
 
-    private Long orderId;
+    private String orderId;
 
-    private Long userId;
+    private String userId;
 
-    private Long driverId;
+    private String driverId;
 
     private Integer userType;
 

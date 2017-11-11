@@ -10,7 +10,7 @@ public class OrderStatisticModel {
 	/**
 	 * 司机id
 	 */
-	private Long driverId;
+	private String driverId;
 
 	/**
 	 * 交易量

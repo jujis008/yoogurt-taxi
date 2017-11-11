@@ -20,19 +20,19 @@ public class OrderCommentInfo extends SuperModel {
      * 订单号
      */
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     /**
      * 发起评价的用户ID
      */
     @Column(name = "from_user_id")
-    private Long fromUserId;
+    private String fromUserId;
 
     /**
      * 被评价的用户的ID
      */
     @Column(name = "to_user_id")
-    private Long toUserId;
+    private String toUserId;
 
     /**
      * 评分，整数，1-5

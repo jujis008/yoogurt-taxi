@@ -11,12 +11,12 @@ public class OrderListCondition extends PeriodWithPageableCondition {
     /**
      * 用户ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 订单号，精确匹配
      */
-    private Long orderId;
+    private String orderId;
 
     /**
      * 司机姓名，精确匹配

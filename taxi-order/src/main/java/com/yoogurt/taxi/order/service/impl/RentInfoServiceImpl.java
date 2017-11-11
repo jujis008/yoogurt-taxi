@@ -81,11 +81,11 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     }
 
     @Override
-    public List<RentInfo> getRentInfoList(Long userId, Long orderId, Integer pageNum, Integer pageSize, Integer... status) {
+    public List<RentInfo> getRentInfoList(String userId, String orderId, Integer pageNum, Integer pageSize, Integer... status) {
         Example ex = new Example(RentInfo.class);
         Example.Criteria criteria = ex.createCriteria();
         criteria.andEqualTo("isDeleted", Boolean.FALSE).andEqualTo("userId", userId).andIn("status", Arrays.asList(status));
-        if (orderId != null && orderId>0) {
+        if (StringUtils.isNotBlank(orderId)) {
             criteria.andEqualTo("rentId",orderId);
         }
         if (pageNum != null && pageSize != null) {
@@ -103,8 +103,8 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
      * @return 租单信息
      */
     @Override
-    public RentInfo getRentInfo(Long rentId, Long userId) {
-        if (rentId != null && rentId > 0) {
+    public RentInfo getRentInfo(String rentId, String userId) {
+        if (StringUtils.isNotBlank(rentId)) {
             RentInfo rentInfo = rentDao.selectById(rentId);
             if (rentInfo == null) return null;
             if (userId != null && !userId.equals(rentInfo.getUserId())) return null;
@@ -153,7 +153,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
      * @return
      */
     @Override
-    public RentInfo cancelOverdue(Long rentId) {
+    public RentInfo cancelOverdue(String rentId) {
         RentInfo rentInfo = getRentInfo(rentId, null);
         if (rentInfo == null) return null;
         //如果订单已被操作，则无需再次操作
@@ -167,8 +167,8 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     }
 
     @Override
-    public boolean modifyStatus(Long rentId, RentStatus status) {
-        if (rentId == null || rentId <= 0 || status == null) return false;
+    public boolean modifyStatus(String rentId, RentStatus status) {
+        if (StringUtils.isBlank(rentId) || status == null) return false;
         RentInfo rentInfo = getRentInfo(rentId, null);
         if (rentInfo == null) return false;
         if (status.getCode().equals(rentInfo.getStatus())) return true; //与原租单状态相同，直接返回true
@@ -204,7 +204,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     }
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
         RentInfo rentInfo = getRentInfo(orderId, userId);
         OrderModel model = new OrderModel();
         BeanUtils.copyProperties(rentInfo, model);
@@ -219,7 +219,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
      * @return 租单列表
      */
     @Override
-    public List<RentInfo> getRentList(Long userId, Integer... status) {
+    public List<RentInfo> getRentList(String userId, Integer... status) {
         Example ex = new Example(RentInfo.class);
         ex.createCriteria()
                 .andEqualTo("userId", userId)
@@ -239,7 +239,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
      * @return 校验结果
      */
     private ResponseObj isAllowPublish(RentForm rentForm) {
-        Long userId = rentForm.getUserId();
+        String userId = rentForm.getUserId();
         //0. 交车时间与发单时间至少间隔一个小时
         if (rentForm.getHandoverTime().getTime() - new Date().getTime() < Constants.MIN_PUBLISH_INTERVAL_HOURS * 3600000)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与发单时间至少间隔" + Constants.MIN_PUBLISH_INTERVAL_HOURS + "小时");
@@ -278,7 +278,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
 
         RentInfo rentInfo = new RentInfo(RandomUtils.getPrimaryKey());
         BeanUtils.copyProperties(rentForm, rentInfo);
-        Long userId = rentForm.getUserId();
+        String userId = rentForm.getUserId();
         //用户信息
         RestResult<UserInfo> userResult = userService.getUserInfoById(userId);
         if (!userResult.isSuccess()) {

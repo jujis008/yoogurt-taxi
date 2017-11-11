@@ -6,18 +6,18 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
     <result column="from_user_id" jdbcType="BIGINT" property="fromUserId" />
-    <result column="to_user_id" jdbcType="BIGINT" property="toUserId" />
+    <result column="to_user_id" jdbcType="VARCHAR" property="toUserId" />
     <result column="score" jdbcType="INTEGER" property="score" />
     <result column="tag_id" jdbcType="VARCHAR" property="tagId" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
-    <result column="creator" jdbcType="BIGINT" property="creator" />
+    <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
-    <result column="modifier" jdbcType="BIGINT" property="modifier" />
+    <result column="modifier" jdbcType="VARCHAR" property="modifier" />
   </resultMap>
 
   <select id="getAvgScore" parameterType="map" resultType="double">

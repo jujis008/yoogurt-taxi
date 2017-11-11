@@ -12,7 +12,7 @@ import java.util.Date;
 public class RentWebListCondition extends PageableCondition {
     private String name;
     private String phone;
-    private Long orderId;
+    private String orderId;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

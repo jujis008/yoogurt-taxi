@@ -79,7 +79,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     }
 
     @Override
-    public FinanceBill getFinanceBillByBillNo(Long billNo) {
+    public FinanceBill getFinanceBillByBillNo(String billNo) {
         Example example = new Example(FinanceBill.class);
         example.createCriteria().andEqualTo("billNo",billNo)
                 .andEqualTo("billStatus",BillStatus.PENDING.getCode());
@@ -92,7 +92,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
 
     @Transactional
     @Override
-    public int chargeSuccessOrFailure(Long billNo, BillStatus billStatus) {
+    public int chargeSuccessOrFailure(String billNo, BillStatus billStatus) {
         FinanceBill financeBill = getFinanceBillByBillNo(billNo);
         if (financeBill == null) {
             return 0;
@@ -136,7 +136,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         UserInfo userInfo = userInfoRestResult.getBody();
         FinanceBill financeBill = new FinanceBill();
         financeBill.setAmount(money.getAmount());
-        Long billNo = RandomUtils.getPrimaryKey();
+        String billNo = RandomUtils.getPrimaryKey();
         financeBill.setBillNo(billNo);
         financeBill.setContextId(condition.getContextId());
         /**付款信息*/

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class AccountUpdateCondition {
     /**账户所有者（必穿）*/
-    private Long userId;
+    private String userId;
     /**变动金额（必穿）*/
     private Money money;
     /**交易类型（必穿）*/
@@ -38,7 +38,7 @@ public class AccountUpdateCondition {
     /**交易流水号（充值必传）*/
     private String transactionNo;
     /**交易对象id（罚款，补偿，订单收入）*/
-    private Long contextId;
+    private String contextId;
 
     /** 操作行为：1-冻结，2-冻结扣除，3-冻结返回*/
     private AccountChangeType changeType;

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserRoleService {
 
-    UserRoleInfo getUserRoleInfo(Long userId, Long roleId);
-    ResponseObj saveUserRoleInfo(Long userId, List<Long> roleIdList);
+    UserRoleInfo getUserRoleInfo(String userId, Long roleId);
+    ResponseObj saveUserRoleInfo(String userId, List<Long> roleIdList);
     ResponseObj removeUserRole(Long id);
 }

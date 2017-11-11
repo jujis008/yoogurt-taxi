@@ -19,7 +19,7 @@ public class OrderStatisticTests {
 
     @Test
     public void recordTest() {
-        OrderStatisticForm form = OrderStatisticForm.builder().orderCount(1).disobeyCount(1).userId(8888L).build();
+        OrderStatisticForm form = OrderStatisticForm.builder().orderCount(1).disobeyCount(1).userId("17101612021383517").build();
         statisticService.record(form);
     }
 }

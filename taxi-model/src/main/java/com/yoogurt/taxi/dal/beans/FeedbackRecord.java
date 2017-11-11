@@ -18,7 +18,7 @@ public class FeedbackRecord extends SuperModel{
     private Long id;
 
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     /**
      * 账号

@@ -15,7 +15,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -28,7 +27,7 @@ import java.net.InetAddress;
 @SpringBootApplication(exclude = { MongoAutoConfiguration.class, MongoDataAutoConfiguration.class })
 @EnableEurekaClient
 @EnableHystrix
-@ComponentScan({"com.yoogurt.taxi"})
+@ComponentScan(basePackages = {"com.yoogurt.taxi"})
 public class TaxiOrderBootstrap {
 
     public static void main(String[] args) throws Exception {

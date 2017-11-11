@@ -35,7 +35,7 @@ public class RestOrderController extends BaseController {
     private CommentTagStatisticService commentTagStatisticService;
 
     @RequestMapping(value = "/statistics/userId/{userId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public RestResult<Map<String, Object>> statistics(@PathVariable(name = "userId") Long userId) {
+    public RestResult<Map<String, Object>> statistics(@PathVariable(name = "userId") String userId) {
 
         //订单统计信息
         OrderStatistic orderStatistics = orderStatisticService.getOrderStatistics(userId);
@@ -49,7 +49,7 @@ public class RestOrderController extends BaseController {
     }
 
     @RequestMapping(value = "/statistics/userId/{userId}/userType/{userType}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public RestResult<Map<String, Object>> orderStatistics(@PathVariable(name = "userId") Long userId, @PathVariable(name = "userType") Integer userType) {
+    public RestResult<Map<String, Object>> orderStatistics(@PathVariable(name = "userId") String userId, @PathVariable(name = "userType") Integer userType) {
         Map<String, Object> map = new HashMap<>();
 
         //未完成订单数量

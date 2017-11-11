@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 @Getter
 @Setter
 public class UserForm {
-    private Long userId;
+    private String userId;
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "(\\+\\d+)?1[34578]\\d{9}$",message = "手机号格式有误")
     private String username;

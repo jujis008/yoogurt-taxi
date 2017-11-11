@@ -32,7 +32,7 @@ public class CarInfoServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarInfo> getCarByUserId(Long userId) {
+    public List<CarInfo> getCarByUserId(String userId) {
         Example example = new Example(CarInfo.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("userId",userId);
@@ -41,7 +41,7 @@ public class CarInfoServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarInfo> getCarByDriverId(Long driverId) {
+    public List<CarInfo> getCarByDriverId(String driverId) {
         Example example = new Example(CarInfo.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("driverId",driverId);

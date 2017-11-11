@@ -72,18 +72,15 @@ public class LoginServiceImpl implements LoginService {
         if(userList.size()!=0) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(),"账号已存在");
         }
-        String userId = RandomUtils.getRandNum(18);
+        String userId = RandomUtils.getPrimaryKey();
         UserInfo user = new UserInfo();
+        user.setUserId(userId);
         user.setUsername(username);
         user.setLoginPassword(Encipher.encrypt(password));
         user.setType(userType.getCode());
         user.setStatus(UserStatus.UN_AUTHENTICATE.getCode());
         user.setUserFrom(UserFrom.APP.getCode());
         user.setIsDeleted(Boolean.FALSE);
-        user.setModifier(Long.valueOf(userId));
-        user.setGmtModify(new Date());
-        user.setGmtCreate(new Date());
-        user.setCreator(Long.valueOf(userId));
         userDao.insert(user);
         return ResponseObj.success();
     }

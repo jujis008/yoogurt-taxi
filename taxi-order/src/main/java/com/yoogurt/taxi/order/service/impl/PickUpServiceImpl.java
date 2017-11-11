@@ -42,7 +42,7 @@ public class PickUpServiceImpl implements PickUpService {
     @Transactional
     @Override
     public PickUpOrderModel doPickUp(PickUpForm pickupForm) {
-        Long orderId = pickupForm.getOrderId();
+        String orderId = pickupForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, pickupForm.getUserId());
         if (orderInfo == null) return null;
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
@@ -76,12 +76,12 @@ public class PickUpServiceImpl implements PickUpService {
     }
 
     @Override
-    public OrderPickUpInfo getPickUpInfo(Long orderId) {
+    public OrderPickUpInfo getPickUpInfo(String orderId) {
         return pickUpDao.selectById(orderId);
     }
 
     @Override
-    public OrderModel info(Long orderId, Long userId) {
+    public OrderModel info(String orderId, String userId) {
 
         PickUpOrderModel model = new PickUpOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);

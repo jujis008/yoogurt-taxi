@@ -50,7 +50,7 @@ public class OrderWebController extends BaseController{
     }
 
     @RequestMapping(value = "info/orderId/{orderId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
-    public ResponseObj getDetail(@PathVariable(name = "orderId") Long orderId) {
+    public ResponseObj getDetail(@PathVariable(name = "orderId") String orderId) {
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
         OrderAcceptInfo acceptInfo = acceptService.getAcceptInfo(orderId);
         OrderPickUpInfo pickUpInfo = pickUpService.getPickUpInfo(orderId);
@@ -98,7 +98,7 @@ public class OrderWebController extends BaseController{
     }
 
     @RequestMapping(value = "rent/info/rentId/{rentId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
-    public ResponseObj getRentDetail(@PathVariable(name = "rentId") Long rentId) {
+    public ResponseObj getRentDetail(@PathVariable(name = "rentId") String rentId) {
         RentInfo rentInfo = rentInfoService.getRentInfo(rentId, null);
         return ResponseObj.success(rentInfo);
     }

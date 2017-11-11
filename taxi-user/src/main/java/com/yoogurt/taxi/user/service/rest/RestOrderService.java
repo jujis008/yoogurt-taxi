@@ -12,5 +12,5 @@ import java.util.Map;
 @FeignClient(value = "taxi-order", fallback = RestOrderServiceHystrix.class)
 public interface RestOrderService {
     @RequestMapping(value = "rest/order/statistics/userId/{userId}",method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    RestResult<Map<String,Object>> statistics(@PathVariable(name = "userId") Long userId);
+    RestResult<Map<String,Object>> statistics(@PathVariable(name = "userId") String userId);
 }

@@ -43,7 +43,7 @@ public class PushServiceImpl implements PushService {
     private MsgService msgService;
 
     @Override
-    public PushDevice getDeviceInfo(String clientId, Long userId) {
+    public PushDevice getDeviceInfo(String clientId, String userId) {
         if (StringUtils.isBlank(clientId)) return null;
         PushDevice device = deviceDao.selectById(clientId);
         if (device == null) return null;
@@ -52,7 +52,7 @@ public class PushServiceImpl implements PushService {
     }
 
     @Override
-    public PushDevice getDeviceByUserId(Long userId) {
+    public PushDevice getDeviceByUserId(String userId) {
         PushDevice probe = new PushDevice();
         probe.setUserId(userId);
         List<PushDevice> devices = deviceDao.selectList(probe);
@@ -73,7 +73,7 @@ public class PushServiceImpl implements PushService {
     public PushDevice binding(UserBindingForm bindingForm) {
         if (bindingForm == null) return null;
         String clientId = bindingForm.getClientId();
-        Long userId = bindingForm.getUserId();
+        String userId = bindingForm.getUserId();
         //查看该用户是否绑定了设备
         PushDevice deviceInfo = getDeviceByUserId(userId);
         PushDevice target = getDeviceInfo(clientId, null);//需要绑定的目标设备
@@ -127,7 +127,7 @@ public class PushServiceImpl implements PushService {
      * @return 设备信息
      */
     @Override
-    public PushDevice unBinding(String clientId, Long userId) {
+    public PushDevice unBinding(String clientId, String userId) {
         PushDevice device = getDeviceInfo(clientId, userId);
         if (device == null) return null;
         device.setUserId(null);
@@ -185,8 +185,8 @@ public class PushServiceImpl implements PushService {
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(Long userId, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist) {
-        List<Long> userIds = new ArrayList<>();
+    public ResponseObj pushMessage(String userId, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist) {
+        List<String> userIds = new ArrayList<>();
         userIds.add(userId);
         ResponseObj pushResult = pushMessage(userIds, userType, sendType, MsgType.SINGLE, null, title, content, extras, persist);
         log.info("userId: [" + userId + "]");
@@ -208,7 +208,7 @@ public class PushServiceImpl implements PushService {
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(List<Long> userIds, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist) {
+    public ResponseObj pushMessage(List<String> userIds, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist) {
         ResponseObj pushResult = pushMessage(userIds, userType, sendType, MsgType.SINGLE, null, title, content, extras, persist);
         log.info("userIds: " + userIds);
         log.info(pushResult.toJSON());
@@ -234,7 +234,7 @@ public class PushServiceImpl implements PushService {
      * @author weihao.liu
      */
     @Override
-    public ResponseObj pushMessage(List<Long> userIds, UserType userType, SendType sendType, MsgType msgType, DeviceType deviceType, String title, String content, Map<String, Object> extras, boolean persist) {
+    public ResponseObj pushMessage(List<String> userIds, UserType userType, SendType sendType, MsgType msgType, DeviceType deviceType, String title, String content, Map<String, Object> extras, boolean persist) {
         if (msgType == null) {
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "不支持的消息类型");
@@ -311,10 +311,10 @@ public class PushServiceImpl implements PushService {
         return ResponseObj.success();
     }
 
-    private void persistMessage(List<Long> userIds, String title, String content, Map<String, Object> extras, SendType sendType) {
+    private void persistMessage(List<String> userIds, String title, String content, Map<String, Object> extras, SendType sendType) {
         if (CollectionUtils.isEmpty(userIds)) return;
         List<Message> messages = new ArrayList<>();
-        for (Long userId : userIds) {
+        for (String userId : userIds) {
             Message msg = new Message();
             msg.setMessageId(RandomUtils.getPrimaryKey());
             msg.setToUserId(userId);
@@ -329,7 +329,7 @@ public class PushServiceImpl implements PushService {
         msgService.addMessages(messages);
     }
 
-    private List<PushDevice> getDeviceByUserIds(List<Long> userIds) {
+    private List<PushDevice> getDeviceByUserIds(List<String> userIds) {
 
         Example ex = new Example(PushDevice.class);
         ex.createCriteria().andIn("userId", userIds);

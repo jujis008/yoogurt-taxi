@@ -5,6 +5,7 @@ import com.yoogurt.taxi.dal.beans.UserRoleInfo;
 import com.yoogurt.taxi.user.dao.UserRoleDao;
 import com.yoogurt.taxi.user.service.UserRoleService;
 import jdk.nashorn.internal.ir.ReturnNode;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +18,9 @@ public class UserRoleServiceImpl implements UserRoleService {
     private UserRoleDao userRoleDao;
 
     @Override
-    public UserRoleInfo getUserRoleInfo(Long userId, Long roleId) {
+    public UserRoleInfo getUserRoleInfo(String userId, Long roleId) {
 
-        if ((userId == null || userId <= 0) && (roleId == null || roleId <= 0)) return null;
+        if (StringUtils.isBlank(userId) && (roleId == null || roleId <= 0)) return null;
         UserRoleInfo info = new UserRoleInfo();
 
         if (userId != null) {
@@ -32,7 +33,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
-    public ResponseObj saveUserRoleInfo(Long userId, List<Long> roleIdList) {
+    public ResponseObj saveUserRoleInfo(String userId, List<Long> roleIdList) {
         for (Long roleId:roleIdList) {
             UserRoleInfo roleInfo = new UserRoleInfo();
             roleInfo.setRoleId(roleId);

@@ -22,7 +22,7 @@ public class OrderPayment extends SuperModel{
      * 订单号
      */
     @Column(name = "order_id")
-    private Long orderId;
+    private String orderId;
 
     /**
      * wallet-钱包支付，
@@ -58,7 +58,7 @@ public class OrderPayment extends SuperModel{
     public OrderPayment() {
     }
 
-    public OrderPayment(String payId, Long orderId) {
+    public OrderPayment(String payId, String orderId) {
         this.payId = payId;
         this.orderId = orderId;
     }

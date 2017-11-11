@@ -14,7 +14,7 @@ public class CommentDaoImpl extends BaseDao<OrderCommentInfoMapper, OrderComment
     private OrderCommentInfoMapper mapper;
 
     @Override
-    public Double getAvgScore(Long userId) {
+    public Double getAvgScore(String userId) {
         return mapper.getAvgScore(userId);
     }
 }

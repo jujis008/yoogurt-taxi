@@ -64,10 +64,9 @@ public class EventTaskRunner extends AbstractEventTaskRunner {
         Money paidMoney = new Money(notify.getAmount());
         String orderNo = notify.getOrderNo();
         if (StringUtils.isBlank(orderNo)) return null;
-        Long orderId = Long.valueOf(orderNo);
         /********************  更新订单的支付状态  ********************************/
         synchronized (orderNo.intern()) {
-            OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
+            OrderInfo orderInfo = orderInfoService.getOrderInfo(orderNo, null);
             if(orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
             if(orderInfo.getIsPaid()) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单已支付");
             if (!paidMoney.getAmount().equals(orderInfo.getAmount()))
@@ -81,12 +80,12 @@ public class EventTaskRunner extends AbstractEventTaskRunner {
 
             /********************  操作订单的支付记录  ********************************/
             Payment payInfo = eventTask.getPayment();
-            List<OrderPayment> payments = paymentService.getPayments(orderId, 10);
+            List<OrderPayment> payments = paymentService.getPayments(orderNo, 10);
             if (CollectionUtils.isEmpty(payments)) {//没有支付记录，则主动创建一条
-                OrderPayment payment = new OrderPayment(payInfo.getPayId(), orderId);
+                OrderPayment payment = new OrderPayment(payInfo.getPayId(), orderNo);
                 payment.setSubject(payInfo.getSubject());
                 payment.setBody(payInfo.getBody());
-                payment.setOrderId(orderId);
+                payment.setOrderId(orderNo);
                 payment.setPayChannel(payChannel.getName());
                 payment.setTransactionNo(notify.getTransactionNo());
                 payment.setStatus(20); //支付完成

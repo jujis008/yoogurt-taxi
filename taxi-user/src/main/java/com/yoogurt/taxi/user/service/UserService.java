@@ -22,7 +22,7 @@ public interface UserService {
      * @param id 主键
      * @return
      */
-    UserInfo getUserByUserId(Long id);
+    UserInfo getUserByUserId(String id);
 
     UserInfo getUserByUsernameAndType(String username, Integer userType);
 
@@ -33,7 +33,7 @@ public interface UserService {
      * @param newPassword   新密码
      * @return
      */
-    ResponseObj modifyLoginPassword(Long userId, String oldPassword, String newPassword);
+    ResponseObj modifyLoginPassword(String userId, String oldPassword, String newPassword);
 
     /**
      * 修改头像
@@ -41,7 +41,7 @@ public interface UserService {
      * @param avatar    头像url
      * @return
      */
-    ResponseObj modifyHeadPicture(Long userId, String avatar);
+    ResponseObj modifyHeadPicture(String userId, String avatar);
 
     /**
      * app端重置登陆密码
@@ -58,7 +58,7 @@ public interface UserService {
      * @param password  密码
      * @return
      */
-    ResponseObj resetLoginPwd(Long userId, String password);
+    ResponseObj resetLoginPwd(String userId, String password);
 
     /**
      * 设置交易密码
@@ -66,7 +66,7 @@ public interface UserService {
      * @param payPassword   交易密码
      * @return
      */
-    ResponseObj payPwdSetting(Long userId, String payPassword);
+    ResponseObj payPwdSetting(String userId, String payPassword);
 
     /**
      * 修改交易密码
@@ -75,7 +75,7 @@ public interface UserService {
      * @param newPassword
      * @return
      */
-    ResponseObj modifyPayPwd(Long userId, String oldPassword, String newPassword);
+    ResponseObj modifyPayPwd(String userId, String oldPassword, String newPassword);
 
     /**
      * 重置交易密码
@@ -94,21 +94,21 @@ public interface UserService {
      * @param phoneNumber
      * @return
      */
-    ResponseObj modifyUserName(Long userId, String password, String phoneCode, String phoneNumber);
+    ResponseObj modifyUserName(String userId, String password, String phoneCode, String phoneNumber);
 
     /**
      * 修改用户状态
      * @param userId
      * @param userStatus
      */
-    void modifyUserStatus(Long userId, UserStatus userStatus);
+    void modifyUserStatus(String userId, UserStatus userStatus);
 
     /**
      * 删除用户（软删除）
      * @param userId
      * @return
      */
-    ResponseObj removeUser(Long userId);
+    ResponseObj removeUser(String userId);
 
     ResponseObj InsertUser(UserInfo userInfo);
 

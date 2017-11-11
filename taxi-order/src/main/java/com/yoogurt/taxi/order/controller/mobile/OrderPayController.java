@@ -34,7 +34,7 @@ public class OrderPayController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        Long orderId = form.getOrderId();
+        String orderId = form.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(form.getOrderId(), super.getUserId());
         if (orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单记录不存在");
         if (orderInfo.getIsPaid()) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单已支付");

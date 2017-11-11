@@ -13,9 +13,9 @@ import java.util.Map;
 
 public interface PushService {
 
-    PushDevice getDeviceByUserId(Long userId);
+    PushDevice getDeviceByUserId(String userId);
 
-    PushDevice getDeviceInfo(String clientId, Long userId);
+    PushDevice getDeviceInfo(String clientId, String userId);
 
     PushDevice saveDevice(PushDevice device, boolean isAdd);
 
@@ -34,7 +34,7 @@ public interface PushService {
      * @param userId   用户ID
      * @return 设备信息
      */
-    PushDevice unBinding(String clientId, Long userId);
+    PushDevice unBinding(String clientId, String userId);
 
     /**
      * <p class="detail">
@@ -75,7 +75,7 @@ public interface PushService {
      * @param persist  是否持久化到数据库，可以在消息中心里面看到   @return 推送结果
      * @author weihao.liu
      */
-    ResponseObj pushMessage(Long userId, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist);
+    ResponseObj pushMessage(String userId, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist);
 
     /**
      * <p class="detail">
@@ -90,7 +90,7 @@ public interface PushService {
      * @param persist  是否持久化到数据库，可以在消息中心里面看到   @return 推送结果
      * @author weihao.liu
      */
-    ResponseObj pushMessage(List<Long> userIds, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist);
+    ResponseObj pushMessage(List<String> userIds, UserType userType, SendType sendType, String title, String content, Map<String, Object> extras, boolean persist);
 
     /**
      * <p class="detail">
@@ -109,6 +109,6 @@ public interface PushService {
      * @return 推送结果
      * @author weihao.liu
      */
-    ResponseObj pushMessage(List<Long> userIds, UserType userType, SendType sendType, MsgType msgType, DeviceType deviceType, String title, String content, Map<String, Object> extras, boolean persist);
+    ResponseObj pushMessage(List<String> userIds, UserType userType, SendType sendType, MsgType msgType, DeviceType deviceType, String title, String content, Map<String, Object> extras, boolean persist);
 
 }

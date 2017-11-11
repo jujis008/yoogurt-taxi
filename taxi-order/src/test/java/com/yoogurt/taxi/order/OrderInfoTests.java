@@ -32,7 +32,7 @@ public class OrderInfoTests {
         OrderListCondition condition = new OrderListCondition();
         condition.setDriverName("刘师傅");
         condition.setEndTime(new Date());
-        condition.setOrderId(1745556817324L);
+        condition.setOrderId("17101612021383517");
         condition.setPageNum(1);
         condition.setPageSize(15);
         condition.setPhone("18814892833");
@@ -44,7 +44,7 @@ public class OrderInfoTests {
     @Test
     public void warningOrdersTest() {
         WarningOrderCondition condition = new WarningOrderCondition();
-        condition.setAgentUserId(8888L);
+        condition.setAgentUserId("17101612021383517");
         List<OrderInfo> warningOrders = orderInfoService.getWarningOrders(condition);
         Assert.assertEquals(1, warningOrders.size());
     }
@@ -57,8 +57,8 @@ public class OrderInfoTests {
 //        orderForm.setUserId(17092815473528528L);
 //        orderForm.setUserType(30);
         //车主发单，司机接单
-        orderForm.setRentId(17101318472433600L);
-        orderForm.setUserId(8888L);
+        orderForm.setRentId("17101612021383517");
+        orderForm.setUserId("17101612021383517");
         orderForm.setUserType(20);
         ResponseObj obj = orderInfoService.placeOrder(orderForm);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
@@ -66,7 +66,7 @@ public class OrderInfoTests {
 
     @Test
     public void orderDetailsTest() {
-        Map<String, Object> map = orderInfoService.getOrderDetails(17101612521636710L, 17092815525312730L);
+        Map<String, Object> map = orderInfoService.getOrderDetails("17101612021383517", "17101612021383517");
         Assert.assertNotNull("订单信息不存在！", map);
     }
 }

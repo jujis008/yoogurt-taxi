@@ -4,6 +4,7 @@ package com.yoogurt.taxi.order.form;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 
@@ -12,7 +13,7 @@ import java.math.BigDecimal;
 @Builder
 public class OrderStatisticForm {
 
-	private Long userId;
+	private String userId;
 
 	/**
 	 * 订单的变更量
@@ -39,7 +40,7 @@ public class OrderStatisticForm {
 	 * @return true 有效，false 无效
 	 */
 	public boolean isValid() {
-		return userId != null && userId > 0 && (orderCount > 0 || trafficViolationCount > 0 || disobeyCount > 0 || score.doubleValue() > 0);
+		return StringUtils.isNotBlank(userId) && (orderCount > 0 || trafficViolationCount > 0 || disobeyCount > 0 || score.doubleValue() > 0);
 	}
 
 }
