@@ -6,6 +6,7 @@ import com.yoogurt.taxi.dal.annotation.Domain;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -70,12 +71,12 @@ public class InsertAspect {
                 //如果没有注入修改人的id，就默认设置当前登录人的id
                 if (MethodUtils.invokeMethod(object, "getCreator", null) == null) {
 
-                    MethodUtils.invokeMethod(object, "setCreator", userId == null ? 0L : userId);
+                    MethodUtils.invokeMethod(object, "setCreator", StringUtils.isBlank(userId) ? "0" : userId);
                 }
                 //如果没有注入修改人的id，就默认设置当前登录人的id
                 if (MethodUtils.invokeMethod(object, "getModifier", null) == null) {
 
-                    MethodUtils.invokeMethod(object, "setModifier", userId == null ? 0L : userId);
+                    MethodUtils.invokeMethod(object, "setModifier", StringUtils.isBlank(userId) ? "0" : userId);
                 }
             } catch (Exception e) {
                 log.error("设置公共字段失败,{}", e);

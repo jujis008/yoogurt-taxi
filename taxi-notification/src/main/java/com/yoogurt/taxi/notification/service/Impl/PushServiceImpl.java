@@ -47,7 +47,7 @@ public class PushServiceImpl implements PushService {
         if (StringUtils.isBlank(clientId)) return null;
         PushDevice device = deviceDao.selectById(clientId);
         if (device == null) return null;
-        if (userId != null && !userId.equals(device.getUserId())) return null;
+        if (StringUtils.isNotBlank(userId) && !userId.equals(device.getUserId())) return null;
         return device;
     }
 

@@ -107,7 +107,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         if (StringUtils.isNotBlank(rentId)) {
             RentInfo rentInfo = rentDao.selectById(rentId);
             if (rentInfo == null) return null;
-            if (userId != null && !userId.equals(rentInfo.getUserId())) return null;
+            if (StringUtils.isNotBlank(userId) && !userId.equals(rentInfo.getUserId())) return null;
             return rentInfo;
         }
         return null;

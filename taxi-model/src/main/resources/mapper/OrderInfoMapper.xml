@@ -73,11 +73,11 @@
             is_commented, is_paid, status, gmt_create
         FROM order_info
         WHERE is_deleted=0
-        <if test="orderId != null and orderId > 0">
+        <if test="orderId != null and orderId !=''">
             AND order_id=#{orderId}
         </if>
 
-        <if test="userId != null and userType != null">
+        <if test="userId != null and userId != '' and userType != null">
             <if test="userType == 20">
                 AND agent_user_id=#{userId}
             </if>
@@ -113,11 +113,11 @@
             is_commented, is_paid, status, gmt_create
         FROM order_info
         WHERE is_deleted=0 AND status != 60
-        <if test="orderId != null and orderId > 0">
+        <if test="orderId != null and orderId != ''">
             AND order_id=#{orderId}
         </if>
 
-        <if test="userId != null and userType != null">
+        <if test="userId != null and userId != '' and userType != null">
             <if test="userType == 20">
                 AND agent_user_id=#{userId}
             </if>
@@ -161,11 +161,11 @@
         FROM order_info AS o LEFT JOIN order_cancel_info AS c ON (c.order_id=o.order_id)
         WHERE o.is_deleted=0 AND o.status=60
 
-        <if test="orderId != null and orderId > 0">
+        <if test="orderId != null and orderId != ''">
             AND o.order_id=#{orderId}
         </if>
 
-        <if test="userId != null and userType != null">
+        <if test="userId != null and userId != '' and userType != null">
             <if test="userType == 20">
                 AND agent_user_id=#{userId}
             </if>

@@ -8,6 +8,7 @@ import com.yoogurt.taxi.common.helper.ServletHelper;
 import com.yoogurt.taxi.common.helper.TokenHelper;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -73,7 +74,7 @@ public class BaseController {
      */
     public SessionUser getUser() {
         String userId = getUserId();
-        if (userId == null) return null;
+        if (StringUtils.isBlank(userId)) return null;
         Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
         return obj != null ? (SessionUser) obj : null;
     }

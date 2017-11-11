@@ -68,13 +68,13 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
     @Override
     public List<OrderDisobeyInfo> getDisobeyList(String orderId, String userId, DisobeyType... types) {
         List<OrderDisobeyInfo> disobeyInfoList = Lists.newArrayList();
-        if (orderId == null && userId == null && (types == null || types.length == 0)) return disobeyInfoList;
+        if (StringUtils.isBlank(orderId) && StringUtils.isBlank(userId) && (types == null || types.length == 0)) return disobeyInfoList;
         Example ex = new Example(OrderDisobeyInfo.class);
         Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
-        if (orderId != null) {
+        if (StringUtils.isNotBlank(orderId)) {
             criteria.andEqualTo("orderId", orderId);
         }
-        if (userId != null) {
+        if (StringUtils.isNotBlank(userId)) {
             criteria.andEqualTo("userId", userId);
         }
         if (types != null && types.length > 0) {

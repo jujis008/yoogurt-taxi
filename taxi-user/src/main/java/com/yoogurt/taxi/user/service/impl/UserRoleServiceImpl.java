@@ -23,7 +23,7 @@ public class UserRoleServiceImpl implements UserRoleService {
         if (StringUtils.isBlank(userId) && (roleId == null || roleId <= 0)) return null;
         UserRoleInfo info = new UserRoleInfo();
 
-        if (userId != null) {
+        if (StringUtils.isNotBlank(userId)) {
             info.setUserId(userId);
         }
         if (roleId != null) {

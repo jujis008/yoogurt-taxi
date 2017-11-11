@@ -73,7 +73,7 @@ public class PushPayload implements Serializable {
     }
 
     public void addUserId(String userId) {
-        if (userId != null) {
+        if (StringUtils.isNotBlank(userId)) {
             this.userIds.add(userId);
         }
     }

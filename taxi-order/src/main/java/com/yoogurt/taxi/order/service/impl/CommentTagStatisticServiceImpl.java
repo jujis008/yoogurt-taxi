@@ -54,7 +54,7 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
 
     private List<CommentTagStatistic> buildStatistic(String userId, Long[] tagIds) {
         List<CommentTagStatistic> statistics = new ArrayList<>();
-        if (userId == null || tagIds == null || tagIds.length == 0) return statistics;
+        if (StringUtils.isBlank(userId) || tagIds == null || tagIds.length == 0) return statistics;
         //长度不对应
         for (Long tagId : tagIds) {
 

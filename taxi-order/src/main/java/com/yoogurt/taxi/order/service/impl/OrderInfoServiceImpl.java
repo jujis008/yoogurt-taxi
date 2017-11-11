@@ -167,7 +167,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         OrderInfo orderInfo = orderDao.selectById(orderId);
         if (orderInfo == null) return null;
         //用户id不符合
-        if (userId != null && !userId.equals(orderInfo.getAgentUserId()) && !userId.equals(orderInfo.getOfficialUserId())) {
+        if (StringUtils.isNotBlank(userId) && !userId.equals(orderInfo.getAgentUserId()) && !userId.equals(orderInfo.getOfficialUserId())) {
             return null;
         }
         return orderInfo;

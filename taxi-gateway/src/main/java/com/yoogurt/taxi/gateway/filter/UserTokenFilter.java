@@ -3,9 +3,10 @@ package com.yoogurt.taxi.gateway.filter;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.helper.TokenHelper;
+import com.yoogurt.taxi.common.vo.ResponseObj;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,9 +83,9 @@ public class UserTokenFilter extends AccessControlFilter {
         //uri忽略处理
         if(matcher.match(IGNORE_PATTERN, uri)) return true;
 
-        Object userId = tokenHelper.getUserId(WebUtils.toHttp(request));
+        String userId = tokenHelper.getUserId(WebUtils.toHttp(request));
         //Token是否存在
-        if (userId != null && redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId) != null) {
+        if (StringUtils.isNotBlank(userId) && redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId) != null) {
             //token过期判定
             String token = tokenHelper.getAuthToken(req);
             return !tokenHelper.isTokenExpired(token);

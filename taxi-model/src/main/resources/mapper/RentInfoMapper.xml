@@ -67,7 +67,7 @@
         FROM rent_info AS r
         LEFT JOIN order_statistic AS o ON (r.user_id=o.user_id)
         WHERE r.is_deleted=0
-        <if test="userId != null and userId > 0">
+        <if test="userId != null and userId != '' ">
             AND r.user_id=#{userId}
         </if>
 
@@ -116,7 +116,7 @@
         FROM rent_info AS r
         LEFT JOIN order_statistic AS o ON (r.user_id=o.user_id)
         WHERE r.is_deleted=0
-        <if test="userId != null and userId > 0">
+        <if test="userId != null and userId != '' ">
             AND r.user_id=#{userId}
         </if>
 
