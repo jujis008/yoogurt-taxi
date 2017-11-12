@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.finance;
+package com.yoogurt.taxi;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;

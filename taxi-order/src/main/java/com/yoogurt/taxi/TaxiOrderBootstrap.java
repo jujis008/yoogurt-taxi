@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.order;
+package com.yoogurt.taxi;
 
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.order.service.ExpiredMessageListener;
@@ -24,7 +24,7 @@ import java.net.InetAddress;
 @Slf4j
 @EnableFeignClients
 @EnableTransactionManagement
-@SpringBootApplication(exclude = { MongoAutoConfiguration.class, MongoDataAutoConfiguration.class })
+@SpringBootApplication
 @EnableEurekaClient
 @EnableHystrix
 @ComponentScan(basePackages = {"com.yoogurt.taxi"})
