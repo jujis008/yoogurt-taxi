@@ -4,8 +4,8 @@ import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.bo.WxNotify;
-import com.yoogurt.taxi.dal.doc.finance.Event;
-import com.yoogurt.taxi.dal.doc.finance.EventTask;
+import com.yoogurt.taxi.pay.doc.Event;
+import com.yoogurt.taxi.pay.doc.EventTask;
 import com.yoogurt.taxi.pay.service.NotifyService;
 import com.yoogurt.taxi.pay.service.PayChannelService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ import java.util.Set;
 public class WxNotifyController extends BaseController {
 
     @Autowired
-    private NotifyService wxNotifyService;
+    private NotifyService notifyService;
 
     @Autowired
     private PayChannelService wxPayService;
@@ -64,10 +64,10 @@ public class WxNotifyController extends BaseController {
             }
         }
         //event对象解析
-        Event<? extends Notify> event = wxNotifyService.eventParse(parameterMap);
+        Event<? extends Notify> event = wxPayService.eventParse(parameterMap);
         if (event != null) {
             log.info("[WxNotifyController]接收到微信回调：\n" + event.toString());
-            EventTask eventTask = wxNotifyService.submit(event);
+            EventTask eventTask = notifyService.submit(event);
             if (eventTask != null) {//回调成功
                 log.info("[WxNotifyController]微信回调任务提交成功：\n" + event.toString());
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -88,7 +88,7 @@ public class WxNotifyController extends BaseController {
      */
     @RequestMapping(value = "/wx/result/{taskId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj queryResult(@PathVariable(name = "taskId") String taskId) {
-        Event<Notify> event = wxNotifyService.queryResult(taskId);
+        Event<Notify> event = notifyService.queryResult(taskId);
         return ResponseObj.success(event);
     }
 
@@ -101,7 +101,7 @@ public class WxNotifyController extends BaseController {
     @RequestMapping(value = "/wx/event/{eventId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getEventTask(@PathVariable(name = "eventId") String eventId) {
 
-        Event<Notify> event = wxNotifyService.queryResult(eventId);
+        Event<Notify> event = notifyService.queryResult(eventId);
         return ResponseObj.success(event);
     }
 }
