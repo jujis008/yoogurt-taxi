@@ -1,6 +1,8 @@
 package com.yoogurt.taxi.pay.service;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.pay.doc.Event;
 import com.yoogurt.taxi.pay.doc.PayTask;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,9 +16,18 @@ public interface PayChannelService {
      * 执行支付任务（异步）
      *
      * @param payTask 支付任务信息
-     * @return
+     * @return 异步任务
      */
     CompletableFuture<ResponseObj> doTask(PayTask payTask);
+
+
+    /**
+     * 解析回调请求，组装EventTask
+     *
+     * @param parameterMap 回调请求
+     * @return EventTask
+     */
+    Event<? extends Notify> eventParse(Map<String, Object> parameterMap);
 
     /**
      * 参数签名接口

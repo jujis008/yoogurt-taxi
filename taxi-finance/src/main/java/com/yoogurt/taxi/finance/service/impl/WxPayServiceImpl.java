@@ -2,26 +2,34 @@ package com.yoogurt.taxi.finance.service.impl;
 
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.utils.BeanRefUtils;
+import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.utils.XmlUtil;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceWxSettings;
-import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.WxNotify;
+import com.yoogurt.taxi.dal.enums.EventType;
+import com.yoogurt.taxi.dal.enums.PayChannel;
 import com.yoogurt.taxi.finance.bo.wx.PrePayInfo;
 import com.yoogurt.taxi.finance.bo.wx.PrePayResult;
 import com.yoogurt.taxi.finance.dao.WxSettingsDao;
 import com.yoogurt.taxi.finance.service.WxPayService;
+import com.yoogurt.taxi.pay.doc.Event;
 import com.yoogurt.taxi.pay.doc.PayTask;
+import com.yoogurt.taxi.pay.doc.Payment;
 import com.yoogurt.taxi.pay.params.PayParams;
 import com.yoogurt.taxi.pay.service.PayService;
 import com.yoogurt.taxi.pay.service.impl.AbstractFinanceBizService;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import net.sf.json.xml.XMLSerializer;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -137,6 +145,56 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         });
     }
 
+    /**
+     * 解析回调请求，组装EventTask
+     *
+     * @param parameterMap 回调请求
+     * @return EventTask
+     */
+    @Override
+    public Event<? extends Notify> eventParse(Map<String, Object> parameterMap) {
+        if (parameterMap == null || parameterMap.isEmpty()) return null;
+        //生成一个eventId
+        String eventId = "event_" + RandomUtils.getPrimaryKey();
+        //构造一个 Notify
+        WxNotify notify = new WxNotify();
+        //构造一个 Event
+        Event<WxNotify> event = new Event<>(eventId, notify);
+        try {
+            //将Map中的参数注入到
+            BeanUtils.populate(notify, parameterMap);
+            notify.setChannel(PayChannel.WX.getName());
+            notify.setCharset("UTF-8");
+            notify.setSignType("MD5");
+            notify.setSign(parameterMap.get("sign").toString());
+            notify.setAmount(Long.valueOf(parameterMap.get("total_fee").toString()));
+            long timestamp = DateTime.parse(notify.getTimeEnd(), DateTimeFormat.forPattern("yyyyMMddHHmmss")).getMillis();
+            notify.setNotifyTimestamp(timestamp);
+            notify.setPaidTimestamp(timestamp);
+            //回传参数
+            if (parameterMap.get("attach") != null) {
+                Map<String, Object> metadata = new HashMap<>();
+                String orderNo = "";
+                String attach = parameterMap.get("attach").toString();
+                String[] extras = attach.split("&");
+                for (String str : extras) {
+                    String[] pairs = str.split("=");
+                    if(pairs.length != 2) continue;
+                    metadata.put(pairs[0], pairs[1]);
+                    if ("orderId".equals(pairs[0])) { //解析attach数据中的订单id
+                        orderNo = pairs[1];
+                    }
+                }
+                notify.setOrderNo(orderNo);
+                notify.setMetadata(metadata);
+            }
+            event.setEventType(EventType.PAY_SUCCEEDED.getCode());
+            return event;
+        } catch (Exception e) {
+            log.error("回调参数解析发生异常, {}", e);
+        }
+        return null;
+    }
     /**
      * 构造一个预下单对象
      *
