@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.pay.service.impl;
 
-import com.yoogurt.taxi.dal.doc.finance.Event;
 import com.yoogurt.taxi.pay.dao.EventDao;
+import com.yoogurt.taxi.pay.doc.Event;
 import com.yoogurt.taxi.pay.service.EventService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

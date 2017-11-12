@@ -1,8 +1,8 @@
 package com.yoogurt.taxi.pay.service.impl;
 
 import com.yoogurt.taxi.common.utils.RandomUtils;
-import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.pay.dao.PaymentDao;
+import com.yoogurt.taxi.pay.doc.Payment;
 import com.yoogurt.taxi.pay.params.PayParams;
 import com.yoogurt.taxi.pay.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;

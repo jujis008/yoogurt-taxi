@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.pay.service;
 
-import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.pay.doc.Payment;
 import com.yoogurt.taxi.pay.params.PayParams;
 
 /**

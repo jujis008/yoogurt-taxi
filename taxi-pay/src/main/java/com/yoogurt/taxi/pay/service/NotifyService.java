@@ -1,23 +1,13 @@
 package com.yoogurt.taxi.pay.service;
 
 import com.yoogurt.taxi.dal.bo.Notify;
-import com.yoogurt.taxi.dal.doc.finance.Event;
-import com.yoogurt.taxi.dal.doc.finance.EventTask;
-
-import java.util.Map;
+import com.yoogurt.taxi.pay.doc.Event;
+import com.yoogurt.taxi.pay.doc.EventTask;
 
 /**
  * 回调相关接口
  */
 public interface NotifyService {
-
-    /**
-     * 解析回调请求，组装EventTask
-     *
-     * @param parameterMap 回调请求
-     * @return EventTask
-     */
-    Event<? extends Notify> eventParse(Map<String, Object> parameterMap);
 
     /**
      * 提交一个回调任务

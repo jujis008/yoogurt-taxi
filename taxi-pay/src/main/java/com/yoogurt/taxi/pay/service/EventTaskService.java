@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.pay.service;
 
 
-import com.yoogurt.taxi.dal.doc.finance.EventTask;
+import com.yoogurt.taxi.pay.doc.EventTask;
 
 public interface EventTaskService {
 

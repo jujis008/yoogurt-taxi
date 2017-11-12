@@ -6,9 +6,9 @@ import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.bo.Notify;
 import com.yoogurt.taxi.dal.bo.TaskInfo;
-import com.yoogurt.taxi.dal.doc.finance.Event;
-import com.yoogurt.taxi.dal.doc.finance.EventTask;
-import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.pay.doc.Event;
+import com.yoogurt.taxi.pay.doc.EventTask;
+import com.yoogurt.taxi.pay.doc.Payment;
 import com.yoogurt.taxi.pay.mq.TaskSender;
 import com.yoogurt.taxi.pay.service.NotifyService;
 import com.yoogurt.taxi.pay.service.PayService;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public abstract class NotifyServiceImpl implements NotifyService {
+public class NotifyServiceImpl implements NotifyService {
 
     @Autowired
     private PayService payService;
