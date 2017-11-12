@@ -9,12 +9,12 @@ import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.bo.WxNotify;
 import com.yoogurt.taxi.dal.condition.account.AccountUpdateCondition;
-import com.yoogurt.taxi.dal.doc.finance.Event;
-import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.dal.enums.DestinationType;
 import com.yoogurt.taxi.dal.enums.PayChannel;
 import com.yoogurt.taxi.dal.enums.Payment;
 import com.yoogurt.taxi.dal.enums.TradeType;
+import com.yoogurt.taxi.pay.doc.Event;
+import com.yoogurt.taxi.pay.doc.EventTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +44,7 @@ public class FinanceTest {
         notify.setAmount(1);
         event.setData(notify);
         eventTask.setEvent(event);
-        chargeNotifyTaskRunner.run(eventTask);
+        chargeNotifyTaskRunner.notify(eventTask);
     }
 
     @Test
