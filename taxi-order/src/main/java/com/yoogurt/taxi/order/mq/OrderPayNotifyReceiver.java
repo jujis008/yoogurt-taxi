@@ -1,10 +1,10 @@
 package com.yoogurt.taxi.order.mq;
 
 import com.yoogurt.taxi.dal.bo.TaskInfo;
-import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.dal.enums.TaskStatus;
 import com.yoogurt.taxi.order.mq.task.EventTaskRunner;
+import com.yoogurt.taxi.pay.doc.EventTask;
 import com.yoogurt.taxi.pay.mq.TaskReceiver;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

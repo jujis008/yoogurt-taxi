@@ -2,9 +2,9 @@ package com.yoogurt.taxi.order.service.rest.hystrix;
 
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.RestResult;
-import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.dal.vo.PaymentVo;
 import com.yoogurt.taxi.order.service.rest.RestFinanceService;
+import com.yoogurt.taxi.pay.doc.Payment;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -2,7 +2,7 @@ package com.yoogurt.taxi.account.service.rest;
 
 import com.yoogurt.taxi.account.service.rest.hystrix.RestFinanceServiceHystrix;
 import com.yoogurt.taxi.common.vo.RestResult;
-import com.yoogurt.taxi.dal.doc.finance.Payment;
+import com.yoogurt.taxi.dal.enums.Payment;
 import com.yoogurt.taxi.dal.vo.PaymentVo;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.RequestBody;
