@@ -6,14 +6,14 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.OrderPayment;
 import com.yoogurt.taxi.dal.bo.Notify;
-import com.yoogurt.taxi.dal.doc.finance.Event;
-import com.yoogurt.taxi.dal.doc.finance.EventTask;
-import com.yoogurt.taxi.dal.doc.finance.Payment;
 import com.yoogurt.taxi.dal.enums.PayChannel;
 import com.yoogurt.taxi.dal.vo.PaymentVo;
 import com.yoogurt.taxi.order.service.OrderInfoService;
 import com.yoogurt.taxi.order.service.OrderPaymentService;
 import com.yoogurt.taxi.order.service.rest.RestFinanceService;
+import com.yoogurt.taxi.pay.doc.Event;
+import com.yoogurt.taxi.pay.doc.EventTask;
+import com.yoogurt.taxi.pay.doc.Payment;
 import com.yoogurt.taxi.pay.runner.impl.AbstractEventTaskRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -55,15 +55,15 @@ public class EventTaskRunner extends AbstractEventTaskRunner {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResponseObj notify(EventTask eventTask) {
-        if (eventTask == null) return null;
+        if (eventTask == null) return ResponseObj.fail();
         final Event event = eventTask.getEvent();
         log.info("[taxi-order#" + eventTask.getTaskId() + "]" + event.getEventType());
         Notify notify = event.getData();
         PayChannel payChannel = PayChannel.getChannelByName(notify.getChannel());
-        if (payChannel == null || StringUtils.isBlank(payChannel.getServiceName())) return null;
+        if (payChannel == null || !payChannel.isThirdParty()) return ResponseObj.fail(StatusCode.BIZ_FAILED, "支付渠道暂未开通");
         Money paidMoney = new Money(notify.getAmount());
         String orderNo = notify.getOrderNo();
-        if (StringUtils.isBlank(orderNo)) return null;
+        if (StringUtils.isBlank(orderNo)) return ResponseObj.fail(StatusCode.BIZ_FAILED, "无效的订单号");
         /********************  更新订单的支付状态  ********************************/
         synchronized (orderNo.intern()) {
             OrderInfo orderInfo = orderInfoService.getOrderInfo(orderNo, null);
