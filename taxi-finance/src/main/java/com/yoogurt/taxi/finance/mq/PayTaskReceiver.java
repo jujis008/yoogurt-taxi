@@ -1,4 +1,4 @@
-package com.yoogurt.taxi.pay.mq.impl;
+package com.yoogurt.taxi.finance.mq;
 
 import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.dal.bo.TaskInfo;

@@ -3,24 +3,20 @@ package com.yoogurt.taxi.pay.runner.impl;
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.doc.finance.Payment;
-import com.yoogurt.taxi.dal.enums.PayChannel;
-import com.yoogurt.taxi.dal.enums.TaskStatus;
 import com.yoogurt.taxi.dal.bo.TaskInfo;
+import com.yoogurt.taxi.dal.enums.TaskStatus;
 import com.yoogurt.taxi.pay.doc.PayTask;
+import com.yoogurt.taxi.pay.doc.Payment;
 import com.yoogurt.taxi.pay.runner.TaskRunner;
-import com.yoogurt.taxi.pay.service.PayChannelService;
 import com.yoogurt.taxi.pay.service.PayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-@Service("payTaskRunner")
-public class PayTaskRunner implements TaskRunner<PayTask> {
+public abstract class AbstractPayTaskRunner implements TaskRunner<PayTask> {
 
     @Autowired
     private ApplicationContext context;
@@ -31,18 +27,11 @@ public class PayTaskRunner implements TaskRunner<PayTask> {
     @Autowired
     private RedisHelper redis;
 
-    /**
-     * 通过第三方交易平台，获取一个支付对象
-     *
-     * @param payTask 支付任务
-     */
-    @Override
-    public void run(final PayTask payTask) {
-        PayChannel channel = PayChannel.getChannelByName(payTask.getPayParams().getChannel());
-        if (channel == null) return;
+    public abstract CompletableFuture<ResponseObj> doTask(PayTask eventTask);
 
-        PayChannelService payChannelService = (PayChannelService) context.getBean(channel.getServiceName());
-        CompletableFuture<ResponseObj> future = payChannelService.doTask(payTask);
+    @Override
+    public void run(PayTask payTask) {
+        CompletableFuture<ResponseObj> future = doTask(payTask);
         if (future == null) return;
         future.thenAccept(obj -> {
             log.warn(obj.getMessage());
@@ -87,8 +76,6 @@ public class PayTaskRunner implements TaskRunner<PayTask> {
 
     @Override
     public PayTask retry(PayTask task) {
-
         return payService.retry(task.getTaskId()); //重试
     }
-
 }
