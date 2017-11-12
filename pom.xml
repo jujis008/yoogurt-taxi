@@ -376,12 +376,6 @@
                 <version>${xom.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.io7m.xom</groupId>
-                <artifactId>xom</artifactId>
-                <version>1.2.10</version>
-            </dependency>
-
             <!--common系列-->
             <dependency>
                 <groupId>commons-codec</groupId>
