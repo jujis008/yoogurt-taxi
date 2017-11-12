@@ -3,8 +3,8 @@ package com.yoogurt.taxi.account.mq;
 import com.yoogurt.taxi.account.mq.task.ChargeNotifyTaskRunner;
 import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.dal.bo.TaskInfo;
-import com.yoogurt.taxi.dal.doc.finance.EventTask;
 import com.yoogurt.taxi.dal.enums.TaskStatus;
+import com.yoogurt.taxi.pay.doc.EventTask;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -31,6 +31,6 @@ public class ChargeNotifyReceiver {
         //记录任务开始的时间戳
         task.setStartTimestamp(System.currentTimeMillis());
         log.info("[" + DateTime.now().toString("yyyy-MM-dd HH:mm:ss") + "] 收到回调任务，开始执行......");
-        chargeNotifyTaskRunner.run(eventTask);
+        chargeNotifyTaskRunner.notify(eventTask);
     }
 }
