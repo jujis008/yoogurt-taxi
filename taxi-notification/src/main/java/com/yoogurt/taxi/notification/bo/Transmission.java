@@ -24,6 +24,7 @@ public class Transmission {
     /**
      * 消息发送类型
      */
+    @Builder.Default
     private SendType sendType = SendType.COMMON;
 
     /**
@@ -39,6 +40,7 @@ public class Transmission {
     /**
      * 通知栏图标
      */
+    @Builder.Default
     private String icon = "icon.png";
 
     /**

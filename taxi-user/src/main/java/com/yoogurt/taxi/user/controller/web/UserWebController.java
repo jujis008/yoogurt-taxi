@@ -498,4 +498,10 @@ public class UserWebController extends BaseController {
         return ResponseObj.success(allAuthorities);
     }
 
+    @RequestMapping(value = "/authority/list/roleId/{roleId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public ResponseObj getAuthorityListByRoleId(@PathVariable(name = "roleId") Long roleId) {
+        List<GroupAuthorityLModel> authorityInfoList = roleAuthorityService.getAuthorityListByRoleId(roleId);
+        return ResponseObj.success(authorityInfoList);
+    }
+
 }
