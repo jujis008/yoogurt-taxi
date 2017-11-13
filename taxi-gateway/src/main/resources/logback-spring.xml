@@ -8,14 +8,14 @@
         <!-- 日志文件归档规则-按时间，每天归档一次 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${LOG_PATH}/common-info.%d{yyyy-MM-dd, Asia/Shanghai}.log.zip
+                ${LOG_PATH}/common-info.%d{yyyy-MM-dd}.log.zip
             </FileNamePattern>
         </rollingPolicy>
 
         <!-- 日志输出格式化，默认配置为PatternLayout -->
         <layout>
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss, Asia/Shanghai} [%thread] %-5level %logger{45} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{45} - %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -26,14 +26,14 @@
         <!-- 日志文件归档规则-按时间，每天归档一次 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${LOG_PATH}/mybatis-info.%d{yyyy-MM-dd, Asia/Shanghai}.log.zip
+                ${LOG_PATH}/mybatis-info.%d{yyyy-MM-dd}.log.zip
             </FileNamePattern>
         </rollingPolicy>
 
         <!-- 日志输出格式化，默认配置为PatternLayout -->
         <layout>
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss, Asia/Shanghai} [%thread] %-5level %logger{45} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{45} - %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -44,14 +44,14 @@
         <!-- 日志文件归档规则-按时间，每天归档一次 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${LOG_PATH}/taxi-gateway-info.%d{yyyy-MM-dd, Asia/Shanghai}.log.zip
+                ${LOG_PATH}/taxi-gateway-info.%d{yyyy-MM-dd}.log.zip
             </FileNamePattern>
         </rollingPolicy>
 
         <!-- 日志输出格式化，默认配置为PatternLayout -->
         <layout>
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss, Asia/Shanghai} [%thread] %-5level %logger{45} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{45} - %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -65,14 +65,14 @@
         <!-- 日志文件归档规则-按时间，每天归档一次 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${LOG_PATH}/common-error.%d{yyyy-MM-dd, Asia/Shanghai}.log.zip
+                ${LOG_PATH}/common-error.%d{yyyy-MM-dd}.log.zip
             </FileNamePattern>
         </rollingPolicy>
 
         <!-- 日志输出格式化，默认配置为PatternLayout -->
         <layout>
             <Pattern>
-                %d{HH:mm:ss, Asia/Shanghai} [%thread] %-5level %logger{45} - %msg%n
+                %d{HH:mm:ss} [%thread] %-5level %logger{45} - %msg%n
             </Pattern>
         </layout>
     </appender>
