@@ -38,5 +38,11 @@ public class TaxiUserBootstrap {
                 env.getProperty("server.port"),
                 InetAddress.getLocalHost().getHostAddress(),
                 env.getProperty("server.port"));
+        try {
+            String ss = null;
+            ss.length();
+        } catch (Exception e) {
+            log.error("异常, {}", e);
+        }
     }
 }

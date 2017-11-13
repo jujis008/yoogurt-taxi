@@ -1,6 +1,5 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <jmxConfigurator/>
     <!-- [公共Appender] 默认启用 -->
     <appender name="DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 日志文件输出的位置 -->
@@ -8,14 +7,14 @@
         <!-- 日志文件归档规则-按时间，每天归档一次 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${LOG_PATH}/common-info.%d{yyyy-MM-dd}.log.zip
+                ${LOG_PATH}/common-info.%d{yyyy-MM-dd, Asia/Shanghai}.log.zip
             </FileNamePattern>
         </rollingPolicy>
 
         <!-- 日志输出格式化，默认配置为PatternLayout -->
         <layout>
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss,SSS} [%thread] %-5level %logger{45} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss, Asia/Shanghai} [%thread] %-5level %logger{45} - %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -26,14 +25,14 @@
         <!-- 日志文件归档规则-按时间，每天归档一次 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${LOG_PATH}/mybatis-info.%d{yyyy-MM-dd}.log.zip
+                ${LOG_PATH}/mybatis-info.%d{yyyy-MM-dd, Asia/Shanghai}.log.zip
             </FileNamePattern>
         </rollingPolicy>
 
         <!-- 日志输出格式化，默认配置为PatternLayout -->
         <layout>
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss,SSS} [%thread] %-5level %logger{45} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss, Asia/Shanghai} [%thread] %-5level %logger{45} - %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -44,21 +43,20 @@
         <!-- 日志文件归档规则-按时间，每天归档一次 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${LOG_PATH}/taxi-notification-info.%d{yyyy-MM-dd}.log.zip
+                ${LOG_PATH}/taxi-notification-info.%d{yyyy-MM-dd, Asia/Shanghai}.log.zip
             </FileNamePattern>
         </rollingPolicy>
 
         <!-- 日志输出格式化，默认配置为PatternLayout -->
         <layout>
             <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss,SSS} [%thread] %-5level %logger{45} - %msg%n
+                %d{yyyy-MM-dd HH:mm:ss, Asia/Shanghai} [%thread] %-5level %logger{45} - %msg%n
             </Pattern>
         </layout>
     </appender>
 
     <!-- 定义错误日志输出 -->
-    <appender name="ERROR-APPENDER"
-              class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 日志文件输出的位置 -->
         <File>${LOG_PATH}/common-error.log</File>
         <!-- 追加模式 -->
@@ -66,14 +64,14 @@
         <!-- 日志文件归档规则-按时间，每天归档一次 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <FileNamePattern>
-                ${LOG_PATH}/common-error.%d{yyyy-MM-dd}.log.zip
+                ${LOG_PATH}/common-error.%d{yyyy-MM-dd, Asia/Shanghai}.log.zip
             </FileNamePattern>
         </rollingPolicy>
 
         <!-- 日志输出格式化，默认配置为PatternLayout -->
         <layout>
             <Pattern>
-                %d{HH:mm:ss,SSS} [%thread] %-5level %logger{45} - %msg%n
+                %d{HH:mm:ss, Asia/Shanghai} [%thread] %-5level %logger{45} - %msg%n
             </Pattern>
         </layout>
     </appender>
@@ -83,20 +81,31 @@
         <appender-ref ref="DEFAULT-APPENDER" />
     </root>
 
-    <!--
-		name 要输出日志的包名或者某个类具体的权限路径
-		additivity-
-			false：只用当前logger的AppenderRef
-			true：使用当前logger的AppenderRef 以及root的AppenderRef
-		level：日志打印级别
-	-->
-    <logger name="dao" additivity="false" level="DEBUG">
-        <appender-ref ref="MYBATIS-APPENDER" />
-    </logger>
 
-    <logger name="com.yoogurt.taxi.user" additivity="false" level="INFO">
-        <appender-ref ref="TAXI-NOTIFICATION-APPENDER" />
-        <appender-ref ref="ERROR-APPENDER" />
-    </logger>
+    <springProfile name="local">
+        <logger name="com.yoogurt.taxi.dal.mapper" level="DEBUG">
+            <appender-ref ref="MYBATIS-APPENDER"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="!local">
+        <logger name="com.yoogurt.taxi.dal.mapper" level="DEBUG">
+            <appender-ref ref="MYBATIS-APPENDER"/>
+        </logger>
+        <!--
+            name 要输出日志的包名或者某个类具体的权限路径
+            additivity-
+                false：只用当前logger的AppenderRef
+                true：使用当前logger的AppenderRef 以及root的AppenderRef
+            level：日志打印级别
+        -->
+        <logger name="com.yoogurt.taxi.notification" additivity="false" level="ERROR">
+            <appender-ref ref="ERROR-APPENDER" />
+        </logger>
+
+        <logger name="com.yoogurt.taxi.notification" additivity="false" level="INFO">
+            <appender-ref ref="TAXI-NOTIFICATION-APPENDER" />
+        </logger>
+    </springProfile>
 
 </configuration>

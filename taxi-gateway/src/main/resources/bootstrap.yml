@@ -24,7 +24,6 @@ security:
 logging:
   level: debug
   path: ./log/taxi-gateway
-  config: classpath:logback-spring-${spring.profiles.active}.xml
 ---
 spring:
   profiles:

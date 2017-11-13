@@ -8,7 +8,6 @@ spring:
 logging:
   level: debug
   path: ./log/taxi-notification
-  config: classpath:logback-spring-${spring.profiles.active}.xml
 ---
 spring:
   profiles:
