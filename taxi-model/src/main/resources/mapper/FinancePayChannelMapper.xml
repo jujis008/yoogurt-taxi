@@ -9,7 +9,7 @@
     <result column="channel_status" jdbcType="VARCHAR" property="channelStatus" />
     <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
     <result column="channel_tag" jdbcType="VARCHAR" property="channelTag" />
-    <result column="is_deleted" jdbcType="BIGINT" property="isDeleted" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />

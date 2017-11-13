@@ -36,8 +36,8 @@
 
     <resultMap id="RentPOIModel" type="com.yoogurt.taxi.dal.model.order.RentInfoModel">
         <id column="rent_id" jdbcType="BIGINT" property="rentId"/>
-        <result column="user_id" jdbcType="BIGINT" property="userId"/>
-        <result column="driver_id" jdbcType="BIGINT" property="driverId"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="driver_id" jdbcType="VARCHAR" property="driverId"/>
         <result column="driver_name" jdbcType="VARCHAR" property="driverName"/>
         <result column="plate_number" jdbcType="VARCHAR" property="plateNumber"/>
         <result column="avatar" jdbcType="VARCHAR" property="avatar"/>

@@ -23,7 +23,7 @@
     </resultMap>
 
     <resultMap id="userWLModel" type="com.yoogurt.taxi.dal.model.user.UserWLModel">
-        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="employee_no" jdbcType="VARCHAR" property="employeeNo"/>

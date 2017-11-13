@@ -8,4 +8,5 @@ import lombok.Setter;
 @Setter
 public class BillCondition extends PeriodCondition{
     private String userId;
+    private Integer billType;
 }

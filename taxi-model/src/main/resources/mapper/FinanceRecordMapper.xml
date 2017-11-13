@@ -10,7 +10,7 @@
     <result column="bill_no" jdbcType="VARCHAR" property="billNo" />
     <result column="status" jdbcType="INTEGER" property="status" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
-    <result column="is_deleted" jdbcType="BIGINT" property="isDeleted" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />

@@ -208,6 +208,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     public List<FinanceBill> getBillList(BillCondition condition) {
         Example example = new Example(FinanceBill.class);
         example.createCriteria().andEqualTo("userId",condition.getUserId())
+                .andEqualTo("billType",condition.getBillType())
                 .andEqualTo("isDeleted",Boolean.FALSE)
                 .andBetween("gmtCreate",condition.getStartTime(),condition.getEndTime());
         return financeBillDao.selectByExample(example);
