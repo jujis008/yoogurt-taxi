@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
-    <jmxConfigurator/>
+    <!-- 导入Spring Boot默认的日志配置 -->
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
     <!-- [公共Appender] 默认启用 -->
     <appender name="DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!-- 日志文件输出的位置 -->
@@ -90,13 +91,15 @@
 			true：使用当前logger的AppenderRef 以及root的AppenderRef
 		level：日志打印级别
 	-->
-    <logger name="dao" additivity="false" level="DEBUG">
-        <appender-ref ref="MYBATIS-APPENDER" />
-    </logger>
-
     <logger name="com.yoogurt.taxi.user" additivity="false" level="INFO">
         <appender-ref ref="TAXI-USER-APPENDER" />
+    </logger>
+
+    <logger name="com.yoogurt.taxi.user" additivity="false" level="ERROR">
         <appender-ref ref="ERROR-APPENDER" />
     </logger>
 
+    <logger name="com.yoogurt.taxi.dal.mapper" level="DEBUG">
+        <appender-ref ref="MYBATIS-APPENDER"/>
+    </logger>
 </configuration>

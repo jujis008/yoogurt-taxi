@@ -24,7 +24,8 @@
 			</Pattern>
 		</layout>
 	</appender>
-	<logger name="dao" additivity="false" level="DEBUG">
-		<appender-ref ref="MYBATIS-APPENDER" />
+	
+	<logger name="com.yoogurt.taxi.dal.mapper" level="DEBUG">
+		<appender-ref ref="MYBATIS-APPENDER"/>
 	</logger>
 </configuration>
