@@ -2,11 +2,10 @@ package com.yoogurt.taxi.notification.service.Impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.utils.DateUtils;
+import com.yoogurt.taxi.common.utils.EncryptUtil;
 import com.yoogurt.taxi.dal.model.ucpaas.TemplateSms;
 import com.yoogurt.taxi.notification.config.SmsConfig;
 import com.yoogurt.taxi.notification.service.SmsService;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -35,9 +34,11 @@ public class SmsServiceImpl implements SmsService {
         CloseableHttpClient client = HttpClients.createDefault();
         String accountSid = smsConfig.getAccountSid();
         String authToken = smsConfig.getAuthToken();
+        //MD5加密
+        EncryptUtil encryptUtil = new EncryptUtil();
         //构造请求URL内容
         String timestamp = DateUtils.dateToStr(new Date(), DateUtils.DATE_TIME_NO_SLASH);
-        String signature = getSignature(accountSid, authToken, timestamp);
+        String signature = getSignature(accountSid, authToken, timestamp, encryptUtil);
         String url = getStringBuffer().append("/").append("2014-06-30").
                 append("/Accounts/").append(accountSid).append("/Messages")
                 .append("/templateSMS")
@@ -48,7 +49,7 @@ public class SmsServiceImpl implements SmsService {
             ObjectMapper m = new ObjectMapper();
             m.setDateFormat(DateFormat.getDateTimeInstance());
             String body = m.writeValueAsString(map);
-            response = post("application/json", accountSid, timestamp, url, client, body);
+            response = post("application/json", accountSid, timestamp, url, client, encryptUtil, body);
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 result = EntityUtils.toString(entity, "UTF-8");
@@ -66,32 +67,32 @@ public class SmsServiceImpl implements SmsService {
         return sb;
     }
 
-    public String getSignature(String accountSid, String authToken, String timestamp) {
+    public String getSignature(String accountSid, String authToken, String timestamp, EncryptUtil encryptUtil) {
         String sig = accountSid + authToken + timestamp;
         String signature = null;
         try {
-            signature = DigestUtils.md5Hex(sig);
+            signature = encryptUtil.md5Digest(sig);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return signature;
     }
 
-    public CloseableHttpResponse post(String cType, String accountSid, String timestamp, String url, CloseableHttpClient httpClient, String body) {
+    public CloseableHttpResponse post(String cType, String accountSid, String timestamp, String url, CloseableHttpClient httpclient, EncryptUtil encryptUtil, String body) {
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Accept", cType);
         httpPost.setHeader("Content-Type", cType + ";charset=utf-8");
         String src = accountSid + ":" + timestamp;
         CloseableHttpResponse response = null;
         try {
-            String auth = Base64.encodeBase64String(src.getBytes());
+            String auth = encryptUtil.base64Encoder(src);
             httpPost.setHeader("Authorization", auth);
             BasicHttpEntity requestBody = new BasicHttpEntity();
             requestBody.setContent(new ByteArrayInputStream(body.getBytes("UTF-8")));
             requestBody.setContentLength(body.getBytes("UTF-8").length);
             httpPost.setEntity(requestBody);
             // 执行客户端请求
-            response = httpClient.execute(httpPost);
+            response = httpclient.execute(httpPost);
         } catch (Exception e) {
             e.printStackTrace();
         }

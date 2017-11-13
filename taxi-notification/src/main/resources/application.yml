@@ -1,12 +1,12 @@
 sms:
   version: 2014-06-30
   restServer: api.ucpaas.com
-  validTemplateId: 155770 //验证码短信通知模板
-  agentPwdTemplateId: 191314 //司机端注册短信通知模板
-  officePwdTemplateId: 191311 //车主端注册短信通知模板
-  appId: 6c549ca44a334201b6410884a32472d9
+  validTemplateId: 155770
+  agentPwdTemplateId: 191314
+  officePwdTemplateId: 191311
+  appId: 796e3d30cc074f86a97cd402b7c35398
   accountSid: 08c32a4d179fd602e73617272dcd1a2b
-  authToken: fe9c1d57c38ffff624a0de85d09d6710
+  authToken: 1a0adafcc7b6bffc3e1e52e45aca34a3
   RestUrl: https://api.ucpaas.com
 push:
   end20:
