@@ -24,12 +24,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.yoogurt.taxi.common</groupId>
-            <artifactId>taxi-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.dx.ss.lib</groupId>
             <artifactId>docx</artifactId>
             <exclusions>

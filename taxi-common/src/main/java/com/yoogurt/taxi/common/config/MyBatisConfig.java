@@ -32,9 +32,9 @@ public class MyBatisConfig implements TransactionManagementConfigurer {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
         bean.setTypeAliasesPackage("com.yoogurt.taxi.dal.beans");
-        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
-        configuration.setLogPrefix("dao.");
-        bean.setConfiguration(configuration);
+//        org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+//        configuration.setLogPrefix("dao.");
+//        bean.setConfiguration(configuration);
 
         Properties properties = new Properties();
         properties.setProperty("dialect", "mysql");
