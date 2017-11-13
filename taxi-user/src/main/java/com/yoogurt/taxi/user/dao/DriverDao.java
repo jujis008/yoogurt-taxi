@@ -12,6 +12,6 @@ import java.util.List;
 
 public interface DriverDao extends IDao<DriverInfoMapper,DriverInfo> {
     Page<DriverWLModel> getDriverWebList(DriverWLCondition condition);
-    int batchInsert(List<DriverInfo> list);
+    int insertDrivers(List<DriverInfo> list);
     List<DriverInfo> getDriverByUserId(String userId);
 }

@@ -25,8 +25,8 @@ public class DriverDaoImpl extends BaseDao<DriverInfoMapper,DriverInfo> implemen
     }
 
     @Override
-    public int batchInsert(List<DriverInfo> list) {
-        return driverInfoMapper.batchInsert(list);
+    public int insertDrivers(List<DriverInfo> list) {
+        return driverInfoMapper.insertDrivers(list);
     }
 
     @Override

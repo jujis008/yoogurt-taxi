@@ -356,8 +356,8 @@ public class UserServiceImpl implements UserService {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
 
             int result = 0;
-            result += userDao.batchInsert(userInfoList);
-            result += driverDao.batchInsert(driverInfoList);
+            result += userDao.insertUsers(userInfoList);
+            result += driverDao.insertDrivers(driverInfoList);
             this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd,CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
             return result;
         });
@@ -434,9 +434,9 @@ public class UserServiceImpl implements UserService {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
 
             int result = 0;
-            result += userDao.batchInsert(userInfoList);
-            result += driverDao.batchInsert(driverInfoList);
-            result += carDao.batchInsert(carInfoList);
+            result += userDao.insertUsers(userInfoList);
+            result += driverDao.insertDrivers(driverInfoList);
+            result += carDao.insertCars(carInfoList);
             this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE);
             return result;
         });

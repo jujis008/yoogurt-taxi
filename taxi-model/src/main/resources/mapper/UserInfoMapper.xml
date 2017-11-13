@@ -23,7 +23,7 @@
     </resultMap>
 
     <resultMap id="userWLModel" type="com.yoogurt.taxi.dal.model.user.UserWLModel">
-        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="employee_no" jdbcType="VARCHAR" property="employeeNo"/>
@@ -62,7 +62,7 @@
     </where>
     ORDER BY t1.gmt_create DESC
     </select>
-    <insert id="batchInsert" parameterType="java.util.List">
+    <insert id="insertUsers" parameterType="java.util.List">
         INSERT INTO user_info (user_id,username,`name`,
         login_password,status,user_from,
         `type`,is_deleted,gmt_modify,

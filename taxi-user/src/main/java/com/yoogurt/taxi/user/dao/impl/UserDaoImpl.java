@@ -26,8 +26,8 @@ public class UserDaoImpl extends BaseDao<UserInfoMapper,UserInfo> implements Use
     }
 
     @Override
-    public int batchInsert(List<UserInfo> list) {
-        return userInfoMapper.batchInsert(list);
+    public int insertUsers(List<UserInfo> list) {
+        return userInfoMapper.insertUsers(list);
     }
 
 }

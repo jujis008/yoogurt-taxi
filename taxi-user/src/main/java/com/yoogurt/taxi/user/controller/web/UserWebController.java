@@ -76,7 +76,7 @@ public class UserWebController extends BaseController {
     @RequestMapping(value = "/import/agentDrivers", method = RequestMethod.POST, produces = {"application/json;UTF-8"})
     public ResponseObj importAgentUserFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
         List<ExcelParamBean> paramBeanList = new ArrayList<>();
-        ExcelParamBean bean1 = new ExcelParamBean(0, "name", "^[\\u4e00-\\u9fa5\\s]{2,8}$", "姓名长度在2-8个字符", Boolean.FALSE, null);
+        ExcelParamBean bean1 = new ExcelParamBean(0, "name", "^[\\u4e00-\\u9fa5\\s]{2,8}$", "姓名长度在2-8个中文字符", Boolean.FALSE, null);
         ExcelParamBean bean2 = new ExcelParamBean(1, "idCard", "^(\\d{18}$|^\\d{17}(\\d|X|x))$", "身份证格式有误", Boolean.TRUE, "表格存在身份证号重复");
         ExcelParamBean bean3 = new ExcelParamBean(2, "phoneNumber", "^(\\+\\d+)?1[34578]\\d{9}$", "手机号格式有误", Boolean.TRUE, "表格存在手机号重复");
         ExcelParamBean bean4 = new ExcelParamBean(3, "drivingLicense", "^\\S{1,}$", "不能为空", Boolean.FALSE, null);
