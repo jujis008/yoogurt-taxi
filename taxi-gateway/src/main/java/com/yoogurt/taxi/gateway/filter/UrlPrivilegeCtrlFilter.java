@@ -2,15 +2,12 @@ package com.yoogurt.taxi.gateway.filter;
 
 import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.enums.StatusCode;
-import com.yoogurt.taxi.common.helper.TokenHelper;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.enums.UserType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
 
@@ -19,7 +16,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Iterator;
 
 /**
  * Description:
@@ -47,8 +44,12 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
         if (matcher.match(IGNORE_PATTERN, currentUrl)) {
             return true;
         }
+        if (subject == null) return false;
         Collection<SessionUser> userInfoList = subject.getPrincipals().fromRealm("UserInfo");
-        SessionUser user = userInfoList.iterator().next();
+        if(userInfoList == null) return false;
+        Iterator<SessionUser> iterator = userInfoList.iterator();
+        if(!iterator.hasNext()) return false;
+        SessionUser user = iterator.next();
         if (UserType.SUPER_ADMIN.getCode().equals(user.getType())) {
             return true;
         }
