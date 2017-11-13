@@ -2,7 +2,7 @@ package com.yoogurt.taxi.notification.service.Impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.utils.DateUtils;
-import com.yoogurt.taxi.common.utils.EncryptUtil;
+import com.yoogurt.taxi.common.utils.EncryptUtils;
 import com.yoogurt.taxi.dal.model.ucpaas.TemplateSms;
 import com.yoogurt.taxi.notification.config.SmsConfig;
 import com.yoogurt.taxi.notification.service.SmsService;
@@ -35,7 +35,7 @@ public class SmsServiceImpl implements SmsService {
         String accountSid = smsConfig.getAccountSid();
         String authToken = smsConfig.getAuthToken();
         //MD5加密
-        EncryptUtil encryptUtil = new EncryptUtil();
+        EncryptUtils encryptUtil = new EncryptUtils();
         //构造请求URL内容
         String timestamp = DateUtils.dateToStr(new Date(), DateUtils.DATE_TIME_NO_SLASH);
         String signature = getSignature(accountSid, authToken, timestamp, encryptUtil);
@@ -67,7 +67,7 @@ public class SmsServiceImpl implements SmsService {
         return sb;
     }
 
-    public String getSignature(String accountSid, String authToken, String timestamp, EncryptUtil encryptUtil) {
+    public String getSignature(String accountSid, String authToken, String timestamp, EncryptUtils encryptUtil) {
         String sig = accountSid + authToken + timestamp;
         String signature = null;
         try {
@@ -78,7 +78,7 @@ public class SmsServiceImpl implements SmsService {
         return signature;
     }
 
-    public CloseableHttpResponse post(String cType, String accountSid, String timestamp, String url, CloseableHttpClient httpclient, EncryptUtil encryptUtil, String body) {
+    public CloseableHttpResponse post(String cType, String accountSid, String timestamp, String url, CloseableHttpClient httpclient, EncryptUtils encryptUtil, String body) {
         HttpPost httpPost = new HttpPost(url);
         httpPost.setHeader("Accept", cType);
         httpPost.setHeader("Content-Type", cType + ";charset=utf-8");
