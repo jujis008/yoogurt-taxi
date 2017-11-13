@@ -7,7 +7,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="order_id" jdbcType="VARCHAR" property="orderId" />
-    <result column="from_user_id" jdbcType="BIGINT" property="fromUserId" />
+    <result column="from_user_id" jdbcType="VARCHAR" property="fromUserId" />
     <result column="to_user_id" jdbcType="VARCHAR" property="toUserId" />
     <result column="score" jdbcType="INTEGER" property="score" />
     <result column="tag_id" jdbcType="VARCHAR" property="tagId" />

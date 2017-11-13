@@ -13,7 +13,7 @@
     <result column="employee_id" jdbcType="VARCHAR" property="employeeId" />
     <result column="api_certificate" jdbcType="VARCHAR" property="apiCertificate" />
     <result column="private_key" jdbcType="VARCHAR" property="privateKey" />
-    <result column="is_deleted" jdbcType="BIGINT" property="isDeleted" />
+    <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
     <result column="creator" jdbcType="VARCHAR" property="creator" />
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />

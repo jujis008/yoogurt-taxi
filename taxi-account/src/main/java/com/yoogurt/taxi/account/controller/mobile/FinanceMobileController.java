@@ -162,6 +162,13 @@ public class FinanceMobileController extends BaseController {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
+        Payment payment = Payment.getEnumsBycode(form.getPayment());
+        if (payment == null) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "提现类型错误");
+        }
+        if (payment != Payment.DEPOSIT && payment != Payment.BALANCE) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "提现类型错误");
+        }
         UserInfo userInfo = restUserService.getUserInfoById(getUserId()).getBody();
         LocalTime nowTime = LocalTime.now();
         LocalDate nowDate = LocalDate.now();
@@ -173,6 +180,12 @@ public class FinanceMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"未在开放时间内");
         }
         BillCondition billCondition = new BillCondition();
+        if (payment == Payment.DEPOSIT) {
+            billCondition.setBillType(BillType.DEPOSIT.getCode());
+        }
+        if (payment == Payment.BALANCE) {
+            billCondition.setBillType(BillType.BALANCE.getCode());
+        }
         billCondition.setUserId(getUserId());
         LocalDateTime firstTimeOfWeek = LocalDateTime.of(nowDate.with(DayOfWeek.MONDAY), LocalTime.of(0, 0, 0));
         billCondition.setStartTime(Date.from(firstTimeOfWeek.atZone(ZoneId.systemDefault()).toInstant()));
@@ -190,13 +203,6 @@ public class FinanceMobileController extends BaseController {
         FinanceAccount financeAccount = financeAccountService.get(getUserId());
         if (financeAccount == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "账户总资金不足");
-        }
-        Payment payment = Payment.getEnumsBycode(form.getPayment());
-        if (payment == null) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID, "提现类型错误");
-        }
-        if (payment != Payment.DEPOSIT && payment != Payment.BALANCE) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID, "提现类型错误");
         }
         DestinationType destinationType = DestinationType.getEnumsBycode(form.getDestinationType());
         if (destinationType == null) {

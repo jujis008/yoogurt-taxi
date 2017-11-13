@@ -9,7 +9,7 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="user_type" jdbcType="INTEGER" property="userType" />
-    <result column="account_no" jdbcType="BIGINT" property="accountNo" />
+    <result column="account_no" jdbcType="VARCHAR" property="accountNo" />
     <result column="balance" jdbcType="DECIMAL" property="balance" />
     <result column="frozen_balance" jdbcType="DECIMAL" property="frozenBalance" />
     <result column="receivable_deposit" jdbcType="DECIMAL" property="receivableDeposit" />

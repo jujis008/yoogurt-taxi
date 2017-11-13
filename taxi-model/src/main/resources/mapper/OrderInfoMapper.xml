@@ -26,8 +26,8 @@
         <result column="vehicle_type" jdbcType="VARCHAR" property="vehicleType"/>
         <result column="car_thumb" jdbcType="VARCHAR" property="carThumb"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
-        <result column="official_user_id" jdbcType="BIGINT" property="officialUserId"/>
-        <result column="official_driver_id" jdbcType="BIGINT" property="officialDriverId"/>
+        <result column="official_user_id" jdbcType="VARCHAR" property="officialUserId"/>
+        <result column="official_driver_id" jdbcType="VARCHAR" property="officialDriverId"/>
         <result column="official_driver_name" jdbcType="VARCHAR" property="officialDriverName"/>
         <result column="official_driver_phone" jdbcType="VARCHAR" property="officialDriverPhone"/>
         <result column="is_commented" jdbcType="BIT" property="isCommented"/>
@@ -42,8 +42,8 @@
     <resultMap id="OrderModel" type="com.yoogurt.taxi.dal.model.order.OrderModel">
         <id column="order_id" jdbcType="BIGINT" property="orderId"/>
         <result column="rent_id" jdbcType="BIGINT" property="rentId"/>
-        <result column="agent_user_id" jdbcType="BIGINT" property="agentUserId"/>
-        <result column="agent_driver_id" jdbcType="BIGINT" property="agentDriverId"/>
+        <result column="agent_user_id" jdbcType="VARCHAR" property="agentUserId"/>
+        <result column="agent_driver_id" jdbcType="VARCHAR" property="agentDriverId"/>
         <result column="agent_driver_name" jdbcType="VARCHAR" property="agentDriverName"/>
         <result column="agent_driver_phone" jdbcType="VARCHAR" property="agentDriverPhone"/>
         <result column="handover_time" jdbcType="TIMESTAMP" property="handoverTime"/>
@@ -57,8 +57,8 @@
         <result column="car_id" jdbcType="BIGINT" property="carId"/>
         <result column="plate_number" jdbcType="VARCHAR" property="plateNumber"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
-        <result column="official_user_id" jdbcType="BIGINT" property="officialUserId"/>
-        <result column="official_driver_id" jdbcType="BIGINT" property="officialDriverId"/>
+        <result column="official_user_id" jdbcType="VARCHAR" property="officialUserId"/>
+        <result column="official_driver_id" jdbcType="VARCHAR" property="officialDriverId"/>
         <result column="official_driver_name" jdbcType="VARCHAR" property="officialDriverName"/>
         <result column="official_driver_phone" jdbcType="VARCHAR" property="officialDriverPhone"/>
         <result column="is_commented" jdbcType="BIT" property="isCommented"/>
