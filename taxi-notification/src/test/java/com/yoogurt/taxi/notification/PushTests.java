@@ -51,9 +51,9 @@ public class PushTests {
         String message = SendType.ORDER_FINISH.getMessage();
         PushPayload payload = new PushPayload(UserType.USER_APP_OFFICE, SendType.ORDER_FINISH, Constants.OFFICIAL_APP_NAME, String.format(message, 17101609512257244L));
         payload.setExtras(new HashMap<String, Object>(){{
-            put("orderId", 17101609512257244L);
+            put("orderId", "171113171753179914");
         }});
-        payload.addUserId("8888");
+        payload.addUserId("17102612235828818");
         ResponseObj obj = pushService.pushMessage(payload.getUserIds(), payload.getUserType(), payload.getSendType(), payload.getMsgType(), payload.getDeviceType(), payload.getTitle(), payload.getContent(), payload.getExtras(), true);
         Assert.assertTrue(obj.getMessage(), obj.isSuccess());
     }
