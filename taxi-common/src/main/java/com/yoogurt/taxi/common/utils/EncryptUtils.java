@@ -1,21 +1,7 @@
-/*
- *  Copyright (c) 2013 The CCP project authors. All Rights Reserved.
- *
- *  Use of this source code is governed by a Beijing Speedtong Information Technology Co.,Ltd license
- *  that can be found in the LICENSE file in the root of the web site.
- *
- *   http://www.cloopen.com
- *
- *  An additional intellectual property rights grant can be found
- *  in the file PATENTS.  All contributing project authors may
- *  be found in the AUTHORS file in the root of the source tree.
- */
 package com.yoogurt.taxi.common.utils;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-import java.security.MessageDigest;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class EncryptUtils {
 
@@ -29,8 +15,7 @@ public class EncryptUtils {
      */
     public String md5Digest(String src) throws Exception {
         // 定义数字签名方法, 可用：MD5, SHA-1
-        MessageDigest md = MessageDigest.getInstance("MD5");
-        byte[] b = md.digest(src.getBytes(UTF8));
+        byte[] b = DigestUtils.md5(src);
         return this.byte2HexStr(b);
     }
 
@@ -41,19 +26,7 @@ public class EncryptUtils {
      * @throws Exception
      */
     public String base64Encoder(String src) throws Exception {
-        BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(src.getBytes(UTF8));
-    }
-
-    /**
-     * BASE64解码
-     * @param dest
-     * @return
-     * @throws Exception
-     */
-    public String base64Decoder(String dest) throws Exception {
-        BASE64Decoder decoder = new BASE64Decoder();
-        return new String(decoder.decodeBuffer(dest), UTF8);
+        return Base64.encodeBase64String(src.getBytes(UTF8));
     }
 
     /**
