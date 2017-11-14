@@ -32,8 +32,8 @@ public class CarServiceTest {
         payload.setType(SmsTemplateType.VALID);
         payload.setParam("123456");
         List<String> phoneNumbers = new ArrayList<>();
-        phoneNumbers.add("13516712356");
-        phoneNumbers.add("18814892833");
+        phoneNumbers.add("17364517747");
+//        phoneNumbers.add("18814892833");
         payload.setPhoneNumbers(phoneNumbers);
         smsSender.send(payload);
     }
