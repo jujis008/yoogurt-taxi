@@ -235,6 +235,10 @@ public class PushServiceImpl implements PushService {
      */
     @Override
     public ResponseObj pushMessage(List<String> userIds, UserType userType, SendType sendType, MsgType msgType, DeviceType deviceType, String title, String content, Map<String, Object> extras, boolean persist) {
+
+        if (persist) {//持久化到数据库
+            persistMessage(userIds, title, content, extras, sendType);
+        }
         if (msgType == null) {
 
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "不支持的消息类型");
@@ -266,9 +270,6 @@ public class PushServiceImpl implements PushService {
             TransmissionPayload payload = new TransmissionPayload(config, transmission);
             log.info("PUSH: " + transmission.toJSON());
             IPushResult pushResult = null;
-            if (persist) {//持久化到数据库
-                persistMessage(userIds, title, content, extras, sendType);
-            }
             if(CollectionUtils.isNotEmpty(userIds)) {
                 String clientId;
                 if (userIds.size() == 1) {//如果只有一个用户，则退化成单推
@@ -312,21 +313,25 @@ public class PushServiceImpl implements PushService {
     }
 
     private void persistMessage(List<String> userIds, String title, String content, Map<String, Object> extras, SendType sendType) {
-        if (CollectionUtils.isEmpty(userIds)) return;
-        List<Message> messages = new ArrayList<>();
-        for (String userId : userIds) {
-            Message msg = new Message();
-            msg.setMessageId(RandomUtils.getPrimaryKey());
-            msg.setToUserId(userId);
-            msg.setTitle(title);
-            msg.setContent(content);
-            msg.setSendType(sendType);
-            msg.setStatus(10);
-            msg.setExtras(extras);
-            msg.setGmtCreate(new Date());
-            messages.add(msg);
+        try {
+            if (CollectionUtils.isEmpty(userIds)) return;
+            List<Message> messages = new ArrayList<>();
+            for (String userId : userIds) {
+                Message msg = new Message();
+                msg.setMessageId(RandomUtils.getPrimaryKey());
+                msg.setToUserId(userId);
+                msg.setTitle(title);
+                msg.setContent(content);
+                msg.setSendType(sendType);
+                msg.setStatus(10);
+                msg.setExtras(extras);
+                msg.setGmtCreate(new Date());
+                messages.add(msg);
+            }
+            msgService.addMessages(messages);
+        } catch (Exception e) {
+            log.error("消息持久化发生异常, {}", e);
         }
-        msgService.addMessages(messages);
     }
 
     private List<PushDevice> getDeviceByUserIds(List<String> userIds) {
