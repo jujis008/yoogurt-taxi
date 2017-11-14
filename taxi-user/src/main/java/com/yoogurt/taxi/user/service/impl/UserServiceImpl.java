@@ -361,15 +361,16 @@ public class UserServiceImpl implements UserService {
         if (!CollectionUtils.isEmpty(errorCellBeanList)) {
             return errorCellBeanList;
         }
-        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+//        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
 
-            int result = 0;
-            result += userDao.batchInsert(userInfoList);
-            result += driverDao.batchInsert(driverInfoList);
-            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
-            return result;
-        });
-        future.thenAccept(result -> log.info("IMPORT{}", "导入条数：" + result / 2));
+        int result = 0;
+        result += userDao.batchInsert(userInfoList);
+        result += driverDao.batchInsert(driverInfoList);
+        this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
+        log.info("IMPORT{}", "导入条数：" + result / 3);
+//            return result;
+//        });
+//        future.thenAccept(result -> log.info("IMPORT{}", "导入条数：" + result / 2));
         return errorCellBeanList;
     }
 
@@ -451,16 +452,17 @@ public class UserServiceImpl implements UserService {
             return errorCellBeanList;
         }
 
-        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
+//        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
 
-            int result = 0;
-            result += userDao.batchInsert(userInfoList);
-            result += driverDao.batchInsert(driverInfoList);
-            result += carDao.batchInsert(carInfoList);
-            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE);
-            return result;
-        });
-        future.thenAccept(result -> log.info("IMPORT{}", "导入条数：" + result / 3));
+        int result = 0;
+        result += userDao.batchInsert(userInfoList);
+        result += driverDao.batchInsert(driverInfoList);
+        result += carDao.batchInsert(carInfoList);
+        this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE);
+        log.info("IMPORT{}", "导入条数：" + result / 3);
+//            return result;
+//        });
+//        future.thenAccept(result -> log.info("IMPORT{}", "导入条数：" + result / 3));
         return errorCellBeanList;
     }
 
