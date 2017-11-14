@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     private UserRoleDao userRoleDao;
 
     @Autowired
-    private SmsSender   smsSender;
+    private SmsSender smsSender;
 
     @Override
     public UserInfo getUserByUserId(String id) {
@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
         Example example = new Example(UserInfo.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("username", username)
-                .andEqualTo("isDeleted",Boolean.FALSE)
+                .andEqualTo("isDeleted", Boolean.FALSE)
                 .andEqualTo("type", userType);
         List<UserInfo> userInfoList = userDao.selectByExample(example);
         if (CollectionUtils.isEmpty(userInfoList)) {
@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
         }
         Example example = new Example(UserInfo.class);
         example.createCriteria()
-                .andEqualTo("isDeleted",Boolean.FALSE)
+                .andEqualTo("isDeleted", Boolean.FALSE)
                 .andEqualTo("username", username);
         example.createCriteria().andEqualTo("type", userType.getCode());
         List<UserInfo> userList = userDao.selectByExample(example);
@@ -203,8 +203,8 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "账号异常");
         }
-        if (phoneNumber.equals(user.getUsername())){
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"请输入新的手机号");
+        if (phoneNumber.equals(user.getUsername())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "请输入新的手机号");
         }
         if (!Encipher.matches(password, user.getLoginPassword())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "密码有误");
@@ -216,12 +216,12 @@ public class UserServiceImpl implements UserService {
         if (!cachePhoneCode.equals(phoneCode)) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "验证码错误");
         }
-        if(getUserByUsernameAndType(phoneNumber,user.getType()) !=null ){
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"手机号已被使用");
+        if (getUserByUsernameAndType(phoneNumber, user.getType()) != null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "手机号已被使用");
         }
         user.setUsername(phoneNumber);
         List<DriverInfo> driverList = driverDao.getDriverByUserId(userId);
-        for (DriverInfo driverInfo:driverList) {
+        for (DriverInfo driverInfo : driverList) {
             driverInfo.setMobile(phoneNumber);
             driverDao.updateByIdSelective(driverInfo);
         }
@@ -275,7 +275,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseObj saveUser(UserForm form) {
         UserInfo userInfo = new UserInfo();
-        BeanUtilsExtends.copyProperties(userInfo,form);
+        BeanUtilsExtends.copyProperties(userInfo, form);
         userInfo.setType(UserType.USER_WEB.getCode());
         userInfo.setUserFrom(UserFrom.WEB.getCode());
         userInfo.setLoginPassword(Encipher.encrypt(DigestUtils.md5Hex(form.getLoginPassword())));
@@ -316,7 +316,7 @@ public class UserServiceImpl implements UserService {
             String phoneNumber = map1.get("phoneNumber").toString();
             String originPassword = RandomUtils.getRandNum(6);
 
-            phoneCodeMap.put(phoneNumber,originPassword);
+            phoneCodeMap.put(phoneNumber, originPassword);
 
             UserInfo userInfo = new UserInfo();
             String userId = RandomUtils.getPrimaryKey();
@@ -358,10 +358,10 @@ public class UserServiceImpl implements UserService {
             int result = 0;
             result += userDao.insertUsers(userInfoList);
             result += driverDao.insertDrivers(driverInfoList);
-            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd,CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
+            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
             return result;
         });
-        future.thenAccept(result ->log.info("IMPORT{}", "导入条数：" + result/2));
+        future.thenAccept(result -> log.info("IMPORT{}", "导入条数：" + result / 2));
         return errorCellBeanList;
     }
 
@@ -387,7 +387,7 @@ public class UserServiceImpl implements UserService {
             userInfo.setName(map1.get("name").toString());
 
             //记录需要发送的短信记录
-            phoneCodeMap.put(phoneNumber,originPassword);
+            phoneCodeMap.put(phoneNumber, originPassword);
 
             userInfo.setLoginPassword(Encipher.encrypt(DigestUtils.md5Hex(originPassword)));
             userInfo.setStatus(UserStatus.UN_ACTIVE.getCode());
@@ -440,21 +440,21 @@ public class UserServiceImpl implements UserService {
             this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE);
             return result;
         });
-        future.thenAccept(result ->log.info("IMPORT{}", "导入条数：" + result/3));
+        future.thenAccept(result -> log.info("IMPORT{}", "导入条数：" + result / 3));
         return errorCellBeanList;
     }
 
-    private void sendPhonePwd(Map<String, Object> phoneCodeMap, SmsTemplateType type,String key) {
-        if (profile.equals("prod")) {
-            phoneCodeMap.forEach((e,b)->{
-                SmsPayload payload = new SmsPayload();
-                payload.setParam(b.toString());
-                payload.addOne(e);
-                payload.setType(type);
-                smsSender.send(payload);
-            });
-        } else {
-            phoneCodeMap.forEach((hashKey,value)->redisHelper.put(key,hashKey,value));
-        }
+    private void sendPhonePwd(Map<String, Object> phoneCodeMap, SmsTemplateType type, String key) {
+//        if (profile.equals("prod")) {
+//            phoneCodeMap.forEach((e,b)->{
+//                SmsPayload payload = new SmsPayload();
+//                payload.setParam(b.toString());
+//                payload.addOne(e);
+//                payload.setType(type);
+//                smsSender.send(payload);
+//            });
+//        } else {
+        phoneCodeMap.forEach((hashKey, value) -> redisHelper.put(key, hashKey, value));
+//        }
     }
 }
