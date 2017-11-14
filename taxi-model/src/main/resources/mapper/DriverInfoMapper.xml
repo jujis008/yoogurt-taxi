@@ -68,7 +68,7 @@
         </where>
         ORDER BY t1.gmt_modify DESC
     </select>
-    <insert id="insertDrivers" parameterType="java.util.List">
+    <insert id="batchInsert" parameterType="java.util.List">
         INSERT INTO driver_info(id,id_card,driving_license,user_id,service_number,
         `type`,mobile,gender,
         is_deleted,gmt_modify,modifier,gmt_create,

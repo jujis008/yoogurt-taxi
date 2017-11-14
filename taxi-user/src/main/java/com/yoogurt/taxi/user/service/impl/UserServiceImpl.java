@@ -328,6 +328,10 @@ public class UserServiceImpl implements UserService {
             userInfo.setUserFrom(UserFrom.IMPORT.getCode());
             userInfo.setType(UserType.USER_APP_AGENT.getCode());
             userInfo.setIsDeleted(Boolean.FALSE);
+            userInfo.setGmtModify(new Date());
+            userInfo.setModifier("0");
+            userInfo.setGmtCreate(new Date());
+            userInfo.setCreator("0");
             userInfoList.add(userInfo);
 
             DriverInfo driverInfo = new DriverInfo();
@@ -341,6 +345,10 @@ public class UserServiceImpl implements UserService {
             driverInfo.setIsDeleted(Boolean.FALSE);
             driverInfo.setServiceNumber(map1.get("serviceNumber").toString());
             driverInfo.setId(driverId);
+            driverInfo.setGmtModify(new Date());
+            driverInfo.setModifier("0");
+            driverInfo.setGmtCreate(new Date());
+            driverInfo.setCreator("0");
             driverInfoList.add(driverInfo);
 
             if (dbUsernameList.contains(phoneNumber)) {
@@ -356,8 +364,8 @@ public class UserServiceImpl implements UserService {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
 
             int result = 0;
-            result += userDao.insertUsers(userInfoList);
-            result += driverDao.insertDrivers(driverInfoList);
+            result += userDao.batchInsert(userInfoList);
+            result += driverDao.batchInsert(driverInfoList);
             this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
             return result;
         });
@@ -394,6 +402,10 @@ public class UserServiceImpl implements UserService {
             userInfo.setUserFrom(UserFrom.IMPORT.getCode());
             userInfo.setType(UserType.USER_APP_OFFICE.getCode());
             userInfo.setIsDeleted(Boolean.FALSE);
+            userInfo.setGmtModify(new Date());
+            userInfo.setModifier("0");
+            userInfo.setGmtCreate(new Date());
+            userInfo.setCreator("0");
             userInfoList.add(userInfo);
 
             String driverId = RandomUtils.getPrimaryKey();
@@ -407,6 +419,10 @@ public class UserServiceImpl implements UserService {
             driverInfo.setServiceNumber(map1.get("serviceNumber").toString());
             driverInfo.setGender(UserGender.SECRET.getCode());
             driverInfo.setIsDeleted(Boolean.FALSE);
+            driverInfo.setGmtModify(new Date());
+            driverInfo.setModifier("0");
+            driverInfo.setGmtCreate(new Date());
+            driverInfo.setCreator("0");
             driverInfoList.add(driverInfo);
 
             CarInfo carInfo = new CarInfo();
@@ -418,6 +434,10 @@ public class UserServiceImpl implements UserService {
             carInfo.setCompany(map1.get("company").toString());
             carInfo.setDriverId(driverId);
             carInfo.setIsDeleted(Boolean.FALSE);
+            carInfo.setGmtModify(new Date());
+            carInfo.setModifier("0");
+            carInfo.setGmtCreate(new Date());
+            carInfo.setCreator("0");
             carInfoList.add(carInfo);
 
             if (dbUsernameList.contains(phoneNumber)) {
@@ -434,9 +454,9 @@ public class UserServiceImpl implements UserService {
         CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> {
 
             int result = 0;
-            result += userDao.insertUsers(userInfoList);
-            result += driverDao.insertDrivers(driverInfoList);
-            result += carDao.insertCars(carInfoList);
+            result += userDao.batchInsert(userInfoList);
+            result += driverDao.batchInsert(driverInfoList);
+            result += carDao.batchInsert(carInfoList);
             this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE);
             return result;
         });

@@ -28,7 +28,7 @@
     <result column="modifier" jdbcType="VARCHAR" property="modifier" />
   </resultMap>
 
-  <insert id="insertCars" parameterType="java.util.List">
+  <insert id="batchInsert" parameterType="java.util.List">
     INSERT INTO car_info(
       user_id,driver_id,
       plate_number,vehicle_type,company,

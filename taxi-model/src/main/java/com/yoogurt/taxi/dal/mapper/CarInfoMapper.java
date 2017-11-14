@@ -6,5 +6,5 @@ import tk.mybatis.mapper.common.Mapper;
 import java.util.List;
 
 public interface CarInfoMapper extends Mapper<CarInfo> {
-    int insertCars(List<CarInfo> carInfoList);
+    int batchInsert(List<CarInfo> carInfoList);
 }

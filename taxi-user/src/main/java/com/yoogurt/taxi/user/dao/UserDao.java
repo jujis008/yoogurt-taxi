@@ -21,6 +21,6 @@ public interface UserDao extends IDao<UserInfoMapper, UserInfo> {
 
     Page<UserWLModel> getUserWebListPage(UserWLCondition condition);
 
-    int insertUsers(List<UserInfo> list);
+    int batchInsert(List<UserInfo> list);
 
 }

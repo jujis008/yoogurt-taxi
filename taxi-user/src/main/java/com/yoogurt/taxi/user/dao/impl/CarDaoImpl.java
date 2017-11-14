@@ -14,7 +14,7 @@ public class CarDaoImpl extends BaseDao<CarInfoMapper,CarInfo> implements CarDao
     @Autowired
     private CarInfoMapper carInfoMapper;
     @Override
-    public int insertCars(List<CarInfo> carInfoList) {
-        return carInfoMapper.insertCars(carInfoList);
+    public int batchInsert(List<CarInfo> carInfoList) {
+        return carInfoMapper.batchInsert(carInfoList);
     }
 }

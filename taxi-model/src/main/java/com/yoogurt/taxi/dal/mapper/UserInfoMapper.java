@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface UserInfoMapper extends SuperMapper<UserInfo> {
     Page<UserWLModel> getUserWebListPage(UserWLCondition condition);
-    int insertUsers(List<UserInfo> list);
+    int batchInsert(List<UserInfo> list);
 }
