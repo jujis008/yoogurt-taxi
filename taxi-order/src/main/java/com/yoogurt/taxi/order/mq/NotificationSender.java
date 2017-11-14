@@ -18,6 +18,6 @@ public class NotificationSender {
      * @param payload 消息负载
      */
     public void send(PushPayload payload) {
-        rabbitTemplate.convertAndSend(MessageQueue.getNotifyExchange(), MessageQueue.ORDER_NOTIFICATION_QUEUE.getRoutingKey(), payload);
+        rabbitTemplate.convertAndSend(MessageQueue.getNotificationExchange(), MessageQueue.ORDER_NOTIFICATION_QUEUE.getRoutingKey(), payload);
     }
 }
