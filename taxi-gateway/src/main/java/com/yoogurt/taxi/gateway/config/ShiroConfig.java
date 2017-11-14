@@ -88,6 +88,9 @@ public class ShiroConfig {
         chains.put("/beans", "anon");
         chains.put("/restart", "anon");
         chains.put("/health", "anon");
+        chains.put("/call", "anon");
+        chains.put("/hystrix", "anon");
+        chains.put("/hystrix.stream", "anon");
         chains.put("/metrics", "anon");
         chains.put("/dump", "anon");
         chains.put("/configprops", "anon");
@@ -97,7 +100,6 @@ public class ShiroConfig {
         chains.put("/actuator", "anon");
         chains.put("/autoconfig", "anon");
         chains.put("/readness", "anon");
-        chains.put("/hystrix", "anon");
         //token颁发接口
         chains.put("/token/**", "anon");
         //匿名接口
