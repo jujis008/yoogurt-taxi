@@ -9,6 +9,8 @@
     <id column="tag_id" jdbcType="BIGINT" property="tagId" />
     <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
     <result column="counter" jdbcType="INTEGER" property="counter" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="positive" jdbcType="BIT" property="positive"/>
     <result column="is_deleted" jdbcType="BIT" property="isDeleted"/>
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
     <result column="creator" jdbcType="VARCHAR" property="creator"/>
@@ -17,8 +19,8 @@
   </resultMap>
 
   <insert id="saveStatistic" parameterType="com.yoogurt.taxi.dal.beans.CommentTagStatistic">
-    INSERT INTO comment_tag_statistic(user_id, tag_id, tag_name, counter, is_deleted, gmt_create, creator, gmt_modify, modifier)
-    VALUES (#{userId}, #{tagId}, #{tagName}, #{counter}, #{isDeleted},#{gmtCreate}, #{creator}, #{gmtModify}, #{modifier})
+    INSERT INTO comment_tag_statistic(user_id, tag_id, tag_name, counter, type, positive, is_deleted, gmt_create, creator, gmt_modify, modifier)
+    VALUES (#{userId}, #{tagId}, #{tagName}, #{counter}, #{type}, #{positive}, #{isDeleted}, #{gmtCreate}, #{creator}, #{gmtModify}, #{modifier})
     ON DUPLICATE KEY UPDATE
       counter=counter+#{counter}, gmt_modify=NOW(), modifier=#{modifier}
   </insert>
