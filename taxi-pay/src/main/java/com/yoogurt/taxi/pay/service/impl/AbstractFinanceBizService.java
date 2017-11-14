@@ -3,12 +3,16 @@ package com.yoogurt.taxi.pay.service.impl;
 import com.yoogurt.taxi.pay.service.PayChannelService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URLEncoder;
 import java.util.*;
 
 @Slf4j
 public abstract class AbstractFinanceBizService implements PayChannelService {
+
+    @Value("${notify.host}")
+    private String notifyHost;
 
     /**
      * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
@@ -82,4 +86,11 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
 
     public abstract String getNotifyUrl();
 
+    public String getNotifyHost() {
+        return notifyHost;
+    }
+
+    public void setNotifyHost(String notifyHost) {
+        this.notifyHost = notifyHost;
+    }
 }

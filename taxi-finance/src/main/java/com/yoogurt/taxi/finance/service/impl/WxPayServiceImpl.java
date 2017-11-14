@@ -323,7 +323,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
 
     @Override
     public String getNotifyUrl() {
-        return "http://api.yoogate.cn/webhooks/finance/i/wx";
+        return "http://" + super.getNotifyHost() + "/webhooks/finance/i/wx";
     }
 
     /**
