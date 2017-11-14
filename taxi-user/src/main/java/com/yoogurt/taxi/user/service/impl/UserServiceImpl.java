@@ -45,7 +45,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("spring.profiles.active")
+    @Value("${spring.profiles.active}")
     private String profile;
 
     @Autowired
@@ -65,9 +65,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRoleDao userRoleDao;
-
-    @Autowired
-    private SmsSender smsSender;
 
     @Override
     public UserInfo getUserByUserId(String id) {
