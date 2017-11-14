@@ -5,7 +5,9 @@ import com.yoogurt.taxi.common.vo.RestResult;
 import com.yoogurt.taxi.dal.beans.FinanceAccount;
 import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.order.service.rest.RestAccountService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RestAccountServiceHystrix implements RestAccountService {
 
     @Override
