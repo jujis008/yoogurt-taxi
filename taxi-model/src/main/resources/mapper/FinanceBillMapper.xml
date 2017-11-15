@@ -104,6 +104,9 @@
       <if test="billType != null">
         AND bill_type = #{billType}
       </if>
+      <if test="billStatus != null">
+        AND bill_status = #{billStatus}
+      </if>
       <if test="startTime != null">
         AND gmt_create>=#{startTime}
       </if>
