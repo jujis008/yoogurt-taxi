@@ -83,13 +83,13 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
         final String appId = payParams.getAppId();
         if (StringUtils.isBlank(appId)) return null;
 
+        final FinanceAlipaySettings settings = getAlipaySettings(appId);
+        if (settings == null) {
+            return null;
+        }
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Payment payment = payService.buildPayment(payParams);
-                final FinanceAlipaySettings settings = getAlipaySettings(appId);
-                if (settings == null) {
-                    return ResponseObj.fail(StatusCode.BIZ_FAILED, "该应用暂不支持支付宝支付");
-                }
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 //构造支付参数
