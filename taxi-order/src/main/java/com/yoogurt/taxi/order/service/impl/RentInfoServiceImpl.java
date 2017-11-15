@@ -196,8 +196,8 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         if (condition.getStartTime() != null) {
             criteria.andLessThanOrEqualTo("handoverTime",condition.getStartTime());
         }
-        if (condition.getStartTime() != null) {
-            criteria.andGreaterThanOrEqualTo("giveBackTime",condition.getStartTime());
+        if (condition.getEndTime() != null) {
+            criteria.andGreaterThanOrEqualTo("giveBackTime",condition.getEndTime());
         }
         Page<RentInfo> rentInfoList = (Page<RentInfo>) rentDao.selectByExample(example);
         return webPagerFactory.generatePager(rentInfoList);
