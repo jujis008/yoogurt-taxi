@@ -93,10 +93,10 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         if (payParams == null) return null;
         final String appId = payParams.getAppId();
         if (StringUtils.isBlank(appId)) return null;
+        final FinanceWxSettings settings = getWxSettings(appId);
+        if (settings == null) return null;
         return CompletableFuture.supplyAsync(() -> {
             try {
-                final FinanceWxSettings settings = getWxSettings(appId);
-                if (settings == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "该应用暂不支持微信支付");
                 Payment payment = payService.buildPayment(payParams);
                 final PrePayInfo pay = buildPrePayInfo(settings, payTask.getPayParams(), payment);
                 if (pay == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "微信预下单失败");
