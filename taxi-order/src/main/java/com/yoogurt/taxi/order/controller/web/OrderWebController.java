@@ -4,23 +4,26 @@ import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.pager.Pager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.*;
-import com.yoogurt.taxi.dal.condition.order.*;
-import com.yoogurt.taxi.dal.enums.DisobeyType;
+import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
+import com.yoogurt.taxi.dal.beans.OrderTrafficViolationInfo;
+import com.yoogurt.taxi.dal.beans.RentInfo;
+import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
+import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
+import com.yoogurt.taxi.dal.condition.order.RentWebListCondition;
+import com.yoogurt.taxi.dal.condition.order.TrafficViolationListCondition;
 import com.yoogurt.taxi.dal.enums.ResponsibleParty;
+import com.yoogurt.taxi.dal.enums.TrafficStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.dal.model.order.CancelOrderModel;
-import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.form.CancelForm;
+import com.yoogurt.taxi.order.form.TrafficHandleForm;
 import com.yoogurt.taxi.order.service.*;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,10 +39,6 @@ public class OrderWebController extends BaseController{
     private CancelService cancelService;
     @Autowired
     private DisobeyService disobeyService;
-    @Autowired
-    private AcceptService   acceptService;
-    @Autowired
-    private PickUpService   pickUpService;
 
     @RequestMapping(value = "list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public ResponseObj getList(OrderListCondition condition) {
@@ -51,23 +50,11 @@ public class OrderWebController extends BaseController{
 
     @RequestMapping(value = "info/orderId/{orderId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public ResponseObj getDetail(@PathVariable(name = "orderId") String orderId) {
-        OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
-        OrderAcceptInfo acceptInfo = acceptService.getAcceptInfo(orderId);
-        OrderPickUpInfo pickUpInfo = pickUpService.getPickUpInfo(orderId);
-        DisobeyType[] types = new DisobeyType[0];
-        List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null, types);
-        Map<String,Object> map = new HashMap<>();
-        map.put("orderInfo",orderInfo);
-        if (acceptInfo != null) {
-            map.put("acceptInfo",acceptInfo);
+        if (StringUtils.isBlank(orderId)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"请指定订单号");
         }
-        if (pickUpInfo != null) {
-            map.put("pickUpInfo",pickUpInfo);
-        }
-        if (CollectionUtils.isNotEmpty(disobeyList)) {
-            map.put("disobeyList",disobeyList);
-        }
-        return ResponseObj.success(map);
+        Map<String, Object> orderDetails = orderInfoService.getOrderDetails(orderId, null);
+        return ResponseObj.success(orderDetails);
     }
 
     @RequestMapping(value = "cancel",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
@@ -111,6 +98,28 @@ public class OrderWebController extends BaseController{
         condition.setFromApp(false);
         Pager<OrderTrafficViolationInfo> trafficViolations = trafficViolationService.getTrafficViolations(condition);
         return ResponseObj.success(trafficViolations);
+    }
+
+    /**
+     * 处理违章
+     * @param disobeyForm   表单参数
+     * @param result        操作结果
+     * @return
+     */
+    @RequestMapping(value = "trafficViolation",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
+    public ResponseObj trafficHandle(@Valid @RequestBody TrafficHandleForm disobeyForm, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
+        }
+        TrafficStatus trafficStatus;
+        if (disobeyForm.isStatus()) {
+            trafficStatus = TrafficStatus.NORMAL;
+        }else {
+            trafficStatus = TrafficStatus.WRONG;
+        }
+        OrderTrafficViolationInfo info = trafficViolationService.modifyStatus(disobeyForm.getId(), trafficStatus);
+        return info != null ? ResponseObj.success(info) : ResponseObj.fail();
     }
 
     @RequestMapping(value = "trafficViolation/info/id/{id}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
