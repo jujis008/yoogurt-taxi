@@ -20,6 +20,28 @@ endpoints:
 logging:
   level: debug
   path: ./log/taxi-gateway
+zuul:
+  ratelimit:
+    enabled: true
+    repository: REDIS
+    behind-proxy: true
+    default-policy: #optional - will apply unless specific policy exists
+      limit: 10 #optional - request number limit per refresh interval window
+      quota: 1000 #optional - request time limit per refresh interval window (in seconds)
+      refresh-interval: 60 #default value (in seconds)
+      type: #optional
+        - user
+        - origin
+        - url
+    policies:
+      myServiceId:
+        limit: 10 #optional - request number limit per refresh interval window
+        quota: 1000 #optional - request time limit per refresh interval window (in seconds)
+        refresh-interval: 60 #default value (in seconds)
+        type: #optional
+          - user
+          - origin
+          - url
 ---
 spring:
   profiles:
