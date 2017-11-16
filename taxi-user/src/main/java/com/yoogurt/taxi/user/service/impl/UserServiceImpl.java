@@ -66,6 +66,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRoleDao userRoleDao;
 
+    @Autowired
+    private SmsSender   smsSender;
+
     @Override
     public UserInfo getUserByUserId(String id) {
         return userDao.selectById(id);
@@ -462,16 +465,16 @@ public class UserServiceImpl implements UserService {
     }
 
     private void sendPhonePwd(Map<String, Object> phoneCodeMap, SmsTemplateType type, String key) {
-//        if (profile.equals("prod")) {
-//            phoneCodeMap.forEach((e,b)->{
-//                SmsPayload payload = new SmsPayload();
-//                payload.setParam(b.toString());
-//                payload.addOne(e);
-//                payload.setType(type);
-//                smsSender.send(payload);
-//            });
-//        } else {
-        phoneCodeMap.forEach((hashKey, value) -> redisHelper.put(key, hashKey, value));
-//        }
+        if (profile.equals("prod")) {
+            phoneCodeMap.forEach((e, b) -> {
+                SmsPayload payload = new SmsPayload();
+                payload.setParam(b.toString());
+                payload.addOne(e);
+                payload.setType(type);
+                smsSender.send(payload);
+            });
+        } else {
+            phoneCodeMap.forEach((hashKey, value) -> redisHelper.put(key, hashKey, value));
+        }
     }
 }

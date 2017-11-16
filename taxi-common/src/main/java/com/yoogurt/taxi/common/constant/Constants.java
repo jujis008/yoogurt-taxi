@@ -50,7 +50,7 @@ public final class Constants {
     /**
      * 允许最大的发单数量
      */
-    public static final int MAX_RENT_COUNT = 5;
+    public static final int MAX_RENT_COUNT = 20;
 
     /**
      * 支付任务最大重试次数

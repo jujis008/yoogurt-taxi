@@ -191,13 +191,13 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
             criteria.andLike("mobile","%"+condition.getPhone()+"%");
         }
         if (condition.getOrderId() != null) {
-            criteria.andLike("mobile","%"+condition.getOrderId()+"%");
+            criteria.andLike("orderId","%"+condition.getOrderId()+"%");
         }
         if (condition.getStartTime() != null) {
-            criteria.andGreaterThanOrEqualTo("handoverTime",condition.getStartTime());
+            criteria.andLessThanOrEqualTo("handoverTime",condition.getStartTime());
         }
-        if (condition.getStartTime() != null) {
-            criteria.andLessThanOrEqualTo("giveBackTime",condition.getStartTime());
+        if (condition.getEndTime() != null) {
+            criteria.andGreaterThanOrEqualTo("giveBackTime",condition.getEndTime());
         }
         Page<RentInfo> rentInfoList = (Page<RentInfo>) rentDao.selectByExample(example);
         return webPagerFactory.generatePager(rentInfoList);

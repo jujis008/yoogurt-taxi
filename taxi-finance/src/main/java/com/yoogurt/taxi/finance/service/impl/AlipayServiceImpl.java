@@ -250,6 +250,6 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
 
     @Override
     public String getNotifyUrl() {
-        return "http://" + super.getNotifyHost() + "/webhooks/finance/i/alipay";
+        return super.getNotifyHost() + "/webhooks/finance/i/alipay";
     }
 }
