@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -19,6 +20,10 @@ public class SmsPayload implements Serializable{
     private String param;
 
     private SmsTemplateType type;
+
+    public SmsPayload() {
+        this.phoneNumbers = new ArrayList<>();
+    }
 
     public void addOne(String phoneNumber) {
         if (StringUtils.isNotBlank(phoneNumber)) {
