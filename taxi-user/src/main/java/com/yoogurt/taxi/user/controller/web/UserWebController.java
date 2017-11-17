@@ -263,8 +263,17 @@ public class UserWebController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "请选择正确的性别");
         }
         UserInfo userInfo = userService.getUserByUserId(form.getUserId());
+        if (userInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"身份信息不存在");
+        }
         DriverInfo driverInfo = driverService.getDriverInfo(form.getDriverId());
+        if (driverInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"司机信息不存在");
+        }
         CarInfo carInfo = carService.getCarInfo(form.getCarId());
+        if (carInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"车辆信息不存在");
+        }
         BeanUtilsExtends.copyProperties(userInfo, form);
         BeanUtilsExtends.copyProperties(driverInfo, form);
         driverInfo.setMobile(form.getUsername());
@@ -281,7 +290,13 @@ public class UserWebController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "请选择正确的性别");
         }
         UserInfo userInfo = userService.getUserByUserId(form.getUserId());
+        if (userInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"身份信息不存在");
+        }
         DriverInfo driverInfo = driverService.getDriverInfo(form.getDriverId());
+        if (driverInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"司机信息不存在");
+        }
         BeanUtilsExtends.copyProperties(userInfo, form);
         BeanUtilsExtends.copyProperties(driverInfo, form);
         driverInfo.setMobile(form.getUsername());
