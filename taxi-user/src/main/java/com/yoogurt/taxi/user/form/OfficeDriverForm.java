@@ -6,7 +6,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -29,7 +28,7 @@ public class OfficeDriverForm extends AgentDriverForm{
     private String company;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "车辆注册时间不能为空")
-    private Date vehicleRegisterTime;
+    private String vehicleRegisterTime;
     @NotBlank(message = "行车证正面照不能为空")
     private String drivingPermitFront;
     @NotBlank(message = "行车证背面照不能为空")

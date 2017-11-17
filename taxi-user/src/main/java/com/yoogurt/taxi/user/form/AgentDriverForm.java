@@ -7,7 +7,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -28,7 +27,7 @@ public class AgentDriverForm {
     @NotNull(message = "请选择性别")
     private Integer gender;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date birthday;
+    private String birthday;
     @NotBlank(message = "身份证号不能为空")
     @Pattern(regexp = "[1-9]\\d{13,16}(\\d|[X|x]{1})",message = "身份证号格式有误")
     private String idCard;
