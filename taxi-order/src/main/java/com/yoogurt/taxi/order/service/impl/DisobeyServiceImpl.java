@@ -193,15 +193,15 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
     private Example buildExample(DisobeyListCondition condition) {
         Example ex = new Example(OrderDisobeyInfo.class);
         Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
-        if (condition.getOrderId() != null) {
+        if (StringUtils.isNotBlank(condition.getOrderId())) {
             criteria.andEqualTo("orderId", condition.getOrderId());
         }
 
-        if (condition.getUserId() != null) {
+        if (StringUtils.isNotBlank(condition.getUserId())) {
             criteria.andEqualTo("userId", condition.getUserId());
         }
 
-        if (condition.getDriverId() != null) {
+        if (StringUtils.isNotBlank(condition.getDriverId())) {
             criteria.andEqualTo("driverId", condition.getDriverId());
         }
 
@@ -213,11 +213,11 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
             criteria.andEqualTo("type", condition.getDisobeyType());
         }
 
-        if (StringUtils.isNoneBlank(condition.getDriverName())) {
+        if (StringUtils.isNotBlank(condition.getDriverName())) {
             criteria.andEqualTo("driverName", condition.getDriverName());
         }
 
-        if (StringUtils.isNoneBlank(condition.getMobile())) {
+        if (StringUtils.isNotBlank(condition.getMobile())) {
             criteria.andEqualTo("mobile", condition.getMobile());
         }
 
