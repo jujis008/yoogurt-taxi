@@ -37,8 +37,10 @@ public class LoginServiceImpl implements LoginService {
         Example example = new Example(UserInfo.class);
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("username", username)
-                .andEqualTo("isDeleted",0)
-                .andEqualTo("type", userType.getCode());
+                .andEqualTo("isDeleted", 0);
+        if (userType.isAppUser()) {
+            criteria.andEqualTo("type", userType.getCode());
+        }
         List<UserInfo> userList = userDao.selectByExample(example);
         if (userList.size() == 0) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED.getStatus(), "登录失败，请核对账号");
