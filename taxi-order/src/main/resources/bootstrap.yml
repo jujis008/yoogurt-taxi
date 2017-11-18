@@ -5,6 +5,10 @@ spring:
     config:
       uri: http://yoogurt:taxi123456@peer1:9998
       fail-fast: true
+  rabbitmq:
+      listener:
+        simple:
+          default-requeue-rejected: false
 logging:
   level: debug
   path: ./log/taxi-order

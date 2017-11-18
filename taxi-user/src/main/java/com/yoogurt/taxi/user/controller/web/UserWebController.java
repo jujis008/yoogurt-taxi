@@ -278,6 +278,8 @@ public class UserWebController extends BaseController {
         BeanUtilsExtends.copyProperties(driverInfo, form);
         driverInfo.setMobile(form.getUsername());
         BeanUtilsExtends.copyProperties(carInfo, form);
+        driverInfo.setIsAuthentication(Boolean.TRUE);
+        carInfo.setIsAuthentication(Boolean.TRUE);
         return userService.saveUnitInfo(userInfo, driverInfo, carInfo);
     }
 
@@ -300,6 +302,7 @@ public class UserWebController extends BaseController {
         BeanUtilsExtends.copyProperties(userInfo, form);
         BeanUtilsExtends.copyProperties(driverInfo, form);
         driverInfo.setMobile(form.getUsername());
+        driverInfo.setIsAuthentication(Boolean.TRUE);
         return userService.saveUnitInfo(userInfo, driverInfo, null);
     }
 
@@ -361,8 +364,12 @@ public class UserWebController extends BaseController {
         if (userInfo == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
+        DriverInfo driverInfo = driverService.getDriverByUserId(form.getUserId());
+        if (!driverInfo.getIsAuthentication()) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户资料尚未填写");
+        }
         if (!userInfo.getStatus().equals(UserStatus.UN_AUTHENTICATE.getCode())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户只有在已认证时才可以冻结");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户只有在未认证才可以认证");
         }
         userInfo.setStatus(UserStatus.AUTHENTICATED.getCode());
         userService.modifyUser(userInfo);
