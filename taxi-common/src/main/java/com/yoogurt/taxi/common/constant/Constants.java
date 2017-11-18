@@ -126,7 +126,7 @@ public final class Constants {
     public static final String OFFICIAL_APP_NAME = "替你开车主端";
 
     /**提现允许日期*/
-    public static final int withdraw_day_of_week = 7;
+    public static final int withdraw_day_of_week = 2;
     /**提现允许开始时间*/
     public static final String withdraw_start_time = "09:00";
     /**提现允许结束时间*/

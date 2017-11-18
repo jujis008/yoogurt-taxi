@@ -8,20 +8,19 @@ import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
+import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.enums.UserFrom;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
-import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.user.dao.UserDao;
+import com.yoogurt.taxi.user.service.AuthorityInfoService;
 import com.yoogurt.taxi.user.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -29,6 +28,8 @@ public class LoginServiceImpl implements LoginService {
     private RedisHelper redisHelper;
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private AuthorityInfoService authorityInfoService;
 
 
     @Override
@@ -60,7 +61,14 @@ public class LoginServiceImpl implements LoginService {
         redisHelper.set(CacheKey.GRANT_CODE_KEY + user.getUserId(), grantCode, Constants.GRANT_CODE_EXPIRE_SECONDS);
         //缓存SessionUser，不需要设置过期时间，以JWT的过期时间为准
         redisHelper.setObject(CacheKey.SESSION_USER_KEY + user.getUserId(), sessionUser);
-        return ResponseObj.success(sessionUser);
+        ResponseObj success = ResponseObj.success(sessionUser);
+        if (userType.isWebUser()) {
+            List<String> tagList = authorityInfoService.getAssociatedControlByUserId(user.getUserId());
+            HashMap<String, Object> extras = new HashMap<>();
+            extras.put("tagList",tagList);
+            success.setExtras(extras);
+        }
+        return success;
     }
 
     @Override

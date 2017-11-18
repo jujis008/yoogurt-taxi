@@ -25,4 +25,6 @@ public interface AuthorityInfoService {
     Pager<AuthorityWLModel> getAuthorityWebList(AuthorityWLCondition condition);
 
     List<GroupAuthorityLModel> getAllAuthorities();
+
+    List<String> getAssociatedControlByUserId(String userId);
 }

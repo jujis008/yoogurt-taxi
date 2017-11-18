@@ -27,4 +27,9 @@ public class AuthorityDaoImpl extends BaseDao<AuthorityInfoMapper,AuthorityInfo>
     public List<GroupAuthorityLModel> getAllAuthorities() {
         return authorityInfoMapper.getAllAuthorities();
     }
+
+    @Override
+    public List<String> getAssociatedControlByUserId(String userId) {
+        return authorityInfoMapper.getAssociatedControlByUserId(userId);
+    }
 }

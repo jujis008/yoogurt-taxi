@@ -12,4 +12,5 @@ import java.util.List;
 public interface AuthorityInfoMapper extends Mapper<AuthorityInfo> {
     Page<AuthorityWLModel> getAuthorityWebList(AuthorityWLCondition condition);
     List<GroupAuthorityLModel> getAllAuthorities();
+    List<String> getAssociatedControlByUserId(String userId);
 }

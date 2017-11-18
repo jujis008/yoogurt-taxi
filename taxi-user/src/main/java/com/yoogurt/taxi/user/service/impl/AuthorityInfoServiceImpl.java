@@ -56,4 +56,9 @@ public class AuthorityInfoServiceImpl implements AuthorityInfoService{
     public List<GroupAuthorityLModel> getAllAuthorities() {
         return authorityDao.getAllAuthorities();
     }
+
+    @Override
+    public List<String> getAssociatedControlByUserId(String userId) {
+        return authorityDao.getAssociatedControlByUserId(userId);
+    }
 }

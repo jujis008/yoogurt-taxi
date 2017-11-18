@@ -123,7 +123,7 @@ public class FinanceMobileController extends BaseController {
         }
         AccountUpdateCondition condition = new AccountUpdateCondition();
         condition.setDestinationType(DestinationType.DEPOSIT);
-        condition.setPayeeAccount(financeAccount.getAccountNo().toString());
+        condition.setPayeeAccount(financeAccount.getAccountNo());
         condition.setPayeeName(userInfo.getName());
         condition.setPayeePhone(userInfo.getUsername());
         condition.setPayment(payment);
