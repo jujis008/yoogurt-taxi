@@ -243,9 +243,11 @@ public class FinanceBillServiceImpl implements FinanceBillService {
             }
             if (!financeBill.getPayeeName().equals(model.getAccountName())) {
                 log.error("账单id："+billId+",户名有误");
+                continue;
             }
             BillStatus billStatus = model.getStatus()?BillStatus.SUCCESS:BillStatus.FAIL;
-            financeAccountService.handleWithdraw(billId,billStatus);
+            ResponseObj responseObj = financeAccountService.handleWithdraw(billId, billStatus);
+            log.info(billId+":"+responseObj.getStatus()+":"+responseObj.getMessage());
             count++;
         }
         return ResponseObj.success(count);

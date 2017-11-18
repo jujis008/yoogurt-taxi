@@ -14,7 +14,6 @@ import com.yoogurt.taxi.dal.model.account.FinanceBillListWebModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillDetailModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
