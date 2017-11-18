@@ -58,7 +58,7 @@ public class LoginServiceImpl implements LoginService {
         SessionUser sessionUser = new SessionUser(user.getUserId(), username);
         sessionUser.setStatus(user.getStatus());
         sessionUser.setGrantCode(grantCode);
-        sessionUser.setType(userType.getCode());
+        sessionUser.setType(user.getType());
         //缓存授权码，30秒内有效
         redisHelper.set(CacheKey.GRANT_CODE_KEY + user.getUserId(), grantCode, Constants.GRANT_CODE_EXPIRE_SECONDS);
         //缓存SessionUser，不需要设置过期时间，以JWT的过期时间为准
