@@ -9,20 +9,21 @@ import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
 import com.yoogurt.taxi.common.helper.excel.ExcelParamBean;
 import com.yoogurt.taxi.common.helper.excel.ExcelUtils;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
+import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.*;
+import com.yoogurt.taxi.dal.bo.SmsPayload;
 import com.yoogurt.taxi.dal.condition.user.AuthorityWLCondition;
 import com.yoogurt.taxi.dal.condition.user.DriverWLCondition;
 import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
-import com.yoogurt.taxi.dal.enums.CarEnergyType;
-import com.yoogurt.taxi.dal.enums.UserGender;
-import com.yoogurt.taxi.dal.enums.UserStatus;
-import com.yoogurt.taxi.dal.enums.UserType;
+import com.yoogurt.taxi.dal.enums.*;
 import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
 import com.yoogurt.taxi.dal.model.user.RoleWLModel;
 import com.yoogurt.taxi.user.form.*;
+import com.yoogurt.taxi.user.mq.SmsSender;
 import com.yoogurt.taxi.user.service.*;
+import com.yoogurt.taxi.user.service.rest.RestAuthService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +60,10 @@ public class UserWebController extends BaseController {
     private RoleInfoService roleInfoService;
     @Autowired
     private RedisHelper redisHelper;
+    @Autowired
+    private RestAuthService restAuthService;
+    @Autowired
+    private SmsSender   smsSender;
 
     @RequestMapping("/tt")
     public String tt() {
@@ -183,6 +188,7 @@ public class UserWebController extends BaseController {
     public ResponseObj logout() {
         String userId = super.getUserId();
         redisHelper.del(CacheKey.SESSION_USER_KEY+userId);
+        restAuthService.clearCachedAuthorizationInfo(userId);
         return ResponseObj.success();
     }
 
@@ -235,9 +241,48 @@ public class UserWebController extends BaseController {
         String newPassword = RandomUtils.getRandNum(6);
         String userId = form.getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
+        if (userInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户不存在");
+        }
         userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
-        redisHelper.set(CacheKey.VERIFY_CODE_KEY + userInfo.getUsername(), newPassword, 5 * 60);
+        SmsPayload payload = new SmsPayload();
+        if (!UserType.getEnumsByCode(userInfo.getType()).isAppUser()) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"只有app用户方可操作");
+        }
+        if (userInfo.getType().equals(UserType.USER_APP_AGENT.getCode())) {
+            payload.setType(SmsTemplateType.AGENT_RESET_PWD);
+        }
+        if (userInfo.getType().equals(UserType.USER_APP_OFFICE.getCode())) {
+            payload.setType(SmsTemplateType.OFFICE_RESET_PWD);
+        }
+        payload.setParam(newPassword);
+        List<String> phoneNumbers = new ArrayList<>();
+        phoneNumbers.add(super.getUserName());
+        payload.setPhoneNumbers(phoneNumbers);
+        smsSender.send(payload);
         return ResponseObj.success();
+    }
+
+    /**
+     * 修改登录密码
+     * @param form
+     * @return
+     */
+    @RequestMapping(value = "/modifyLoginPwd", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
+    public ResponseObj modifyLoginPwd(@RequestBody UserPatchForm form) {
+        if (StringUtils.isBlank(form.getPassword())) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,"旧密码不能为空");
+        }
+        if (StringUtils.isBlank(form.getNewPassword())) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID,"新密码不能为空");
+        }
+        String userId = super.getUserId();
+        UserInfo userInfo = userService.getUserByUserId(userId);
+        if (!Encipher.matches(form.getUserId(),userInfo.getLoginPassword())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED,"旧密码错误");
+        }
+        userInfo.setLoginPassword(Encipher.encrypt(form.getNewPassword()));
+        return userService.modifyUser(userInfo);
     }
 
     /**
@@ -365,9 +410,7 @@ public class UserWebController extends BaseController {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
         DriverInfo driverInfo = driverService.getDriverByUserId(form.getUserId());
-        if (!driverInfo.getIsAuthentication()) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户资料尚未填写");
-        }
+        if (!driverInfo.getIsAuthentication())
         if (!userInfo.getStatus().equals(UserStatus.UN_AUTHENTICATE.getCode())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户只有在未认证才可以认证");
         }

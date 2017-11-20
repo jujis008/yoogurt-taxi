@@ -36,11 +36,17 @@ public class SmsReceiver {
             case VALID:
                 templateSms.setTemplateId(smsConfig.getValidTemplateId());
                 break;
-            case agent_pwd:
+            case AGENT_PWD:
                 templateSms.setTemplateId(smsConfig.getAgentPwdTemplateId());
                 break;
-            case office_pwd:
+            case OFFICE_PWD:
                 templateSms.setTemplateId(smsConfig.getOfficePwdTemplateId());
+                break;
+            case AGENT_RESET_PWD:
+                templateSms.setTemplateId(smsConfig.getAgentResetPwdTemplateId());
+                break;
+            case OFFICE_RESET_PWD:
+                templateSms.setTemplateId(smsConfig.getOfficeResetPwdTemplateId());
                 break;
             default:
                 return;

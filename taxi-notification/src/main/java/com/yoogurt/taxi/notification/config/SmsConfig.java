@@ -27,4 +27,8 @@ public class SmsConfig {
     private String agentPwdTemplateId;
     @Value("officePwdTemplateId")
     private String officePwdTemplateId;
+    @Value("officeResetPwdTemplateId")
+    private String officeResetPwdTemplateId;
+    @Value("agentResetPwdTemplateId")
+    private String agentResetPwdTemplateId;
 }

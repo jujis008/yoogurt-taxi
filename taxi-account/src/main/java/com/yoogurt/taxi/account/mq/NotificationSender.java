@@ -1,12 +1,15 @@
 package com.yoogurt.taxi.account.mq;
 
-import com.yoogurt.taxi.dal.bo.PushPayload;
+import com.alibaba.fastjson.JSON;
 import com.yoogurt.taxi.common.enums.MessageQueue;
+import com.yoogurt.taxi.dal.bo.PushPayload;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class NotificationSender {
 
     @Autowired
@@ -17,6 +20,7 @@ public class NotificationSender {
      * @param payload 消息负载
      */
     public void send(PushPayload payload) {
-        rabbitTemplate.convertAndSend(MessageQueue.SMS_NOTIFICATION_QUEUE.getExchange(), MessageQueue.SMS_NOTIFICATION_QUEUE.getRoutingKey(), payload);
+        rabbitTemplate.convertAndSend(MessageQueue.ACCOUNT_NOTIFICATION_QUEUE.getExchange(), MessageQueue.ACCOUNT_NOTIFICATION_QUEUE.getRoutingKey(), payload);
+        log.info("新的信息推入队列"+ JSON.toJSONString(payload));
     }
 }
