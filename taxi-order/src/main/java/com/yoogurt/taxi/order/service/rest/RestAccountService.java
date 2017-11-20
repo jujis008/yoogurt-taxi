@@ -16,7 +16,7 @@ import javax.validation.Valid;
 public interface RestAccountService {
 
     @RequestMapping(value = "/rest/account/userId/{userId}", method = RequestMethod.GET)
-    RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") String userId);
+    RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") String userId, Integer userType);
 
     @RequestMapping(value = "/rest/account/modification", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     RestResult updateAccount(@Valid @RequestBody ModificationVo vo);
