@@ -30,10 +30,10 @@
     FROM finance_account
     <where>
       <if test="name != null and name !=''">
-        name like concat('%',#{name},'%')
+        name = #{name}
       </if>
       <if test="username != null and username != ''">
-        and username like concat('%',#{username},'%')
+        and username = #{username}
       </if>
       <if test="userType != null">
         and user_type=#{userType}

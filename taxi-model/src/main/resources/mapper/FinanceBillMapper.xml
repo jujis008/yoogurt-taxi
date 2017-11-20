@@ -78,10 +78,10 @@
       FROM finance_bill
       <where>
         <if test="name != null and name !=''">
-          name like concat('%',#{name},'%')
+          name = #{name}
         </if>
         <if test="username != null and username != ''">
-          and username like concat('%',#{username},'%')
+          and username = #{username}
         </if>
         <if test="userType != null">
           and user_type=#{userType}
@@ -99,7 +99,7 @@
       FROM finance_bill
       WHERE trade_type = #{tradeType}
       <if test="username != null and username != ''">
-        AND username like concat('%',#{username},'%')
+        AND username = #{username}
       </if>
       <if test="billType != null">
         AND bill_type = #{billType}

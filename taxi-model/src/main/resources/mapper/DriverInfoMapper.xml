@@ -52,13 +52,13 @@
         LEFT JOIN car_info t3 ON t1.id = t3.driver_id
         <where>
             <if test="name != null and name != ''">
-                t2.name LIKE concat('%',#{name},'%')
+                t2.name = #{name}
             </if>
             <if test="username != null and username != ''">
-                AND t2.username LIKE concat('%',#{username},'%')
+                AND t2.username = #{username}
             </if>
             <if test="null != idCard and '' != idCard">
-                AND t1.id_card LIKE concat('%',#{idCard},'%')
+                AND t1.id_card = #{idCard}
             </if>
             <if test="userStatus != null and userStatus != ''">
                 AND t2.status=#{userStatus}

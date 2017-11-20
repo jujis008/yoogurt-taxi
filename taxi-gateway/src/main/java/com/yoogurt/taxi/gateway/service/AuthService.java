@@ -6,5 +6,5 @@ public interface AuthService {
 
     String refreshToken(String token);
 
-    void clearCachedAuthorizationInfo(String... userIds);
+    void clearCachedAuthorizationInfo(Object... userIds);
 }

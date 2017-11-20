@@ -179,18 +179,18 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
 
     @Override
     public Pager<RentInfo> getRentListForWebPage(RentWebListCondition condition) {
-        PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
+        PageHelper.startPage(condition.getPageNum(),condition.getPageSize());
         Example example = new Example(RentInfo.class);
         example.setOrderByClause(" gmt_create desc");
         Example.Criteria criteria = example.createCriteria();
         if (StringUtils.isNotBlank(condition.getName())) {
-            criteria.andLike("driverName", "%" + condition.getName() + "%");
+            criteria.andEqualTo("driverName",condition.getName());
         }
         if (StringUtils.isNotBlank(condition.getPhone())) {
-            criteria.andLike("mobile", "%" + condition.getPhone() + "%");
+            criteria.andEqualTo("mobile",condition.getPhone());
         }
         if (condition.getOrderId() != null) {
-            criteria.andLike("orderId", "%" + condition.getOrderId() + "%");
+            criteria.andEqualTo("orderId",condition.getOrderId());
         }
         if (condition.getStartTime() != null) {
             criteria.andLessThanOrEqualTo("handoverTime", condition.getStartTime());

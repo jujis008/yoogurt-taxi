@@ -33,6 +33,8 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
      */
     private static final String IGNORE_PATTERN = "/**/i/**";
 
+    private static final String LOGOUT_URI = "/web/user/logout";
+
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
 
@@ -51,6 +53,9 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
         if(!iterator.hasNext()) return false;
         SessionUser user = iterator.next();
         if (UserType.SUPER_ADMIN.getCode().equals(user.getType())) {
+            return true;
+        }
+        if (matcher.match(LOGOUT_URI, currentUrl)) {
             return true;
         }
         //判断当前用户是有该uri的访问权限

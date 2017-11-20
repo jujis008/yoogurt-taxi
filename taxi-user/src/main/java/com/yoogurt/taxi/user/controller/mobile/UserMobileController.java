@@ -74,6 +74,7 @@ public class UserMobileController extends BaseController {
     public ResponseObj logout() {
         String userId = super.getUserId();
         redisHelper.del(CacheKey.SESSION_USER_KEY+userId);
+        redisHelper.deleteMap(CacheKey.SHIRO_AUTHORITY_MAP, userId);
         return ResponseObj.success();
     }
 
