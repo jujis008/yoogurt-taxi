@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("web/order")
-public class OrderWebController extends BaseController{
+public class OrderWebController extends BaseController {
     @Autowired
     private OrderInfoService orderInfoService;
     @Autowired
@@ -45,9 +45,9 @@ public class OrderWebController extends BaseController{
     @Autowired
     private DisobeyService disobeyService;
     @Autowired
-    private CommonResourceService   commonResourceService;
+    private CommonResourceService commonResourceService;
 
-    @RequestMapping(value = "list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getList(OrderListCondition condition) {
         if (!UserType.getEnumsByCode(super.getUser().getType()).isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
@@ -55,15 +55,15 @@ public class OrderWebController extends BaseController{
         return ResponseObj.success(orderInfoService.getWebOrderList(condition));
     }
 
-    @RequestMapping(value = "info/orderId/{orderId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "info/orderId/{orderId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getDetail(@PathVariable(name = "orderId") String orderId) {
         if (StringUtils.isBlank(orderId)) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"请指定订单号");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "请指定订单号");
         }
         Map<String, Object> orderDetails = orderInfoService.getOrderDetails(orderId, null);
-        List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null, null);
+        List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null);
         if (CollectionUtils.isNotEmpty(disobeyList)) {
-            orderDetails.put("disobeyList",disobeyList);
+            orderDetails.put("disobeyList", disobeyList);
         }
         return ResponseObj.success(orderDetails);
     }
@@ -89,25 +89,26 @@ public class OrderWebController extends BaseController{
         return ResponseObj.success(stringStream);
     }
 
-    @RequestMapping(value = "cancel",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "cancel", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj cancelOrder(@RequestBody @Valid CancelForm cancelForm, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         if (ResponsibleParty.getEnumsByCode(cancelForm.getResponsibleParty()) == null) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"请选择正确的责任方");
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "请选择正确的责任方");
         }
         Integer userType = super.getUser().getType();
         if (!UserType.getEnumsByCode(userType).isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
+        cancelForm.setInternal(false);
         cancelForm.setFromApp(false);
         cancelForm.setUserType(userType);
         CancelOrderModel cancelOrderModel = cancelService.doCancel(cancelForm);
         return ResponseObj.success(cancelOrderModel);
     }
 
-    @RequestMapping(value = "rent/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "rent/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentList(RentWebListCondition condition) {
         if (!UserType.getEnumsByCode(super.getUser().getType()).isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
@@ -116,13 +117,13 @@ public class OrderWebController extends BaseController{
         return ResponseObj.success(rentListByPage);
     }
 
-    @RequestMapping(value = "rent/info/rentId/{rentId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "rent/info/rentId/{rentId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentDetail(@PathVariable(name = "rentId") String rentId) {
         RentInfo rentInfo = rentInfoService.getRentInfo(rentId, null);
         return ResponseObj.success(rentInfo);
     }
 
-    @RequestMapping(value = "trafficViolation/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "trafficViolation/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getTrafficViolationList(TrafficViolationListCondition condition) {
         if (!UserType.getEnumsByCode(super.getUser().getType()).isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
@@ -134,11 +135,12 @@ public class OrderWebController extends BaseController{
 
     /**
      * 处理违章
-     * @param disobeyForm   表单参数
-     * @param result        操作结果
+     *
+     * @param disobeyForm 表单参数
+     * @param result      操作结果
      * @return
      */
-    @RequestMapping(value = "trafficViolation",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "trafficViolation", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj trafficHandle(@Valid @RequestBody TrafficHandleForm disobeyForm, BindingResult result) {
 
         if (result.hasErrors()) {
@@ -147,20 +149,20 @@ public class OrderWebController extends BaseController{
         TrafficStatus trafficStatus;
         if (disobeyForm.isStatus()) {
             trafficStatus = TrafficStatus.NORMAL;
-        }else {
+        } else {
             trafficStatus = TrafficStatus.WRONG;
         }
         OrderTrafficViolationInfo info = trafficViolationService.modifyStatus(disobeyForm.getId(), trafficStatus);
         return info != null ? ResponseObj.success(info) : ResponseObj.fail();
     }
 
-    @RequestMapping(value = "trafficViolation/info/id/{id}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "trafficViolation/info/id/{id}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getTrafficViolationDetail(@PathVariable(name = "id") Long id) {
         OrderTrafficViolationInfo trafficViolationInfo = trafficViolationService.getTrafficViolationInfo(id);
         return ResponseObj.success(trafficViolationInfo);
     }
 
-    @RequestMapping(value = "disobey/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "disobey/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getDisobeyList(DisobeyListCondition condition) {
         if (!UserType.getEnumsByCode(super.getUser().getType()).isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
@@ -170,7 +172,7 @@ public class OrderWebController extends BaseController{
         return ResponseObj.success(disobeyList);
     }
 
-    @RequestMapping(value = "disobey/info/id/{id}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "disobey/info/id/{id}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getDisobeyDetail(@PathVariable(name = "id") Long id) {
         OrderDisobeyInfo disobeyInfo = disobeyService.getDisobeyInfo(id);
         return ResponseObj.success(disobeyInfo);

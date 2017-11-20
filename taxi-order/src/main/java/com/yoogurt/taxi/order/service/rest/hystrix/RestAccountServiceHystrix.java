@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class RestAccountServiceHystrix implements RestAccountService {
 
     @Override
-    public RestResult<FinanceAccount> getAccountByUserId(String userId) {
+    public RestResult<FinanceAccount> getAccountByUserId(String userId, Integer userType) {
         return RestResult.fail(StatusCode.BIZ_FAILED, "获取账户信息异常");
     }
 

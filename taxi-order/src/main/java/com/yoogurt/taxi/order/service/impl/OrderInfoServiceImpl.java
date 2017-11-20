@@ -354,7 +354,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "该租单信息已被他人接走");
         }
         String userId = orderForm.getUserId();
-        ResponseObj obj = super.isAllowed(userId);
+        ResponseObj obj = super.isAllowed(userId, orderForm.getUserType());
         if (!obj.isSuccess()) return obj;
 
         DateTimeSection section = new DateTimeSection(rentInfo.getHandoverTime(), rentInfo.getGiveBackTime());

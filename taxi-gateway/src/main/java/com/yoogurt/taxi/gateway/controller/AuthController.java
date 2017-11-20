@@ -39,6 +39,7 @@ public class AuthController extends BaseController {
 
         Integer userType = super.getUserType();
         String authToken = authService.getAuthToken(userId, grantCode, username, userType);
+        log.info("token: \n" + authToken);
         if(StringUtils.isNoneBlank(authToken)) return ResponseObj.success(authToken);
 
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "授权码不存在或已过期");
@@ -50,6 +51,7 @@ public class AuthController extends BaseController {
         String oldToken = tokenHelper.getAuthToken(request);
         String newToken = authService.refreshToken(oldToken);
         if (StringUtils.isNoneBlank(newToken)) {
+            log.info("new_token: \n" + newToken);
             return ResponseObj.success(newToken);
         }
         return ResponseObj.fail(StatusCode.LOGIN_EXPIRE, StatusCode.LOGIN_EXPIRE.getDetail());

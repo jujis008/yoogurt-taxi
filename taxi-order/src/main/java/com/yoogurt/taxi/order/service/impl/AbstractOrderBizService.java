@@ -28,9 +28,9 @@ public abstract class AbstractOrderBizService implements OrderBizService {
     @Autowired
     private NotificationSender sender;
 
-    public ResponseObj isAllowed(String userId) {
+    public ResponseObj isAllowed(String userId, Integer userType) {
 
-        RestResult<FinanceAccount> accountResult = accountService.getAccountByUserId(userId);
+        RestResult<FinanceAccount> accountResult = accountService.getAccountByUserId(userId, userType);
         if (!accountResult.isSuccess()) {
             log.warn("[REST]{}", accountResult.getMessage());
             return ResponseObj.of(accountResult);

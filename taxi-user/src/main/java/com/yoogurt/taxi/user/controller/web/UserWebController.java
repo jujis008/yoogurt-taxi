@@ -182,7 +182,7 @@ public class UserWebController extends BaseController {
     @RequestMapping(value = "/logout", method = RequestMethod.DELETE, produces = {"application/json;charset=utf-8"})
     public ResponseObj logout() {
         String userId = super.getUserId();
-        redisHelper.del(CacheKey.SESSION_USER_KEY+userId);
+        redisHelper.del(CacheKey.SESSION_USER_KEY + userId);
         return ResponseObj.success();
     }
 
@@ -208,20 +208,21 @@ public class UserWebController extends BaseController {
      */
     @RequestMapping(value = "/driver/detail/driverId/{driverId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getOfficeDriverDetail(@PathVariable(name = "driverId") String driverId) {
-        Map<String, Object> map = new HashMap<>();
         DriverInfo driverInfo = driverService.getDriverInfo(driverId);
-        List<CarInfo> carInfoList = carService.getCarByDriverId(driverId);
         if (driverInfo != null) {
+            Map<String, Object> map = new HashMap<>();
             map.put("driverInfo", driverInfo);
+            UserInfo userInfo = userService.getUserByUserId(driverInfo.getUserId());
+            if (userInfo != null) {
+                map.put("userInfo", userInfo);
+            }
+            List<CarInfo> carInfoList = carService.getCarByDriverId(driverId);
+            if (CollectionUtils.isNotEmpty(carInfoList)) {
+                map.put("carInfo", carInfoList.get(0));
+            }
+            return ResponseObj.success(map);
         }
-        UserInfo userInfo = userService.getUserByUserId(driverInfo.getUserId());
-        if (userInfo != null) {
-            map.put("userInfo", userInfo);
-        }
-        if (CollectionUtils.isNotEmpty(carInfoList)) {
-            map.put("carInfo", carInfoList.get(0));
-        }
-        return ResponseObj.success(map);
+        return ResponseObj.fail(StatusCode.BIZ_FAILED, "司机信息不存在");
     }
 
     /**
@@ -235,9 +236,12 @@ public class UserWebController extends BaseController {
         String newPassword = RandomUtils.getRandNum(6);
         String userId = form.getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
-        userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
-        redisHelper.set(CacheKey.VERIFY_CODE_KEY + userInfo.getUsername(), newPassword, 5 * 60);
-        return ResponseObj.success();
+        if (userInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户信息不存在");
+        if (userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword)).isSuccess()) {
+            redisHelper.set(CacheKey.VERIFY_CODE_KEY + userInfo.getUsername(), newPassword, 5 * 60);
+            return ResponseObj.success();
+        }
+        return ResponseObj.fail();
     }
 
     /**
@@ -264,15 +268,15 @@ public class UserWebController extends BaseController {
         }
         UserInfo userInfo = userService.getUserByUserId(form.getUserId());
         if (userInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"身份信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "身份信息不存在");
         }
         DriverInfo driverInfo = driverService.getDriverInfo(form.getDriverId());
         if (driverInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"司机信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "司机信息不存在");
         }
         CarInfo carInfo = carService.getCarInfo(form.getCarId());
         if (carInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"车辆信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "车辆信息不存在");
         }
         BeanUtilsExtends.copyProperties(userInfo, form);
         BeanUtilsExtends.copyProperties(driverInfo, form);
@@ -293,11 +297,11 @@ public class UserWebController extends BaseController {
         }
         UserInfo userInfo = userService.getUserByUserId(form.getUserId());
         if (userInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"身份信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "身份信息不存在");
         }
         DriverInfo driverInfo = driverService.getDriverInfo(form.getDriverId());
         if (driverInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"司机信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "司机信息不存在");
         }
         BeanUtilsExtends.copyProperties(userInfo, form);
         BeanUtilsExtends.copyProperties(driverInfo, form);
@@ -308,6 +312,7 @@ public class UserWebController extends BaseController {
 
     /**
      * 功能：冻结
+     *
      * @param form
      * @return
      */
@@ -330,6 +335,7 @@ public class UserWebController extends BaseController {
 
     /**
      * 功能：解冻
+     *
      * @param form
      * @return
      */
@@ -352,6 +358,7 @@ public class UserWebController extends BaseController {
 
     /**
      * 功能：认证
+     *
      * @param form
      * @return
      */
@@ -366,7 +373,7 @@ public class UserWebController extends BaseController {
         }
         DriverInfo driverInfo = driverService.getDriverByUserId(form.getUserId());
         if (!driverInfo.getIsAuthentication()) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户资料尚未填写");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户资料尚未填写");
         }
         if (!userInfo.getStatus().equals(UserStatus.UN_AUTHENTICATE.getCode())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户只有在未认证才可以认证");
