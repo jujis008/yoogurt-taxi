@@ -24,36 +24,26 @@ public class RestUserAccountController {
 
     @Autowired
     private FinanceAccountService financeAccountService;
+
     @Autowired
     private RestUserService restUserService;
 
-    @RequestMapping(value = "/userId/{userId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") String userId) {
+    @RequestMapping(value = "/userId/{userId}/{userType}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") String userId, @PathVariable(name = "userType") Integer userType) {
+
         FinanceAccount financeAccount = financeAccountService.get(userId);
         if (financeAccount == null) {
-            RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(userId);
-            if (!userInfoRestResult.isSuccess()) {
-                return RestResult.fail(StatusCode.BIZ_FAILED,"用户信息不存在");
-            }
-            Money receivableDeposit = new Money(0);
-            UserInfo userInfo = userInfoRestResult.getBody();
-            if (UserType.USER_APP_OFFICE.getCode() == userInfo.getType()) {
-                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLE_DEPOSIT);
-            }
-            if (UserType.USER_APP_AGENT.getCode() == userInfo.getType()) {
-                receivableDeposit = new Money(Constants.AGENT_RECEIVABLE_DEPOSIT);
-            }
-            financeAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, userId);
+            financeAccount = buildAccount(userId, userType);
         }
-        if(financeAccount != null) return RestResult.success(financeAccount);
+        if (financeAccount != null) return RestResult.success(financeAccount);
         return RestResult.fail(StatusCode.BIZ_FAILED, "账户信息不存在");
     }
 
-    @RequestMapping(value = "/modification",method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/modification", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public RestResult updateAccount(@Valid @RequestBody ModificationVo voObject) {
         TradeType tradeType = TradeType.getEnumsByCode(voObject.getType());
         if (tradeType == null) {
-            return RestResult.fail(StatusCode.BIZ_FAILED,"错误的交易类型");
+            return RestResult.fail(StatusCode.BIZ_FAILED, "错误的交易类型");
         }
         RestResult<UserInfo> fineInUserInfoRestResult = restUserService.getUserInfoById(voObject.getInUserId());
         if (!fineInUserInfoRestResult.isSuccess()) {
@@ -61,7 +51,7 @@ public class RestUserAccountController {
         }
         FinanceAccount fineInFinanceAccount = financeAccountService.get(voObject.getInUserId());
         if (fineInFinanceAccount == null) {
-            return RestResult.fail(StatusCode.BIZ_FAILED,"账户资金不足，不足以扣款");
+            return RestResult.fail(StatusCode.BIZ_FAILED, "账户资金不足，不足以扣款");
         }
 
         RestResult<UserInfo> fineOutUserInfoRestResult = restUserService.getUserInfoById(voObject.getOutUserId());
@@ -75,18 +65,12 @@ public class RestUserAccountController {
         if (fineOutFinanceAccount == null) {
             RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(voObject.getUserId());
             if (!userInfoRestResult.isSuccess()) {
-                return RestResult.fail(StatusCode.BIZ_FAILED,"用户信息不存在");
+                return RestResult.fail(StatusCode.BIZ_FAILED, "用户信息不存在");
             }
-            Money receivableDeposit = new Money(0);
             UserInfo userInfo = userInfoRestResult.getBody();
-            if (UserType.USER_APP_OFFICE.getCode() == userInfo.getType()) {
-                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLE_DEPOSIT);
-            }
-            if (UserType.USER_APP_AGENT.getCode() == userInfo.getType()) {
-                receivableDeposit = new Money(Constants.AGENT_RECEIVABLE_DEPOSIT);
-            }
-            fineOutFinanceAccount = financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, voObject.getOutUserId());
+            fineOutFinanceAccount = buildAccount(voObject.getOutUserId(), userInfo.getType());
         }
+        if (fineOutFinanceAccount == null) return RestResult.fail(StatusCode.BIZ_FAILED, "账户创建失败");
 
         UserInfo userInfo = fineInUserInfoRestResult.getBody();
         AccountUpdateCondition condition = new AccountUpdateCondition();
@@ -105,13 +89,28 @@ public class RestUserAccountController {
         condition.setUserId(voObject.getUserId());
         condition.setPayeePhone(userInfo.getUsername());
         condition.setPayeeName(userInfo.getName());
-        condition.setPayeeAccount(fineInFinanceAccount.getAccountNo().toString());
+        condition.setPayeeAccount(fineInFinanceAccount.getAccountNo());
         condition.setMoney(new Money(voObject.getMoney()));
         condition.setDraweeName(fineOutUser.getName());
-        condition.setDraweeAccount(fineOutFinanceAccount.getAccountNo().toString());
+        condition.setDraweeAccount(fineOutFinanceAccount.getAccountNo());
         condition.setDraweePhone(fineOutUser.getUsername());
         condition.setContextId(voObject.getContextId());
         ResponseObj responseObj = financeAccountService.updateAccount(condition);
         return RestResult.of(responseObj);
+    }
+
+    private FinanceAccount buildAccount(String userId, Integer userType) {
+        Money receivableDeposit;
+        switch (UserType.getEnumsByCode(userType)) {
+            case USER_APP_AGENT:
+                receivableDeposit = new Money(Constants.AGENT_RECEIVABLE_DEPOSIT);
+                break;
+            case USER_APP_OFFICE:
+                receivableDeposit = new Money(Constants.OFFICE_RECEIVABLE_DEPOSIT);
+                break;
+            default:
+                return null;
+        }
+        return financeAccountService.createAccount(RandomUtils.getPrimaryKey(), receivableDeposit, userId);
     }
 }
