@@ -14,12 +14,4 @@ public interface RestUserService {
     @RequestMapping(value = "/rest/user/userId/{userId}", method = RequestMethod.GET)
     RestResult<UserInfo> getUserInfoById(@PathVariable(name = "userId") String userId);
 
-//    @RequestMapping(value = "/rest/user/driver/id/{id}", method = RequestMethod.GET)
-//    RestResult<DriverInfo> getDriverInfoById(@PathVariable(name = "driverId") Long driverId);
-//
-//    @RequestMapping(value = "/rest/user/driver/userId/{userId}", method = RequestMethod.GET)
-//    RestResult<DriverInfo> getDriverInfoByUserId(@PathVariable(name = "userId") Long userId);
-//
-//    @RequestMapping(value = "/rest/user/car/userId/{userId}", method = RequestMethod.GET)
-//    RestResult<List<CarInfo>> getCarInfoByUserId(@PathVariable(name = "userId") Long userId);
 }
