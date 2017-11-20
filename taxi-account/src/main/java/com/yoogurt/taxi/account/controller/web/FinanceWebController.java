@@ -38,47 +38,48 @@ import java.util.*;
 
 @RestController
 @RequestMapping("web/account")
-public class FinanceWebController extends BaseController{
+public class FinanceWebController extends BaseController {
     @Autowired
     private FinanceAccountService financeAccountService;
     @Autowired
-    private FinanceBillService  financeBillService;
+    private FinanceBillService financeBillService;
 
-    @RequestMapping(value = "/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getAccountListWeb(AccountListWebCondition condition) {
         Pager<FinanceAccountListModel> listWeb = financeAccountService.getListWeb(condition);
         return ResponseObj.success(listWeb);
     }
 
-    @RequestMapping(value = "/bill/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/bill/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getBillListWeb(BillListWebCondition condition) {
         Pager<FinanceBillListWebModel> financeBillListWeb = financeBillService.getFinanceBillListWeb(condition);
         return ResponseObj.success(financeBillListWeb);
     }
 
-    @RequestMapping(value = "/withdraw/list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/withdraw/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getWithdrawBillListWeb(WithdrawListWebCondition condition) {
         Pager<WithdrawBillListWebModel> withdrawBillListWeb = financeBillService.getWithdrawBillListWeb(condition);
         return ResponseObj.success(withdrawBillListWeb);
     }
 
-    @RequestMapping(value = "/withdraw/billId/{billId}",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/withdraw/billId/{billId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getWithdrawBillDetail(@PathVariable(name = "billId") Long billId) {
         WithdrawBillDetailModel withdrawBillDetail = financeBillService.getWithdrawBillDetail(billId);
         return ResponseObj.success(withdrawBillDetail);
     }
 
-    @RequestMapping(value = "/withdraw",method = RequestMethod.PATCH,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/withdraw", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj handleWithdraw(@RequestBody @Valid UpdateBillForm form, BindingResult result) {
         if (result.hasErrors()) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,result.getAllErrors().get(0).getDefaultMessage());
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         return financeAccountService.handleWithdraw(form.getId(), BillStatus.getEnumsByCode(form.getStatus()));
     }
+
     //TODO 上线时，切换成需要后台登录
-    @RequestMapping(value = "/i/withdraw/download",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
-    public void dowmLoadWithdrawExcel(ExportBillCondition condition, HttpServletResponse reponse) {
-        List<ExcelData> excelDatas = new ArrayList<>();
+    @RequestMapping(value = "/i/withdraw/download", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
+    public void dowmLoadWithdrawExcel(ExportBillCondition condition, HttpServletResponse response) {
+        List<ExcelData> excelDataList = new ArrayList<>();
         // 设置第一个表数据
         ExcelData excelData = new ExcelData();
         // 设置第一个sheet表名
@@ -91,7 +92,7 @@ public class FinanceWebController extends BaseController{
         excelHeaders.add(new ExcelHeader("bankAddress", "开户地", 5));
         excelHeaders.add(new ExcelHeader("id", "注释", 6));
 
-        Collections.sort(excelHeaders,Comparator.comparingInt(ExcelHeader::getOrder));
+        excelHeaders.sort(Comparator.comparingInt(ExcelHeader::getOrder));
         excelData.setExcelHeaders(excelHeaders);
 
         //目前只支持提现至银行卡
@@ -99,19 +100,17 @@ public class FinanceWebController extends BaseController{
         condition.setTradeType(TradeType.WITHDRAW.getCode());
         condition.setDestinationType(DestinationType.BANK.getCode());
         List<Map<String, Object>> billList = financeBillService.getBillListForExport(condition);
-        if (CollectionUtils.isEmpty(billList)) {
-            ExcelUtils.createAndDownExcel("提现工单",excelDatas,reponse);
-            return;
-        }
-        excelData.setBodyDatas(billList);
+        if (CollectionUtils.isNotEmpty(billList)) {
+            ExcelUtils.createAndDownExcel("提现工单", excelDataList, response);
+            excelData.setBodyDatas(billList);
 
-        excelDatas.add(excelData);
-        ExcelUtils.createAndDownExcel("提现工单",excelDatas,reponse);
-        return;
+            excelDataList.add(excelData);
+            ExcelUtils.createAndDownExcel("提现工单", excelDataList, response);
+        }
     }
 
     //TODO 上线时，切换成需要后台登录
-    @RequestMapping(value = "/i/withdraw/import",method = RequestMethod.POST,produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/i/withdraw/import", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj importExcel(MultipartFile file) throws IOException, InvalidFormatException {
         List<BankReceiptOfMerchantsModel> list = ExcelUtils.importExcelForWithdraw(file.getInputStream());
         return financeBillService.batchHandleWithdraw(list);
