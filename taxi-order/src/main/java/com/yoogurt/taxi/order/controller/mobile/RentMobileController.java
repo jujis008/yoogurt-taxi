@@ -1,6 +1,7 @@
 package com.yoogurt.taxi.order.controller.mobile;
 
 import com.github.pagehelper.Page;
+import com.yoogurt.taxi.common.bo.SessionUser;
 import com.yoogurt.taxi.common.condition.PageableCondition;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
@@ -37,13 +38,14 @@ public class RentMobileController extends BaseController {
 
     /**
      * 地图POI检索
+     *
      * @param condition 检索条件
      * @return ResponseObj
      */
     @RequestMapping(value = "/i/rents/poi", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentList(RentPOICondition condition) {
 
-        if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         condition.setStatus(RentStatus.WAITING.getCode());
         condition.setUserType(UserType.USER_APP_AGENT.getCode().equals(super.getUserType()) ? UserType.USER_APP_OFFICE.getCode() : UserType.USER_APP_AGENT.getCode());
         return ResponseObj.success(rentInfoService.getRentList(condition));
@@ -51,13 +53,14 @@ public class RentMobileController extends BaseController {
 
     /**
      * 列表检索
+     *
      * @param condition 检索条件
      * @return ResponseObj
      */
     @RequestMapping(value = "/i/rents", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentList(RentListCondition condition) {
 
-        if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         condition.setFromApp(true);
         condition.setStatus(RentStatus.WAITING.getCode());
         condition.setUserType(UserType.USER_APP_AGENT.getCode().equals(super.getUserType()) ? UserType.USER_APP_OFFICE.getCode() : UserType.USER_APP_AGENT.getCode());
@@ -66,28 +69,33 @@ public class RentMobileController extends BaseController {
 
     /**
      * 我发布的租单列表
+     *
      * @param condition 分页条件
      * @return ResponseObj
      */
     @RequestMapping(value = "/rents", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentList(PageableCondition condition) {
 
-        if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
         List<RentInfo> rents = rentInfoService.getRentInfoList(super.getUserId(), null, condition.getPageNum(), condition.getPageSize(), RentStatus.WAITING.getCode());
         return ResponseObj.success(appPagerFactory.generatePager((Page<RentInfo>) rents));
     }
 
     /**
      * 发布租单
+     *
      * @param rentForm 发布信息表单
-     * @param result 校验结果
+     * @param result   校验结果
      * @return ResponseObj
      */
     @RequestMapping(value = "/rent", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj publishRentInfo(@Valid @RequestBody RentForm rentForm, BindingResult result) {
 
-        if(result.hasErrors()) return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
-        rentForm.setUserId(getUserId());
+        if (result.hasErrors())
+            return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
+        SessionUser user = super.getUser();
+        rentForm.setUserId(user.getUserId());
+        rentForm.setUserType(user.getType());
         ResponseObj obj = rentInfoService.addRentInfo(rentForm);
         if (obj.getExtras() != null) {
             obj.getExtras().put("timestamp", System.currentTimeMillis());
@@ -97,6 +105,7 @@ public class RentMobileController extends BaseController {
 
     /**
      * 获取租单详情
+     *
      * @param rentId 租单ID
      * @return ResponseObj
      */
@@ -104,7 +113,7 @@ public class RentMobileController extends BaseController {
     public ResponseObj getRentInfo(@PathVariable(name = "rentId") String rentId) {
 
         RentInfo rentInfo = rentInfoService.getRentInfo(rentId, super.getUserId());
-        if(rentInfo != null) {
+        if (rentInfo != null) {
             Map<String, Object> extras = new HashMap<>();
             extras.put("timestamp", System.currentTimeMillis());
             return ResponseObj.success(rentInfo, extras);

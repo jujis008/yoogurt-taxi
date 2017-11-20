@@ -46,14 +46,18 @@ public class OrderStatisticsController extends BaseController {
         map.put("maxRentCount", Constants.MAX_RENT_COUNT);
         map.put("rentCount", rentList.size());
 
+        Integer userType = 0;
+
         RestResult<UserInfo> userResult = userService.getUserInfoById(userId);
         if (userResult.isSuccess()) {
-            map.put("userStatus", userResult.getBody().getStatus());
+            UserInfo userInfo = userResult.getBody();
+            userType = userInfo.getType();
+            map.put("userStatus", userInfo.getStatus());
         } else {
             map.put("userStatus", UserStatus.AUTHENTICATED.getCode());
         }
 
-        RestResult<FinanceAccount> accountResult = accountService.getAccountByUserId(userId);
+        RestResult<FinanceAccount> accountResult = accountService.getAccountByUserId(userId, userType);
         if (accountResult.isSuccess()) {
             FinanceAccount account = accountResult.getBody();
             map.put("receivedDeposit", account.getReceivedDeposit());
@@ -65,7 +69,7 @@ public class OrderStatisticsController extends BaseController {
             map.put("enough", true);
         }
 
-        Map<String, Object> extras = new HashMap<String, Object>(){{
+        Map<String, Object> extras = new HashMap<String, Object>() {{
             put("timestamp", System.currentTimeMillis());
         }};
         return ResponseObj.success(map, extras);
