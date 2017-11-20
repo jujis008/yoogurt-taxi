@@ -32,7 +32,7 @@ public class FeedbackRecordDaoImpl extends BaseDao<FeedbackRecordMapper, Feedbac
             criteria.andEqualTo("feedbackType",condition.getFeedbackType());
         }
         if (StringUtils.isNotBlank(condition.getUsername())) {
-            criteria.andLike("username","%"+condition.getUsername()+"%");
+            criteria.andEqualTo("username",condition.getUsername());
         }
         Page<FeedbackRecord> recordList = (Page<FeedbackRecord>) feedbackRecordMapper.selectByExample(example);
         return webPagerFactory.generatePager(recordList);

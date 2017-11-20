@@ -63,7 +63,7 @@ public class UserWebController extends BaseController {
     @Autowired
     private RestAuthService restAuthService;
     @Autowired
-    private SmsSender   smsSender;
+    private SmsSender smsSender;
 
     @RequestMapping("/tt")
     public String tt() {
@@ -177,18 +177,23 @@ public class UserWebController extends BaseController {
         if (StringUtils.isBlank(loginForm.getPassword())) {
             return ResponseObj.fail(StatusCode.PARAM_BLANK, "密码不能为空");
         }
-        UserType userType = UserType.getEnumsByCode(getUserType());
+        UserType userType;
+        if (loginForm.getUsername().equals("admin")) {
+            userType = UserType.USER_WEB;
+        } else {
+            userType = UserType.SUPER_ADMIN;
+        }
         if (!userType.isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
         return loginService.login(loginForm.getUsername(), loginForm.getPassword(), userType);
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.DELETE, produces = {"application/json;charset=utf-8"})
+    @RequestMapping(value = "/logout", method = RequestMethod.PUT, produces = {"application/json;charset=utf-8"})
     public ResponseObj logout() {
         String userId = super.getUserId();
-        redisHelper.del(CacheKey.SESSION_USER_KEY+userId);
-        restAuthService.clearCachedAuthorizationInfo(userId);
+        redisHelper.deleteMap(CacheKey.SHIRO_AUTHORITY_MAP, userId);
+        redisHelper.del(CacheKey.SESSION_USER_KEY + userId);
         return ResponseObj.success();
     }
 
@@ -242,12 +247,12 @@ public class UserWebController extends BaseController {
         String userId = form.getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (userInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"用户不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户不存在");
         }
         userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
         SmsPayload payload = new SmsPayload();
         if (!UserType.getEnumsByCode(userInfo.getType()).isAppUser()) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"只有app用户方可操作");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有app用户方可操作");
         }
         if (userInfo.getType().equals(UserType.USER_APP_AGENT.getCode())) {
             payload.setType(SmsTemplateType.AGENT_RESET_PWD);
@@ -265,21 +270,22 @@ public class UserWebController extends BaseController {
 
     /**
      * 修改登录密码
+     *
      * @param form
      * @return
      */
     @RequestMapping(value = "/modifyLoginPwd", method = RequestMethod.PATCH, produces = {"application/json;charset=utf-8"})
     public ResponseObj modifyLoginPwd(@RequestBody UserPatchForm form) {
         if (StringUtils.isBlank(form.getPassword())) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"旧密码不能为空");
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "旧密码不能为空");
         }
         if (StringUtils.isBlank(form.getNewPassword())) {
-            return ResponseObj.fail(StatusCode.FORM_INVALID,"新密码不能为空");
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "新密码不能为空");
         }
         String userId = super.getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
-        if (!Encipher.matches(form.getUserId(),userInfo.getLoginPassword())) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"旧密码错误");
+        if (!Encipher.matches(form.getUserId(), userInfo.getLoginPassword())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "旧密码错误");
         }
         userInfo.setLoginPassword(Encipher.encrypt(form.getNewPassword()));
         return userService.modifyUser(userInfo);
@@ -309,15 +315,15 @@ public class UserWebController extends BaseController {
         }
         UserInfo userInfo = userService.getUserByUserId(form.getUserId());
         if (userInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"身份信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "身份信息不存在");
         }
         DriverInfo driverInfo = driverService.getDriverInfo(form.getDriverId());
         if (driverInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"司机信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "司机信息不存在");
         }
         CarInfo carInfo = carService.getCarInfo(form.getCarId());
         if (carInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"车辆信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "车辆信息不存在");
         }
         BeanUtilsExtends.copyProperties(userInfo, form);
         BeanUtilsExtends.copyProperties(driverInfo, form);
@@ -338,11 +344,11 @@ public class UserWebController extends BaseController {
         }
         UserInfo userInfo = userService.getUserByUserId(form.getUserId());
         if (userInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"身份信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "身份信息不存在");
         }
         DriverInfo driverInfo = driverService.getDriverInfo(form.getDriverId());
         if (driverInfo == null) {
-            return ResponseObj.fail(StatusCode.BIZ_FAILED,"司机信息不存在");
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "司机信息不存在");
         }
         BeanUtilsExtends.copyProperties(userInfo, form);
         BeanUtilsExtends.copyProperties(driverInfo, form);
@@ -353,6 +359,7 @@ public class UserWebController extends BaseController {
 
     /**
      * 功能：冻结
+     *
      * @param form
      * @return
      */
@@ -375,6 +382,7 @@ public class UserWebController extends BaseController {
 
     /**
      * 功能：解冻
+     *
      * @param form
      * @return
      */
@@ -397,6 +405,7 @@ public class UserWebController extends BaseController {
 
     /**
      * 功能：认证
+     *
      * @param form
      * @return
      */
@@ -410,7 +419,9 @@ public class UserWebController extends BaseController {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
         DriverInfo driverInfo = driverService.getDriverByUserId(form.getUserId());
-        if (!driverInfo.getIsAuthentication())
+        if (!driverInfo.getIsAuthentication()) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户资料尚未填写完毕");
+        }
         if (!userInfo.getStatus().equals(UserStatus.UN_AUTHENTICATE.getCode())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户只有在未认证才可以认证");
         }

@@ -47,13 +47,13 @@
     ON t2.role_id=t3.id
     <where>
         <if test="username != null and username != ''">
-            t1.username LIKE concat('%',#{username},'%')
+            t1.username = #{username}
         </if>
         <if test="employeeNo != null and employeeNo != ''">
-            AND t1.employee_no LIKE concat('%',#{employeeNo},'%')
+            AND t1.employee_no = #{employeeNo}
         </if>
         <if test="name != null and name != ''">
-            AND t1.employee_no LIKE concat('%',#{name},'%')
+            AND t1.employee_no = #{name}
         </if>
         <if test="roleId != null">
             AND t2.id = #{roleId}

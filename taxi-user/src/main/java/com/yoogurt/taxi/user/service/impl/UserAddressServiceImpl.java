@@ -25,7 +25,7 @@ public class UserAddressServiceImpl implements UserAddressService {
         criteria.andEqualTo("userId", userId);
         criteria.andEqualTo("isDeleted",Boolean.FALSE);
         if (StringUtils.isNotBlank(keywords)) {
-            criteria.andLike("address", "%" + keywords + "%");
+            criteria.andEqualTo("address", keywords);
         }
         return ResponseObj.success(userAddressDao.selectByExample(example));
     }

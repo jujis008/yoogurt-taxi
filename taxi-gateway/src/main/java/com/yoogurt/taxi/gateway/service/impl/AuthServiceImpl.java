@@ -86,9 +86,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void clearCachedAuthorizationInfo(String... userIds) {
+    public void clearCachedAuthorizationInfo(Object... userIds) {
         if(userIds != null && userIds.length > 0){
-            authorizationCache.remove(CacheKey.SHIRO_AUTHORITY_MAP, userIds);
+            authorizationCache.remove(userIds);
         }
     }
 }
