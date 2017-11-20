@@ -37,6 +37,7 @@ public class RentInfoTests {
         rentForm.setLng(120.36450212);
         rentForm.setPrice(new BigDecimal(125));
         rentForm.setUserId("17101612021383517");
+        rentForm.setUserType(30);
         ResponseObj result = rentInfoService.addRentInfo(rentForm);
         Assert.assertNotNull(result.getMessage(), result.getBody());
     }
