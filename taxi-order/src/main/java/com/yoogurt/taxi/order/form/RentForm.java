@@ -16,6 +16,8 @@ public class RentForm {
 
     private String userId;
 
+    private Integer userType;
+
     @NotBlank(message = "请指定交班地址")
     private String address;
 
