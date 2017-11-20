@@ -27,7 +27,7 @@ public enum MessageQueue {
     /**
      * 账户相关通知专用
      */
-    ACCOUNT_NOTIFICATION_QUEUE(getNotificationExchange(), "X-Queue-Notification", "topic.notification.push.account", "order_notification"),
+    ACCOUNT_NOTIFICATION_QUEUE(getNotificationExchange(), "X-Queue-Notification", "topic.notification.push.account", "account_notification"),
 
     /**
      * 手机短信通知专用

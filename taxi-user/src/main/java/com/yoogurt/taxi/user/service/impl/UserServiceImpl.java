@@ -3,7 +3,6 @@ package com.yoogurt.taxi.user.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.constant.CacheKey;
-import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
@@ -366,7 +365,7 @@ public class UserServiceImpl implements UserService {
             int result = 0;
             result += userDao.batchInsert(userInfoList);
             result += driverDao.batchInsert(driverInfoList);
-            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.agent_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
+            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.AGENT_PWD, CacheKey.PHONE_PASSWORD_HASH_MAP_AGENT);
             return result;
         });
         future.thenAccept(result -> log.info("IMPORT{}", "导入条数：" + result / 2));
@@ -457,7 +456,7 @@ public class UserServiceImpl implements UserService {
             result += userDao.batchInsert(userInfoList);
             result += driverDao.batchInsert(driverInfoList);
             result += carDao.batchInsert(carInfoList);
-            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.office_pwd, CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE);
+            this.sendPhonePwd(phoneCodeMap, SmsTemplateType.OFFICE_PWD, CacheKey.PHONE_PASSWORD_HASH_MAP_OFFICE);
             return result;
         });
         future.thenAccept(result -> log.info("IMPORT{}", "导入条数：" + result / 3));

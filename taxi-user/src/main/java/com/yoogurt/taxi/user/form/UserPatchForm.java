@@ -10,4 +10,5 @@ public class UserPatchForm {
     private String password;
     private String userId;
     private Integer userStatus;
+    private String newPassword;
 }

@@ -4,6 +4,8 @@ sms:
   validTemplateId: 155770
   agentPwdTemplateId: 191314
   officePwdTemplateId: 191311
+  officeResetPwdTemplateId: 234268
+  agentResetPwdTemplateId: 234268
   appId: 796e3d30cc074f86a97cd402b7c35398
   accountSid: 08c32a4d179fd602e73617272dcd1a2b
   authToken: 1a0adafcc7b6bffc3e1e52e45aca34a3

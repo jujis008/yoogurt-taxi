@@ -144,6 +144,11 @@ public class AmqpConfig {
     }
 
     @Bean
+    Binding accountQueueBinding(Queue notificationQueue, TopicExchange notificationExchange) {
+        return BindingBuilder.bind(notificationQueue).to(notificationExchange).with(MessageQueue.ACCOUNT_NOTIFICATION_QUEUE.getRoutingKey());
+    }
+
+    @Bean
     Binding smsQueueBinding(Queue smsQueue, TopicExchange notificationExchange) {
         return BindingBuilder.bind(smsQueue).to(notificationExchange).with(MessageQueue.SMS_NOTIFICATION_QUEUE.getRoutingKey());
     }
