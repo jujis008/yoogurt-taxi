@@ -20,6 +20,7 @@ import java.util.List;
 
 /**
  * 为Mapper的更新方法设置切面，设置Bean中的公共字段值。
+ *
  * @see com.yoogurt.taxi.dal.common.SuperModel
  */
 @Slf4j
@@ -32,18 +33,19 @@ public class UpdateAspect {
     private TokenHelper tokenHelper;
 
     @Before("execution(* com.yoogurt.taxi.dal.mapper..*..*update*(..))" +
-        "||execution(* com.yoogurt.taxi.dal.mapper..*..*edit*(..))" +
-        "||execution(* com.yoogurt.taxi.dal.mapper..*..*save*(..))" +
-        "||execution(* com.yoogurt.taxi.dal.mapper..*..*delete*(..))")
+            "||execution(* com.yoogurt.taxi.dal.mapper..*..*modify*(..))" +
+            "||execution(* com.yoogurt.taxi.dal.mapper..*..*edit*(..))" +
+            "||execution(* com.yoogurt.taxi.dal.mapper..*..*save*(..))" +
+            "||execution(* com.yoogurt.taxi.dal.mapper..*..*delete*(..))")
     public void before(JoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
-        if(args != null && args.length > 0)
+        if (args != null && args.length > 0)
             Arrays.stream(args).forEach(arg -> {
                 if (arg != null) {
                     if (arg instanceof List) {
-                        List argList = (List) arg;
+                        List<?> argList = (List<?>) arg;
                         if (!CollectionUtils.isEmpty(argList)) {
-                            argList.stream().forEach(this::domainHandle);
+                            argList.forEach(this::domainHandle);
                         }
                     } else {
                         domainHandle(arg);
