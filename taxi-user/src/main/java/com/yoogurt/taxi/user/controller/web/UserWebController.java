@@ -28,6 +28,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,6 +62,8 @@ public class UserWebController extends BaseController {
     private RedisHelper redisHelper;
     @Autowired
     private SmsSender   smsSender;
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @RequestMapping("/tt")
     public String tt() {
@@ -174,7 +177,12 @@ public class UserWebController extends BaseController {
         if (StringUtils.isBlank(loginForm.getPassword())) {
             return ResponseObj.fail(StatusCode.PARAM_BLANK, "密码不能为空");
         }
-        UserType userType = UserType.getEnumsByCode(getUserType());
+        UserType userType;
+        if (loginForm.getUsername().equals("admin")) {
+            userType = UserType.USER_WEB;
+        } else {
+            userType = UserType.SUPER_ADMIN;
+        }
         if (!userType.isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
@@ -242,11 +250,11 @@ public class UserWebController extends BaseController {
         if (userInfo == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "用户不存在");
         }
-        userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
-        SmsPayload payload = new SmsPayload();
         if (!UserType.getEnumsByCode(userInfo.getType()).isAppUser()) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有app用户方可操作");
         }
+        userService.resetLoginPwd(userId, DigestUtils.md5Hex(newPassword));
+        SmsPayload payload = new SmsPayload();
         if (userInfo.getType().equals(UserType.USER_APP_AGENT.getCode())) {
             payload.setType(SmsTemplateType.AGENT_RESET_PWD);
         }
@@ -257,7 +265,9 @@ public class UserWebController extends BaseController {
         List<String> phoneNumbers = new ArrayList<>();
         phoneNumbers.add(super.getUserName());
         payload.setPhoneNumbers(phoneNumbers);
-        smsSender.send(payload);
+        if (profile.equals("prod")) {
+            smsSender.send(payload);
+        }
         return ResponseObj.success();
     }
 
@@ -277,7 +287,7 @@ public class UserWebController extends BaseController {
         }
         String userId = super.getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
-        if (!Encipher.matches(form.getUserId(), userInfo.getLoginPassword())) {
+        if (!Encipher.matches(form.getPassword(), userInfo.getLoginPassword())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "旧密码错误");
         }
         userInfo.setLoginPassword(Encipher.encrypt(form.getNewPassword()));

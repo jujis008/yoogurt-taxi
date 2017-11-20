@@ -35,6 +35,8 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
 
     private static final String LOGOUT_URI = "/web/user/logout";
 
+    private static final String MODIFY_PWD_URI = "/web/user/modifyLoginPwd";
+
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
 
@@ -56,6 +58,9 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
             return true;
         }
         if (matcher.match(LOGOUT_URI, currentUrl)) {
+            return true;
+        }
+        if (matcher.match(MODIFY_PWD_URI, currentUrl)) {
             return true;
         }
         //判断当前用户是有该uri的访问权限
