@@ -34,7 +34,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
@@ -86,7 +85,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         Example.Criteria criteria = ex.createCriteria();
         criteria.andEqualTo("isDeleted", Boolean.FALSE).andEqualTo("userId", userId).andIn("status", Arrays.asList(status));
         if (StringUtils.isNotBlank(orderId)) {
-            criteria.andEqualTo("rentId",orderId);
+            criteria.andEqualTo("rentId", orderId);
         }
         if (pageNum != null && pageSize != null) {
             PageHelper.startPage(pageNum, pageSize, "gmt_create DESC");
@@ -127,7 +126,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime handoverDateTime = LocalDateTime.ofInstant(rentInfo.getHandoverTime().toInstant(), ZoneId.systemDefault());
             long seconds = Duration.between(currentDateTime, handoverDateTime).getSeconds();
-            redisHelper.set(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+rentInfo.getRentId(),rentInfo.getRentId(),seconds);
+            redisHelper.set(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY + rentInfo.getRentId(), rentInfo.getRentId(), seconds);
         }
         return obj;
     }
@@ -140,7 +139,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         if (!RentStatus.WAITING.getCode().equals(rentInfo.getStatus())) return null;
         rentInfo.setStatus(RentStatus.CANCELED.getCode());
         if (modifyStatus(cancelForm.getRentId(), RentStatus.CANCELED)) {
-            redisHelper.del(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY+cancelForm.getRentId());
+            redisHelper.del(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY + cancelForm.getRentId());
             return rentInfo;
         }
         return null;
@@ -161,9 +160,9 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         rentInfo.setStatus(RentStatus.TIMEOUT.getCode());
 
         Example example = new Example(RentInfo.class);
-        example.createCriteria().andEqualTo(rentId).andEqualTo("status",RentStatus.WAITING.getCode());
+        example.createCriteria().andEqualTo(rentId).andEqualTo("status", RentStatus.WAITING.getCode());
         int i = rentDao.updateByExampleSelective(rentInfo, example);
-        return i==1?rentInfo:null;
+        return i == 1 ? rentInfo : null;
     }
 
     @Override
@@ -180,24 +179,24 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
 
     @Override
     public Pager<RentInfo> getRentListForWebPage(RentWebListCondition condition) {
-        PageHelper.startPage(condition.getPageNum(),condition.getPageSize());
+        PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
         Example example = new Example(RentInfo.class);
         example.setOrderByClause(" gmt_create desc");
         Example.Criteria criteria = example.createCriteria();
         if (StringUtils.isNotBlank(condition.getName())) {
-            criteria.andLike("driverName","%"+condition.getName()+"%");
+            criteria.andLike("driverName", "%" + condition.getName() + "%");
         }
         if (StringUtils.isNotBlank(condition.getPhone())) {
-            criteria.andLike("mobile","%"+condition.getPhone()+"%");
+            criteria.andLike("mobile", "%" + condition.getPhone() + "%");
         }
         if (condition.getOrderId() != null) {
-            criteria.andLike("orderId","%"+condition.getOrderId()+"%");
+            criteria.andLike("orderId", "%" + condition.getOrderId() + "%");
         }
         if (condition.getStartTime() != null) {
-            criteria.andLessThanOrEqualTo("handoverTime",condition.getStartTime());
+            criteria.andLessThanOrEqualTo("handoverTime", condition.getStartTime());
         }
         if (condition.getEndTime() != null) {
-            criteria.andGreaterThanOrEqualTo("giveBackTime",condition.getEndTime());
+            criteria.andGreaterThanOrEqualTo("giveBackTime", condition.getEndTime());
         }
         Page<RentInfo> rentInfoList = (Page<RentInfo>) rentDao.selectByExample(example);
         return webPagerFactory.generatePager(rentInfoList);
@@ -247,7 +246,7 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
         if (rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_WORKING_HOURS * 3600000)
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与还车时间至少间隔" + Constants.MIN_WORKING_HOURS + "小时");
 
-        ResponseObj obj = super.isAllowed(userId);
+        ResponseObj obj = super.isAllowed(userId, rentForm.getUserType());
         if (!obj.isSuccess()) return obj;
 
         List<RentInfo> rentList = getRentList(userId, RentStatus.WAITING.getCode(), RentStatus.RENT.getCode());
