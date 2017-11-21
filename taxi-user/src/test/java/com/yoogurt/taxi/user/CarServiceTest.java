@@ -29,7 +29,7 @@ public class CarServiceTest {
     @Test
     public void sendTest() {
         SmsPayload payload = new SmsPayload();
-        payload.setType(SmsTemplateType.agent_pwd);
+        payload.setType(SmsTemplateType.OFFICE_RESET_PWD);
         payload.setParam("123456");
         List<String> phoneNumbers = new ArrayList<>();
         phoneNumbers.add("17364517747");
