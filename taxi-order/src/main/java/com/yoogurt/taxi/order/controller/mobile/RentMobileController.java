@@ -9,7 +9,7 @@ import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
-import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.condition.order.RentPoiCondition;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.order.form.RentCancelForm;
@@ -43,9 +43,11 @@ public class RentMobileController extends BaseController {
      * @return ResponseObj
      */
     @RequestMapping(value = "/i/rents/poi", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getRentList(RentPOICondition condition) {
+    public ResponseObj getRentList(RentPoiCondition condition) {
 
-        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        }
         condition.setStatus(RentStatus.WAITING.getCode());
         condition.setUserType(UserType.USER_APP_AGENT.getCode().equals(super.getUserType()) ? UserType.USER_APP_OFFICE.getCode() : UserType.USER_APP_AGENT.getCode());
         return ResponseObj.success(rentInfoService.getRentList(condition));
@@ -60,7 +62,9 @@ public class RentMobileController extends BaseController {
     @RequestMapping(value = "/i/rents", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentList(RentListCondition condition) {
 
-        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        }
         condition.setFromApp(true);
         condition.setStatus(RentStatus.WAITING.getCode());
         condition.setUserType(UserType.USER_APP_AGENT.getCode().equals(super.getUserType()) ? UserType.USER_APP_OFFICE.getCode() : UserType.USER_APP_AGENT.getCode());
@@ -76,7 +80,9 @@ public class RentMobileController extends BaseController {
     @RequestMapping(value = "/rents", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRentList(PageableCondition condition) {
 
-        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        }
         List<RentInfo> rents = rentInfoService.getRentInfoList(super.getUserId(), null, condition.getPageNum(), condition.getPageSize(), RentStatus.WAITING.getCode());
         return ResponseObj.success(appPagerFactory.generatePager((Page<RentInfo>) rents));
     }
@@ -91,8 +97,9 @@ public class RentMobileController extends BaseController {
     @RequestMapping(value = "/rent", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     public ResponseObj publishRentInfo(@Valid @RequestBody RentForm rentForm, BindingResult result) {
 
-        if (result.hasErrors())
+        if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
+        }
         SessionUser user = super.getUser();
         rentForm.setUserId(user.getUserId());
         rentForm.setUserType(user.getType());
@@ -114,7 +121,7 @@ public class RentMobileController extends BaseController {
 
         RentInfo rentInfo = rentInfoService.getRentInfo(rentId, super.getUserId());
         if (rentInfo != null) {
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("timestamp", System.currentTimeMillis());
             return ResponseObj.success(rentInfo, extras);
         }

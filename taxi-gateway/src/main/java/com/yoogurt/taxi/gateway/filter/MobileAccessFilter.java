@@ -94,7 +94,6 @@ public class MobileAccessFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-//        log.info("########## " + SecurityUtils.getSubject().isAuthenticated() + " #########");
         HttpServletRequest req = WebUtils.toHttp(request);
         String uri = WebUtils.getPathWithinApplication(req);
         //在Basic基础上，增加对ignoreUris的处理能力

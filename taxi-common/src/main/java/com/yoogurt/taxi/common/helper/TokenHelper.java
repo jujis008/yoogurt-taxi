@@ -47,12 +47,20 @@ public final class TokenHelper {
      * @return 获取不到，返回 ""，否则返回客户端传来的token
      */
     public String getAuthToken(HttpServletRequest request) {
-        if(request == null) return StringUtils.EMPTY;
+        if(request == null) {
+            return StringUtils.EMPTY;
+        }
         String content = request.getHeader(HEADER);
-        if(StringUtils.isBlank(content)) return StringUtils.EMPTY;
-        if(!StringUtils.startsWith(content, BASIC)) return StringUtils.EMPTY;
+        if(StringUtils.isBlank(content)) {
+            return StringUtils.EMPTY;
+        }
+        if(!StringUtils.startsWith(content, BASIC)) {
+            return StringUtils.EMPTY;
+        }
         String[] contents = content.split(StringUtils.SPACE);
-        if(contents.length < 2) return StringUtils.EMPTY;
+        if(contents.length < 2) {
+            return StringUtils.EMPTY;
+        }
         return contents[1];
     }
 
@@ -77,7 +85,9 @@ public final class TokenHelper {
      * @return 用户id
      */
     public String getUserId(String token) {
-        if(StringUtils.isBlank(token)) return null;
+        if(StringUtils.isBlank(token)) {
+            return null;
+        }
         String userId;
         try {
             final Claims claims = getClaims(token);
@@ -96,7 +106,9 @@ public final class TokenHelper {
      */
     public String getUserId(HttpServletRequest request) {
         String authToken = getAuthToken(request);
-        if(StringUtils.isBlank(authToken)) return null;
+        if(StringUtils.isBlank(authToken)) {
+            return null;
+        }
         return getUserId(authToken);
     }
 
@@ -106,7 +118,9 @@ public final class TokenHelper {
      * @return 用户登录名
      */
     public String getUserName(String token) {
-        if(StringUtils.isBlank(token)) return null;
+        if(StringUtils.isBlank(token)) {
+            return null;
+        }
         String username;
         try {
             final Claims claims = getClaims(token);
@@ -125,7 +139,9 @@ public final class TokenHelper {
      */
     public String getUserName(HttpServletRequest request) {
         String authToken = getAuthToken(request);
-        if(StringUtils.isBlank(authToken)) return null;
+        if(StringUtils.isBlank(authToken)) {
+            return null;
+        }
         return getUserName(authToken);
     }
 
@@ -134,16 +150,24 @@ public final class TokenHelper {
      * @return 用户类型
      */
     public Integer getUserType(HttpServletRequest request) {
-        if(request == null) return -1;
+        if(request == null) {
+            return -1;
+        }
         String userType = request.getHeader(Constants.USER_TYPE_HERDER_NAME);
-        if(StringUtils.isBlank(userType)) return -1;
+        if(StringUtils.isBlank(userType)) {
+            return -1;
+        }
         return Integer.valueOf(userType);
     }
 
     public Integer getSysType(HttpServletRequest request) {
-        if (request == null) return -1;
+        if (request == null) {
+            return -1;
+        }
         String sysType = request.getHeader(Constants.REQUEST_SYSTEM_TYPE);
-        if (StringUtils.isBlank(sysType)) return -1;
+        if (StringUtils.isBlank(sysType)) {
+            return -1;
+        }
         return Integer.valueOf(sysType);
     }
 
@@ -153,7 +177,9 @@ public final class TokenHelper {
      * @return 颁发（创建）时间
      */
     public Date getCreatedDate(String token) {
-        if(StringUtils.isBlank(token)) return null;
+        if(StringUtils.isBlank(token)) {
+            return null;
+        }
         Date created;
         try {
             final Claims claims = getClaims(token);
@@ -171,7 +197,9 @@ public final class TokenHelper {
      * @return 过期时间
      */
     public Date getExpirationDate(String token) {
-        if(StringUtils.isBlank(token)) return null;
+        if(StringUtils.isBlank(token)) {
+            return null;
+        }
         Date expiration;
         try {
             final Claims claims = getClaims(token);
@@ -189,10 +217,14 @@ public final class TokenHelper {
      * @return 是否失效
      */
     public Boolean isTokenExpired(String token) {
-        if(StringUtils.isBlank(token)) return true;
+        if(StringUtils.isBlank(token)) {
+            return true;
+        }
         final Date expiration = getExpirationDate(token);
         //返回null，可以判定是token过期
-        if(expiration == null) return true;
+        if(expiration == null) {
+            return true;
+        }
         return expiration.before(new Date());
     }
 
@@ -203,7 +235,7 @@ public final class TokenHelper {
      */
     public long remainTimes(String token) {
         Date expirationDate = getExpirationDate(token);
-        return expirationDate != null && expirationDate.before(new Date()) ? (expirationDate.getTime() - new Date().getTime()) : 0L;
+        return expirationDate != null && expirationDate.before(new Date()) ? (expirationDate.getTime() - System.currentTimeMillis()) : 0L;
     }
 
     /**
@@ -212,11 +244,14 @@ public final class TokenHelper {
      * @return 新的token
      */
     public String refreshToken(String token) {
-        if(isTokenExpired(token)) return null;
+        if(isTokenExpired(token)) {
+            return null;
+        }
         String refreshedToken;
         try {
             final Claims claims = getClaims(token);
-            claims.setIssuedAt(new Date()); //重置颁发时间
+            //重置颁发时间
+            claims.setIssuedAt(new Date());
             refreshedToken = generateToken(claims);
         } catch (ExpiredJwtException e) {
             refreshedToken = null;

@@ -8,7 +8,7 @@ import com.yoogurt.taxi.account.service.rest.RestUserService;
 import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.common.helper.excel.BankReceiptOfMerchantsModel;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -22,8 +22,8 @@ import com.yoogurt.taxi.dal.model.account.FinanceBillListWebModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillDetailModel;
 import com.yoogurt.taxi.dal.model.account.WithdrawBillListWebModel;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +45,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     @Autowired
     private FinanceAccountService financeAccountService;
     @Override
-    public Pager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition) {
+    public BasePager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition) {
         return financeBillDao.getFinanceBillListApp(condition);
     }
 
@@ -90,7 +90,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         return financeBillList.get(0);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public int chargeSuccessOrFailure(String billNo, BillStatus billStatus) {
         FinanceBill financeBill = getFinanceBillByBillNo(billNo);
@@ -127,7 +127,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus, BillType billType) {
         RestResult<UserInfo> userInfoRestResult = restUserService.getUserInfoById(condition.getUserId());
         if (!userInfoRestResult.isSuccess()) {
@@ -171,23 +171,23 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         financeRecord.setBillNo(financeBill.getBillNo());
         financeRecord.setBillId(financeBill.getId());
         financeRecordService.save(financeRecord);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(4);
         map.put("billNo",billNo);
         map.put("subject","替你开-押金充值");
         map.put("body","["+financeBill.getBillNo()+"]押金充值￥" + money.getAmount().doubleValue());
-        map.put("metadata", new HashMap<String, Object>() {{
+        map.put("metadata", new HashMap<String, Object>(1) {{
             put("biz", MessageQueue.CHARGE_NOTIFY_QUEUE.getBiz());
         }});
         return ResponseObj.success(map);
     }
 
     @Override
-    public Pager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition) {
+    public BasePager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition) {
         return financeBillDao.getFinanceBillListWeb(condition);
     }
 
     @Override
-    public Pager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition) {
+    public BasePager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition) {
         condition.setTradeType(TradeType.WITHDRAW.getCode());
         return financeBillDao.getWithdrawBillListWeb(condition);
     }
@@ -197,7 +197,7 @@ public class FinanceBillServiceImpl implements FinanceBillService {
         FinanceBill financeBill = financeBillDao.selectById(billId);
         WithdrawBillDetailModel model = new WithdrawBillDetailModel();
         try {
-            BeanUtils.copyProperties(model,financeBill);
+            BeanUtils.copyProperties(financeBill,model);
         } catch (Exception e) {
             e.printStackTrace();
         }

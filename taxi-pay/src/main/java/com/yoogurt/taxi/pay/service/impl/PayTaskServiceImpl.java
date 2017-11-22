@@ -17,25 +17,33 @@ public class PayTaskServiceImpl implements PayTaskService {
 
     @Override
     public PayTask getPayTask(String taskId) {
-        if(StringUtils.isBlank(taskId)) return null;
+        if(StringUtils.isBlank(taskId)) {
+            return null;
+        }
         return payTaskDao.findOne(taskId);
     }
 
     @Override
     public PayTask addPayTask(PayTask task) {
-        if(task == null) return null;
+        if(task == null) {
+            return null;
+        }
         return payTaskDao.insert(task);
     }
 
     @Override
     public PayTask savePayTask(PayTask task) {
-        if(task == null) return null;
+        if(task == null) {
+            return null;
+        }
         return payTaskDao.save(task);
     }
 
     @Override
     public boolean deletePayTask(String taskId) {
-        if(StringUtils.isBlank(taskId)) return false;
+        if(StringUtils.isBlank(taskId)) {
+            return false;
+        }
         try {
             payTaskDao.delete(taskId);
         } catch (Exception e) {

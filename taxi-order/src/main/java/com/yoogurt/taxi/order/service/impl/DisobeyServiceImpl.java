@@ -4,7 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.yoogurt.taxi.common.factory.PagerFactory;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
@@ -55,7 +55,7 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
      * @param condition 查询条件
      */
     @Override
-    public Pager<OrderDisobeyInfo> getDisobeyList(DisobeyListCondition condition) {
+    public BasePager<OrderDisobeyInfo> getDisobeyList(DisobeyListCondition condition) {
         Example ex = buildExample(condition);
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize(), "happen_time DESC");
         Page<OrderDisobeyInfo> page = (Page<OrderDisobeyInfo>) disobeyDao.selectByExample(ex);
@@ -68,7 +68,10 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
     @Override
     public List<OrderDisobeyInfo> getDisobeyList(String orderId, String userId, DisobeyType... types) {
         List<OrderDisobeyInfo> disobeyInfoList = Lists.newArrayList();
-        if (StringUtils.isBlank(orderId) && StringUtils.isBlank(userId) && (types == null || types.length == 0)) return disobeyInfoList;
+        boolean b = StringUtils.isBlank(orderId) && StringUtils.isBlank(userId) && (types == null || types.length == 0);
+        if (b) {
+            return disobeyInfoList;
+        }
         Example ex = new Example(OrderDisobeyInfo.class);
         Example.Criteria criteria = ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
         if (StringUtils.isNotBlank(orderId)) {
@@ -85,13 +88,17 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
 
     @Override
     public OrderDisobeyInfo getDisobeyInfo(Long id) {
-        if (id == null) return null;
+        if (id == null) {
+            return null;
+        }
         return disobeyDao.selectById(id);
     }
 
     @Override
     public OrderDisobeyInfo addDisobey(OrderDisobeyInfo disobey) {
-        if (disobey == null) return null;
+        if (disobey == null) {
+            return null;
+        }
         if (disobeyDao.insertSelective(disobey) == 1) {
             statisticService.record(OrderStatisticForm.builder().userId(disobey.getUserId()).disobeyCount(1).build());
             OrderInfo orderInfo = orderInfoService.getOrderInfo(disobey.getOrderId(), disobey.getUserId());
@@ -113,9 +120,9 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
 
             }
             //受罚者
-            super.push(orderInfo, userType, SendType.DISOBEY_FINE_OUT, new HashMap<>());
+            super.push(orderInfo, userType, SendType.DISOBEY_FINE_OUT, new HashMap<>(1));
             //补偿者
-            super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.DISOBEY_FINE_IN, new HashMap<>());
+            super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.DISOBEY_FINE_IN, new HashMap<>(1));
             return disobey;
         }
         return null;
@@ -137,7 +144,9 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
         //只有这三种状态会涉及到违约
         if(!OrderStatus.HAND_OVER.getCode().equals(orderInfo.getStatus())
                 && !OrderStatus.GIVE_BACK.getCode().equals(orderInfo.getStatus())
-                && !OrderStatus.CANCELED.getCode().equals(orderInfo.getStatus())) return null;
+                && !OrderStatus.CANCELED.getCode().equals(orderInfo.getStatus())) {
+            return null;
+        }
 
         OrderDisobeyInfo disobey = new OrderDisobeyInfo(orderInfo.getOrderId());
         if (userType.equals(UserType.USER_APP_OFFICE)) {
@@ -169,9 +178,13 @@ public class DisobeyServiceImpl extends AbstractOrderBizService implements Disob
     @Override
     public OrderDisobeyInfo modifyStatus(Long id, boolean status) {
         OrderDisobeyInfo disobey = getDisobeyInfo(id);
-        if (disobey == null) return null;
+        if (disobey == null) {
+            return null;
+        }
         disobey.setStatus(status);
-        if (disobeyDao.updateByIdSelective(disobey) == 1) return disobey;
+        if (disobeyDao.updateByIdSelective(disobey) == 1) {
+            return disobey;
+        }
         return null;
     }
 

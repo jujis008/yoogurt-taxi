@@ -4,7 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.dao.impl.BaseDao;
 import com.yoogurt.taxi.common.factory.WebPagerFactory;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.dal.beans.FeedbackRecord;
 import com.yoogurt.taxi.dal.condition.system.FeedbackRecordCondition;
 import com.yoogurt.taxi.dal.mapper.FeedbackRecordMapper;
@@ -23,7 +23,7 @@ public class FeedbackRecordDaoImpl extends BaseDao<FeedbackRecordMapper, Feedbac
 
 
     @Override
-    public Pager<FeedbackRecord> getWebList(FeedbackRecordCondition condition) {
+    public BasePager<FeedbackRecord> getWebList(FeedbackRecordCondition condition) {
         PageHelper.startPage(condition.getPageNum(),condition.getPageSize());
         Example example = new Example(FeedbackRecord.class);
         example.setOrderByClause(" gmt_create desc");

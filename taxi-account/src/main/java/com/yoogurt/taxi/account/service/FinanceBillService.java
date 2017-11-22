@@ -2,7 +2,7 @@ package com.yoogurt.taxi.account.service;
 
 import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.helper.excel.BankReceiptOfMerchantsModel;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.condition.account.*;
@@ -23,7 +23,7 @@ public interface FinanceBillService {
      * @param condition
      * @return
      */
-    Pager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition);
+    BasePager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition);
 
     /**
      * 获取financeBill对象
@@ -53,9 +53,9 @@ public interface FinanceBillService {
 
     ResponseObj insertBill(Money money, AccountUpdateCondition condition, Payment payment, BillStatus billStatus, BillType billType);
 
-    Pager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition);
+    BasePager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition);
 
-    Pager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition);
+    BasePager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition);
 
     WithdrawBillDetailModel getWithdrawBillDetail(Long billId);
 

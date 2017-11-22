@@ -20,7 +20,10 @@ public class UserRoleServiceImpl implements UserRoleService {
     @Override
     public UserRoleInfo getUserRoleInfo(String userId, Long roleId) {
 
-        if (StringUtils.isBlank(userId) && (roleId == null || roleId <= 0)) return null;
+        boolean b = StringUtils.isBlank(userId) && (roleId == null || roleId <= 0);
+        if (b) {
+            return null;
+        }
         UserRoleInfo info = new UserRoleInfo();
 
         if (StringUtils.isNotBlank(userId)) {

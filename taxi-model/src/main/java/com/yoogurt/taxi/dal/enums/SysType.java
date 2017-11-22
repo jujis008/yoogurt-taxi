@@ -4,7 +4,14 @@ import lombok.Getter;
 
 @Getter
 public enum SysType {
+    /**
+     * Android
+     */
     android(1,"Android"),
+
+    /**
+     * ios
+     */
     ios(2,"ios");
 
     private Integer code;

@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.order;
 
-import com.yoogurt.taxi.dal.model.order.GiveBackOrderModel;
+import com.yoogurt.taxi.dal.model.order.GiveBackOrderModelBase;
 import com.yoogurt.taxi.order.form.GiveBackForm;
 import com.yoogurt.taxi.order.service.GiveBackService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class GiveBackTests {
         form.setLng(120.564112154);
         form.setRealGiveBackAddress("杭州湾大酒店");
         form.setOrderId("17101612021383517");
-        GiveBackOrderModel model = giveBackService.doGiveBack(form);
+        GiveBackOrderModelBase model = giveBackService.doGiveBack(form);
         Assert.assertNotNull("还车失败！", model);
     }
 }

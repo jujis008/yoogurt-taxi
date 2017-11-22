@@ -80,12 +80,17 @@ public class UniqueDeviceFilter extends AccessControlFilter {
         HttpServletRequest req = WebUtils.toHttp(request);
         String uri = WebUtils.getPathWithinApplication(req);
         //被忽略的uri不作处理
-        if(matcher.match(IGNORE_PATTERN, uri)) return true;
+        if(matcher.match(IGNORE_PATTERN, uri)) {
+            return true;
+        }
         //验证token是否过期
         String authToken = tokenHelper.getAuthToken(req);
         String userId = tokenHelper.getUserId(authToken);
         Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
-        if (obj == null) return true; //token丢失交给下游的Filter处理
+        //token丢失交给下游的Filter处理
+        if (obj == null) {
+            return true;
+        }
         SessionUser user = (SessionUser) obj;
         //判断redis缓存的token与客户端传入的token是一致的
         //token不一致说明存在多设备登录，不允许通过

@@ -1,12 +1,33 @@
 package com.yoogurt.taxi.dal.enums;
 
 public enum DestinationType {
+    /**
+     * 押金
+     */
     DEPOSIT(1,"押金"),
+    /**
+     * 余额
+     */
     BALANCE(2,"余额"),
+    /**
+     * 支付宝
+     */
     ALIPAY(3,"支付宝"),
+    /**
+     * 微信
+     */
     WEIXIN(4,"微信"),
+    /**
+     * 银行
+     */
     BANK(5,"银行"),
+    /**
+     * 平台
+     */
     PLATFORM(7,"平台"),
+    /**
+     * 其它
+     */
     OTHERS(6,"其它"),
     ;
 

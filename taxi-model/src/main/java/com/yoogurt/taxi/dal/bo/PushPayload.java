@@ -49,7 +49,9 @@ public class PushPayload implements Serializable {
 
     public PushPayload(UserType userType, SendType sendType, String title, String content) {
         this();
-        if(sendType != null && StringUtils.isBlank(content)) content = sendType.getMessage();
+        if(sendType != null && StringUtils.isBlank(content)) {
+            content = sendType.getMessage();
+        }
         this.userType = userType;
         this.sendType = sendType;
         this.title = title;

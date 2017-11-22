@@ -31,9 +31,9 @@ public class PayMobileController extends BaseController {
     private static final String METHOD = "yoogurt.taxi.finance.pay";
 
     /**
-     * 发起请求的时间与服务器当前时间的最大间隔
+     * 发起请求的时间与服务器当前时间的最大间隔:半小时
      */
-    private static final long MAX_REQUEST_INTERVAL = 30 * 60 * 1000; //半小时
+    private static final long MAX_REQUEST_INTERVAL = 30 * 60 * 1000;
 
     /**
      * 提交一个支付任务
@@ -46,12 +46,15 @@ public class PayMobileController extends BaseController {
         }
         //表单字段进一步验证
         ResponseObj validateResult = validatePayForm(payParams);
-        if(!validateResult.isSuccess()) return validateResult;
+        if(!validateResult.isSuccess()) {
+            return validateResult;
+        }
         Map<String, Object> extras = payParams.getExtras();
         if (extras == null) {
-            extras = new HashMap<>();
+            extras = new HashMap<>(0);
         }
-        extras.put("trade_type", "APP"); //APP支付
+        //APP支付
+        extras.put("trade_type", "APP");
         payParams.setExtras(extras);
         PayTask task = payService.submit(payParams);
         if (task != null) {

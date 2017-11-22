@@ -28,7 +28,7 @@ public class ExcelUtils {
             return null;
         }
         int cols = tmp.getPhysicalNumberOfCells();
-        Map<ExcelParamBean, List<CellPropertyBean>> map = new HashMap<>();
+        Map<ExcelParamBean, List<CellPropertyBean>> map = new HashMap<>(16);
         for (int col = 0; col < cols; col++) {
             List<CellPropertyBean> list = new ArrayList<>();
             for (ExcelParamBean paramBean : paramBeanList) {
@@ -58,7 +58,7 @@ public class ExcelUtils {
             if (errorSet.contains(row+1)) {
                 continue;
             }
-            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>(16);
             for (int col = 0; col < cols; col++) {
                 for (ExcelParamBean paramBean : paramBeanList) {
                     if (paramBean.getIndex() == col) {
@@ -80,7 +80,6 @@ public class ExcelUtils {
         if (tmp == null) {
             return null;
         }
-//        int cols = tmp.getPhysicalNumberOfCells();
         List<BankReceiptOfMerchantsModel> list = new ArrayList<>();
         for (int row=1;row<rows;row++) {
             Row r = sheet.getRow(row);
@@ -88,7 +87,7 @@ public class ExcelUtils {
             model.setAccountNo(getCellValue(r.getCell(0)).toString());
             model.setAccountName(getCellValue(r.getCell(1)).toString());
             model.setAmount(new BigDecimal(getCellValue(r.getCell(2)).toString()));
-            model.setStatus(getCellValue(r.getCell(3)).equals("成功"));
+            model.setStatus("成功".equals(getCellValue(r.getCell(3))));
             model.setId(new Long(getCellValue(r.getCell(4)).toString()));
             model.setNote(getCellValue(r.getCell(5)).toString());
             model.setBankName(getCellValue(r.getCell(6)).toString());

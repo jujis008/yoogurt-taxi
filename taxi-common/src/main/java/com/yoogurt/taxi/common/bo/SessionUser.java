@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Description:
  * 登录用户信息
- * @Author Eric Lau
+ * @author Eric Lau
  * @Date 2017/9/6.
  */
 @Getter

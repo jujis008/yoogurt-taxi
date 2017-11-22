@@ -126,12 +126,12 @@ public final class Constants {
     public static final String OFFICIAL_APP_NAME = "替你开车主端";
 
     /**提现允许日期*/
-    public static final int withdraw_day_of_week = 2;
+    public static final int WITHDRAW_DAY_OF_WEEK = 2;
     /**提现允许开始时间*/
-    public static final String withdraw_start_time = "09:00";
+    public static final String WITHDRAW_START_TIME = "09:00";
     /**提现允许结束时间*/
-    public static final String withdraw_end_time = "18:00";
+    public static final String WITHDRAW_END_TIME = "18:00";
     /**提现允许次数*/
-    public static final int withdraw_times = 1;
+    public static final int WITHDRAW_TIMES = 1;
 
 }

@@ -27,7 +27,7 @@ public class IdCardUtils {
     /**
      * 省、直辖市代码表
      */
-    public static final String cityCode[] = {"11", "12", "13", "14", "15",
+    public static final String[] CITY_CODE = {"11", "12", "13", "14", "15",
             "21", "22", "23", "31", "32", "33", "34", "35", "36", "37", "41",
             "42", "43", "44", "45", "46", "50", "51", "52", "53", "54", "61",
             "62", "63", "64", "65", "71", "81", "82", "91"};
@@ -35,7 +35,7 @@ public class IdCardUtils {
     /**
      * 每位加权因子
      */
-    public static final int power[] = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9,
+    public static final int[] POWER = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9,
             10, 5, 8, 4, 2};
 
     /**
@@ -147,8 +147,9 @@ public class IdCardUtils {
                 e.printStackTrace();
             }
             Calendar cal = Calendar.getInstance();
-            if (birthDate != null)
+            if (birthDate != null) {
                 cal.setTime(birthDate);
+            }
             // 获取出生年(完全表现形式,如：2010)
             String sYear = String.valueOf(cal.get(Calendar.YEAR));
             idCard18 = idCard.substring(0, 6) + sYear + idCard.substring(8);
@@ -178,9 +179,10 @@ public class IdCardUtils {
         if (validateIdCard15(card)) {
             return true;
         }
-        String[] cardval = validateIdCard10(card);
-        if (cardval != null) {
-            if (cardval[2].equals("true")) {
+        String[] validateResult = validateIdCard10(card);
+        if (validateResult != null) {
+            boolean equals = "true".equals(validateResult[2]);
+            if (equals) {
                 return true;
             }
         }
@@ -239,7 +241,9 @@ public class IdCardUtils {
                 e.printStackTrace();
             }
             Calendar cal = Calendar.getInstance();
-            if (birthDate != null) cal.setTime(birthDate);
+            if (birthDate != null) {
+                cal.setTime(birthDate);
+            }
             return valiDate(cal.get(Calendar.YEAR), Integer.valueOf(birthCode.substring(2, 4)), Integer.valueOf(birthCode.substring(4, 6)));
         }
         return false;
@@ -257,18 +261,20 @@ public class IdCardUtils {
      */
     public static String[] validateIdCard10(String idCard) {
         String[] info = new String[3];
-        String card = idCard.replaceAll("[\\(|\\)]", "");
-        if (card.length() != 8 && card.length() != 9 && idCard.length() != 10) {
+        String card = idCard.replaceAll("[(|)]", "");
+        boolean b = card.length() != 8 && card.length() != 9 && idCard.length() != 10;
+        if (b) {
             return null;
         }
-        if (idCard.matches("^[a-zA-Z][0-9]{9}$")) { // 台湾
+        // 台湾
+        if (idCard.matches("^[a-zA-Z][0-9]{9}$")) {
             info[0] = "台湾";
             System.out.println("11111");
             String char2 = idCard.substring(1, 2);
-            if (char2.equals("1")) {
+            if ("1".equals(char2)) {
                 info[1] = "M";
                 System.out.println("MMMMMMM");
-            } else if (char2.equals("2")) {
+            } else if ("2".equals(char2)) {
                 info[1] = "F";
                 System.out.println("FFFFFFF");
             } else {
@@ -278,10 +284,12 @@ public class IdCardUtils {
                 return info;
             }
             info[2] = validateTWCard(idCard) ? "true" : "false";
-        } else if (idCard.matches("^[1|5|7][0-9]{6}\\(?[0-9A-Z]\\)?$")) { // 澳门
+        // 澳门
+        } else if (idCard.matches("^[1|5|7][0-9]{6}\\(?[0-9A-Z]\\)?$")) {
             info[0] = "澳门";
             info[1] = "N";
-        } else if (idCard.matches("^[A-Z]{1,2}[0-9]{6}\\(?[0-9A]\\)?$")) { // 香港
+        // 香港
+        } else if (idCard.matches("^[A-Z]{1,2}[0-9]{6}\\(?[0-9A]\\)?$")) {
             info[0] = "香港";
             info[1] = "N";
             info[2] = validateHKCard(idCard) ? "true" : "false";
@@ -309,8 +317,7 @@ public class IdCardUtils {
             sum = sum + Integer.valueOf(c + "") * iflag;
             iflag--;
         }
-        return (sum % 10 == 0 ? 0 : (10 - sum % 10)) == Integer.valueOf(end) ? true
-                : false;
+        return (sum % 10 == 0 ? 0 : (10 - sum % 10)) == Integer.valueOf(end);
     }
 
     /**
@@ -330,25 +337,25 @@ public class IdCardUtils {
         String card = idCard.replaceAll("[\\(|\\)]", "");
         Integer sum = 0;
         if (card.length() == 9) {
-            sum = (Integer.valueOf(card.substring(0, 1).toUpperCase()
-                    .toCharArray()[0]) - 55)
+            sum = (card.substring(0, 1).toUpperCase()
+                    .toCharArray()[0] - 55)
                     * 9
-                    + (Integer.valueOf(card.substring(1, 2).toUpperCase()
-                    .toCharArray()[0]) - 55) * 8;
+                    + (card.substring(1, 2).toUpperCase()
+                    .toCharArray()[0] - 55) * 8;
             card = card.substring(1, 9);
         } else {
-            sum = 522 + (Integer.valueOf(card.substring(0, 1).toUpperCase()
-                    .toCharArray()[0]) - 55) * 8;
+            sum = 522 + (card.substring(0, 1).toUpperCase()
+                    .toCharArray()[0] - 55) * 8;
         }
         String mid = card.substring(1, 7);
         String end = card.substring(7, 8);
         char[] chars = mid.toCharArray();
-        Integer iflag = 7;
+        Integer flag = 7;
         for (char c : chars) {
-            sum = sum + Integer.valueOf(c + "") * iflag;
-            iflag--;
+            sum = sum + Integer.valueOf(c + "") * flag;
+            flag--;
         }
-        if (end.toUpperCase().equals("A")) {
+        if ("A".equals(end.toUpperCase())) {
             sum = sum + 10;
         } else {
             sum = sum + Integer.valueOf(end);
@@ -383,11 +390,11 @@ public class IdCardUtils {
      */
     private static int getPowerSum(int[] iArr) {
         int iSum = 0;
-        if (power.length == iArr.length) {
+        if (POWER.length == iArr.length) {
             for (int i = 0; i < iArr.length; i++) {
-                for (int j = 0; j < power.length; j++) {
+                for (int j = 0; j < POWER.length; j++) {
                     if (i == j) {
-                        iSum = iSum + iArr[i] * power[j];
+                        iSum = iSum + iArr[i] * POWER[j];
                     }
                 }
             }
@@ -437,6 +444,8 @@ public class IdCardUtils {
             case 0:
                 sCode = "1";
                 break;
+            default:
+                sCode ="";
         }
         return sCode;
     }

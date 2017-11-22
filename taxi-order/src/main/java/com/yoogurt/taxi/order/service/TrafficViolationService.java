@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.order.service;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderTrafficViolationInfo;
 import com.yoogurt.taxi.dal.condition.order.TrafficViolationListCondition;
@@ -9,7 +9,7 @@ import com.yoogurt.taxi.order.form.TrafficViolationForm;
 
 public interface TrafficViolationService {
 
-	Pager<OrderTrafficViolationInfo> getTrafficViolations(TrafficViolationListCondition condition);
+	BasePager<OrderTrafficViolationInfo> getTrafficViolations(TrafficViolationListCondition condition);
 
 	OrderTrafficViolationInfo getTrafficViolationInfo(Long id);
 

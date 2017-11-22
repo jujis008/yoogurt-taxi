@@ -62,7 +62,9 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     public PayTask getTask(String taskId) {
 
         Object o = redis.getMapValue(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId);
-        if (o == null) return null;
+        if (o == null) {
+            return null;
+        }
         return (PayTask) o;
     }
 
@@ -75,7 +77,9 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
     public Payment queryResult(String taskId) {
 
         Object o = redis.getMapValue(CacheKey.PAY_MAP, CacheKey.PAYMENT_HASH_KEY + taskId);
-        if (o == null) return null;
+        if (o == null) {
+            return null;
+        }
         return (Payment) o;
     }
 
@@ -108,7 +112,9 @@ public class PayServiceImpl extends PaymentServiceImpl implements PayService {
         final PayTask task;
         if (isRetry && StringUtils.isNoneBlank(taskId)) {
             task = getTask(taskId);
-            if(task != null) task.getTask().doRetry();
+            if(task != null) {
+                task.getTask().doRetry();
+            }
         } else {
             TaskInfo taskInfo = buildTask();
             taskId = taskInfo.getTaskId();

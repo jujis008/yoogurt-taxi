@@ -5,7 +5,7 @@ import com.yoogurt.taxi.dal.beans.OrderCancelRule;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.enums.*;
-import com.yoogurt.taxi.dal.model.order.CancelOrderModel;
+import com.yoogurt.taxi.dal.model.order.CancelOrderModelBase;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.order.dao.CancelDao;
@@ -42,16 +42,20 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
     @Autowired
     private RestAccountService restAccountService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public CancelOrderModel doCancel(CancelForm cancelForm) {
+    public CancelOrderModelBase doCancel(CancelForm cancelForm) {
         String orderId = cancelForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //已完成的订单不可取消了
-        if (OrderStatus.FINISH.equals(status)) return null;
+        if (OrderStatus.FINISH.equals(status)) {
+            return null;
+        }
         //已取消的订单不可操作了
-        if (OrderStatus.CANCELED.equals(status)) return null;
+        if (OrderStatus.CANCELED.equals(status)) {
+            return null;
+        }
 
         OrderCancelInfo cancelInfo = new OrderCancelInfo();
         BeanUtils.copyProperties(cancelForm, cancelInfo);
@@ -70,7 +74,8 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
         int hours = (int) Math.abs(Math.floor((orderInfo.getHandoverTime().getTime() - now.getTime()) / 3600000.00));
 
         if (cancelForm.isInternal()) {
-            if (orderInfo.getIsPaid()) {//若司机已支付，需要退款
+            //若司机已支付，需要退款
+            if (orderInfo.getIsPaid()) {
                 //退款到司机账户，记录为平台支出
                 ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
                         .userId(orderInfo.getAgentUserId())
@@ -99,7 +104,9 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
             OrderCancelRule rule = ruleService.getRuleInfo(orderInfo.getHandoverTime().getTime() - now.getTime());
             if (rule != null) {
                 //该时段不允许取消
-                if (!rule.getAllowCancel()) return null;
+                if (!rule.getAllowCancel()) {
+                    return null;
+                }
                 cancelInfo.setRuleId(rule.getRuleId());
                 cancelInfo.setUnit(unit);
                 cancelInfo.setTime(hours);
@@ -124,18 +131,18 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
             orderInfoService.modifyStatus(orderId, OrderStatus.CANCELED);
             if (cancelForm.isInternal()) {
                 //超时自动取消，需要通知双方
-                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_HANDOVER_UNFINISHED_REMINDER, new HashMap<>());
-                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER_UNFINISHED_REMINDER, new HashMap<>());
+                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_HANDOVER_UNFINISHED_REMINDER, new HashMap<>(1));
+                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER_UNFINISHED_REMINDER, new HashMap<>(1));
             } else if (cancelForm.isFromApp()) {
                 //对于App客户端，操作者通常是责任方，除非无责取消
                 //通知对方，订单已取消
-                super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
+                super.push(orderInfo, userType.equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>(1));
             } else {
                 //后台取消，需要通知双方
-                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL, new HashMap<>());
-                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>());
+                super.push(orderInfo, UserType.USER_APP_OFFICE, SendType.ORDER_CANCEL, new HashMap<>(1));
+                super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_CANCEL, new HashMap<>(1));
             }
-            return (CancelOrderModel) info(orderId, cancelForm.getUserId());
+            return (CancelOrderModelBase) info(orderId, cancelForm.getUserId());
         }
         return null;
     }
@@ -147,9 +154,11 @@ public class CancelServiceImpl extends AbstractOrderBizService implements Cancel
 
     @Override
     public OrderModel info(String orderId, String userId) {
-        CancelOrderModel model = new CancelOrderModel();
+        CancelOrderModelBase model = new CancelOrderModelBase();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
-        if (orderInfo == null) return null;
+        if (orderInfo == null) {
+            return null;
+        }
 
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间

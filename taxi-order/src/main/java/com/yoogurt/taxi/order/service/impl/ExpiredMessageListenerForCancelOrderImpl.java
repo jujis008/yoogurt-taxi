@@ -60,7 +60,7 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
             PushPayload payload = new PushPayload(userType, sendType, title);
             payload.setContent(String.format(sendType.getMessage(), type, rentId));
             payload.addUserId(rentInfo.getUserId());
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("orderId", rentId);
             payload.setExtras(extras);
             sender.send(payload);
@@ -72,14 +72,16 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
             String rentId = key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY, "");
             log.info("[" + rentId + "]交车1小时前提醒");
             OrderInfo orderInfo = orderInfoService.getOrderInfo(rentId,null);
-            if (orderInfo == null) return;
+            if (orderInfo == null) {
+                return;
+            }
             SendType sendType = SendType.ORDER_HANDOVER_REMINDER1;
             UserType userType = UserType.USER_APP_OFFICE;
             String title = Constants.OFFICIAL_APP_NAME;
             PushPayload payload = new PushPayload(userType, sendType, title);
             payload.addUserId(orderInfo.getOfficialUserId());
             payload.setContent(String.format(sendType.getMessage(), rentId));
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("orderId", rentId);
             payload.setExtras(extras);
             sender.send(payload);
@@ -91,14 +93,16 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
             String rentId = key.replaceFirst(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER_KEY, "");
             log.info("[" + rentId + "]交车提醒");
             OrderInfo orderInfo = orderInfoService.getOrderInfo(rentId,null);
-            if (orderInfo == null) return;
+            if (orderInfo == null) {
+                return;
+            }
             SendType sendType = SendType.ORDER_HANDOVER_REMINDER;
             UserType userType = UserType.USER_APP_OFFICE;
             String title = Constants.OFFICIAL_APP_NAME;
             PushPayload payload = new PushPayload(userType, sendType, title);
             payload.addUserId(orderInfo.getOfficialUserId());
             payload.setContent(String.format(sendType.getMessage(), rentId));
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("orderId", rentId);
             payload.setExtras(extras);
             sender.send(payload);
@@ -126,14 +130,16 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
             String orderId = key.replaceFirst(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER1_KEY, "");
             log.info("[" + orderId + "]还车一小时前提醒");
             OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
-            if (orderInfo == null) return;
+            if (orderInfo == null) {
+                return;
+            }
             SendType sendType = SendType.ORDER_GIVE_BACK_REMINDER1;
             UserType userType = UserType.USER_APP_AGENT;
             String title = Constants.AGENT_APP_NAME;
             PushPayload payload = new PushPayload(userType, sendType, title);
             payload.addUserId(orderInfo.getAgentUserId());
             payload.setContent(String.format(sendType.getMessage(), orderInfo.getAgentUserId()));
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("orderId", orderId);
             payload.setExtras(extras);
             sender.send(payload);
@@ -145,14 +151,16 @@ public class ExpiredMessageListenerForCancelOrderImpl implements ExpiredMessageL
             String orderId = key.replaceFirst(CacheKey.MESSAGE_ORDER_GIVE_BACK_REMINDER_KEY, "");
             log.info("[" + orderId + "]还车到点提醒");
             OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, null);
-            if (orderInfo == null) return;
+            if (orderInfo == null) {
+                return;
+            }
             SendType sendType = SendType.ORDER_GIVE_BACK_REMINDER;
             UserType userType = UserType.USER_APP_AGENT;
             String title = Constants.AGENT_APP_NAME;
             PushPayload payload = new PushPayload(userType, sendType, title);
             payload.addUserId(orderInfo.getAgentUserId());
             payload.setContent(String.format(sendType.getMessage(), orderInfo.getAgentUserId()));
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("orderId", orderId);
             payload.setExtras(extras);
             sender.send(payload);

@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-public class TrafficHandleForm extends OrderForm {
+public class TrafficHandleForm extends BaseOrderForm {
 
 	@NotNull(message = "请指定违约记录")
 	private Long id;

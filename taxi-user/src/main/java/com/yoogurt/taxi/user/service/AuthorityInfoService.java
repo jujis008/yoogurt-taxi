@@ -1,12 +1,11 @@
 package com.yoogurt.taxi.user.service;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.AuthorityInfo;
-import com.yoogurt.taxi.dal.condition.user.AuthorityWLCondition;
-import com.yoogurt.taxi.dal.model.user.AuthorityWLModel;
-import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
-import org.springframework.stereotype.Service;
+import com.yoogurt.taxi.dal.condition.user.AuthorityWebListCondition;
+import com.yoogurt.taxi.dal.model.user.AuthorityWebListModel;
+import com.yoogurt.taxi.dal.model.user.GroupAuthorityListModel;
 
 import java.util.List;
 
@@ -22,9 +21,9 @@ public interface AuthorityInfoService {
 
     ResponseObj removeAuthorityById(Long authorityId);
 
-    Pager<AuthorityWLModel> getAuthorityWebList(AuthorityWLCondition condition);
+    BasePager<AuthorityWebListModel> getAuthorityWebList(AuthorityWebListCondition condition);
 
-    List<GroupAuthorityLModel> getAllAuthorities();
+    List<GroupAuthorityListModel> getAllAuthorities();
 
     List<String> getAssociatedControlByUserId(String userId);
 }

@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.order;
 
 import com.yoogurt.taxi.dal.beans.OrderHandoverInfo;
-import com.yoogurt.taxi.dal.model.order.HandoverOrderModel;
+import com.yoogurt.taxi.dal.model.order.HandoverOrderModelBase;
 import com.yoogurt.taxi.order.form.HandoverForm;
 import com.yoogurt.taxi.order.service.HandoverService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class HandoverTests {
         handoverForm.setRealHandoverAddress("临丁路171号");
         handoverForm.setLat(30.5422331079);
         handoverForm.setLng(120.12348547011);
-        HandoverOrderModel model = handoverService.doHandover(handoverForm);
+        HandoverOrderModelBase model = handoverService.doHandover(handoverForm);
         Assert.assertNotNull("交车不成功！", model);
     }
 

@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-public class AcceptForm extends OrderForm{
+public class AcceptForm extends BaseOrderForm {
 
 	@NotNull(message = "请指定车辆状态")
 	private Boolean carStatus;

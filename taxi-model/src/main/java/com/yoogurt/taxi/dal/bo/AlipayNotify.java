@@ -11,7 +11,7 @@ import java.util.Map;
 @Setter
 @Getter
 @ToString
-public class AlipayNotify extends Notify {
+public class AlipayNotify extends BaseNotify {
 
 	/**
 	 * 支付宝分配给开发者的应用Id
@@ -134,12 +134,11 @@ public class AlipayNotify extends Notify {
 
 	@Override
 	public Map<String, Object> attributeMap() {
-		return new HashMap<String, Object>(){{
+		return new HashMap<String, Object>(23){{
 			put("app_id", "appId");
 			put("out_trade_no", "orderNo");
 			put("sign_type", "signType");
 			put("trade_no", "transactionNo");
-
 			put("notify_type", "notifyType");
 			put("notify_id", "notifyId");
 			put("out_biz_no", "outBizNo");

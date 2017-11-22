@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Setter
 @Getter
-public class GiveBackForm extends OrderForm{
+public class GiveBackForm extends BaseOrderForm {
 
 	@NotBlank(message = "请指定还车地址")
 	private String realGiveBackAddress;

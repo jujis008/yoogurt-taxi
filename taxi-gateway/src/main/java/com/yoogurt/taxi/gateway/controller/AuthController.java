@@ -40,7 +40,9 @@ public class AuthController extends BaseController {
         Integer userType = super.getUserType();
         String authToken = authService.getAuthToken(userId, grantCode, username, userType);
         log.info("token: \n" + authToken);
-        if(StringUtils.isNoneBlank(authToken)) return ResponseObj.success(authToken);
+        if(StringUtils.isNoneBlank(authToken)) {
+            return ResponseObj.success(authToken);
+        }
 
         return ResponseObj.fail(StatusCode.BIZ_FAILED, "授权码不存在或已过期");
     }

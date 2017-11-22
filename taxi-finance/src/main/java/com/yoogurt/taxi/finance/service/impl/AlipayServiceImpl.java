@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.utils.BeanRefUtils;
-import com.yoogurt.taxi.common.utils.RSA;
+import com.yoogurt.taxi.common.utils.Rsa;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceAlipaySettings;
 import com.yoogurt.taxi.dal.bo.AlipayNotify;
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.dal.enums.EventType;
 import com.yoogurt.taxi.dal.enums.PayChannel;
 import com.yoogurt.taxi.finance.bo.alipay.Alipay;
@@ -46,21 +46,31 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
 
     @Override
     public FinanceAlipaySettings addAlipaySettings(FinanceAlipaySettings settings) {
-        if (settings == null) return null;
-        if (alipaySettingsDao.insertSelective(settings) == 1) return settings;
+        if (settings == null) {
+            return null;
+        }
+        if (alipaySettingsDao.insertSelective(settings) == 1) {
+            return settings;
+        }
         return null;
     }
 
     @Override
     public FinanceAlipaySettings updateAlipaySettings(FinanceAlipaySettings settings) {
-        if (settings == null) return null;
-        if (alipaySettingsDao.updateByIdSelective(settings) == 1) return settings;
+        if (settings == null) {
+            return null;
+        }
+        if (alipaySettingsDao.updateByIdSelective(settings) == 1) {
+            return settings;
+        }
         return null;
     }
 
     @Override
     public FinanceAlipaySettings getAlipaySettings(String appId) {
-        if (StringUtils.isBlank(appId)) return null;
+        if (StringUtils.isBlank(appId)) {
+            return null;
+        }
         FinanceAlipaySettings probe = new FinanceAlipaySettings();
         probe.setAppId(appId);
         probe.setIsDeleted(Boolean.FALSE);
@@ -69,7 +79,9 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
 
     @Override
     public FinanceAlipaySettings getAlipaySettingsByAppId(String alipayAppId) {
-        if (StringUtils.isBlank(alipayAppId)) return null;
+        if (StringUtils.isBlank(alipayAppId)) {
+            return null;
+        }
         FinanceAlipaySettings settings = new FinanceAlipaySettings();
         settings.setAlipayAppId(alipayAppId);
         return alipaySettingsDao.selectOne(settings);
@@ -77,11 +89,17 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
 
     @Override
     public CompletableFuture<ResponseObj> doTask(final PayTask payTask) {
-        if (payTask == null) return null;
+        if (payTask == null) {
+            return null;
+        }
         final PayParams payParams = payTask.getPayParams();
-        if (payParams == null) return null;
+        if (payParams == null) {
+            return null;
+        }
         final String appId = payParams.getAppId();
-        if (StringUtils.isBlank(appId)) return null;
+        if (StringUtils.isBlank(appId)) {
+            return null;
+        }
 
         final FinanceAlipaySettings settings = getAlipaySettings(appId);
         if (settings == null) {
@@ -103,7 +121,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
                 alipay.setNotifyUrl(getNotifyUrl());
                 Map<String, Object> metadata = payParams.getMetadata();
                 if (metadata == null) {
-                    metadata = new HashMap<>();
+                    metadata = new HashMap<>(0);
                 }
                 metadata.put("payId", payment.getPayId());
                 alipay.setPassbackParams(mapper.writeValueAsString(metadata));
@@ -112,7 +130,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
                 //将支付参数按ASCII升序排列
                 SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(alipay);
                 //生成签名
-                String sign = sign(parameters, alipay.parameterMap(), RSA.RSA2_ALGORITHMS, settings.getPrivateKey(), "UTF-8", "sign", "key");
+                String sign = sign(parameters, alipay.parameterMap(), Rsa.RSA2_ALGORITHMS, settings.getPrivateKey(), "UTF-8", "sign", "key");
                 log.info("支付宝签名：" + sign);
                 if (StringUtils.isBlank(sign)) {
                     payment.setStatusCode(String.valueOf(StatusCode.BIZ_FAILED.getStatus()));
@@ -143,8 +161,10 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
      * @return EventTask
      */
     @Override
-    public Event<? extends Notify> eventParse(Map<String, Object> parameterMap) {
-        if (parameterMap == null || parameterMap.isEmpty()) return null;
+    public Event<? extends BaseNotify> eventParse(Map<String, Object> parameterMap) {
+        if (parameterMap == null || parameterMap.isEmpty()) {
+            return null;
+        }
         //生成一个eventId
         String eventId = "event_" + RandomUtils.getPrimaryKey();
         //构造一个 Notify
@@ -175,7 +195,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
      *
      * @param parameters   参数组装的SortedMap
      * @param parameterMap 字段对应的请求参数，传入null，或者字段名对应的value为null，则以字段名为准
-     * @param signType     加密方式，MD5，RSA，RSA2等
+     * @param signType     加密方式，MD5，Rsa，RSA2等
      * @param privateKey   加密的私钥
      * @param charset      编码方式
      * @param skipAttrs    从parameters中跳过的属性
@@ -183,9 +203,11 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
      */
     @Override
     public String sign(SortedMap<String, Object> parameters, Map<String, Object> parameterMap, String signType, String privateKey, String charset, String... skipAttrs) {
-        if (parameters == null || parameters.size() <= 0) return null;
+        if (parameters == null || parameters.size() <= 0) {
+            return null;
+        }
         String content = super.parameterAssemble(parameters, parameterMap, skipAttrs);
-        return RSA.sign(content, signType, privateKey, charset);
+        return Rsa.sign(content, signType, privateKey, charset);
     }
 
     /**
@@ -197,7 +219,7 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
      */
     @Override
     public Map<String, Object> parameterResolve(HttpServletRequest request, Map<String, Object> attributeMap) {
-        Map<String, Object> parameterMap = new HashMap<>();
+        Map<String, Object> parameterMap = new HashMap<>(16);
         Enumeration<String> parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
             String name = parameterNames.nextElement();
@@ -241,9 +263,10 @@ public class AlipayServiceImpl extends AbstractFinanceBizService implements Alip
             log.error("找不到应用配置");
             return false;
         }
-        boolean verify = RSA.verify(content.toString(), sign, RSA.RSA2_ALGORITHMS, settings.getPublicKey(), "UTF-8");
+        boolean verify = Rsa.verify(content.toString(), sign, Rsa.RSA2_ALGORITHMS, settings.getPublicKey(), "UTF-8");
         log.info("验签结果：" + verify);
-        params.put("sign", sign);//验签后，将签名回传进去
+        //验签后，将签名回传进去
+        params.put("sign", sign);
         params.put("signType", signType);
         return verify;
     }

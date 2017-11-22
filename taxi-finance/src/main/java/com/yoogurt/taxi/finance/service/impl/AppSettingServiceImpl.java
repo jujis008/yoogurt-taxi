@@ -15,21 +15,31 @@ public class AppSettingServiceImpl implements AppSettingService {
 
     @Override
     public FinanceAppSettings getAppSettings(String appId) {
-        if(StringUtils.isBlank(appId)) return null;
+        if(StringUtils.isBlank(appId)) {
+            return null;
+        }
         return appSettingsDao.selectById(appId);
     }
 
     @Override
     public FinanceAppSettings addAppSettings(FinanceAppSettings settings) {
-        if(settings == null) return null;
-        if(appSettingsDao.insertSelective(settings) == 1) return settings;
+        if(settings == null) {
+            return null;
+        }
+        if(appSettingsDao.insertSelective(settings) == 1) {
+            return settings;
+        }
         return null;
     }
 
     @Override
     public FinanceAppSettings updateAppSettings(FinanceAppSettings settings) {
-        if(settings == null) return null;
-        if(appSettingsDao.updateByIdSelective(settings) == 1) return settings;
+        if(settings == null) {
+            return null;
+        }
+        if(appSettingsDao.updateByIdSelective(settings) == 1) {
+            return settings;
+        }
         return null;
     }
 }

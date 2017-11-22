@@ -66,7 +66,7 @@ public class LoginServiceImpl implements LoginService {
         ResponseObj success = ResponseObj.success(sessionUser);
         if (userType.isWebUser()) {
             List<String> tagList = authorityInfoService.getAssociatedControlByUserId(user.getUserId());
-            HashMap<String, Object> extras = new HashMap<>();
+            HashMap<String, Object> extras = new HashMap<>(1);
             extras.put("tagList",tagList);
             success.setExtras(extras);
         }

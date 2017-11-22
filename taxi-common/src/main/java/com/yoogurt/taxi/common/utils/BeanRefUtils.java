@@ -21,21 +21,29 @@ public class BeanRefUtils {
      * @return Map对象
      */
     public static Map<?, ?> toMap(Object obj, boolean superClass) {
-        if(obj == null) return null;
-        if(superClass) return new BeanMap(obj);
+        if(obj == null) {
+            return null;
+        }
+        if(superClass) {
+            return new BeanMap(obj);
+        }
         return toMap(obj);
     }
 
     public static Map<String, Object> toMap(Object obj) {
-        if(obj == null) return null;
-        Map<String, Object> map = new HashMap<>();
+        if(obj == null) {
+            return null;
+        }
+        Map<String, Object> map = new HashMap<>(16);
         Class<?> clz = obj.getClass();
         Field[] fields = clz.getDeclaredFields();
         try {
             for (Field field : fields) {
                 String property = field.getName();
                 String firstLetter = StringUtils.left(property, 1);
-                if (StringUtils.isBlank(firstLetter)) continue; // bean property is empty, continue.
+                if (StringUtils.isBlank(firstLetter)) {
+                    continue; // bean property is empty, continue.
+                }
                 // get the getXxx method.
                 Method method = clz.getMethod(property.replaceFirst(firstLetter, "get" + firstLetter.toUpperCase()));
                 map.put(property, method.invoke(obj));
@@ -65,13 +73,17 @@ public class BeanRefUtils {
         Method[] methods = clz.getMethods();
         for (Method method : methods) {
             String methodName = method.getName();
-            if (StringUtils.isNoneBlank(methodName) && methodName.startsWith("get") && !methodName.equals("getClass")) {    //继承了Object的getClass方法，要过滤掉
+            //继承了Object的getClass方法，要过滤掉
+            if (StringUtils.isNoneBlank(methodName) && methodName.startsWith("get") && !"getClass".equals(methodName)) {
                 try {
-                    Object value = method.invoke(obj);    //调用Bean的get方法，得到属性值
+                    //调用Bean的get方法，得到属性值
+                    Object value = method.invoke(obj);
                     if (value != null) {
                         String key = methodName.substring(3);
                         key = key.substring(0, 1).toLowerCase() + key.substring(1);
-                        if(skipList.contains(key)) continue;
+                        if(skipList.contains(key)) {
+                            continue;
+                        }
                         sortedMap.put(key, value);
                     }
                 } catch (Exception e) {
@@ -96,7 +108,9 @@ public class BeanRefUtils {
      * @return Document
      */
     public static Document toXml(Object obj, String rootElementName, Map<String, Object> parameterMap, String... skipAttrs){
-        if (StringUtils.isBlank(rootElementName)) rootElementName = "xml";
+        if (StringUtils.isBlank(rootElementName)) {
+            rootElementName = "xml";
+        }
         List<String> skipList = new ArrayList<>();
         if (skipAttrs != null && skipAttrs.length > 0) {
             skipList.addAll(Arrays.asList(skipAttrs));
@@ -107,13 +121,17 @@ public class BeanRefUtils {
         Method[] methods = clz.getMethods();
         for (Method method : methods) {
             String methodName = method.getName();
-            if (StringUtils.isNoneBlank(methodName) && methodName.startsWith("get") && !methodName.equals("getClass")) {    //继承了Object的getClass方法，要过滤掉
+            //继承了Object的getClass方法，要过滤掉
+            if (StringUtils.isNoneBlank(methodName) && methodName.startsWith("get") && !"getClass".equals(methodName)) {
                 try {
-                    Object value = method.invoke(obj);    //调用Bean的get方法，得到属性值
+                    //调用Bean的get方法，得到属性值
+                    Object value = method.invoke(obj);
                     if (value != null) {
                         String key = methodName.substring(3);
                         key = key.substring(0, 1).toLowerCase() + key.substring(1);
-                        if(skipList.contains(key)) continue;
+                        if(skipList.contains(key)) {
+                            continue;
+                        }
                         if (parameterMap != null && parameterMap.get(key) != null) {
                             key = parameterMap.get(key).toString();
                         }

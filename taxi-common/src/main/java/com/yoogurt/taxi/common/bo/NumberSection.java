@@ -31,13 +31,24 @@ public class NumberSection implements Comparable<NumberSection>, Serializable {
 
 	private static final long serialVersionUID = 695679468376567894L;
 
-	private Integer start;	//区间下限
+	/**
+	 * 区间下限
+	 */
+	private Integer start;
 
-	private Integer end = Integer.MAX_VALUE;	//区段上限，如果想表示1000以上，请不要设置end，或者设置成Integer.MAX_VALUE
+	/**
+	 * 区段上限，如果想表示1000以上，请不要设置end，或者设置成Integer.MAX_VALUE
+	 */
+	private Integer end = Integer.MAX_VALUE;
+	/**
+	 *默认闭区间
+	 */
+	private boolean openLeft = false;
 
-	private boolean openLeft = false;	//默认闭区间
-
-	private boolean openRight = true;	//默认开区间
+	/**
+	 * 默认闭区间
+	 */
+	private boolean openRight = true;
 
 	public NumberSection() {
 		super();
@@ -94,7 +105,9 @@ public class NumberSection implements Comparable<NumberSection>, Serializable {
 	 * @return
 	 */
 	public int getOverLength(NumberSection other){
-		if(!isInclude(other))	return 0;
+		if(!isInclude(other)) {
+            return 0;
+        }
 		int len = (this.openRight ? (max(this.start, this.end) - 1) : (max(this.start, this.end)))
             -
             (other.isOpenLeft() ? (min(other.getStart(), other.getEnd()) + 1) : (min(other.getStart(), other.getEnd())));
@@ -115,7 +128,10 @@ public class NumberSection implements Comparable<NumberSection>, Serializable {
 	 * @return
 	 */
 	public boolean isContinuous(NumberSection other){
-	    if(getOverLength(other) > 0) return false;  //有重叠长度的两个区间一定不连续
+		//有重叠长度的两个区间一定不连续
+	    if(getOverLength(other) > 0) {
+            return false;
+        }
         //区段A的右区间与区段B的左区间相等，并且是一开一闭，不能同开或者同闭。
 		return max(this.start, this.end) == min(other.getStart(), other.getEnd()) && !(this.openRight && other.isOpenLeft());
 	}
@@ -137,7 +153,9 @@ public class NumberSection implements Comparable<NumberSection>, Serializable {
 	 */
 	public int getRange(NumberSection other, boolean positive){
 	    //如果只计算正距离，那么就需要考虑两个区间是否连续。如果连续，那么跨度就为0。
-		if(positive && isContinuous(other))	return 0;
+		if(positive && isContinuous(other)) {
+            return 0;
+        }
 		return min(other.getStart(), other.getEnd()) - max(this.start, this.end);
 	}
 

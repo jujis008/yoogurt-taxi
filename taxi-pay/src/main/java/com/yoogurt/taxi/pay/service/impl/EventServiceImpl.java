@@ -17,25 +17,33 @@ public class EventServiceImpl extends EventTaskServiceImpl implements EventServi
 
     @Override
     public Event getEvent(String eventId) {
-        if (StringUtils.isBlank(eventId)) return null;
+        if (StringUtils.isBlank(eventId)) {
+            return null;
+        }
         return eventDao.findOne(eventId);
     }
 
     @Override
     public Event addEvent(Event event) {
-        if (event == null) return null;
+        if (event == null) {
+            return null;
+        }
         return eventDao.insert(event);
     }
 
     @Override
     public Event saveEvent(Event event) {
-        if (event == null) return null;
+        if (event == null) {
+            return null;
+        }
         return eventDao.save(event);
     }
 
     @Override
     public boolean deleteEvent(String eventId) {
-        if (StringUtils.isBlank(eventId)) return false;
+        if (StringUtils.isBlank(eventId)) {
+            return false;
+        }
         try {
             eventDao.delete(eventId);
         } catch (Exception e) {

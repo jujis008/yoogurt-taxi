@@ -9,15 +9,13 @@ import com.yoogurt.taxi.common.helper.excel.BankReceiptOfMerchantsModel;
 import com.yoogurt.taxi.common.helper.excel.ExcelData;
 import com.yoogurt.taxi.common.helper.excel.ExcelHeader;
 import com.yoogurt.taxi.common.helper.excel.ExcelUtils;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.condition.account.AccountListWebCondition;
 import com.yoogurt.taxi.dal.condition.account.BillListWebCondition;
 import com.yoogurt.taxi.dal.condition.account.ExportBillCondition;
 import com.yoogurt.taxi.dal.condition.account.WithdrawListWebCondition;
 import com.yoogurt.taxi.dal.enums.BillStatus;
-import com.yoogurt.taxi.dal.enums.BillType;
 import com.yoogurt.taxi.dal.enums.DestinationType;
 import com.yoogurt.taxi.dal.enums.TradeType;
 import com.yoogurt.taxi.dal.model.account.FinanceAccountListModel;
@@ -46,19 +44,19 @@ public class FinanceWebController extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getAccountListWeb(AccountListWebCondition condition) {
-        Pager<FinanceAccountListModel> listWeb = financeAccountService.getListWeb(condition);
+        BasePager<FinanceAccountListModel> listWeb = financeAccountService.getListWeb(condition);
         return ResponseObj.success(listWeb);
     }
 
     @RequestMapping(value = "/bill/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getBillListWeb(BillListWebCondition condition) {
-        Pager<FinanceBillListWebModel> financeBillListWeb = financeBillService.getFinanceBillListWeb(condition);
+        BasePager<FinanceBillListWebModel> financeBillListWeb = financeBillService.getFinanceBillListWeb(condition);
         return ResponseObj.success(financeBillListWeb);
     }
 
     @RequestMapping(value = "/withdraw/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getWithdrawBillListWeb(WithdrawListWebCondition condition) {
-        Pager<WithdrawBillListWebModel> withdrawBillListWeb = financeBillService.getWithdrawBillListWeb(condition);
+        BasePager<WithdrawBillListWebModel> withdrawBillListWeb = financeBillService.getWithdrawBillListWeb(condition);
         return ResponseObj.success(withdrawBillListWeb);
     }
 

@@ -25,11 +25,15 @@ public class PayTaskReceiver implements TaskReceiver<PayTask> {
     @RabbitHandler
     @Override
     public void receive(@Payload PayTask payTask) {
-        if (payTask == null) return;
+        if (payTask == null) {
+            return;
+        }
         TaskInfo task = payTask.getTask();
         //只接收处于 【可执行状态】 的支付任务
         TaskStatus status = TaskStatus.getEnumByStatus(task.getStatusCode());
-        if (status == null || !status.isExecutable()) return;
+        if (status == null || !status.isExecutable()) {
+            return;
+        }
         log.info("[" + DateTime.now().toString("yyyy-MM-dd HH:mm:ss") + "] 收到支付任务，开始执行......");
         //记录任务开始的时间戳
         task.setStartTimestamp(System.currentTimeMillis());

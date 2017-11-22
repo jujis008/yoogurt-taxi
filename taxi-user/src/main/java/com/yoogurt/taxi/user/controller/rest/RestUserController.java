@@ -72,11 +72,6 @@ public class RestUserController extends BaseController {
         if (userInfo == null) {
             return RestResult.fail(StatusCode.BIZ_FAILED,"用户信息不存在");
         }
-//        try {
-//            Thread.sleep(900);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
         return RestResult.success(userInfo);
     }
 

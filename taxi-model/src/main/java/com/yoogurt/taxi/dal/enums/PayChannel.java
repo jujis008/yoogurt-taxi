@@ -11,13 +11,33 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Getter
 public enum PayChannel {
-
+    /**
+     *余额支付
+     */
     BALANCE("balance", "余额支付", ""),
+    /**
+     *支付宝快捷支付
+     */
     ALIPAY("alipay", "支付宝快捷支付", "alipayService"),
+    /**
+     *银联支付
+     */
     UPACP("upacp", "银联支付", "upacpService"),
+    /**
+     * 银联网页支付
+     */
     UPACP_WAP("upacp_wap", "银联网页支付", "upacpService"),
+    /**
+     * 微信公众号支付
+     */
     WX_PUB("wx_pub", "微信公众号支付", "wxPayService"),
+    /**
+     *微信支付
+     */
     WX("wx", "微信支付", "wxPayService"),
+    /**
+     *线下渠道
+     */
     OFFLINE("Offline", "线下渠道", "");
 
     private String name;

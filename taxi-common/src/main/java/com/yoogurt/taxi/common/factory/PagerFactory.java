@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.common.factory;
 
 import com.github.pagehelper.Page;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 
 /**
  * Description:
@@ -27,5 +27,5 @@ public interface PagerFactory {
      * @param <E> 结果集的数据类型
      * @return 系统内定义的分页对象
      */
-    <E> Pager<E> generatePager(Page<E> page);
+    <E> BasePager<E> generatePager(Page<E> page);
 }

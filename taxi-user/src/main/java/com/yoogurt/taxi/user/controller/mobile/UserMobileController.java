@@ -193,7 +193,7 @@ public class UserMobileController extends BaseController {
         if (driverInfo == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
-        Map<String, Object> driverInfoMap = new HashMap<>();
+        Map<String, Object> driverInfoMap = new HashMap<>(2);
         UserInfo userInfo = userService.getUserByUserId(userId);
         driverInfoMap.put("avatar", userInfo.getAvatar());
         driverInfoMap.put("name", CommonUtils.convertName(userInfo.getName(), "师傅"));
@@ -203,7 +203,7 @@ public class UserMobileController extends BaseController {
             if (CollectionUtils.isEmpty(carInfoList)) {
                 return ResponseObj.fail(StatusCode.BIZ_FAILED);
             }
-            Map<String, Object> carInfoMap = new HashMap<>();
+            Map<String, Object> carInfoMap = new HashMap<>(3);
             carInfoMap.put("carPicture", carInfoList.get(0).getCarPicture());
             carInfoMap.put("plateNumber", carInfoList.get(0).getPlateNumber());
             carInfoMap.put("company", carInfoList.get(0).getCompany());
@@ -224,7 +224,8 @@ public class UserMobileController extends BaseController {
         String userId = getUserId();
         UserInfo userInfo = userService.getUserByUserId(userId);
         if (userInfo == null) {
-            redisSetting(userId);//设置用户激活失败次数、时间
+            //设置用户激活失败次数、时间
+            redisSetting(userId);
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
         }
         if (UserStatus.getEnumsByCode(userInfo.getStatus()) != UserStatus.UN_ACTIVE) {
@@ -243,17 +244,20 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY.getStatus(), StatusCode.NO_AUTHORITY.getDetail());
         }
         if (!userInfo.getName().equals(activeAccountForm.getName())) {
-            redisSetting(userId);//设置用户激活重试次数、时间
+            //设置用户激活重试次数、时间
+            redisSetting(userId);
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
         }
         DriverInfo driverInfo = driverService.getDriverByUserId(userInfo.getUserId());
         if (driverInfo == null) {
-            redisSetting(userId);//设置用户激活重试次数、时间
+            //设置用户激活重试次数、时间
+            redisSetting(userId);
             redisHelper.incrBy(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + getUserId(), 1);
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
         }
         if (!driverInfo.getIdCard().equals(activeAccountForm.getIdCard())) {
-            redisSetting(userId);//设置用户激活重试次数、时间
+            //设置用户激活重试次数、时间
+            redisSetting(userId);
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "对不起，您的激活信息与系统内收录信息不符，请确认信息的正确性并重新激活");
         }
         redisHelper.del(CacheKey.ACTIVATE_RETRY_MAX_COUNT_KEY + userId);
@@ -288,10 +292,11 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "用户不是未激活状态");
         }
         Object object = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId);
-        if (object == null) {//redis缓存已经过期，但是app那边存的脏数据
+        //redis缓存已经过期，但是app那边存的脏数据
+        if (object == null) {
             return ResponseObj.fail(StatusCode.NOT_LOGIN);
         }
-        if (!object.equals("2")) {
+        if (!"2".equals(object)) {
             return ResponseObj.fail(StatusCode.SYS_ERROR);
         }
         ResponseObj responseObj = userService.modifyLoginPassword(userId, form.getOldPassword(), form.getNewPassword());
@@ -337,10 +342,11 @@ public class UserMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "用户不是未激活状态");
         }
         Object object = redisHelper.get(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId);
-        if (object == null) {//redis缓存已经过期，但是app那边存的脏数据
+        //redis缓存已经过期，但是app那边存的脏数据
+        if (object == null) {
             return ResponseObj.fail(StatusCode.NOT_LOGIN);
         }
-        if (!object.equals("3")) {
+        if (!"3".equals(object)) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED);
         }
         return userService.payPwdSetting(userId, form.getPassword());

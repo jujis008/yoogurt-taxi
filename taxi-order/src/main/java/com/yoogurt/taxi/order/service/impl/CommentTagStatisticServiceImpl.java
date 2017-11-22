@@ -46,7 +46,9 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
      */
     @Override
     public List<CommentTagStatistic> getStatistic(String userId) {
-        if (StringUtils.isBlank(userId)) return null;
+        if (StringUtils.isBlank(userId)) {
+            return null;
+        }
         Example ex = new Example(CommentTagStatistic.class);
         ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE).andEqualTo("userId", userId);
         return statisticDao.selectByExample(ex);
@@ -54,13 +56,17 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
 
     private List<CommentTagStatistic> buildStatistic(String userId, Long[] tagIds) {
         List<CommentTagStatistic> statistics = new ArrayList<>();
-        if (StringUtils.isBlank(userId) || tagIds == null || tagIds.length == 0) return statistics;
+        if (StringUtils.isBlank(userId) || tagIds == null || tagIds.length == 0) {
+            return statistics;
+        }
         //长度不对应
         for (Long tagId : tagIds) {
 
             CommentTagStatistic statistic = new CommentTagStatistic(userId);
             CommentTag commentTag = commentTagDao.selectById(tagId);
-            if (commentTag == null) continue;
+            if (commentTag == null) {
+                continue;
+            }
             statistic.setTagId(tagId);
             BeanUtils.copyProperties(commentTag, statistic);
             statistic.setCounter(1);
@@ -70,7 +76,9 @@ public class CommentTagStatisticServiceImpl implements CommentTagStatisticServic
     }
 
     private CommentTagStatistic addStatistic(CommentTagStatistic statistic) {
-        if (statistic == null) return null;
+        if (statistic == null) {
+            return null;
+        }
         if (statisticDao.insertSelective(statistic) == 1) {
             return statistic;
         }

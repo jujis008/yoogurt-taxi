@@ -29,7 +29,9 @@ public class CommonResourceServiceImpl implements CommonResourceService {
 
     @Override
     public int addResources(List<CommonResource> resources) {
-        if(CollectionUtils.isEmpty(resources)) return 0;
+        if(CollectionUtils.isEmpty(resources)) {
+            return 0;
+        }
         return resourceDao.insertList(resources);
     }
 
@@ -45,7 +47,9 @@ public class CommonResourceServiceImpl implements CommonResourceService {
     @Override
     public List<CommonResource> assembleResources(String linkId, String tableName, String... pictures) {
         List<CommonResource> resources = Lists.newArrayList();
-        if(StringUtils.isBlank(linkId) || pictures == null || pictures.length == 0) return resources;
+        if(StringUtils.isBlank(linkId) || pictures == null || pictures.length == 0) {
+            return resources;
+        }
         for (String picture : pictures) {
             CommonResource resource = new CommonResource();
             resource.setLinkId(linkId);

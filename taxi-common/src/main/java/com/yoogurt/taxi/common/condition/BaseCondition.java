@@ -40,7 +40,9 @@ public abstract class BaseCondition {
      * @return 在keywords两侧加上%
      */
     public String likes() {
-        if(StringUtils.isBlank(this.keywords)) return StringUtils.EMPTY;
+        if(StringUtils.isBlank(this.keywords)) {
+            return StringUtils.EMPTY;
+        }
         return "%" + this.keywords + "%";
     }
 
@@ -50,7 +52,9 @@ public abstract class BaseCondition {
      * @return 含有通配符的LIKE语句
      */
     public String likes(boolean matchHead) {
-        if(StringUtils.isBlank(this.keywords)) return StringUtils.EMPTY;
+        if(StringUtils.isBlank(this.keywords)) {
+            return StringUtils.EMPTY;
+        }
         return matchHead ? (this.keywords + "%") : ("%" + this.keywords);
     }
 
@@ -62,8 +66,12 @@ public abstract class BaseCondition {
      * @return 含有占位符的LIKE语句
      */
     public String likes(boolean matchHead, int placeCount) {
-        if(StringUtils.isBlank(this.keywords)) return StringUtils.EMPTY;
-        if(placeCount == 0) return likes(matchHead);
+        if(StringUtils.isBlank(this.keywords)) {
+            return StringUtils.EMPTY;
+        }
+        if(placeCount == 0) {
+            return likes(matchHead);
+        }
         StringBuilder placeBuilder = new StringBuilder(placeCount);
         for (int i=0; i < placeCount; i++) {
             placeBuilder.append("_");

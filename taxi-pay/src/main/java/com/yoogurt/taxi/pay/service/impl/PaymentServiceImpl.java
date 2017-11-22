@@ -26,7 +26,9 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
      */
     @Override
     public Payment getPayment(String payId) {
-        if(StringUtils.isBlank(payId)) return null;
+        if(StringUtils.isBlank(payId)) {
+            return null;
+        }
         return paymentDao.findOne(payId);
     }
 
@@ -38,7 +40,9 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
      */
     @Override
     public Payment addPayment(Payment payment) {
-        if(payment == null) return null;
+        if(payment == null) {
+            return null;
+        }
         return paymentDao.insert(payment);
     }
 
@@ -50,7 +54,9 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
      */
     @Override
     public Payment updatePayment(Payment payment) {
-        if(payment == null) return null;
+        if(payment == null) {
+            return null;
+        }
         return paymentDao.save(payment);
     }
 
@@ -62,7 +68,9 @@ public class PaymentServiceImpl extends PayTaskServiceImpl implements PaymentSer
      */
     @Override
     public boolean deletePayment(String payId) {
-        if(StringUtils.isBlank(payId)) return false;
+        if(StringUtils.isBlank(payId)) {
+            return false;
+        }
         try {
             paymentDao.delete(payId);
         } catch (Exception e) {

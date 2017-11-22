@@ -19,7 +19,9 @@ public class HessianMessageConverter implements MessageConverter {
      */
     @Override
     public Message toMessage(Object object, MessageProperties messageProperties) throws MessageConversionException {
-        if(object == null) return null;
+        if(object == null) {
+            return null;
+        }
         if (messageProperties == null) {
             messageProperties = new MessageProperties();
         }

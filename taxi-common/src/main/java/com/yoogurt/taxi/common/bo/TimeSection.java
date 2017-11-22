@@ -83,8 +83,14 @@ public class TimeSection implements Comparable<TimeSection>, Serializable {
      * @return 重叠的毫秒数
      */
     public long getOverLength(TimeSection other){
-        if(!isInclude(other))	return 0;//如果两个区间不重叠，即可直接返回0
-        if(contains(other)) return other.getPeriod();//如果包含，直接返回被包含的时间段持续的毫秒数
+        //如果两个区间不重叠，即可直接返回0
+        if(!isInclude(other)) {
+            return 0;
+        }
+        //如果包含，直接返回被包含的时间段持续的毫秒数
+        if(contains(other)) {
+            return other.getPeriod();
+        }
         long len = Math.max(this.startTime.getTime(), this.endTime.getTime()) - Math.min(other.getStartTime().getTime(), other.getEndTime().getTime());
         return len;
     }
@@ -108,7 +114,10 @@ public class TimeSection implements Comparable<TimeSection>, Serializable {
      * @return 跨度时间，以毫秒为单位，永远是正距离
      */
     public long getRange(TimeSection other){
-        if(isContinuous(other) || isInclude(other))	return 0;//两个区间连续或者有重叠，则认为是0跨度
+        //两个区间连续或者有重叠，则认为是0跨度
+        if(isContinuous(other) || isInclude(other)) {
+            return 0;
+        }
         return Math.min(other.getStartTime().getTime(), other.getEndTime().getTime()) - Math.max(this.getStartTime().getTime(), this.getEndTime().getTime());
     }
 
@@ -123,18 +132,26 @@ public class TimeSection implements Comparable<TimeSection>, Serializable {
 
         int result = this.getStartTime().compareTo(o.getStartTime());
         //如果开始时间相等，那么就以时长优先
-        if(result == 0) return this.period - o.getPeriod() < 0 ? 1 : -1;
+        if(result == 0) {
+            return this.period - o.getPeriod() < 0 ? 1 : -1;
+        }
         return result;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TimeSection section = (TimeSection) o;
 
-        if (!startTime.equals(section.startTime)) return false;
+        if (!startTime.equals(section.startTime)) {
+            return false;
+        }
         return endTime.equals(section.endTime);
     }
 

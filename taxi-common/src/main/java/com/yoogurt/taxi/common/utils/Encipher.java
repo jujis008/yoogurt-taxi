@@ -21,7 +21,7 @@ public class Encipher {
      */
     private static final int STRENGTH = 10;
 
-    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(STRENGTH);
+    private static final BCryptPasswordEncoder ENCODER = new BCryptPasswordEncoder(STRENGTH);
 
     /**
      * 对内容进行加密
@@ -29,7 +29,7 @@ public class Encipher {
      * @return 加密后的内容
      */
     public static String encrypt(String content) {
-        return encoder.encode(content);
+        return ENCODER.encode(content);
     }
 
     /**
@@ -39,7 +39,7 @@ public class Encipher {
      * @return 是否匹配
      */
     public static boolean matches(String raw, String encryption) {
-        return encoder.matches(raw, encryption);
+        return ENCODER.matches(raw, encryption);
     }
 
 }

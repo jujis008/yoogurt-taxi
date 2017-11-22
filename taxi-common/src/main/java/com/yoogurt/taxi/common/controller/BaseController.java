@@ -75,7 +75,9 @@ public class BaseController {
      */
     public SessionUser getUser() {
         String userId = getUserId();
-        if (StringUtils.isBlank(userId)) return null;
+        if (StringUtils.isBlank(userId)) {
+            return null;
+        }
         Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
         return obj != null ? (SessionUser) obj : null;
     }
@@ -84,7 +86,7 @@ public class BaseController {
     public ResponseObj exceptionHandler(HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
         log.error("error: " + request.getRequestURI());
         log.error("捕获到异常：", e);
-        return ResponseObj.fail(StatusCode.SYS_ERROR, StatusCode.SYS_ERROR.getDetail(), new HashMap<String, Object>(){{
+        return ResponseObj.fail(StatusCode.SYS_ERROR, StatusCode.SYS_ERROR.getDetail(), new HashMap<String, Object>(2){{
             put("error", e.toString());
             put("params", request.getParameterMap());
         }});

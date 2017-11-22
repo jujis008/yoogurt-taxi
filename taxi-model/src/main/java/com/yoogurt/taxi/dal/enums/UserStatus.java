@@ -2,9 +2,21 @@ package com.yoogurt.taxi.dal.enums;
 
 
 public enum UserStatus {
+    /**
+     * 未激活
+     */
     UN_ACTIVE(10,"未激活"),
+    /**
+     * 未认证
+     */
     UN_AUTHENTICATE(20,"未认证"),
+    /**
+     * 已认证
+     */
     AUTHENTICATED(30,"已认证"),
+    /**
+     * 冻结
+     */
     FROZEN(40,"冻结"),
     ;
     private Integer code;

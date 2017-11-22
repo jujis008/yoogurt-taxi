@@ -2,12 +2,12 @@ package com.yoogurt.taxi.user;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.UserInfo;
-import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
-import com.yoogurt.taxi.dal.model.user.UserWLModel;
+import com.yoogurt.taxi.dal.condition.user.UserWebListCondition;
+import com.yoogurt.taxi.dal.model.user.UserWebListModel;
 import com.yoogurt.taxi.user.service.UserService;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,12 +30,12 @@ public class UserServiceTest {
     @Test
     @Ignore
     public void getUserWebList() {
-        UserWLCondition condition = new UserWLCondition();
+        UserWebListCondition condition = new UserWebListCondition();
         condition.setEmployeeNo("9901");
         condition.setName("");
         condition.setRoleId(null);
         condition.setUsername("");
-        Pager<UserWLModel> userWebList = userService.getUserWebList(condition);
+        BasePager<UserWebListModel> userWebList = userService.getUserWebList(condition);
         Date gmtModify = userWebList.getDataList().get(0).getGmtModify();
         String pattern = "yyyy-MM-dd HH:mm:ss";
         SimpleDateFormat formatter = new SimpleDateFormat(pattern);

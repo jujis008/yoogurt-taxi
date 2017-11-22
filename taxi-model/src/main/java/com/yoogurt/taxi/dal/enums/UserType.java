@@ -1,9 +1,21 @@
 package com.yoogurt.taxi.dal.enums;
 
 public enum UserType {
+    /**
+     * 超级管理员
+     */
     SUPER_ADMIN(0,"超级管理员"),
+    /**
+     * 后端用户
+     */
     USER_WEB(10,"后端用户"),
+    /**
+     * 司机
+     */
     USER_APP_AGENT(20,"司机"),
+    /**
+     * 车主
+     */
     USER_APP_OFFICE(30,"车主"),
     ;
 

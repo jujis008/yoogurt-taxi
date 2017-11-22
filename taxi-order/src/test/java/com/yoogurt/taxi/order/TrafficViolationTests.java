@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.order;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderTrafficViolationInfo;
 import com.yoogurt.taxi.dal.condition.order.TrafficViolationListCondition;
@@ -32,7 +32,7 @@ public class TrafficViolationTests {
         condition.setOrderId("17101612021383517");
         condition.setStatus(TrafficStatus.PENDING.getCode());
         condition.setUserId("17101612021383517");
-        Pager<OrderTrafficViolationInfo> trafficViolations = trafficViolationService.getTrafficViolations(condition);
+        BasePager<OrderTrafficViolationInfo> trafficViolations = trafficViolationService.getTrafficViolations(condition);
         Assert.assertTrue(trafficViolations.getDataList().size() == 1);
 
     }

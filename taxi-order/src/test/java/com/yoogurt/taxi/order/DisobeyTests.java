@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.order;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.DisobeyListCondition;
@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -53,7 +52,7 @@ public class DisobeyTests {
 
         DisobeyListCondition condition = new DisobeyListCondition();
         condition.setOrderId("17101612021383517");
-        Pager<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(condition);
+        BasePager<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(condition);
         Assert.assertEquals(1, disobeyList.getDataList().size());
     }
 }

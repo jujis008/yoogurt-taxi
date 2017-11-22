@@ -1,10 +1,25 @@
 package com.yoogurt.taxi.dal.enums;
 
 public enum BillStatus {
+    /**
+     *待处理
+     */
     PENDING(10,"待处理"),
+    /**
+     *转账中
+     */
     TRANSFERRING(20,"转账中"),
+    /**
+     *成功
+     */
     SUCCESS(30,"成功"),
+    /**
+     *失败
+     */
     FAIL(40,"失败"),
+    /**
+     *拒绝
+     */
     REFUSE(50,"拒绝"),
     ;
 

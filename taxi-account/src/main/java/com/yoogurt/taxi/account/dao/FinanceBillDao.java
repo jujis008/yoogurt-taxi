@@ -1,8 +1,7 @@
 package com.yoogurt.taxi.account.dao;
 
-import com.github.pagehelper.Page;
 import com.yoogurt.taxi.common.dao.IDao;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
 import com.yoogurt.taxi.dal.condition.account.BillListWebCondition;
@@ -17,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface FinanceBillDao extends IDao<FinanceBillMapper,FinanceBill> {
-    Pager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition);
-    Pager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition);
-    Pager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition);
+    BasePager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition);
+    BasePager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition);
+    BasePager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition);
     List<Map<String,Object>> getWithdrawListForExport(ExportBillCondition condition);
 }

@@ -22,7 +22,7 @@
         <result column="modifier" jdbcType="VARCHAR" property="modifier"/>
     </resultMap>
 
-    <resultMap id="userWLModel" type="com.yoogurt.taxi.dal.model.user.UserWLModel">
+    <resultMap id="userWLModel" type="com.yoogurt.taxi.dal.model.user.UserWebListModel">
         <result column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="name" jdbcType="VARCHAR" property="name"/>
@@ -32,7 +32,7 @@
     </resultMap>
 
     <select id="getUserWebListPage" resultMap="userWLModel"
-            parameterType="com.yoogurt.taxi.dal.condition.user.UserWLCondition">
+            parameterType="com.yoogurt.taxi.dal.condition.user.UserWebListCondition">
     SELECT
         t1.user_id,
         t1.username,

@@ -6,7 +6,7 @@ import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.dal.enums.BillStatus;
 import com.yoogurt.taxi.dal.enums.PayChannel;
 import com.yoogurt.taxi.dal.vo.PaymentVo;
@@ -37,16 +37,22 @@ public class ChargeNotifyTaskRunner extends AbstractEventTaskRunner {
     }
 
     public ResponseObj notify(EventTask eventTask){
-        if (eventTask == null) return ResponseObj.fail();
+        if (eventTask == null) {
+            return ResponseObj.fail();
+        }
         final Event event = eventTask.getEvent();
         log.info("[taxi-account#" + eventTask.getTaskId() + "]" + event.getEventType());
         log.info("+++++++++++++++++充值回调的业务处理开始++++++++++++++");
-        Notify notify = event.getData();
+        BaseNotify notify = event.getData();
         PayChannel payChannel = PayChannel.getChannelByName(notify.getChannel());
-        if (payChannel == null || !payChannel.isThirdParty()) return ResponseObj.fail(StatusCode.BIZ_FAILED, "支付渠道暂未开通");
+        if (payChannel == null || !payChannel.isThirdParty()) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "支付渠道暂未开通");
+        }
         log.info(payChannel.getDetail());
         String orderNo = notify.getOrderNo();
-        if (StringUtils.isBlank(orderNo)) return ResponseObj.fail(StatusCode.BIZ_FAILED, "无效的账单号");
+        if (StringUtils.isBlank(orderNo)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "无效的账单号");
+        }
         FinanceBill financeBill = financeBillService.getFinanceBillByBillNo(orderNo);
         if (financeBill == null) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交易账单不存在");

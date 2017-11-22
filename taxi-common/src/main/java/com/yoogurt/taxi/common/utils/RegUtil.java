@@ -24,7 +24,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false
 	 */
     public static boolean checkEmail(String email) {   
-    	if(StringUtils.isBlank(email))	return false;
+    	if(StringUtils.isBlank(email)) {
+            return false;
+        }
         String regex = "\\w+@\\w+\\.[a-z]+(\\.[a-z]+)?";
         return Pattern.matches(regex, email);   
     }   
@@ -39,7 +41,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkIdCard(String idCard) {   
-    	if(StringUtils.isBlank(idCard))	return false;
+    	if(StringUtils.isBlank(idCard)) {
+            return false;
+        }
         String regex = "[1-9]\\d{13,16}[X|x]{1}";
         return Pattern.matches(regex,idCard);   
     }
@@ -58,7 +62,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkMobile(String mobile) {  
-    	if(StringUtils.isBlank(mobile))	return false;
+    	if(StringUtils.isBlank(mobile)) {
+            return false;
+        }
         String regex = "(\\+\\d+)?1[34578]\\d{9}$";
         return Pattern.matches(regex,mobile);   
     }
@@ -78,7 +84,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkPhone(String phone) {  
-    	if(StringUtils.isBlank(phone))	return false;
+    	if(StringUtils.isBlank(phone)) {
+            return false;
+        }
         String regex = "(\\+\\d+)?(\\d{3,4}\\-?)?\\d{7,8}$";   
         return Pattern.matches(regex, phone);   
     }   
@@ -92,7 +100,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkDigit(String digit) {   
-    	if(StringUtils.isBlank(digit))	return false;
+    	if(StringUtils.isBlank(digit)) {
+            return false;
+        }
         String regex = "-?\\d+$";
         return Pattern.matches(regex,digit);   
     }
@@ -105,7 +115,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkDecimals(String decimals) {   
-    	if(StringUtils.isBlank(decimals))	return false;
+    	if(StringUtils.isBlank(decimals)) {
+            return false;
+        }
         String regex = "^\\d+(\\.\\d+)?$";   
         return Pattern.matches(regex,decimals);   
     } 
@@ -120,7 +132,9 @@ public class RegUtil {
      * @return
      */
     public static boolean checkMoney(String money) {   
-    	if(StringUtils.isBlank(money))	return false;
+    	if(StringUtils.isBlank(money)) {
+            return false;
+        }
     	String regex = "^([0-9][\\d]{0,7}|0)(\\.[\\d]{1,2})?$";   
     	return Pattern.matches(regex, money);   
     } 
@@ -133,7 +147,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkBlankSpace(String blankSpace) {   
-    	if(StringUtils.isBlank(blankSpace))	return false;
+    	if(StringUtils.isBlank(blankSpace)) {
+            return false;
+        }
         String regex = "\\s+";   
         return Pattern.matches(regex,blankSpace);   
     }   
@@ -146,7 +162,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkChinese(String chinese) {   
-    	if(StringUtils.isBlank(chinese))	return false;
+    	if(StringUtils.isBlank(chinese)) {
+            return false;
+        }
         String regex = "^[\u4E00-\u9FA5]+$";   
         return Pattern.matches(regex,chinese);   
     }   
@@ -159,7 +177,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkBirthday(String birthday) {  
-    	if(StringUtils.isBlank(birthday))	return false;
+    	if(StringUtils.isBlank(birthday)) {
+            return false;
+        }
         String regex = "[1-9]{4}([-./])\\d{1,2}\\1\\d{1,2}";   
         return Pattern.matches(regex,birthday);   
     }   
@@ -172,8 +192,11 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkURL(String url) {   
-    	if(StringUtils.isBlank(url))	return false;
-    	Pattern p = Pattern.compile("\\b(([\\w-]+://?|www[.])[^\\s()<>]+(?:\\([\\w\\d]+\\)|([^[:punct:]\\s]|/)))",Pattern.CASE_INSENSITIVE );   
+    	if(StringUtils.isBlank(url)) {
+            return false;
+        }
+        String regex = "\\b(([\\w-]+://?|www[.])[^\\s()<>]+(?:\\([\\w\\d]+\\)|([^[:punct:]\\s]|/)))";
+        Pattern p = Pattern.compile(regex,Pattern.CASE_INSENSITIVE );
         return p.matcher(url).find();
     }   
       
@@ -188,8 +211,11 @@ public class RegUtil {
      * @return 
      */  
     public static String getDomain(String url) {  
-    	if(StringUtils.isBlank(url))	return null;
-        Pattern p = Pattern.compile("(?<=http://|\\.)[^.]*?\\.(com|cn|net|org|biz|info|cc|tv)", Pattern.CASE_INSENSITIVE);  
+    	if(StringUtils.isBlank(url)) {
+            return null;
+        }
+        String regex = "(?<=http://|\\.)[^.]*?\\.(com|cn|net|org|biz|info|cc|tv)";
+        Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         // 获取完整的域名  
         // Pattern p=Pattern.compile("[^//]*?\\.(com|cn|net|org|biz|info|cc|tv)", Pattern.CASE_INSENSITIVE);  
         Matcher matcher = p.matcher(url);  
@@ -204,7 +230,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkPostcode(String postcode) {   
-    	if(StringUtils.isBlank(postcode))	return false;
+    	if(StringUtils.isBlank(postcode)) {
+            return false;
+        }
         String regex = "[1-9]\\d{5}";   
         return Pattern.matches(regex, postcode);   
     }   
@@ -217,7 +245,9 @@ public class RegUtil {
      * @return 验证成功返回true，验证失败返回false 
      */   
     public static boolean checkIpAddress(String ipAddress) {
-    	if(StringUtils.isBlank(ipAddress))	return false;
+    	if(StringUtils.isBlank(ipAddress)) {
+            return false;
+        }
         String regex = "[1-9](\\d{1,2})?\\.(0|([1-9](\\d{1,2})?))\\.(0|([1-9](\\d{1,2})?))\\.(0|([1-9](\\d{1,2})?))";   
         return Pattern.matches(regex, ipAddress);   
     }
@@ -229,7 +259,9 @@ public class RegUtil {
      * @return
      */
     public static boolean checkNickName(String nickName) {
-    	if(StringUtils.isBlank(nickName))	return false;
+    	if(StringUtils.isBlank(nickName)) {
+            return false;
+        }
         String regex = "^[\\u4e00-\\u9fa5_a-zA-Z0-9-]{1,16}$";
         return Pattern.matches(regex, nickName);
     }
@@ -241,7 +273,9 @@ public class RegUtil {
      * @return
      */
     public static boolean checkPassword(String password) {
-    	if(StringUtils.isBlank(password))	return false;
+    	if(StringUtils.isBlank(password)) {
+            return false;
+        }
         String regex = "((?=.*\\d)(?=.*\\D)|(?=.*[a-zA-Z])(?=.*[^a-zA-Z]))^.{6,20}$";
         return Pattern.matches(regex, password);
     }

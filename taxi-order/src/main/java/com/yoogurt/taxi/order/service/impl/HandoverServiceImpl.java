@@ -2,17 +2,15 @@ package com.yoogurt.taxi.order.service.impl;
 
 import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.dal.beans.*;
 import com.yoogurt.taxi.dal.enums.*;
-import com.yoogurt.taxi.dal.model.order.HandoverOrderModel;
+import com.yoogurt.taxi.dal.model.order.HandoverOrderModelBase;
 import com.yoogurt.taxi.dal.model.order.OrderModel;
 import com.yoogurt.taxi.dal.vo.ModificationVo;
 import com.yoogurt.taxi.order.dao.HandoverDao;
 import com.yoogurt.taxi.order.form.HandoverForm;
 import com.yoogurt.taxi.order.service.*;
 import com.yoogurt.taxi.order.service.rest.RestAccountService;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 @Service("handoverService")
 public class HandoverServiceImpl extends AbstractOrderBizService implements HandoverService {
@@ -53,14 +50,16 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
      * @param handoverForm 交车信息
      * @return 交车相关信息
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
-    public HandoverOrderModel doHandover(HandoverForm handoverForm) {
+    public HandoverOrderModelBase doHandover(HandoverForm handoverForm) {
         String orderId = handoverForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, handoverForm.getUserId());
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待交车】
-        if (!OrderStatus.HAND_OVER.equals(status)) return null;
+        if (!OrderStatus.HAND_OVER.equals(status)) {
+            return null;
+        }
 
         OrderHandoverInfo handoverInfo = new OrderHandoverInfo();
         handoverInfo.setOrderId(orderId);
@@ -92,13 +91,16 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
                 OrderDisobeyInfo disobey = disobeyService.buildDisobeyInfo(
                         orderInfo, UserType.USER_APP_OFFICE, DisobeyType.OFFICIAL_DRIVER_HANDOVER_TIMEOUT,
                         rule.getRuleId(), fineMoney, description);
-                if (disobey != null) disobeyService.addDisobey(disobey);
+                if (disobey != null) {
+                    disobeyService.addDisobey(disobey);
+                }
             } else {
                 handoverInfo.setTime(minutes);
             }
         }
         if (handoverDao.insertSelective(handoverInfo) == 1) {
-            if (!orderInfo.getIsPaid()) {//未支付
+            //未支付
+            if (!orderInfo.getIsPaid()) {
                 //司机扣款，扣款顺序：余额》》押金
                 ModificationVo vo = ModificationVo.builder().contextId(orderInfo.getOrderId())
                         .userId(orderInfo.getAgentUserId())
@@ -108,8 +110,8 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
                         .payment(Payment.BALANCE.getCode())
                         .type(TradeType.OUTCOME.getCode()).build();
                 restAccountService.updateAccount(vo);
-
-                orderInfoService.modifyPayStatus(orderId);//订单修改成已支付
+                //订单修改成已支付
+                orderInfoService.modifyPayStatus(orderId);
             }
             //修改订单状态
             orderInfoService.modifyStatus(orderId, status.next());
@@ -120,17 +122,19 @@ public class HandoverServiceImpl extends AbstractOrderBizService implements Hand
             redisHelper.del(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + orderId);
 
             //向司机发送已交车的通知
-            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER, new HashMap<>());
-            return (HandoverOrderModel) info(orderId, handoverForm.getUserId());
+            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_HANDOVER, new HashMap<>(1));
+            return (HandoverOrderModelBase) info(orderId, handoverForm.getUserId());
         }
         return null;
     }
 
     @Override
     public OrderModel info(String orderId, String userId) {
-        HandoverOrderModel model = new HandoverOrderModel();
+        HandoverOrderModelBase model = new HandoverOrderModelBase();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
-        if (orderInfo == null) return null;
+        if (orderInfo == null) {
+            return null;
+        }
 
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间

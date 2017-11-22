@@ -39,7 +39,7 @@ public class OrderStatisticsController extends BaseController {
     @RequestMapping(value = "/statistics", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getStatistics() {
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(6);
 
         String userId = super.getUserId();
         List<RentInfo> rentList = rentInfoService.getRentList(userId, RentStatus.WAITING.getCode(), RentStatus.RENT.getCode());
@@ -69,7 +69,7 @@ public class OrderStatisticsController extends BaseController {
             map.put("enough", true);
         }
 
-        Map<String, Object> extras = new HashMap<String, Object>() {{
+        Map<String, Object> extras = new HashMap<String, Object>(1) {{
             put("timestamp", System.currentTimeMillis());
         }};
         return ResponseObj.success(map, extras);

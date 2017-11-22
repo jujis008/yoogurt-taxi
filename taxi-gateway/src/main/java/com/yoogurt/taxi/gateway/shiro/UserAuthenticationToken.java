@@ -87,7 +87,14 @@ public class UserAuthenticationToken extends UsernamePasswordToken {
     }
 
     public enum RequestFrom {
-        TAXI_MOBILE, //来自移动端的请求
-        TAXI_WEB,;  //来自后台管理系统的请求
+        /**
+         * 来自移动端的请求
+         */
+        TAXI_MOBILE,
+        /**
+         * 来自后台管理系统的请求
+         */
+        TAXI_WEB,
+        ;
     }
 }

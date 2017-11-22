@@ -32,13 +32,16 @@ public abstract class AbstractPayTaskRunner implements TaskRunner<PayTask> {
     @Override
     public void run(PayTask payTask) {
         CompletableFuture<ResponseObj> future = doTask(payTask);
-        if (future == null) return;
+        if (future == null) {
+            return;
+        }
         future.thenAccept(obj -> {
             log.warn(obj.getMessage());
 
             final String taskId = payTask.getTaskId();
             final TaskInfo task = payTask.getTask();
-            if (obj.isSuccess()) { //执行成功
+            //执行成功
+            if (obj.isSuccess()) {
                 //状态码
                 task.setStatusCode(TaskStatus.EXECUTE_SUCCESS.getCode());
                 //提示信息
@@ -55,10 +58,12 @@ public abstract class AbstractPayTaskRunner implements TaskRunner<PayTask> {
                 //删除任务信息缓存
                 redis.deleteMap(CacheKey.PAY_MAP, CacheKey.TASK_HASH_KEY + taskId);
                 log.info("[" + task.getTaskId() + "]任务执行完毕!");
-            } else if (task.isNeedRetry()) {//触发任务重试
+                //触发任务重试
+            } else if (task.isNeedRetry()) {
                 if (task.canRetry()) {
                     log.warn("[" + task.getTaskId() + "]任务执行失败!!");
-                    retry(payTask); //重试
+                    //重试
+                    retry(payTask);
                 } else {
                     //状态码
                     task.setStatusCode(TaskStatus.EXECUTE_FAILED.getCode());
@@ -76,6 +81,7 @@ public abstract class AbstractPayTaskRunner implements TaskRunner<PayTask> {
 
     @Override
     public PayTask retry(PayTask task) {
-        return payService.retry(task.getTaskId()); //重试
+        //重试
+        return payService.retry(task.getTaskId());
     }
 }

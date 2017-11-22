@@ -4,12 +4,29 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-
+    /**
+     *待交车
+     */
     HAND_OVER(10,"待交车"),
+    /**
+     *待取车
+     */
     PICK_UP(20,"待取车"),
+    /**
+     *待还车
+     */
     GIVE_BACK(30,"待还车"),
+    /**
+     *待收车
+     */
     ACCEPT(40,"待收车"),
+    /**
+     *已完成
+     */
     FINISH(50,"已完成"),
+    /**
+     *已取消
+     */
     CANCELED(60,"已取消"),
     ;
     private Integer code;

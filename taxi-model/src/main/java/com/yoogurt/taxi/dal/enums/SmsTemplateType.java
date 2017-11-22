@@ -6,10 +6,25 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SmsTemplateType {
+    /**
+     *验证码
+     */
     VALID(1,"验证码"),
+    /**
+     * 车主端短信密码通知
+     */
     OFFICE_PWD(2,"车主端短信密码通知"),
+    /**
+     * 司机端短信密码通知
+     */
     AGENT_PWD(3,"司机端短信密码通知"),
+    /**
+     * 车主短信重置密码通知
+     */
     OFFICE_RESET_PWD(4,"车主短信重置密码通知"),
+    /**
+     * 司机短信重置密码通知
+     */
     AGENT_RESET_PWD(4,"司机短信重置密码通知"),
     ;
 

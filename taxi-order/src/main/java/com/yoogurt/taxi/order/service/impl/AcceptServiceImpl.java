@@ -43,15 +43,19 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
     @Autowired
     private OrderStatisticService statisticService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public AcceptOrderModel doAccept(AcceptForm acceptForm) {
         String orderId = acceptForm.getOrderId();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, acceptForm.getUserId());
-        if (orderInfo == null) return null;
+        if (orderInfo == null) {
+            return null;
+        }
         OrderStatus status = OrderStatus.getEnumsByCode(orderInfo.getStatus());
         //订单状态不是 【待收车】
-        if (!OrderStatus.ACCEPT.equals(status)) return null;
+        if (!OrderStatus.ACCEPT.equals(status)) {
+            return null;
+        }
         OrderAcceptInfo acceptInfo = new OrderAcceptInfo();
         BeanUtils.copyProperties(acceptForm, acceptInfo);
         //插入收车记录信息
@@ -95,7 +99,7 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
             statisticService.record(OrderStatisticForm.builder().userId(orderInfo.getAgentUserId()).orderCount(1).build());
 
             //订单已结束，通知司机
-            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_FINISH, new HashMap<>());
+            super.push(orderInfo, UserType.USER_APP_AGENT, SendType.ORDER_FINISH, new HashMap<>(1));
             return (AcceptOrderModel) info(orderId, acceptForm.getUserId());
         }
         return null;
@@ -110,7 +114,9 @@ public class AcceptServiceImpl extends AbstractOrderBizService implements Accept
     public OrderModel info(String orderId, String userId) {
         AcceptOrderModel model = new AcceptOrderModel();
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, userId);
-        if (orderInfo == null) return null;
+        if (orderInfo == null) {
+            return null;
+        }
         BeanUtils.copyProperties(orderInfo, model);
         //下单时间
         model.setOrderTime(orderInfo.getGmtCreate());

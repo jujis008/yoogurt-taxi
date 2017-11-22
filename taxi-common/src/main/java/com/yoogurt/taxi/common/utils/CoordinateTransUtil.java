@@ -7,10 +7,10 @@ package com.yoogurt.taxi.common.utils;
  * @since 2016/7/27 0027
  */
 public class CoordinateTransUtil {
-    private static final double x_PI = 3.14159265358979324 * 3000.0 / 180.0;
+    private static final double X_PI = 3.14159265358979324 * 3000.0 / 180.0;
     private static final double PI = 3.1415926535897932384626;
-    private static final double a = 6378245.0;
-    private static final double ee = 0.00669342162296594323;
+    private static final double A = 6378245.0;
+    private static final double EE = 0.00669342162296594323;
 
     /**
      * 百度坐标（BD09）转 GCJ02
@@ -22,11 +22,11 @@ public class CoordinateTransUtil {
     public static double[] transformBD09ToGCJ02(double lng, double lat) {
         double x = lng - 0.0065;
         double y = lat - 0.006;
-        double z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * x_PI);
-        double theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * x_PI);
-        double gcj_lng = z * Math.cos(theta);
-        double gcj_lat = z * Math.sin(theta);
-        return new double[]{gcj_lng, gcj_lat};
+        double z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * X_PI);
+        double theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * X_PI);
+        double gcjLng = z * Math.cos(theta);
+        double gcjLat = z * Math.sin(theta);
+        return new double[]{gcjLng, gcjLat};
     }
 
     /**
@@ -37,11 +37,11 @@ public class CoordinateTransUtil {
      * @return 百度坐标：[经度，纬度]
      */
     public static double[] transformGCJ02ToBD09(double lng, double lat) {
-        double z = Math.sqrt(lng * lng + lat * lat) + 0.00002 * Math.sin(lat * x_PI);
-        double theta = Math.atan2(lat, lng) + 0.000003 * Math.cos(lng * x_PI);
-        double bd_lng = z * Math.cos(theta) + 0.0065;
-        double bd_lat = z * Math.sin(theta) + 0.006;
-        return new double[]{bd_lng, bd_lat};
+        double z = Math.sqrt(lng * lng + lat * lat) + 0.00002 * Math.sin(lat * X_PI);
+        double theta = Math.atan2(lat, lng) + 0.000003 * Math.cos(lng * X_PI);
+        double bdLng = z * Math.cos(theta) + 0.0065;
+        double bdLat = z * Math.sin(theta) + 0.006;
+        return new double[]{bdLng, bdLat};
     }
 
     /**
@@ -59,10 +59,10 @@ public class CoordinateTransUtil {
             double dLng = transformLng(lng - 105.0, lat - 35.0);
             double radLat = lat / 180.0 * PI;
             double magic = Math.sin(radLat);
-            magic = 1 - ee * magic * magic;
+            magic = 1 - EE * magic * magic;
             double sqrtMagic = Math.sqrt(magic);
-            dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * PI);
-            dLng = (dLng * 180.0) / (a / sqrtMagic * Math.cos(radLat) * PI);
+            dLat = (dLat * 180.0) / ((A * (1 - EE)) / (magic * sqrtMagic) * PI);
+            dLng = (dLng * 180.0) / (A / sqrtMagic * Math.cos(radLat) * PI);
             double mgLat = lat + dLat;
             double mgLng = lng + dLng;
             return new double[]{lng * 2 - mgLng, lat * 2 - mgLat};
@@ -84,10 +84,10 @@ public class CoordinateTransUtil {
             double dLng = transformLng(lng - 105.0, lat - 35.0);
             double redLat = lat / 180.0 * PI;
             double magic = Math.sin(redLat);
-            magic = 1 - ee * magic * magic;
+            magic = 1 - EE * magic * magic;
             double sqrtMagic = Math.sqrt(magic);
-            dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * PI);
-            dLng = (dLng * 180.0) / (a / sqrtMagic * Math.cos(redLat) * PI);
+            dLat = (dLat * 180.0) / ((A * (1 - EE)) / (magic * sqrtMagic) * PI);
+            dLng = (dLng * 180.0) / (A / sqrtMagic * Math.cos(redLat) * PI);
             double mgLat = lat + dLat;
             double mgLng = lng + dLng;
             return new double[]{mgLng, mgLat};

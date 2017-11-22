@@ -19,7 +19,9 @@ public class DisobeyController extends BaseController {
 
     @RequestMapping(value = "/disobeys", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getDisobeyList(DisobeyListCondition condition) {
-        if(!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if(!condition.validate()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        }
 
         condition.setUserId(super.getUserId());
         condition.setFromApp(true);

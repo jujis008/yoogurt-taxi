@@ -59,8 +59,12 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
      * @return encode之后的字符串
      */
     protected String parameterEncode(String params, String charset) {
-        if (StringUtils.isBlank(params) || !params.contains("&")) return params;
-        if (StringUtils.isBlank(charset)) charset = getCharset();
+        if (StringUtils.isBlank(params) || !params.contains("&")) {
+            return params;
+        }
+        if (StringUtils.isBlank(charset)) {
+            charset = getCharset();
+        }
         StringBuilder builder = new StringBuilder();
         String[] paramsArr = params.split("&");
         try {
@@ -69,7 +73,8 @@ public abstract class AbstractFinanceBizService implements PayChannelService {
                 val[0] = paramsArr[i].substring(0, paramsArr[i].indexOf("="));
                 val[1] = paramsArr[i].substring(paramsArr[i].indexOf("=") + 1, paramsArr[i].length());
                 builder.append(val[0]).append("=").append(URLEncoder.encode(val[1], charset));
-                if (i != paramsArr.length - 1) {//拼接时，不包括最后一个&字符
+                //拼接时，不包括最后一个&字符
+                if (i != paramsArr.length - 1) {
                     builder.append("&");
                 }
             }

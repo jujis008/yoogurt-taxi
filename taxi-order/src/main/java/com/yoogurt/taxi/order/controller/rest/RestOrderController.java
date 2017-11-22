@@ -42,7 +42,7 @@ public class RestOrderController extends BaseController {
         //评价标签统计信息
         List<CommentTagStatistic> commentTagStatistics = commentTagStatisticService.getStatistic(userId);
 
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(2);
         result.put("order", orderStatistics);
         result.put("comment", commentTagStatistics);
         return RestResult.success(result);
@@ -50,7 +50,7 @@ public class RestOrderController extends BaseController {
 
     @RequestMapping(value = "/statistics/userId/{userId}/userType/{userType}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public RestResult<Map<String, Object>> orderStatistics(@PathVariable(name = "userId") String userId, @PathVariable(name = "userType") Integer userType) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(4);
 
         //未完成订单数量
         //最近一笔已完成订单时间

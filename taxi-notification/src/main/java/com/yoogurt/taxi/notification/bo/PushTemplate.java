@@ -36,15 +36,19 @@ public class PushTemplate {
         style0.setLogo("icon.png");
 
         // 设置通知是否响铃，震动，或者可清除
-        style0.setRing(true);        //收到通知是否响铃：true响铃，false不响铃。默认响铃。
-        style0.setVibrate(true);    //收到通知是否振动：true振动，false不振动。默认振动。
-        style0.setClearable(true);    //通知是否可清除：true可清除，false不可清除。默认可清除。
+        //收到通知是否响铃：true响铃，false不响铃。默认响铃。
+        style0.setRing(true);
+        //收到通知是否振动：true振动，false不振动。默认振动。
+        style0.setVibrate(true);
+        //通知是否可清除：true可清除，false不可清除。默认可清除。
+        style0.setClearable(true);
         template.setStyle(style0);
 
 
         // 透传消息设置，1为强制启动应用，客户端接收到消息后就会立即启动应用；2为等待应用启动
         template.setTransmissionType(2);
-        template.setTransmissionContent(tranMsg);    //透传内容，不支持转义字符
+        //透传内容，不支持转义字符
+        template.setTransmissionContent(tranMsg);
         return template;
     }
 
@@ -67,8 +71,10 @@ public class PushTemplate {
         TransmissionTemplate template = new TransmissionTemplate();
         template.setAppId(appId);
         template.setAppkey(appKey);
-        template.setTransmissionType(2);                    //收到消息是否立即启动应用：1为立即启动，2则广播等待客户端自启动
-        template.setTransmissionContent(StringUtils.isBlank(tranMsg) ? msg : tranMsg);        //透传内容，不支持转义字符
+        //收到消息是否立即启动应用：1为立即启动，2则广播等待客户端自启动
+        template.setTransmissionType(2);
+        //透传内容，不支持转义字符
+        template.setTransmissionContent(StringUtils.isBlank(tranMsg) ? msg : tranMsg);
         try {
 
             APNPayload payload = new APNPayload();

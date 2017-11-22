@@ -51,7 +51,9 @@ public enum StatusCode {
 
     public static StatusCode getStatusCode(Integer status) {
 
-        if (status == null) return null;
+        if (status == null) {
+            return null;
+        }
 
         for (StatusCode statusCode : StatusCode.values()) {
             if (status == statusCode.getStatus()) {

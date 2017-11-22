@@ -5,7 +5,7 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.beans.OrderPayment;
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.dal.enums.PayChannel;
 import com.yoogurt.taxi.dal.vo.PaymentVo;
 import com.yoogurt.taxi.order.service.OrderInfoService;
@@ -40,7 +40,7 @@ public class EventTaskRunner extends AbstractEventTaskRunner {
     private OrderPaymentService paymentService;
 
     @Autowired
-    private RestFinanceService financeService;
+    private RestFinanceService restFinanceService;
 
     @Override
     public CompletableFuture<ResponseObj> doTask(final EventTask eventTask) {
@@ -55,22 +55,33 @@ public class EventTaskRunner extends AbstractEventTaskRunner {
      */
     @Transactional(rollbackFor = Exception.class)
     public ResponseObj notify(EventTask eventTask) {
-        if (eventTask == null) return ResponseObj.fail();
+        if (eventTask == null) {
+            return ResponseObj.fail();
+        }
         final Event event = eventTask.getEvent();
         log.info("[taxi-order#" + eventTask.getTaskId() + "]" + event.getEventType());
-        Notify notify = event.getData();
+        BaseNotify notify = event.getData();
         PayChannel payChannel = PayChannel.getChannelByName(notify.getChannel());
-        if (payChannel == null || !payChannel.isThirdParty()) return ResponseObj.fail(StatusCode.BIZ_FAILED, "支付渠道暂未开通");
+        if (payChannel == null || !payChannel.isThirdParty()) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "支付渠道暂未开通");
+        }
         Money paidMoney = new Money(notify.getAmount());
         String orderNo = notify.getOrderNo();
-        if (StringUtils.isBlank(orderNo)) return ResponseObj.fail(StatusCode.BIZ_FAILED, "无效的订单号");
+        if (StringUtils.isBlank(orderNo)) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "无效的订单号");
+        }
         /********************  更新订单的支付状态  ********************************/
         synchronized (orderNo.intern()) {
             OrderInfo orderInfo = orderInfoService.getOrderInfo(orderNo, null);
-            if(orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
-            if(orderInfo.getIsPaid()) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单已支付");
-            if (!paidMoney.getAmount().equals(orderInfo.getAmount()))
+            if(orderInfo == null) {
+                return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
+            }
+            if(orderInfo.getIsPaid()) {
+                return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单已支付");
+            }
+            if (!paidMoney.getAmount().equals(orderInfo.getAmount())) {
                 return ResponseObj.fail(StatusCode.BIZ_FAILED, "支付金额不吻合");
+            }
             orderInfo.setIsPaid(true);
             if (orderInfoService.saveOrderInfo(orderInfo, false) == null) {
                 return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单状态更改失败");
@@ -81,24 +92,30 @@ public class EventTaskRunner extends AbstractEventTaskRunner {
             /********************  操作订单的支付记录  ********************************/
             Payment payInfo = eventTask.getPayment();
             List<OrderPayment> payments = paymentService.getPayments(orderNo, 10);
-            if (CollectionUtils.isEmpty(payments)) {//没有支付记录，则主动创建一条
+            //没有支付记录，则主动创建一条
+            if (CollectionUtils.isEmpty(payments)) {
                 OrderPayment payment = new OrderPayment(payInfo.getPayId(), orderNo);
                 payment.setSubject(payInfo.getSubject());
                 payment.setBody(payInfo.getBody());
                 payment.setOrderId(orderNo);
                 payment.setPayChannel(payChannel.getName());
                 payment.setTransactionNo(notify.getTransactionNo());
-                payment.setStatus(20); //支付完成
+                //支付完成
+                payment.setStatus(20);
                 payment.setAmount(new Money(notify.getAmount()).getAmount());
-                payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
+                //支付完成时间
+                payment.setPaidTime(new Date(notify.getNotifyTimestamp()));
                 if (paymentService.addPayment(payment) == null) {
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单支付记录插入失败");
                 }
-            } else { //有支付记录，更新第一条记录
+            } else {
+                //有支付记录，更新第一条记录
                 OrderPayment payment = payments.get(0);
                 payment.setTransactionNo(notify.getTransactionNo());
-                payment.setStatus(20); //支付完成
-                payment.setPaidTime(new Date(notify.getNotifyTimestamp()));//支付完成时间
+                //支付完成
+                payment.setStatus(20);
+                //支付完成时间
+                payment.setPaidTime(new Date(notify.getNotifyTimestamp()));
                 if (paymentService.modifyPayment(payment) == null) {
                     return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单支付记录更改失败");
                 }
@@ -108,7 +125,7 @@ public class EventTaskRunner extends AbstractEventTaskRunner {
 
             /********************  更新payment对象  *******************************/
             try {
-                financeService.updatePayment(PaymentVo.builder()
+                restFinanceService.updatePayment(PaymentVo.builder()
                         .payId(payInfo.getPayId())
                         .paidAmount(paidMoney.getCent())
                         .paidTime(notify.getNotifyTimestamp())

@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.pay.service;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.pay.doc.Event;
 import com.yoogurt.taxi.pay.doc.PayTask;
 
@@ -27,14 +27,14 @@ public interface PayChannelService {
      * @param parameterMap 回调请求
      * @return EventTask
      */
-    Event<? extends Notify> eventParse(Map<String, Object> parameterMap);
+    Event<? extends BaseNotify> eventParse(Map<String, Object> parameterMap);
 
     /**
      * 参数签名接口
      *
      * @param parameters   参数组装的SortedMap
      * @param parameterMap 字段对应的请求参数，传入null，或者字段名对应的value为null，则以字段名为准
-     * @param signType     加密方式，MD5，RSA，RSA2等
+     * @param signType     加密方式，MD5，Rsa，RSA2等
      * @param privateKey   加密的私钥
      * @param charset      编码方式
      * @param skipAttrs    从parameters中跳过的属性

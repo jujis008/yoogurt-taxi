@@ -33,27 +33,39 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
 
     @Override
     public OrderPayment getPayment(String payId) {
-        if (StringUtils.isBlank(payId)) return null;
+        if (StringUtils.isBlank(payId)) {
+            return null;
+        }
         return paymentDao.selectById(payId);
     }
 
     @Override
     public OrderPayment addPayment(OrderPayment payment) {
-        if (payment == null) return null;
-        if (paymentDao.insertSelective(payment) == 1) return payment;
+        if (payment == null) {
+            return null;
+        }
+        if (paymentDao.insertSelective(payment) == 1) {
+            return payment;
+        }
         return null;
     }
 
     @Override
     public OrderPayment modifyPayment(OrderPayment payment) {
-        if (payment == null) return null;
-        if (paymentDao.updateByIdSelective(payment) == 1) return payment;
+        if (payment == null) {
+            return null;
+        }
+        if (paymentDao.updateByIdSelective(payment) == 1) {
+            return payment;
+        }
         return null;
     }
 
     @Override
     public boolean deletePayment(String payId) {
-        if (StringUtils.isBlank(payId)) return false;
+        if (StringUtils.isBlank(payId)) {
+            return false;
+        }
         return paymentDao.deleteById(payId) == 1;
     }
 

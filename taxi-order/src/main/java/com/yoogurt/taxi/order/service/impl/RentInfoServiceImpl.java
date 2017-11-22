@@ -8,7 +8,7 @@ import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -17,7 +17,7 @@ import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
-import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.condition.order.RentPoiCondition;
 import com.yoogurt.taxi.dal.condition.order.RentWebListCondition;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.enums.UserStatus;
@@ -41,7 +41,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -64,13 +63,13 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     private RedisHelper redisHelper;
 
     @Override
-    public List<RentInfoModel> getRentList(RentPOICondition condition) {
+    public List<RentInfoModel> getRentList(RentPoiCondition condition) {
 
         return rentDao.getRentList(condition);
     }
 
     @Override
-    public Pager<RentInfoModel> getRentListByPage(RentListCondition condition) {
+    public BasePager<RentInfoModel> getRentListByPage(RentListCondition condition) {
 
         Page<RentInfoModel> page = rentDao.getRentListByPage(condition);
         if (!condition.isFromApp()) {
@@ -105,8 +104,12 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     public RentInfo getRentInfo(String rentId, String userId) {
         if (StringUtils.isNotBlank(rentId)) {
             RentInfo rentInfo = rentDao.selectById(rentId);
-            if (rentInfo == null) return null;
-            if (StringUtils.isNotBlank(userId) && !userId.equals(rentInfo.getUserId())) return null;
+            if (rentInfo == null) {
+                return null;
+            }
+            if (StringUtils.isNotBlank(userId) && !userId.equals(rentInfo.getUserId())) {
+                return null;
+            }
             return rentInfo;
         }
         return null;
@@ -135,8 +138,12 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     public RentInfo cancel(RentCancelForm cancelForm) {
 
         RentInfo rentInfo = getRentInfo(cancelForm.getRentId(), cancelForm.getUserId());
-        if (rentInfo == null) return null;
-        if (!RentStatus.WAITING.getCode().equals(rentInfo.getStatus())) return null;
+        if (rentInfo == null) {
+            return null;
+        }
+        if (!RentStatus.WAITING.getCode().equals(rentInfo.getStatus())) {
+            return null;
+        }
         rentInfo.setStatus(RentStatus.CANCELED.getCode());
         if (modifyStatus(cancelForm.getRentId(), RentStatus.CANCELED)) {
             redisHelper.del(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY + cancelForm.getRentId());
@@ -154,9 +161,13 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     @Override
     public RentInfo cancelOverdue(String rentId) {
         RentInfo rentInfo = getRentInfo(rentId, null);
-        if (rentInfo == null) return null;
+        if (rentInfo == null) {
+            return null;
+        }
         //如果订单已被操作，则无需再次操作
-        if (!rentInfo.getStatus().equals(RentStatus.WAITING.getCode())) return rentInfo;
+        if (!rentInfo.getStatus().equals(RentStatus.WAITING.getCode())) {
+            return rentInfo;
+        }
         rentInfo.setStatus(RentStatus.TIMEOUT.getCode());
 
         Example example = new Example(RentInfo.class);
@@ -167,18 +178,28 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
 
     @Override
     public boolean modifyStatus(String rentId, RentStatus status) {
-        if (StringUtils.isBlank(rentId) || status == null) return false;
+        if (StringUtils.isBlank(rentId) || status == null) {
+            return false;
+        }
         RentInfo rentInfo = getRentInfo(rentId, null);
-        if (rentInfo == null) return false;
-        if (status.getCode().equals(rentInfo.getStatus())) return true; //与原租单状态相同，直接返回true
-        if (status.getCode() < rentInfo.getStatus()) return false; //不允许状态回退
+        if (rentInfo == null) {
+            return false;
+        }
+        if (status.getCode().equals(rentInfo.getStatus())) {
+            //与原租单状态相同，直接返回true
+            return true;
+        }
+        if (status.getCode() < rentInfo.getStatus()) {
+            //不允许状态回退
+            return false;
+        }
 
         rentInfo.setStatus(status.getCode());
         return rentDao.updateByIdSelective(rentInfo) == 1;
     }
 
     @Override
-    public Pager<RentInfo> getRentListForWebPage(RentWebListCondition condition) {
+    public BasePager<RentInfo> getRentListForWebPage(RentWebListCondition condition) {
         PageHelper.startPage(condition.getPageNum(),condition.getPageSize());
         Example example = new Example(RentInfo.class);
         example.setOrderByClause(" gmt_create desc");
@@ -240,22 +261,30 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     private ResponseObj isAllowPublish(RentForm rentForm) {
         String userId = rentForm.getUserId();
         //0. 交车时间与发单时间至少间隔一个小时
-        if (rentForm.getHandoverTime().getTime() - new Date().getTime() < Constants.MIN_PUBLISH_INTERVAL_HOURS * 3600000)
+        if (rentForm.getHandoverTime().getTime() - System.currentTimeMillis() < Constants.MIN_PUBLISH_INTERVAL_HOURS * 3600000) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与发单时间至少间隔" + Constants.MIN_PUBLISH_INTERVAL_HOURS + "小时");
+        }
 
-        if (rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_WORKING_HOURS * 3600000)
+        if (rentForm.getGiveBackTime().getTime() - rentForm.getHandoverTime().getTime() < Constants.MIN_WORKING_HOURS * 3600000) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "交车时间与还车时间至少间隔" + Constants.MIN_WORKING_HOURS + "小时");
+        }
 
         ResponseObj obj = super.isAllowed(userId, rentForm.getUserType());
-        if (!obj.isSuccess()) return obj;
+        if (!obj.isSuccess()) {
+            return obj;
+        }
 
         List<RentInfo> rentList = getRentList(userId, RentStatus.WAITING.getCode(), RentStatus.RENT.getCode());
-        if (CollectionUtils.isEmpty(rentList)) //未发布过租单，直接返回成功
+        //未发布过租单，直接返回成功
+        if (CollectionUtils.isEmpty(rentList))
+        {
             return ResponseObj.success();
+        }
 
         //2. 订单数量上限校验
-        if (rentList.size() >= Constants.MAX_RENT_COUNT)
+        if (rentList.size() >= Constants.MAX_RENT_COUNT) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "最多发布" + Constants.MAX_RENT_COUNT + "笔租单");
+        }
 
         DateTimeSection section = new DateTimeSection(rentForm.getHandoverTime(), rentForm.getGiveBackTime());
 
@@ -273,7 +302,9 @@ public class RentInfoServiceImpl extends AbstractOrderBizService implements Rent
     private ResponseObj buildRentInfo(RentForm rentForm) {
         ResponseObj validateResult = isAllowPublish(rentForm);
         //校验不成功，直接返回校验结果
-        if (!validateResult.isSuccess()) return validateResult;
+        if (!validateResult.isSuccess()) {
+            return validateResult;
+        }
 
         RentInfo rentInfo = new RentInfo(RandomUtils.getPrimaryKey());
         BeanUtils.copyProperties(rentForm, rentInfo);

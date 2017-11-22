@@ -14,12 +14,12 @@ import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.*;
 import com.yoogurt.taxi.dal.bo.SmsPayload;
-import com.yoogurt.taxi.dal.condition.user.AuthorityWLCondition;
-import com.yoogurt.taxi.dal.condition.user.DriverWLCondition;
-import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
+import com.yoogurt.taxi.dal.condition.user.AuthorityWebListCondition;
+import com.yoogurt.taxi.dal.condition.user.DriverWebListCondition;
+import com.yoogurt.taxi.dal.condition.user.UserWebListCondition;
 import com.yoogurt.taxi.dal.enums.*;
-import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
-import com.yoogurt.taxi.dal.model.user.RoleWLModel;
+import com.yoogurt.taxi.dal.model.user.GroupAuthorityListModel;
+import com.yoogurt.taxi.dal.model.user.RoleWebListModel;
 import com.yoogurt.taxi.user.form.*;
 import com.yoogurt.taxi.user.mq.SmsSender;
 import com.yoogurt.taxi.user.service.*;
@@ -61,7 +61,7 @@ public class UserWebController extends BaseController {
     @Autowired
     private RedisHelper redisHelper;
     @Autowired
-    private SmsSender   smsSender;
+    private SmsSender smsSender;
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -76,7 +76,6 @@ public class UserWebController extends BaseController {
      * @param file excel源文件
      * @return ResponseObj
      * @throws IOException            文件读写异常
-     * @throws InvalidFormatException 类型转换异常
      */
     @RequestMapping(value = "/import/agentDrivers", method = RequestMethod.POST, produces = {"application/json;UTF-8"})
     public ResponseObj importAgentUserFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
@@ -92,8 +91,10 @@ public class UserWebController extends BaseController {
         paramBeanList.add(bean4);
         paramBeanList.add(bean5);
         Map<ExcelParamBean, List<CellPropertyBean>> map = ExcelUtils.importExcel(file.getInputStream(), paramBeanList);
-        Set<Integer> skipSet = new HashSet<>();//忽略跳过行数
-        List<ErrorCellBean> errorCellBeanList = ExcelUtils.filter(map, skipSet);//过滤表格中的内容
+        //忽略跳过行数
+        Set<Integer> skipSet = new HashSet<>();
+        //过滤表格中的内容
+        List<ErrorCellBean> errorCellBeanList = ExcelUtils.filter(map, skipSet);
 
         if (CollectionUtils.isNotEmpty(errorCellBeanList)) {
             StringBuilder sb = new StringBuilder();
@@ -118,7 +119,6 @@ public class UserWebController extends BaseController {
      * @param file 源文件
      * @return ResponseObj
      * @throws IOException            文件读写异常
-     * @throws InvalidFormatException 类型转换异常
      */
     @RequestMapping(value = "/import/officeDrivers", method = RequestMethod.POST, produces = {"application/json;UTF-8"})
     public ResponseObj importOfficeUsersFromExcel(MultipartFile file) throws IOException, InvalidFormatException {
@@ -142,9 +142,10 @@ public class UserWebController extends BaseController {
         paramBeanList.add(bean7);
         paramBeanList.add(bean8);
         Map<ExcelParamBean, List<CellPropertyBean>> map = ExcelUtils.importExcel(file.getInputStream(), paramBeanList);
-
-        Set<Integer> skipSet = new HashSet<>();//忽略跳过行数
-        List<ErrorCellBean> errorCellBeanList = ExcelUtils.filter(map, skipSet);//过滤表格中的内容
+        //忽略跳过行数
+        Set<Integer> skipSet = new HashSet<>();
+        //过滤表格中的内容
+        List<ErrorCellBean> errorCellBeanList = ExcelUtils.filter(map, skipSet);
 
         if (CollectionUtils.isNotEmpty(errorCellBeanList)) {
             StringBuilder sb = new StringBuilder();
@@ -178,7 +179,7 @@ public class UserWebController extends BaseController {
             return ResponseObj.fail(StatusCode.PARAM_BLANK, "密码不能为空");
         }
         UserType userType;
-        if (loginForm.getUsername().equals("admin")) {
+        if ("admin".equals(loginForm.getUsername())) {
             userType = UserType.USER_WEB;
         } else {
             userType = UserType.SUPER_ADMIN;
@@ -200,15 +201,15 @@ public class UserWebController extends BaseController {
     /**
      * 获取司机分页列表
      *
-     * @param driverWLCondition
+     * @param driverWebListCondition
      * @return
      */
     @RequestMapping(value = "/driver/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getDriverList(@Valid DriverWLCondition driverWLCondition, BindingResult result) {
+    public ResponseObj getDriverList(@Valid DriverWebListCondition driverWebListCondition, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
-        return driverService.getDriverWebList(driverWLCondition);
+        return driverService.getDriverWebList(driverWebListCondition);
     }
 
     /**
@@ -221,7 +222,7 @@ public class UserWebController extends BaseController {
     public ResponseObj getOfficeDriverDetail(@PathVariable(name = "driverId") String driverId) {
         DriverInfo driverInfo = driverService.getDriverInfo(driverId);
         if (driverInfo != null) {
-            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>(3);
             map.put("driverInfo", driverInfo);
             UserInfo userInfo = userService.getUserByUserId(driverInfo.getUserId());
             if (userInfo != null) {
@@ -265,7 +266,7 @@ public class UserWebController extends BaseController {
         List<String> phoneNumbers = new ArrayList<>();
         phoneNumbers.add(super.getUserName());
         payload.setPhoneNumbers(phoneNumbers);
-        if (profile.equals("prod")) {
+        if ("prod".equals(profile)) {
             smsSender.send(payload);
         }
         return ResponseObj.success();
@@ -301,7 +302,7 @@ public class UserWebController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getUserWebList(UserWLCondition condition) {
+    public ResponseObj getUserWebList(UserWebListCondition condition) {
         return ResponseObj.success(userService.getUserWebList(condition));
     }
 
@@ -469,7 +470,7 @@ public class UserWebController extends BaseController {
      */
     @RequestMapping(value = "/role/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRoleList() {
-        List<RoleWLModel> roleWebList = roleInfoService.getRoleWebList();
+        List<RoleWebListModel> roleWebList = roleInfoService.getRoleWebList();
         return ResponseObj.success(roleWebList);
     }
 
@@ -523,7 +524,7 @@ public class UserWebController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/authority/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
-    public ResponseObj getAuthorityList(AuthorityWLCondition condition) {
+    public ResponseObj getAuthorityList(AuthorityWebListCondition condition) {
         return ResponseObj.success(authorityInfoService.getAuthorityWebList(condition));
     }
 
@@ -573,13 +574,13 @@ public class UserWebController extends BaseController {
      */
     @RequestMapping(value = "/authority/group", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getAuthorityListGroup() {
-        List<GroupAuthorityLModel> allAuthorities = authorityInfoService.getAllAuthorities();
+        List<GroupAuthorityListModel> allAuthorities = authorityInfoService.getAllAuthorities();
         return ResponseObj.success(allAuthorities);
     }
 
     @RequestMapping(value = "/authority/list/roleId/{roleId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getAuthorityListByRoleId(@PathVariable(name = "roleId") Long roleId) {
-        List<GroupAuthorityLModel> authorityInfoList = roleAuthorityService.getAuthorityListByRoleId(roleId);
+        List<GroupAuthorityListModel> authorityInfoList = roleAuthorityService.getAuthorityListByRoleId(roleId);
         return ResponseObj.success(authorityInfoList);
     }
 

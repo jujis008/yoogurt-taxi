@@ -28,7 +28,7 @@
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="modifier" jdbcType="VARCHAR" property="modifier"/>
     </resultMap>
-    <resultMap id="DriverWLModelMap" type="com.yoogurt.taxi.dal.model.user.DriverWLModel">
+    <resultMap id="DriverWLModelMap" type="com.yoogurt.taxi.dal.model.user.DriverWebListModel">
         <id column="id" jdbcType="VARCHAR" property="id"/>
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
@@ -39,7 +39,7 @@
     </resultMap>
 
     <select id="getDriverWebList" resultMap="DriverWLModelMap"
-            parameterType="com.yoogurt.taxi.dal.condition.user.DriverWLCondition">
+            parameterType="com.yoogurt.taxi.dal.condition.user.DriverWebListCondition">
         SELECT
         t1.id,
         t1.user_id,

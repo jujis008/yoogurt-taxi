@@ -1,10 +1,10 @@
 package com.yoogurt.taxi.order;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
-import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.condition.order.RentPoiCondition;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.form.RentForm;
 import com.yoogurt.taxi.order.service.RentInfoService;
@@ -17,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -50,7 +49,7 @@ public class RentInfoTests {
 
     @Test
     public void getRentPOIs() {
-        RentPOICondition condition = new RentPOICondition();
+        RentPoiCondition condition = new RentPoiCondition();
 //        condition.setMaxLat(30.9866632);
 //        condition.setMinLat(29.89663321);
 //        condition.setMaxLng(121.563121);
@@ -78,7 +77,7 @@ public class RentInfoTests {
 //        condition.setPageSize(15);
 //        condition.setSortName("price");
 //        condition.setSortOrder("ASC");
-        Pager<RentInfoModel> pager = rentInfoService.getRentListByPage(condition);
+        BasePager<RentInfoModel> pager = rentInfoService.getRentListByPage(condition);
         Assert.assertNotNull("租单信息不存在", pager);
     }
 }

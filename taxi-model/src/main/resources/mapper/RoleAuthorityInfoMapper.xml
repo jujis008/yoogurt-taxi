@@ -24,9 +24,9 @@
         <result column="uri" jdbcType="VARCHAR" property="uri"/>
         <result column="associated_control" jdbcType="VARCHAR" property="associatedControl"/>
     </resultMap>
-    <resultMap id="GroupAuthorityLModelMap" type="com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel">
+    <resultMap id="GroupAuthorityLModelMap" type="com.yoogurt.taxi.dal.model.user.GroupAuthorityListModel">
         <result column="authority_group" jdbcType="VARCHAR" property="groupName" />
-        <collection property="authorityList" ofType="com.yoogurt.taxi.dal.model.user.AuthorityLModel">
+        <collection property="authorityList" ofType="com.yoogurt.taxi.dal.model.user.AuthorityListModel">
             <result column="id" jdbcType="BIGINT" property="id"/>
             <result column="authority_name" jdbcType="VARCHAR" property="authorityName"/>
         </collection>

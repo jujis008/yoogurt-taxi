@@ -29,7 +29,9 @@ public class HandoverRuleServiceImpl implements HandoverRuleService {
         OrderHandoverRule rule = getRuleInfo();
 
         //没有设置规则
-        if (rule == null) return StringUtils.EMPTY;
+        if (rule == null) {
+            return StringUtils.EMPTY;
+        }
         String unit = rule.getUnit();
         if ("HOURS".equalsIgnoreCase(unit)) {
             unit = "小时";
@@ -47,13 +49,19 @@ public class HandoverRuleServiceImpl implements HandoverRuleService {
      */
     @Override
     public OrderHandoverRule getRuleInfo(long milliseconds) {
-        if (milliseconds <= 0) return null;
+        if (milliseconds <= 0) {
+            return null;
+        }
         OrderHandoverRule rule = getRuleInfo();
-        if (rule == null) return null;
+        if (rule == null) {
+            return null;
+        }
         TimeUnit unit = TimeUnit.valueOf(rule.getUnit());
         long period = unit.toMillis(rule.getTime());
         //没有超出设置好的违约时限，都视为没有违约
-        if (period > milliseconds) return null;
+        if (period > milliseconds) {
+            return null;
+        }
         return rule;
     }
 
@@ -78,7 +86,9 @@ public class HandoverRuleServiceImpl implements HandoverRuleService {
      */
     @Override
     public Money calculate(OrderHandoverRule rule, int time, BigDecimal limitAmount) {
-        if (rule == null) return null;
+        if (rule == null) {
+            return null;
+        }
         Money limitMoney = new Money(limitAmount);
         Money money = new Money(rule.getPrice());
         money.multiplyBy(Math.floor((double) time / rule.getTime()));

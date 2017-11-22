@@ -1,11 +1,11 @@
 package com.yoogurt.taxi.user;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.AuthorityInfo;
-import com.yoogurt.taxi.dal.condition.user.AuthorityWLCondition;
-import com.yoogurt.taxi.dal.model.user.AuthorityWLModel;
-import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
+import com.yoogurt.taxi.dal.condition.user.AuthorityWebListCondition;
+import com.yoogurt.taxi.dal.model.user.AuthorityWebListModel;
+import com.yoogurt.taxi.dal.model.user.GroupAuthorityListModel;
 import com.yoogurt.taxi.user.service.AuthorityInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Ignore;
@@ -28,7 +28,7 @@ public class AuthorityServiceTest {
     @Test
     @Ignore
     public void allAuthorities() {
-        List<GroupAuthorityLModel> allAuthorities = authorityInfoService.getAllAuthorities();
+        List<GroupAuthorityListModel> allAuthorities = authorityInfoService.getAllAuthorities();
         System.out.println(ResponseObj.success(allAuthorities).toJSON());
     }
 
@@ -40,11 +40,11 @@ public class AuthorityServiceTest {
 
     @Test
     public void getAuthorityWebList() {
-        AuthorityWLCondition condition = new AuthorityWLCondition();
+        AuthorityWebListCondition condition = new AuthorityWebListCondition();
         condition.setAuthorityGroup("");
         condition.setAuthorityName("tt");
         condition.setUri("");
-        Pager<AuthorityWLModel> authorityWebList = authorityInfoService.getAuthorityWebList(condition);
+        BasePager<AuthorityWebListModel> authorityWebList = authorityInfoService.getAuthorityWebList(condition);
         System.out.println(ResponseObj.success(authorityWebList));
     }
 

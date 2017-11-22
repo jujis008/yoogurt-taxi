@@ -7,8 +7,13 @@ import lombok.Getter;
  */
 @Getter
 public enum TrafficType {
-
+    /**
+     *服务违章
+     */
     SERVICE(10, "服务违章"),
+    /**
+     *交通违章
+     */
     TRAFFIC(20, "交通违章"),
     ;
 

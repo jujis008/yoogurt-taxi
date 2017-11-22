@@ -3,7 +3,7 @@ package com.yoogurt.taxi.user.service.impl;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RoleAuthorityInfo;
 import com.yoogurt.taxi.dal.model.user.AuthorityModel;
-import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
+import com.yoogurt.taxi.dal.model.user.GroupAuthorityListModel;
 import com.yoogurt.taxi.user.dao.RoleAuthorityDao;
 import com.yoogurt.taxi.user.service.RoleAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
     }
 
     @Override
-    public List<GroupAuthorityLModel> getAuthorityListByRoleId(Long roleId) {
+    public List<GroupAuthorityListModel> getAuthorityListByRoleId(Long roleId) {
         return roleAuthorityDao.getAuthorityListByRoleId(roleId);
     }
 

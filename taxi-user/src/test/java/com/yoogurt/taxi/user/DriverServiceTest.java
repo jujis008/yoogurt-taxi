@@ -2,19 +2,16 @@ package com.yoogurt.taxi.user;
 
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.DriverInfo;
-import com.yoogurt.taxi.dal.condition.user.DriverWLCondition;
+import com.yoogurt.taxi.dal.condition.user.DriverWebListCondition;
 import com.yoogurt.taxi.dal.enums.UserGender;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
 import com.yoogurt.taxi.user.service.DriverService;
-import com.yoogurt.taxi.user.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import javax.jnlp.IntegrationService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -31,7 +28,7 @@ public class DriverServiceTest {
 
     @Test
     public void getDriverWebList() {
-        DriverWLCondition condition = new DriverWLCondition();
+        DriverWebListCondition condition = new DriverWebListCondition();
         condition.setIdCard("");
         condition.setName("");
         condition.setUsername("");

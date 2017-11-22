@@ -18,7 +18,9 @@ public class SerializeUtils {
      * @return 序列化字节数组
      */
     public static byte[] serialize(Object obj) {
-        if(obj == null) return new byte[0];
+        if(obj == null) {
+            return new byte[0];
+        }
         Hessian2Output output = null;
         ByteArrayOutputStream os;
         try {
@@ -32,7 +34,9 @@ public class SerializeUtils {
             log.error("[Hessian2]对象序列化失败, {}", e);
         } finally {
             try {
-                if(output != null) output.close();
+                if(output != null) {
+                    output.close();
+                }
             } catch (IOException e) {
                 log.error("输出流关闭异常, {}", e);
             }
@@ -47,7 +51,9 @@ public class SerializeUtils {
      * @return 反序列化出来的对象
      */
     public static Object deserialize(byte[] bytes) {
-        if(bytes == null || bytes.length <= 0) return null;
+        if(bytes == null || bytes.length <= 0) {
+            return null;
+        }
         Hessian2Input input = null;
         ByteArrayInputStream is;
         try {
@@ -59,7 +65,9 @@ public class SerializeUtils {
             log.error("[Hessian2]对象反序列化失败, {}", e);
         } finally {
             try {
-                if(input != null) input.close();
+                if(input != null) {
+                    input.close();
+                }
             } catch (IOException e) {
                 log.error("输入流关闭异常, {}", e);
             }

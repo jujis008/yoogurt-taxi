@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.order.service;
 
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
@@ -27,7 +27,7 @@ public interface OrderInfoService extends OrderBizService {
      * @param condition 查询条件
      * @return 订单列表
      */
-    Pager<OrderModel> getOrderList(OrderListCondition condition);
+    BasePager<OrderModel> getOrderList(OrderListCondition condition);
 
     /**
      *
@@ -35,7 +35,7 @@ public interface OrderInfoService extends OrderBizService {
      * @author wudeyou
      * @return 后台订单列表
      */
-    Pager<OrderModel> getWebOrderList(OrderListCondition condition);
+    BasePager<OrderModel> getWebOrderList(OrderListCondition condition);
 
     /**
      * 获取取消订单列表

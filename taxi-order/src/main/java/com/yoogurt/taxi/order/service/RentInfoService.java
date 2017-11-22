@@ -1,11 +1,11 @@
 package com.yoogurt.taxi.order.service;
 
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
-import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
+import com.yoogurt.taxi.dal.condition.order.RentPoiCondition;
 import com.yoogurt.taxi.dal.condition.order.RentWebListCondition;
 import com.yoogurt.taxi.dal.enums.RentStatus;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
@@ -16,9 +16,9 @@ import java.util.List;
 
 public interface RentInfoService {
 
-	List<RentInfoModel> getRentList(RentPOICondition condition);
+	List<RentInfoModel> getRentList(RentPoiCondition condition);
 
-	Pager<RentInfoModel> getRentListByPage(RentListCondition condition);
+	BasePager<RentInfoModel> getRentListByPage(RentListCondition condition);
 
 	List<RentInfo> getRentInfoList(String userId, String orderId, Integer pageNum, Integer pageSize, Integer... status);
 
@@ -39,5 +39,5 @@ public interface RentInfoService {
 
 	boolean modifyStatus(String rentId, RentStatus status);
 
-	Pager<RentInfo> getRentListForWebPage(RentWebListCondition condition);
+	BasePager<RentInfo> getRentListForWebPage(RentWebListCondition condition);
 }

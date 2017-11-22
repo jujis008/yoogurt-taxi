@@ -38,6 +38,10 @@ import java.math.BigDecimal;
  * </ul>
  *
  * TODO: 必须处理运算中的溢出情形
+ * * Description:
+ * 登录用户信息
+ *@author Eric Lau
+ *@date 2017/9/6.
  */
 public class Money implements Serializable, Comparable<Object> {
 
@@ -208,6 +212,7 @@ public class Money implements Serializable, Comparable<Object> {
      *
      * @see Object#equals(Object)
      */
+    @Override
     public boolean equals(Object other) {
         return (other instanceof Money) && equals((Money) other);
     }
@@ -236,6 +241,7 @@ public class Money implements Serializable, Comparable<Object> {
      *
      * @see Object#hashCode()
      */
+    @Override
     public int hashCode() {
         return (int) (cent ^ (cent >>> 32));
     }
@@ -261,6 +267,7 @@ public class Money implements Serializable, Comparable<Object> {
      *
      * @see Comparable#compareTo(Object)
      */
+    @Override
     public int compareTo(Object other) {
         return compareTo((Money) other);
     }
@@ -713,6 +720,7 @@ public class Money implements Serializable, Comparable<Object> {
     /**
      * 生成本对象的缺省字符串表示
      */
+    @Override
     public String toString() {
         return getAmount().toString();
     }

@@ -81,7 +81,9 @@ public class UserTokenFilter extends AccessControlFilter {
         HttpServletRequest req = WebUtils.toHttp(request);
         String uri = WebUtils.getPathWithinApplication(req);
         //uri忽略处理
-        if(matcher.match(IGNORE_PATTERN, uri)) return true;
+        if(matcher.match(IGNORE_PATTERN, uri)) {
+            return true;
+        }
 
         String userId = tokenHelper.getUserId(WebUtils.toHttp(request));
         //Token是否存在

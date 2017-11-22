@@ -17,25 +17,33 @@ public class EventTaskServiceImpl implements EventTaskService {
 
     @Override
     public EventTask getEventTask(String taskId) {
-        if (StringUtils.isBlank(taskId)) return null;
+        if (StringUtils.isBlank(taskId)) {
+            return null;
+        }
         return eventTaskDao.findOne(taskId);
     }
 
     @Override
     public EventTask addEventTask(EventTask task) {
-        if (task == null) return null;
+        if (task == null) {
+            return null;
+        }
         return eventTaskDao.insert(task);
     }
 
     @Override
     public EventTask saveEventTask(EventTask task) {
-        if (task == null) return null;
+        if (task == null) {
+            return null;
+        }
         return eventTaskDao.save(task);
     }
 
     @Override
     public boolean deleteEventTask(String taskId) {
-        if (StringUtils.isBlank(taskId)) return false;
+        if (StringUtils.isBlank(taskId)) {
+            return false;
+        }
         try {
             eventTaskDao.delete(taskId);
         } catch (Exception e) {

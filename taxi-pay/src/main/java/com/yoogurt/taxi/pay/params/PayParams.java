@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class PayParams extends CommonParams {
+public class PayParams extends BaseCommonParams {
 
 	/**
 	 * 商户订单号，不可重复

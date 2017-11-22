@@ -43,14 +43,16 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private OrderStatisticService orderStatisticService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseObj doComment(CommentForm commentForm) {
 
         String orderId = commentForm.getOrderId();
         //检查订单是否存在
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, commentForm.getUserId());
-        if(orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
+        if(orderInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
+        }
         if (!OrderStatus.FINISH.getCode().equals(orderInfo.getStatus())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "请结束订单后再提交评价");
         }
@@ -65,7 +67,9 @@ public class CommentServiceImpl implements CommentService {
         condition.setOrderId(commentForm.getOrderId());
         condition.setFromUserId(commentForm.getUserId());
         condition.setToUserId(toCommentUseId);
-        if(getComments(condition).size() > 0) return ResponseObj.fail(StatusCode.BIZ_FAILED, "该订单已评论");
+        if(getComments(condition).size() > 0) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "该订单已评论");
+        }
         //构造评论信息
         OrderCommentInfo comment = new OrderCommentInfo();
         BeanUtils.copyProperties(commentForm, comment);
@@ -103,7 +107,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public int removeComments(String commentIds) {
-        if(StringUtils.isBlank(commentIds)) return 0;
+        if(StringUtils.isBlank(commentIds)) {
+            return 0;
+        }
         Example ex = new Example(OrderCommentInfo.class);
         ex.createCriteria().andIn("id", Splitter.on(",").split(commentIds));
         OrderCommentInfo probe = new OrderCommentInfo();
@@ -113,7 +119,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Double getAvgScore(String userId) {
-        if(StringUtils.isBlank(userId)) return 0.00;
+        if(StringUtils.isBlank(userId)) {
+            return 0.00;
+        }
         return commentDao.getAvgScore(userId);
     }
 
@@ -126,7 +134,9 @@ public class CommentServiceImpl implements CommentService {
         CommentListCondition condition = new CommentListCondition();
         condition.setToUserId(userId);
         List<OrderCommentInfo> comments = getComments(condition);
-        if(CollectionUtils.isEmpty(comments)) return 0.00;
+        if(CollectionUtils.isEmpty(comments)) {
+            return 0.00;
+        }
         double totalScore = 0.00;
         for (OrderCommentInfo comment : comments) {
             totalScore += comment.getScore();

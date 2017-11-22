@@ -35,7 +35,9 @@ public class RestUserAccountController {
         if (financeAccount == null) {
             financeAccount = buildAccount(userId, userType);
         }
-        if (financeAccount != null) return RestResult.success(financeAccount);
+        if (financeAccount != null) {
+            return RestResult.success(financeAccount);
+        }
         return RestResult.fail(StatusCode.BIZ_FAILED, "账户信息不存在");
     }
 
@@ -70,7 +72,9 @@ public class RestUserAccountController {
             UserInfo userInfo = userInfoRestResult.getBody();
             fineOutFinanceAccount = buildAccount(voObject.getOutUserId(), userInfo.getType());
         }
-        if (fineOutFinanceAccount == null) return RestResult.fail(StatusCode.BIZ_FAILED, "账户创建失败");
+        if (fineOutFinanceAccount == null) {
+            return RestResult.fail(StatusCode.BIZ_FAILED, "账户创建失败");
+        }
 
         UserInfo userInfo = fineInUserInfoRestResult.getBody();
         AccountUpdateCondition condition = new AccountUpdateCondition();
@@ -81,10 +85,14 @@ public class RestUserAccountController {
             case OUTCOME:
                 condition.setDestinationType(DestinationType.BALANCE);
                 condition.setPayment(Payment.BALANCE);
+                break;
             case INCOME:
             case REFUND:
                 condition.setDestinationType(DestinationType.BALANCE);
                 condition.setPayment(Payment.getEnumsBycode(voObject.getPayment()));
+                break;
+            default:
+                return RestResult.fail(StatusCode.BIZ_FAILED, "错误的交易类型");
         }
         condition.setUserId(voObject.getUserId());
         condition.setPayeePhone(userInfo.getUsername());

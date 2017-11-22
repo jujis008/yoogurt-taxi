@@ -4,8 +4,17 @@ import lombok.Getter;
 
 @Getter
 public enum AccountChangeType {
+    /**
+     * 冻结
+     */
     frozen_add(10,"冻结"),
+    /**
+     * 冻结扣除
+     */
     frozen_deduct(20,"冻结扣除"),
+    /**
+     * 冻结返还
+     */
     frozen_back(30,"冻结返还"),
     ;
 

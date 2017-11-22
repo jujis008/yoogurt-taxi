@@ -15,7 +15,7 @@
     <result column="modifier" jdbcType="VARCHAR" property="modifier" />
   </resultMap>
 
-  <resultMap id="RoleWLModelMap" type="com.yoogurt.taxi.dal.model.user.RoleWLModel">
+  <resultMap id="RoleWLModelMap" type="com.yoogurt.taxi.dal.model.user.RoleWebListModel">
     <result column="id" jdbcType="BIGINT" property="roleId" />
     <result column="role_name" jdbcType="VARCHAR" property="roleName" />
     <result column="role_code" jdbcType="VARCHAR" property="roleCode" />

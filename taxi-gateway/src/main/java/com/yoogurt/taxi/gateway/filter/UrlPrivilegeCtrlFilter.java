@@ -48,11 +48,17 @@ public class UrlPrivilegeCtrlFilter extends AccessControlFilter {
         if (matcher.match(IGNORE_PATTERN, currentUrl)) {
             return true;
         }
-        if (subject == null) return false;
+        if (subject == null) {
+            return false;
+        }
         Collection<SessionUser> userInfoList = subject.getPrincipals().fromRealm("UserInfo");
-        if(userInfoList == null) return false;
+        if(userInfoList == null) {
+            return false;
+        }
         Iterator<SessionUser> iterator = userInfoList.iterator();
-        if(!iterator.hasNext()) return false;
+        if(!iterator.hasNext()) {
+            return false;
+        }
         SessionUser user = iterator.next();
         if (UserType.SUPER_ADMIN.getCode().equals(user.getType())) {
             return true;

@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.pay.doc;
 
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Setter
 @Getter
 @ToString
-public class Event<T extends Notify> implements Serializable {
+public class Event<T extends BaseNotify> implements Serializable {
 
 	@Id
 	private String eventId;

@@ -6,7 +6,7 @@ import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.utils.XmlUtil;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FinanceWxSettings;
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.dal.bo.WxNotify;
 import com.yoogurt.taxi.dal.enums.EventType;
 import com.yoogurt.taxi.dal.enums.PayChannel;
@@ -60,27 +60,39 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
 
     @Override
     public FinanceWxSettings addWxSettings(FinanceWxSettings settings) {
-        if (settings == null) return null;
-        if (wxSettingsDao.insertSelective(settings) == 1) return settings;
+        if (settings == null) {
+            return null;
+        }
+        if (wxSettingsDao.insertSelective(settings) == 1) {
+            return settings;
+        }
         return null;
     }
 
     @Override
     public FinanceWxSettings updateWxSettings(FinanceWxSettings settings) {
-        if (settings == null) return null;
-        if (wxSettingsDao.updateByIdSelective(settings) == 1) return settings;
+        if (settings == null) {
+            return null;
+        }
+        if (wxSettingsDao.updateByIdSelective(settings) == 1) {
+            return settings;
+        }
         return null;
     }
 
     @Override
     public FinanceWxSettings getWxSettings(String appId) {
-        if (StringUtils.isBlank(appId)) return null;
+        if (StringUtils.isBlank(appId)) {
+            return null;
+        }
         return wxSettingsDao.selectById(appId);
     }
 
     @Override
     public FinanceWxSettings getWxSettingsByAppId(String wxAppId) {
-        if (StringUtils.isBlank(wxAppId)) return null;
+        if (StringUtils.isBlank(wxAppId)) {
+            return null;
+        }
         FinanceWxSettings settings = new FinanceWxSettings();
         settings.setWxAppId(wxAppId);
         return wxSettingsDao.selectOne(settings);
@@ -88,18 +100,28 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
 
     @Override
     public CompletableFuture<ResponseObj> doTask(final PayTask payTask) {
-        if (payTask == null) return null;
+        if (payTask == null) {
+            return null;
+        }
         final PayParams payParams = payTask.getPayParams();
-        if (payParams == null) return null;
+        if (payParams == null) {
+            return null;
+        }
         final String appId = payParams.getAppId();
-        if (StringUtils.isBlank(appId)) return null;
+        if (StringUtils.isBlank(appId)) {
+            return null;
+        }
         final FinanceWxSettings settings = getWxSettings(appId);
-        if (settings == null) return null;
+        if (settings == null) {
+            return null;
+        }
         return CompletableFuture.supplyAsync(() -> {
             try {
                 Payment payment = payService.buildPayment(payParams);
                 final PrePayInfo pay = buildPrePayInfo(settings, payTask.getPayParams(), payment);
-                if (pay == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "微信预下单失败");
+                if (pay == null) {
+                    return ResponseObj.fail(StatusCode.BIZ_FAILED, "微信预下单失败");
+                }
                 final Document document = BeanRefUtils.toXml(pay, "xml", pay.parameterMap(), "key");
                 //控制台输出请求参数
                 log.info(document.asXML());
@@ -111,10 +133,10 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
                     //转换成JSON格式
                     XMLSerializer serializer = new XMLSerializer();
                     final JSONObject jsonObject = (JSONObject) serializer.read(prepayResult.getBody().replaceAll("^<\\?.*", "").replaceAll("\\r|\\t|\\n|\\s", ""));
-                    if (!jsonObject.optString("return_code").equals("SUCCESS")) {
+                    if (!"SUCCESS".equals(jsonObject.optString("return_code"))) {
                         //1、判断 return_code
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, jsonObject.optString("return_msg"));
-                    } else if (!jsonObject.optString("result_code").equals("SUCCESS")) {
+                    } else if (!"SUCCESS".equals(jsonObject.optString("result_code"))) {
                         //2、判断 result_code
                         return ResponseObj.fail(StatusCode.BIZ_FAILED, "[" + jsonObject.optString("err_code") + "]" + jsonObject.optString("err_code_des"));
                     } else {    //预下单请求成功
@@ -152,8 +174,10 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
      * @return EventTask
      */
     @Override
-    public Event<? extends Notify> eventParse(Map<String, Object> parameterMap) {
-        if (parameterMap == null || parameterMap.isEmpty()) return null;
+    public Event<? extends BaseNotify> eventParse(Map<String, Object> parameterMap) {
+        if (parameterMap == null || parameterMap.isEmpty()) {
+            return null;
+        }
         //生成一个eventId
         String eventId = "event_" + RandomUtils.getPrimaryKey();
         //构造一个 Notify
@@ -173,15 +197,18 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
             notify.setPaidTimestamp(timestamp);
             //回传参数
             if (parameterMap.get("attach") != null) {
-                Map<String, Object> metadata = new HashMap<>();
+                Map<String, Object> metadata = new HashMap<>(16);
                 String orderNo = "";
                 String attach = parameterMap.get("attach").toString();
                 String[] extras = attach.split("&");
                 for (String str : extras) {
                     String[] pairs = str.split("=");
-                    if(pairs.length != 2) continue;
+                    if(pairs.length != 2) {
+                        continue;
+                    }
                     metadata.put(pairs[0], pairs[1]);
-                    if ("orderId".equals(pairs[0])) { //解析attach数据中的订单id
+                    //解析attach数据中的订单id
+                    if ("orderId".equals(pairs[0])) {
                         orderNo = pairs[1];
                     }
                 }
@@ -210,24 +237,28 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
             PrePayInfo pay = PrePayInfo.builder()
                     .appId(settings.getWxAppId())
                     .nonceStr(UUID.randomUUID().toString().replaceAll("-", ""))
-                    .notifyUrl(getNotifyUrl()) //通知url必须为直接可访问的url，不能携带参数
+                    //通知url必须为直接可访问的url，不能携带参数
+                    .notifyUrl(getNotifyUrl())
                     .mchId(settings.getMerchantId())
                     .body(payParams.getBody())
-                    .outTradeNo(payment.getPayId()) //这里用payId是因为微信不接受商户传来的重复的订单号，用户发起支付，取消后又发起支付，会发生此情况
+                    //这里用payId是因为微信不接受商户传来的重复的订单号，用户发起支付，取消后又发起支付，会发生此情况
+                    .outTradeNo(payment.getPayId())
                     .totalFee(payParams.getAmount())
                     .spbillCreateIp(payParams.getClientIp())
                     .tradeType((extras != null && extras.get("trade_type") != null) ? extras.get("trade_type").toString() : "APP")
                     .key(settings.getApiSecret())
                     .signType("MD5")
                     .timeStart(now.toString("yyyyMMddHHmmss"))
-                    .timeExpire(now.plusMinutes(5).toString("yyyyMMddHHmmss")) //5分钟过期
+                    //5分钟过期
+                    .timeExpire(now.plusMinutes(5).toString("yyyyMMddHHmmss"))
                     .build();
             Map<String, Object> metadata = payParams.getMetadata();
             if (metadata == null) {
-                metadata = new HashMap<>();
+                metadata = new HashMap<>(0);
             }
             metadata.put("payId", payment.getPayId());
-            metadata.put("orderId", payParams.getOrderNo()); //真正的订单号作为附加数据传入，回调时再解析出来注入
+            //真正的订单号作为附加数据传入，回调时再解析出来注入
+            metadata.put("orderId", payParams.getOrderNo());
             pay.setAttach(parameterAssemble(metadata, null));
             SortedMap<String, Object> parameters = BeanRefUtils.toSortedMap(pay, "key");
             String sign = sign(parameters, pay.parameterMap(), "MD5", settings.getApiSecret(), super.getCharset(), "sign");
@@ -245,7 +276,7 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
      *
      * @param parameters   参数组装的SortedMap
      * @param parameterMap 字段对应的请求参数，传入null，或者字段名对应的value为null，则以字段名为准
-     * @param signType     加密方式，MD5，RSA，RSA2等
+     * @param signType     加密方式，MD5，Rsa，RSA2等
      * @param privateKey   加密的私钥
      * @param charset      编码方式
      * @param skipAttrs    从parameters中跳过的属性
@@ -257,7 +288,8 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         String sign;
         String content = super.parameterAssemble(parameters, parameterMap, skipAttrs) + "&key=" + privateKey.trim();
         log.info(content);
-        sign = DigestUtils.md5Hex(content).toUpperCase();    //拼接支付密钥
+        sign = DigestUtils.md5Hex(content).toUpperCase();
+        //拼接支付密钥
         log.info("签名结果：" + sign);
         return sign;
     }
@@ -272,12 +304,14 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
     @Override
     public Map<String, Object> parameterResolve(HttpServletRequest request, Map<String, Object> attributeMap) {
         String rawData = getRawData(request);
-        if (StringUtils.isBlank(rawData)) return null;
+        if (StringUtils.isBlank(rawData)) {
+            return null;
+        }
         try {
             //解析参数(XML)格式
             Document document = DocumentHelper.parseText(rawData);
             //转换成Map对象
-            return XmlUtil.toMap(new HashMap<>(), document.getRootElement());
+            return XmlUtil.toMap(new HashMap<>(16), document.getRootElement());
         } catch (Exception e) {
             log.error("参数转换发生异常, {}", e);
         }
@@ -312,12 +346,14 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
         }
         content.append("&key=").append(settings.getApiSecret().trim());
         log.info(content.toString());
-        String sign = DigestUtils.md5Hex(content.toString()).toUpperCase();    //拼接支付密钥
+        //拼接支付密钥
+        String sign = DigestUtils.md5Hex(content.toString()).toUpperCase();
         log.info("微信回传签名：" + wxSign);
         log.info("系统签名结果：" + sign);
         boolean verify = sign.equals(wxSign);
         log.info("验签结果：" + verify);
-        parameterMap.put("sign", sign);//验签后，将签名回传进去
+        //验签后，将签名回传进去
+        parameterMap.put("sign", sign);
         return verify;
     }
 
@@ -342,7 +378,9 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
             String line;
             while (true) {
                 line = br.readLine();
-                if (StringUtils.isBlank(line)) break;
+                if (StringUtils.isBlank(line)) {
+                    break;
+                }
                 buffer.append(line);
             }
             return buffer.toString();
@@ -350,8 +388,12 @@ public class WxPayServiceImpl extends AbstractFinanceBizService implements WxPay
             log.error("获取微信回调参数发生异常, {}", e);
         } finally {
             try {
-                if (stream != null) stream.close();
-                if (br != null) br.close();
+                if (stream != null) {
+                    stream.close();
+                }
+                if (br != null) {
+                    br.close();
+                }
             } catch (IOException e) {
                 log.error("关闭流发生异常, {}", e);
             }

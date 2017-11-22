@@ -53,7 +53,9 @@ public class OrderMobileController extends BaseController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getOrderList(OrderListCondition condition) {
-        if (!condition.validate()) return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        if (!condition.validate()) {
+            return ResponseObj.fail(StatusCode.FORM_INVALID, "查询条件有误");
+        }
         SessionUser user = super.getUser();
         condition.setUserId(user.getUserId());
         condition.setUserType(user.getType());
@@ -82,7 +84,7 @@ public class OrderMobileController extends BaseController {
     @RequestMapping(value = "/info/{orderId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getOrderDetails(@PathVariable(name = "orderId") String orderId) {
 
-        Map<String, Object> extras = new HashMap<>();
+        Map<String, Object> extras = new HashMap<>(1);
         extras.put("timestamp", System.currentTimeMillis());
         return ResponseObj.success(orderInfoService.getOrderDetails(orderId, super.getUserId()), extras);
     }
@@ -95,9 +97,9 @@ public class OrderMobileController extends BaseController {
         if (!UserType.USER_APP_OFFICE.getCode().equals(super.getUser().getType())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有车主才能进行交车操作");
         }
-        HandoverOrderModel model = handoverService.doHandover(form);
+        HandoverOrderModelBase model = handoverService.doHandover(form);
         if (model != null) {
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("timestamp", System.currentTimeMillis());
             return ResponseObj.success(model, extras);
         }
@@ -115,7 +117,7 @@ public class OrderMobileController extends BaseController {
         }
         PickUpOrderModel model = pickUpService.doPickUp(form);
         if (model != null) {
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("timestamp", System.currentTimeMillis());
             return ResponseObj.success(model, extras);
         }
@@ -130,9 +132,9 @@ public class OrderMobileController extends BaseController {
         if (!UserType.USER_APP_AGENT.getCode().equals(super.getUser().getType())) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "只有司机才能进行还车操作");
         }
-        GiveBackOrderModel model = giveBackService.doGiveBack(form);
+        GiveBackOrderModelBase model = giveBackService.doGiveBack(form);
         if (model != null) {
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("timestamp", System.currentTimeMillis());
             return ResponseObj.success(model, extras);
         }
@@ -149,7 +151,7 @@ public class OrderMobileController extends BaseController {
         }
         AcceptOrderModel model = acceptService.doAccept(form);
         if (model != null) {
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("timestamp", System.currentTimeMillis());
             return ResponseObj.success(model, extras);
         }
@@ -168,9 +170,9 @@ public class OrderMobileController extends BaseController {
         form.setResponsibleParty(ResponsibleParty.getEnumsByType(userType).getCode());
         form.setReason(UserType.USER_APP_OFFICE.getCode().equals(userType) ? "车主手动取消" : "司机手动取消");
 
-        CancelOrderModel model = cancelService.doCancel(form);
+        CancelOrderModelBase model = cancelService.doCancel(form);
         if (model != null) {
-            Map<String, Object> extras = new HashMap<>();
+            Map<String, Object> extras = new HashMap<>(1);
             extras.put("timestamp", System.currentTimeMillis());
             return ResponseObj.success(model, extras);
         }

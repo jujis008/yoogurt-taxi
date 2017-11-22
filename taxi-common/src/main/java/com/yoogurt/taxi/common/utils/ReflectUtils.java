@@ -68,15 +68,21 @@ public class ReflectUtils {
             Enum<?>[] values = (Enum<?>[]) valuesMethod.invoke(null);
             Field[] fields = clz.getDeclaredFields();
             for (Enum<?> value : values) {
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>(16);
                 map.put("property",value.name());
                 for (Field field : fields) {
-                    if(field.getType().equals(value.getClass()) || field.getName().equalsIgnoreCase("$VALUES")) continue;
+                    if(field.getType().equals(value.getClass()) || "$VALUES".equalsIgnoreCase(field.getName())) {
+                        continue;
+                    }
                     String fieldName = field.getName();
                     String first = StringUtils.left(fieldName, 1);
-                    if (StringUtils.isBlank(first)) continue;
+                    if (StringUtils.isBlank(first)) {
+                        continue;
+                    }
                     Method method = clz.getMethod("get" + fieldName.replaceFirst(first, first.toUpperCase()));
-                    if (method == null) continue;
+                    if (method == null) {
+                        continue;
+                    }
                     map.put(fieldName, method.invoke(value));
                 }
                 list.add(map);

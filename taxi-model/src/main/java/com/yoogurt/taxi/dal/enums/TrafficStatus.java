@@ -7,9 +7,17 @@ import lombok.Getter;
  */
 @Getter
 public enum TrafficStatus {
-
+    /**
+     *未处理
+     */
     PENDING(10, "未处理"),
+    /**
+     *已处理
+     */
     NORMAL(20, "已处理"),
+    /**
+     *信息误报
+     */
     WRONG(30, "信息误报"),
     ;
 

@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-public class PickUpForm extends OrderForm {
+public class PickUpForm extends BaseOrderForm {
 
 	/**
 	 * false-异常，true-正常

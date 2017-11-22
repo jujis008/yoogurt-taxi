@@ -38,22 +38,30 @@ public class AuthorizationCache implements Cache<String, SimpleAuthorizationInfo
 
     @Override
     public SimpleAuthorizationInfo get(String key) throws CacheException {
-        if(StringUtils.isBlank(key)) return null;
+        if(StringUtils.isBlank(key)) {
+            return null;
+        }
         Object o = redisHelper.getMapValue(cacheName, key);
-        if(o != null && o instanceof SimpleAuthorizationInfo) return (SimpleAuthorizationInfo) o;
+        if(o != null && o instanceof SimpleAuthorizationInfo) {
+            return (SimpleAuthorizationInfo) o;
+        }
         return null;
     }
 
     @Override
     public SimpleAuthorizationInfo put(String key, SimpleAuthorizationInfo simpleAuthorizationInfo) throws CacheException {
-        if(StringUtils.isBlank(key) || simpleAuthorizationInfo == null) return null;
+        if(StringUtils.isBlank(key) || simpleAuthorizationInfo == null) {
+            return null;
+        }
         redisHelper.put(cacheName, key, simpleAuthorizationInfo);
         return simpleAuthorizationInfo;
     }
 
     @Override
     public SimpleAuthorizationInfo remove(String key) throws CacheException {
-        if(StringUtils.isBlank(key)) return null;
+        if(StringUtils.isBlank(key)) {
+            return null;
+        }
         Object o = redisHelper.getMapValue(cacheName, key);
         if (o != null && o instanceof SimpleAuthorizationInfo) {
             redisHelper.deleteMap(cacheName, key);

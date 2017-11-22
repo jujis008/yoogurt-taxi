@@ -16,7 +16,7 @@ public class ErrorConfig extends DefaultErrorAttributes {
 
         Map<String, Object> attributes = super.getErrorAttributes(requestAttributes, includeStackTrace);
 
-        return new HashMap<String, Object>() {{
+        return new HashMap<String, Object>(4) {{
             put("status", attributes.get("status"));
             put("message", StatusCode.SYS_ERROR.getDetail());
             put("extras", attributes);

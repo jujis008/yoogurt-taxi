@@ -20,7 +20,9 @@ public class GiveBackRuleServiceImpl implements GiveBackRuleService {
     @Override
     public String getIntroduction() {
         OrderGiveBackRule rule = getRuleInfo();
-        if (rule == null) return StringUtils.EMPTY;
+        if (rule == null) {
+            return StringUtils.EMPTY;
+        }
         String unit = rule.getUnit();
         if ("HOURS".equalsIgnoreCase(unit)) {
             unit = "小时";
@@ -33,13 +35,19 @@ public class GiveBackRuleServiceImpl implements GiveBackRuleService {
 
     @Override
     public OrderGiveBackRule getRuleInfo(long milliseconds) {
-        if (milliseconds <= 0) return null;
+        if (milliseconds <= 0) {
+            return null;
+        }
         OrderGiveBackRule rule = getRuleInfo();
-        if (rule == null) return null;
+        if (rule == null) {
+            return null;
+        }
         TimeUnit unit = TimeUnit.valueOf(rule.getUnit());
         long period = unit.toMillis(rule.getTime());
         //没有超出设置好的违约时限，都视为没有违约
-        if (period > milliseconds) return null;
+        if (period > milliseconds) {
+            return null;
+        }
         return rule;
     }
 
@@ -60,7 +68,9 @@ public class GiveBackRuleServiceImpl implements GiveBackRuleService {
      */
     @Override
     public Money calculate(OrderGiveBackRule rule, int minutes, BigDecimal limitAmount) {
-        if (rule == null) return null;
+        if (rule == null) {
+            return null;
+        }
         Money money = new Money(rule.getPrice());
         money.multiplyBy(Math.floor((double) minutes / rule.getTime()));
         Money limitMoney = new Money(limitAmount);

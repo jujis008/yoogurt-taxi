@@ -18,7 +18,7 @@ public class SmsConfig {
     @Value("authToken")
     private String authToken;
     @Value("RestUrl")
-    private String RestUrl;
+    private String restUrl;
     @Value("appId")
     private String appId;
     @Value("validTemplateId")

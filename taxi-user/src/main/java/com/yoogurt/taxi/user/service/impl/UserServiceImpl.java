@@ -7,7 +7,7 @@ import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.utils.BeanUtilsExtends;
 import com.yoogurt.taxi.common.utils.DateUtils;
 import com.yoogurt.taxi.common.utils.Encipher;
@@ -18,9 +18,9 @@ import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
 import com.yoogurt.taxi.dal.beans.UserRoleInfo;
 import com.yoogurt.taxi.dal.bo.SmsPayload;
-import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
+import com.yoogurt.taxi.dal.condition.user.UserWebListCondition;
 import com.yoogurt.taxi.dal.enums.*;
-import com.yoogurt.taxi.dal.model.user.UserWLModel;
+import com.yoogurt.taxi.dal.model.user.UserWebListModel;
 import com.yoogurt.taxi.user.dao.CarDao;
 import com.yoogurt.taxi.user.dao.DriverDao;
 import com.yoogurt.taxi.user.dao.UserDao;
@@ -152,7 +152,8 @@ public class UserServiceImpl implements UserService {
         }
         user.setPayPassword(Encipher.encrypt(payPassword));
         userDao.updateById(user);
-        modifyUserStatus(userId, UserStatus.UN_AUTHENTICATE);//更改用户状态为
+        //更改用户状态为
+        modifyUserStatus(userId, UserStatus.UN_AUTHENTICATE);
         redisHelper.del(CacheKey.ACTIVATE_PROGRESS_STATUS_KEY + userId);
         return ResponseObj.success();
     }
@@ -196,7 +197,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ResponseObj modifyUserName(String userId, String password, String phoneCode, String phoneNumber) {
         UserInfo user = userDao.selectById(userId);
         if (user == null) {
@@ -246,7 +247,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseObj InsertUser(UserInfo userInfo) {
+    public ResponseObj insertUser(UserInfo userInfo) {
         userDao.insert(userInfo);
         return ResponseObj.success();
     }
@@ -293,18 +294,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Pager<UserWLModel> getUserWebList(UserWLCondition condition) {
+    public BasePager<UserWebListModel> getUserWebList(UserWebListCondition condition) {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
-        Page<UserWLModel> userWebListPage = userDao.getUserWebListPage(condition);
+        Page<UserWebListModel> userWebListPage = userDao.getUserWebListPage(condition);
         return webPagerFactory.generatePager(userWebListPage);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public List<ErrorCellBean> importAgentDriversFromExcel(List<Map<String, Object>> list) {
         List<UserInfo> userInfoList = new ArrayList<>();
         List<DriverInfo> driverInfoList = new ArrayList<>();
-        Map<String, Object> phoneCodeMap = new HashMap<>();
+        Map<String, Object> phoneCodeMap = new HashMap<>(16);
         Example example = new Example(UserInfo.class);
         example.createCriteria().andEqualTo("type", UserType.USER_APP_AGENT.getCode());
         List<UserInfo> dbUserInfoList = userDao.selectByExample(example);
@@ -377,7 +378,7 @@ public class UserServiceImpl implements UserService {
         List<UserInfo> userInfoList = new ArrayList<>();
         List<DriverInfo> driverInfoList = new ArrayList<>();
         List<CarInfo> carInfoList = new ArrayList<>();
-        Map<String, Object> phoneCodeMap = new HashMap<>();
+        Map<String, Object> phoneCodeMap = new HashMap<>(16);
         Example example = new Example(UserInfo.class);
         example.createCriteria().andEqualTo("type", UserType.USER_APP_OFFICE.getCode());
         List<UserInfo> dbUserInfoList = userDao.selectByExample(example);
@@ -464,7 +465,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void sendPhonePwd(Map<String, Object> phoneCodeMap, SmsTemplateType type, String key) {
-        if (profile.equals("prod")) {
+        if ("prod".equals(profile)) {
             phoneCodeMap.forEach((e, b) -> {
                 SmsPayload payload = new SmsPayload();
                 payload.setParam(b.toString());

@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-public class CommentForm extends OrderForm {
+public class CommentForm extends BaseOrderForm {
 
 	@NotNull(message = "请指定评分")
 	private Integer score;

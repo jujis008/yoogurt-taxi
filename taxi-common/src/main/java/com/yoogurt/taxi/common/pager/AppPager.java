@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class AppPager<E> extends Pager<E>{
+public class AppPager<E> extends BasePager<E> {
 
 
     public AppPager() {

@@ -10,7 +10,7 @@ import com.yoogurt.taxi.common.bo.Money;
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.utils.Encipher;
 import com.yoogurt.taxi.common.utils.RandomUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.*;
-import java.time.temporal.TemporalAdjuster;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +53,7 @@ public class FinanceMobileController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, result.getAllErrors().get(0).getDefaultMessage());
         }
         condition.setUserId(getUserId());
-        Pager<FinanceBillListAppModel> financeBillListApp = financeBillService.getFinanceBillListApp(condition);
+        BasePager<FinanceBillListAppModel> financeBillListApp = financeBillService.getFinanceBillListApp(condition);
         return ResponseObj.success(financeBillListApp);
     }
 
@@ -172,9 +171,9 @@ public class FinanceMobileController extends BaseController {
         UserInfo userInfo = restUserService.getUserInfoById(getUserId()).getBody();
         LocalTime nowTime = LocalTime.now();
         LocalDate nowDate = LocalDate.now();
-        LocalTime startTime = LocalTime.parse(Constants.withdraw_start_time);
-        LocalTime endTime = LocalTime.parse(Constants.withdraw_end_time);
-        if (nowDate.getDayOfWeek().compareTo(DayOfWeek.of(Constants.withdraw_day_of_week)) != 0
+        LocalTime startTime = LocalTime.parse(Constants.WITHDRAW_START_TIME);
+        LocalTime endTime = LocalTime.parse(Constants.WITHDRAW_END_TIME);
+        if (nowDate.getDayOfWeek().compareTo(DayOfWeek.of(Constants.WITHDRAW_DAY_OF_WEEK)) != 0
                 && nowTime.isBefore(startTime)
                 && nowTime.isAfter(endTime)) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"未在开放时间内");
@@ -191,7 +190,7 @@ public class FinanceMobileController extends BaseController {
         billCondition.setStartTime(Date.from(firstTimeOfWeek.atZone(ZoneId.systemDefault()).toInstant()));
         billCondition.setEndTime(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         List<FinanceBill> billList = financeBillService.getBillList(billCondition);
-        if (billList.size()>=Constants.withdraw_times) {
+        if (billList.size()>=Constants.WITHDRAW_TIMES) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED,"本周已申请提现，无法重复提交申请。");
         }
         if (UserStatus.FROZEN == UserStatus.getEnumsByCode(userInfo.getStatus())) {
@@ -218,7 +217,7 @@ public class FinanceMobileController extends BaseController {
         condition.setBankAddress(form.getBankAddress());
         condition.setMoney(new Money(form.getWithdrawMoney()));
         condition.setDraweePhone(getUserName());
-        condition.setDraweeAccount(financeAccount.getAccountNo().toString());
+        condition.setDraweeAccount(financeAccount.getAccountNo());
         condition.setDraweeName(userInfo.getName());
         condition.setDestinationType(destinationType);
         condition.setChangeType(AccountChangeType.frozen_add);
@@ -227,11 +226,11 @@ public class FinanceMobileController extends BaseController {
 
     @RequestMapping(value = "/i/withdraw/rule", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getWithdrawRule() {
-        Map<String,Object> map = new HashMap<>();
-        map.put("weekday", Constants.withdraw_day_of_week);
-        map.put("startTime",Constants.withdraw_start_time);
-        map.put("endTime",Constants.withdraw_end_time);
-        map.put("times",Constants.withdraw_times);
+        Map<String,Object> map = new HashMap<>(4);
+        map.put("weekday", Constants.WITHDRAW_DAY_OF_WEEK);
+        map.put("startTime",Constants.WITHDRAW_START_TIME);
+        map.put("endTime",Constants.WITHDRAW_END_TIME);
+        map.put("times",Constants.WITHDRAW_TIMES);
         return ResponseObj.success(map);
     }
 

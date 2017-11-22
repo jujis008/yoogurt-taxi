@@ -106,7 +106,9 @@ public class RestResult<T> implements Serializable {
         result.setStatus(obj.getStatus());
         result.setMessage(obj.getMessage());
         Object body = obj.getBody();
-        if (body != null) result.setBody((T) body);
+        if (body != null) {
+            result.setBody((T) body);
+        }
         result.setExtras(obj.getExtras());
         return result;
     }

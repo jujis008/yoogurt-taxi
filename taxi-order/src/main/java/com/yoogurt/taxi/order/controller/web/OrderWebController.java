@@ -2,7 +2,7 @@ package com.yoogurt.taxi.order.controller.web;
 
 import com.yoogurt.taxi.common.controller.BaseController;
 import com.yoogurt.taxi.common.enums.StatusCode;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.CommonResource;
 import com.yoogurt.taxi.dal.beans.OrderDisobeyInfo;
@@ -15,7 +15,7 @@ import com.yoogurt.taxi.dal.condition.order.TrafficViolationListCondition;
 import com.yoogurt.taxi.dal.enums.ResponsibleParty;
 import com.yoogurt.taxi.dal.enums.TrafficStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
-import com.yoogurt.taxi.dal.model.order.CancelOrderModel;
+import com.yoogurt.taxi.dal.model.order.CancelOrderModelBase;
 import com.yoogurt.taxi.order.form.CancelForm;
 import com.yoogurt.taxi.order.form.TrafficHandleForm;
 import com.yoogurt.taxi.order.service.*;
@@ -29,7 +29,6 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("web/order")
@@ -78,13 +77,7 @@ public class OrderWebController extends BaseController {
             return ResponseObj.fail(StatusCode.FORM_INVALID, "参数有误");
         }
 
-//        StringBuilder urlBuilder = new StringBuilder();
         List<CommonResource> resources = commonResourceService.getResources(linkId, name);
-//        for (int j=0,size=resources.size();j<size;j++) {
-//            CommonResource resource = resources.get(j);
-//            urlBuilder.append(resource.getUrl());
-//            if(j != size - 1) urlBuilder.append(",");
-//        }
         String stringStream = resources.stream().map(CommonResource::getUrl).collect(Collectors.joining(","));
         return ResponseObj.success(stringStream);
     }
@@ -104,7 +97,7 @@ public class OrderWebController extends BaseController {
         cancelForm.setInternal(false);
         cancelForm.setFromApp(false);
         cancelForm.setUserType(userType);
-        CancelOrderModel cancelOrderModel = cancelService.doCancel(cancelForm);
+        CancelOrderModelBase cancelOrderModel = cancelService.doCancel(cancelForm);
         return ResponseObj.success(cancelOrderModel);
     }
 
@@ -113,7 +106,7 @@ public class OrderWebController extends BaseController {
         if (!UserType.getEnumsByCode(super.getUser().getType()).isWebUser()) {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
-        Pager<RentInfo> rentListByPage = rentInfoService.getRentListForWebPage(condition);
+        BasePager<RentInfo> rentListByPage = rentInfoService.getRentListForWebPage(condition);
         return ResponseObj.success(rentListByPage);
     }
 
@@ -129,7 +122,7 @@ public class OrderWebController extends BaseController {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
         condition.setFromApp(false);
-        Pager<OrderTrafficViolationInfo> trafficViolations = trafficViolationService.getTrafficViolations(condition);
+        BasePager<OrderTrafficViolationInfo> trafficViolations = trafficViolationService.getTrafficViolations(condition);
         return ResponseObj.success(trafficViolations);
     }
 
@@ -168,7 +161,7 @@ public class OrderWebController extends BaseController {
             return ResponseObj.fail(StatusCode.NO_AUTHORITY);
         }
         condition.setFromApp(false);
-        Pager<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(condition);
+        BasePager<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(condition);
         return ResponseObj.success(disobeyList);
     }
 

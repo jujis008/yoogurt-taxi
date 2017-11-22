@@ -26,11 +26,15 @@ public class OrderPayNotifyReceiver implements TaskReceiver<EventTask> {
     @Override
     public void receive(@Payload EventTask eventTask) {
 
-        if (eventTask == null) return;
+        if (eventTask == null) {
+            return;
+        }
         TaskInfo task = eventTask.getTask();
         TaskStatus status = TaskStatus.getEnumByStatus(task.getStatusCode());
         //只接收处于 【可执行状态】 的支付任务
-        if (status == null || !status.isExecutable()) return;
+        if (status == null || !status.isExecutable()) {
+            return;
+        }
         log.info("[" + DateTime.now().toString("yyyy-MM-dd HH:mm:ss") + "] 收到回调任务，开始执行......");
         //记录任务开始的时间戳
         task.setStartTimestamp(System.currentTimeMillis());

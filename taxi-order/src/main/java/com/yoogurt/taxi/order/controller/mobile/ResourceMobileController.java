@@ -40,7 +40,9 @@ public class ResourceMobileController extends BaseController {
         for (int i=0,size=resources.size();i<size;i++) {
             CommonResource resource = resources.get(i);
             urlBuilder.append(resource.getUrl());
-            if(i != size - 1) urlBuilder.append(",");
+            if(i != size - 1) {
+                urlBuilder.append(",");
+            }
         }
         return ResponseObj.success(urlBuilder.toString());
     }

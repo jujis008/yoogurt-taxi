@@ -87,7 +87,7 @@ public class Alipay {
 
 
     public Map<String, Object> parameterMap() {
-        return new HashMap<String, Object>(){{
+        return new HashMap<String, Object>(16){{
             put("appId", "app_id");
             put("signType", "sign_type");
             put("notifyUrl", "notify_url");

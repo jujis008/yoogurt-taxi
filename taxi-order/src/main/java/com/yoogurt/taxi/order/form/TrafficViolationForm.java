@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class TrafficViolationForm extends OrderForm {
+public class TrafficViolationForm extends BaseOrderForm {
 
 	@NotNull(message = "请指定违章类型")
 	private Integer type;

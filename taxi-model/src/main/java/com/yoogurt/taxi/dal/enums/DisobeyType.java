@@ -7,9 +7,17 @@ import lombok.Getter;
  */
 @Getter
 public enum DisobeyType {
-
+    /**
+     *车主交车超时
+     */
     OFFICIAL_DRIVER_HANDOVER_TIMEOUT(10, "车主交车超时"),
+    /**
+     *司机还车超时
+     */
     AGENT_DRIVER_HANDOVER_TIMEOUT(20, "司机还车超时"),
+    /**
+     *司机取消
+     */
     CANCEL_ORDER(30, "司机取消"),
     ;
 

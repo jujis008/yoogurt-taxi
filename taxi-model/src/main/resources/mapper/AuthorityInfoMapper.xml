@@ -17,7 +17,7 @@
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="modifier" jdbcType="VARCHAR" property="modifier"/>
     </resultMap>
-    <resultMap id="AuthorityWLModelMap" type="com.yoogurt.taxi.dal.model.user.AuthorityWLModel">
+    <resultMap id="AuthorityWLModelMap" type="com.yoogurt.taxi.dal.model.user.AuthorityWebListModel">
         <id column="id" jdbcType="BIGINT" property="id"/>
         <result column="uri" jdbcType="VARCHAR" property="uri"/>
         <result column="authority_name" jdbcType="VARCHAR" property="authorityName"/>
@@ -25,15 +25,15 @@
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
     </resultMap>
-    <resultMap id="GroupAuthorityLModelMap" type="com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel">
+    <resultMap id="GroupAuthorityLModelMap" type="com.yoogurt.taxi.dal.model.user.GroupAuthorityListModel">
         <result column="authority_group" jdbcType="VARCHAR" property="groupName" />
-        <collection property="authorityList" ofType="com.yoogurt.taxi.dal.model.user.AuthorityLModel">
+        <collection property="authorityList" ofType="com.yoogurt.taxi.dal.model.user.AuthorityListModel">
             <result column="id" jdbcType="BIGINT" property="id"/>
             <result column="authority_name" jdbcType="VARCHAR" property="authorityName"/>
         </collection>
     </resultMap>
     <select id="getAuthorityWebList" resultMap="AuthorityWLModelMap"
-            parameterType="com.yoogurt.taxi.dal.condition.user.AuthorityWLCondition">
+            parameterType="com.yoogurt.taxi.dal.condition.user.AuthorityWebListCondition">
     SELECT id,uri,authority_name,authority_group,remark,gmt_modify FROM authority_info WHERE is_deleted=0
         <if test="uri != null and uri != ''">
             AND uri = #{uri}

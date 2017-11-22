@@ -48,7 +48,8 @@ public class RedisConfig {
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(getHessianSerializer()); //使用hessian序列化较为通用
+        //使用hessian序列化较为通用
+        template.setHashValueSerializer(getHessianSerializer());
         template.afterPropertiesSet();
         return template;
     }

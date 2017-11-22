@@ -10,7 +10,7 @@ import java.util.Map;
 @Setter
 @Getter
 @ToString
-public class WxNotify extends Notify {
+public class WxNotify extends BaseNotify {
 
 	/**
 	 * 微信开放平台审核通过的应用APPID
@@ -92,11 +92,10 @@ public class WxNotify extends Notify {
 
 	@Override
     public Map<String, Object> attributeMap() {
-		return new HashMap<String, Object>(){{
+		return new HashMap<String, Object>(22){{
 			put("appid", "appId");
 			put("out_trade_no", "orderNo");
 			put("transaction_id", "transactionNo");
-
 			put("mch_id", "mchId");
 			put("device_info", "deviceInfo");
 			put("out_biz_no", "outBizNo");

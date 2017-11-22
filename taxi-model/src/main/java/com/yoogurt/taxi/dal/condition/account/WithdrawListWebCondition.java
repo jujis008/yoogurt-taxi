@@ -14,8 +14,8 @@ public class WithdrawListWebCondition extends PageableCondition{
     private Integer billType;
     private Integer billStatus;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date startTime;
+    private String startTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date endTime;
+    private String endTime;
     private Integer tradeType;
 }

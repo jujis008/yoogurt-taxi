@@ -5,7 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderAcceptInfo;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
@@ -55,7 +55,7 @@ public class TrafficViolationServiceImpl extends AbstractOrderBizService impleme
     private PagerFactory webPagerFactory;
 
     @Override
-    public Pager<OrderTrafficViolationInfo> getTrafficViolations(TrafficViolationListCondition condition) {
+    public BasePager<OrderTrafficViolationInfo> getTrafficViolations(TrafficViolationListCondition condition) {
         Example ex = buildExample(condition);
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize(), "happen_time DESC");
         Page<OrderTrafficViolationInfo> page = (Page<OrderTrafficViolationInfo>) trafficViolationDao.selectByExample(ex);
@@ -67,17 +67,21 @@ public class TrafficViolationServiceImpl extends AbstractOrderBizService impleme
 
     @Override
     public OrderTrafficViolationInfo getTrafficViolationInfo(Long id) {
-        if (id == null || id <= 0) return null;
+        if (id == null || id <= 0) {
+            return null;
+        }
         return trafficViolationDao.selectById(id);
     }
 
     @Override
     public OrderTrafficViolationInfo addTrafficViolation(OrderTrafficViolationInfo trafficViolation) {
-        if (trafficViolation == null) return null;
+        if (trafficViolation == null) {
+            return null;
+        }
         if (trafficViolationDao.insertSelective(trafficViolation) == 1) {
             statisticService.record(OrderStatisticForm.builder().userId(trafficViolation.getUserId()).disobeyCount(1).build());
             OrderInfo orderInfo = orderInfoService.getOrderInfo(trafficViolation.getOrderId(), trafficViolation.getUserId());
-            super.push(orderInfo, UserType.getEnumsByCode(trafficViolation.getUserType()), SendType.TRAFFIC_VIOLATION, new HashMap<>());
+            super.push(orderInfo, UserType.getEnumsByCode(trafficViolation.getUserType()), SendType.TRAFFIC_VIOLATION, new HashMap<>(1));
             return trafficViolation;
         }
         return null;
@@ -87,11 +91,17 @@ public class TrafficViolationServiceImpl extends AbstractOrderBizService impleme
     public ResponseObj buildTrafficViolation(TrafficViolationForm form) {
         ResponseObj validateResult = isAllowed(form.getOrderId(), form.getUserId());
         //校验不成功，直接返回校验结果
-        if(!validateResult.isSuccess()) return validateResult;
+        if(!validateResult.isSuccess()) {
+            return validateResult;
+        }
 
         OrderInfo orderInfo = orderInfoService.getOrderInfo(form.getOrderId(), form.getUserId());
-        if (orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
-        if(!OrderStatus.FINISH.getCode().equals(orderInfo.getStatus())) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单未完成，不能添加违章记录");
+        if (orderInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
+        }
+        if(!OrderStatus.FINISH.getCode().equals(orderInfo.getStatus())) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单未完成，不能添加违章记录");
+        }
         OrderTrafficViolationInfo traffic = new OrderTrafficViolationInfo();
         BeanUtils.copyProperties(form, traffic);
         traffic.setInputUserId(form.getUserId());
@@ -116,13 +126,24 @@ public class TrafficViolationServiceImpl extends AbstractOrderBizService impleme
      */
     @Override
     public OrderTrafficViolationInfo modifyStatus(Long id, TrafficStatus status) {
-        if (id == null || id <= 0 || status == null) return null;
+        if (id == null || id <= 0 || status == null) {
+            return null;
+        }
         OrderTrafficViolationInfo traffic = getTrafficViolationInfo(id);
-        if (traffic == null) return null;
-        if (status.getCode() < traffic.getStatus()) return null;//状态不能倒退
-        if (status.getCode().equals(traffic.getStatus())) return traffic;
+        if (traffic == null) {
+            return null;
+        }
+        if (status.getCode() < traffic.getStatus()) {
+            //状态不能倒退
+            return null;
+        }
+        if (status.getCode().equals(traffic.getStatus())) {
+            return traffic;
+        }
         traffic.setStatus(status.getCode());
-        if (trafficViolationDao.updateByIdSelective(traffic) == 1) return traffic;
+        if (trafficViolationDao.updateByIdSelective(traffic) == 1) {
+            return traffic;
+        }
         return null;
     }
 
@@ -136,7 +157,9 @@ public class TrafficViolationServiceImpl extends AbstractOrderBizService impleme
     @Override
     public ResponseObj isAllowed(String orderId, String userId) {
         OrderAcceptInfo acceptInfo = acceptService.getAcceptInfo(orderId);
-        if (acceptInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单暂未结束");
+        if (acceptInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单暂未结束");
+        }
         int days = Days.daysBetween(new DateTime(), new DateTime((acceptInfo.getGmtCreate()))).getDays();
         return days <= Constants.MAX_INTERVAL_DAYS ? ResponseObj.success() : ResponseObj.fail(StatusCode.BIZ_FAILED, "交易结束后" + Constants.MAX_INTERVAL_DAYS + "天内才能提交违章记录");
     }

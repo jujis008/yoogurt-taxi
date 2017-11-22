@@ -1,9 +1,9 @@
 package com.yoogurt.taxi.pay.service;
 
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.pay.doc.Event;
 
-public interface EventService<T extends Notify> extends EventTaskService {
+public interface EventService<T extends BaseNotify> extends EventTaskService {
 
     Event<T> getEvent(String eventId);
 

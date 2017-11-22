@@ -23,7 +23,9 @@ public class CancelRuleServiceImpl implements CancelRuleService {
     @Override
     public String getIntroduction() {
         List<OrderCancelRule> ruleList = getRules();
-        if (CollectionUtils.isEmpty(ruleList)) return StringUtils.EMPTY;
+        if (CollectionUtils.isEmpty(ruleList)) {
+            return StringUtils.EMPTY;
+        }
         StringBuilder introduction = new StringBuilder("取消订单规则说明：\n");
         ruleList.forEach((OrderCancelRule rule) -> {
             String unit = getCNTimeUnit(rule.getUnit());
@@ -56,9 +58,13 @@ public class CancelRuleServiceImpl implements CancelRuleService {
      */
     @Override
     public OrderCancelRule getRuleInfo(long milliseconds) {
-        if (milliseconds <= 0) return null;
+        if (milliseconds <= 0) {
+            return null;
+        }
         List<OrderCancelRule> rules = getRules();
-        if (CollectionUtils.isEmpty(rules)) return null;
+        if (CollectionUtils.isEmpty(rules)) {
+            return null;
+        }
         for (OrderCancelRule rule : rules) {
             TimeUnit unit = TimeUnit.valueOf(rule.getUnit());
             long startMillis = unit.toMillis(rule.getStart());
@@ -67,7 +73,9 @@ public class CancelRuleServiceImpl implements CancelRuleService {
             if (milliseconds >= startMillis) {
                 //正好在某个时段区间内
                 //xx小时以上的情况，满足如下判定条件
-                if (milliseconds <= endMillis || endMillis <= 0) return rule;
+                if (milliseconds <= endMillis || endMillis <= 0) {
+                    return rule;
+                }
             }
         }
         return null;
@@ -77,7 +85,8 @@ public class CancelRuleServiceImpl implements CancelRuleService {
     public List<OrderCancelRule> getRules() {
         Example ex = new Example(OrderCancelRule.class);
         ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE);
-        ex.setOrderByClause("start ASC"); //按照时段下限由小到大排序
+        //按照时段下限由小到大排序
+        ex.setOrderByClause("start ASC");
         return ruleDao.selectByExample(ex);
     }
 

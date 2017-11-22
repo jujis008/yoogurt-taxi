@@ -23,7 +23,9 @@ public class XmlUtil {
      * @author liuwh
      */
     public static Document createDocument(String text) throws DocumentException {
-        if (!StringUtils.isBlank(text)) return DocumentHelper.parseText(text);
+        if (!StringUtils.isBlank(text)) {
+            return DocumentHelper.parseText(text);
+        }
         return DocumentHelper.createDocument();
     }
 
@@ -36,7 +38,9 @@ public class XmlUtil {
      * @author liuwh
      */
     public static Element createElement(String name, String text) {
-        if (StringUtils.isBlank(name)) return null;
+        if (StringUtils.isBlank(name)) {
+            return null;
+        }
         Element element = DocumentHelper.createElement(name);
         if (!StringUtils.isBlank(text)) {
             element.setText(text);

@@ -23,7 +23,9 @@ public class OrderStatisticServiceImpl implements OrderStatisticService {
      */
     @Override
     public OrderStatistic getOrderStatistics(String userId) {
-        if(StringUtils.isBlank(userId)) return null;
+        if(StringUtils.isBlank(userId)) {
+            return null;
+        }
         return orderStatisticDao.selectById(userId);
     }
 

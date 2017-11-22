@@ -7,11 +7,25 @@ import lombok.Getter;
  */
 @Getter
 public enum RentStatus {
-
+    /**
+     *待接单
+     */
     WAITING(10,"待接单"),
+    /**
+     *已接单
+     */
     RENT(20,"已接单"),
+    /**
+     *手动取消
+     */
     CANCELED(30,"手动取消"),
+    /**
+     *超时自动取消
+     */
     TIMEOUT(40,"超时自动取消"),
+    /**
+     *已完成
+     */
     FINISH(50,"已完成"),
     ;
     private Integer code;

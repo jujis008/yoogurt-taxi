@@ -12,8 +12,13 @@ import org.apache.commons.lang.StringUtils;
  * @author weihao.liu
  */
 public enum MsgType {
-
-    ALL("10", "群推"), // 含push_all类型的推送
+    /**
+     * 群推
+     */
+    ALL("10", "群推"),
+    /**
+     * 单个推
+     */
     SINGLE("20", "单个推");
 
     private String  type;

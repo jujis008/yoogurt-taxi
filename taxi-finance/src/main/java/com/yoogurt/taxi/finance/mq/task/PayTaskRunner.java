@@ -22,7 +22,9 @@ public class PayTaskRunner extends AbstractPayTaskRunner {
     @Override
     public CompletableFuture<ResponseObj> doTask(PayTask payTask) {
         PayChannel channel = PayChannel.getChannelByName(payTask.getPayParams().getChannel());
-        if (channel == null) return null;
+        if (channel == null) {
+            return null;
+        }
 
         PayChannelService payChannelService = (PayChannelService) context.getBean(channel.getServiceName());
         return payChannelService.doTask(payTask);

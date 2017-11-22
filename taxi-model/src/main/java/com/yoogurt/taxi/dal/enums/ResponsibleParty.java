@@ -7,9 +7,17 @@ import lombok.Getter;
  */
 @Getter
 public enum ResponsibleParty {
-
+    /**
+     *车主
+     */
     OFFICIAL(10, 30, "车主"),
+    /**
+     *司机
+     */
     AGENT(20, 20, "司机"),
+    /**
+     *无责
+     */
     NONE(30, 0, "无责"),
     ;
 

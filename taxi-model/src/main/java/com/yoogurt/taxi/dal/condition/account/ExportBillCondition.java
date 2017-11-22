@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
-
 @Getter
 @Setter
 public class ExportBillCondition {
@@ -13,9 +11,9 @@ public class ExportBillCondition {
     private Integer billType;
     private Integer billStatus;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date startTime;
+    private String startTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date endTime;
+    private String endTime;
     private Integer tradeType;
     private Integer destinationType;
 }

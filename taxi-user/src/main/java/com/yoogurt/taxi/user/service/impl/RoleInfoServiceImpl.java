@@ -5,7 +5,7 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.RoleAuthorityInfo;
 import com.yoogurt.taxi.dal.beans.RoleInfo;
 import com.yoogurt.taxi.dal.beans.UserRoleInfo;
-import com.yoogurt.taxi.dal.model.user.RoleWLModel;
+import com.yoogurt.taxi.dal.model.user.RoleWebListModel;
 import com.yoogurt.taxi.user.dao.RoleAuthorityDao;
 import com.yoogurt.taxi.user.dao.RoleDao;
 import com.yoogurt.taxi.user.dao.UserRoleDao;
@@ -81,7 +81,7 @@ public class RoleInfoServiceImpl implements RoleInfoService{
     }
 
     @Override
-    public List<RoleWLModel> getRoleWebList() {
+    public List<RoleWebListModel> getRoleWebList() {
         return roleDao.getRoleWebList();
     }
 }

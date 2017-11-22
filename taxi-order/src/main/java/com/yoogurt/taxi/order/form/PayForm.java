@@ -6,7 +6,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 @Getter
 @Setter
-public class PayForm extends OrderForm{
+public class PayForm extends BaseOrderForm {
 
 	@NotBlank(message = "请指定支付方式")
 	private String payChannel;

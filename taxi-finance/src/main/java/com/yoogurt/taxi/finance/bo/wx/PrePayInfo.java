@@ -72,7 +72,7 @@ public final class PrePayInfo implements Serializable {
 	private String timeExpire;
 
 	public Map<String, Object> parameterMap() {
-		return new HashMap<String, Object>(){{
+		return new HashMap<String, Object>(14){{
 			put("appId", "appid");
 			put("mchId", "mch_id");
 			put("openId", "openid");

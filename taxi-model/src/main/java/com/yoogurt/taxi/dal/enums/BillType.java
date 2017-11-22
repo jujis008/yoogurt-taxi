@@ -4,7 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum BillType {
+    /**
+     * 押金
+     */
     DEPOSIT(10,"押金"),
+    /**
+     * 余额
+     */
     BALANCE(20,"余额"),
     ;
 

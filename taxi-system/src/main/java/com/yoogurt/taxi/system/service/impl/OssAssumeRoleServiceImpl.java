@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class OssAssumeRoleServiceImpl implements OssAssumeRoleService{
-    // 目前只有"cn-hangzhou"这个region可用, 不要使用填写其他region的值
+    /**目前只有"cn-hangzhou"这个region可用, 不要使用填写其他region的值*/
     public static final String REGION_CN_HANGZHOU = "cn-hangzhou";
-    // 当前 STS API 版本
+    /**当前 STS API 版本*/
     public static final String STS_API_VERSION = "2015-04-01";
 
     @Override

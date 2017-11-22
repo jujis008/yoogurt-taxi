@@ -16,9 +16,17 @@ import org.apache.commons.lang.StringUtils;
  * Copyright 2016 tsou.com, Inc. All rights reserved
  */
 public enum DeviceType {
-
-    ALL("all", "全部设备"), 
-    ANDROID("android", "安卓设备"), 
+    /**
+     * 全部设备
+     */
+    ALL("all", "全部设备"),
+    /**
+     * 安卓设备
+     */
+    ANDROID("android", "安卓设备"),
+    /**
+     * 苹果设备
+     */
     IOS("IOS", "苹果设备");
 
     private String  type;

@@ -1,10 +1,10 @@
 package com.yoogurt.taxi.finance.controller.mobile;
 
 import com.yoogurt.taxi.common.controller.BaseController;
-import com.yoogurt.taxi.common.utils.RSA;
+import com.yoogurt.taxi.common.utils.Rsa;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.bo.AlipayNotify;
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.pay.doc.Event;
 import com.yoogurt.taxi.pay.doc.EventTask;
 import com.yoogurt.taxi.pay.service.NotifyService;
@@ -50,7 +50,7 @@ public class AlipayNotifyController extends BaseController {
         PrintWriter out = response.getWriter();
         Map<String, Object> params = alipayService.parameterResolve(request, null);
         //回调验签
-        if (!alipayService.signVerify(params, RSA.RSA2_ALGORITHMS, RSA.getDefaultCharset())) {
+        if (!alipayService.signVerify(params, Rsa.RSA2_ALGORITHMS, Rsa.getDefaultCharset())) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.write("非法的回调请求");
             return;
@@ -58,11 +58,12 @@ public class AlipayNotifyController extends BaseController {
         //参数解析&映射
         Map<String, Object> parameterMap = alipayService.parameterResolve(request, new AlipayNotify().attributeMap());
         //event对象解析
-        Event<? extends Notify> event = alipayService.eventParse(parameterMap);
+        Event<? extends BaseNotify> event = alipayService.eventParse(parameterMap);
         if (event != null) {
             log.info("[AlipayNotifyController]接收到支付宝回调：\n" + event.toString());
             EventTask eventTask = notifyService.submit(event);
-            if (eventTask != null) {//回调成功
+            //回调成功
+            if (eventTask != null) {
                 log.info("[AlipayNotifyController]支付宝回调任务提交成功：\n" + eventTask.toString());
                 response.setStatus(HttpServletResponse.SC_OK);
                 out.write("success");
@@ -82,7 +83,7 @@ public class AlipayNotifyController extends BaseController {
      */
     @RequestMapping(value = "/alipay/result/{taskId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj queryResult(@PathVariable(name = "taskId") String taskId) {
-        Event<Notify> event = notifyService.queryResult(taskId);
+        Event<BaseNotify> event = notifyService.queryResult(taskId);
         return ResponseObj.success(event);
     }
 
@@ -95,7 +96,7 @@ public class AlipayNotifyController extends BaseController {
     @RequestMapping(value = "/alipay/event/{eventId}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getEventTask(@PathVariable(name = "eventId") String eventId) {
 
-        Event<Notify> event = notifyService.queryResult(eventId);
+        Event<BaseNotify> event = notifyService.queryResult(eventId);
         return ResponseObj.success(event);
     }
 

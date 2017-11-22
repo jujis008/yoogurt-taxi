@@ -17,7 +17,9 @@ public class SmsSender {
 
     public void send(SmsPayload payload) {
 
-        if (payload == null) return;
+        if (payload == null) {
+            return;
+        }
         log.info("消息入队："+ JSON.toJSONString(payload));
         rabbitTemplate.convertAndSend(MessageQueue.SMS_NOTIFICATION_QUEUE.getExchange(), MessageQueue.SMS_NOTIFICATION_QUEUE.getRoutingKey(), payload);
     }

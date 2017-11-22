@@ -8,9 +8,17 @@ package com.yoogurt.taxi.dal.enums;
  * @author liu.weihao
  */
 public enum DeviceStatus {
-
+    /**
+     *未绑定
+     */
     UNBIND(10, "未绑定"),
+    /**
+     * 已绑定
+     */
     BIND(20, "已绑定"),
+    /**
+     * 黑名单
+     */
     BLACK_LIST(30, "黑名单");
 
     private int    status;

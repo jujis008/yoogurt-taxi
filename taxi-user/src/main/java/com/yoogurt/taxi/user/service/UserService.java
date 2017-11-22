@@ -1,15 +1,15 @@
 package com.yoogurt.taxi.user.service;
 
 import com.yoogurt.taxi.common.helper.excel.ErrorCellBean;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.CarInfo;
 import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
-import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
+import com.yoogurt.taxi.dal.condition.user.UserWebListCondition;
 import com.yoogurt.taxi.dal.enums.UserStatus;
 import com.yoogurt.taxi.dal.enums.UserType;
-import com.yoogurt.taxi.dal.model.user.UserWLModel;
+import com.yoogurt.taxi.dal.model.user.UserWebListModel;
 import com.yoogurt.taxi.user.form.UserForm;
 
 import java.util.List;
@@ -110,7 +110,7 @@ public interface UserService {
      */
     ResponseObj removeUser(String userId);
 
-    ResponseObj InsertUser(UserInfo userInfo);
+    ResponseObj insertUser(UserInfo userInfo);
 
     ResponseObj modifyUser(UserInfo userInfo);
 
@@ -123,7 +123,7 @@ public interface UserService {
      * @param condition
      * @return
      */
-    Pager<UserWLModel> getUserWebList(UserWLCondition condition);
+    BasePager<UserWebListModel> getUserWebList(UserWebListCondition condition);
 
     List<ErrorCellBean> importAgentDriversFromExcel(List<Map<String, Object>> list);
 

@@ -53,11 +53,13 @@ public class DisobeyRuleController extends BaseController {
 
     @RequestMapping(value = "/disobey/rules/{orderId}/{type}", method = RequestMethod.GET, produces = {"application/json;charset=utf-8"})
     public ResponseObj getRule(@PathVariable(name = "orderId") String orderId, @PathVariable(name = "type") String type) {
-        Map<String, Object> extras = new HashMap<>();
+        Map<String, Object> extras = new HashMap<>(2);
         extras.put("type", type);
         OrderInfo orderInfo = orderInfoService.getOrderInfo(orderId, super.getUserId());
-        if(orderInfo == null) return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
-        long period = orderInfo.getHandoverTime().getTime() - new Date().getTime();
+        if(orderInfo == null) {
+            return ResponseObj.fail(StatusCode.BIZ_FAILED, "订单不存在");
+        }
+        long period = orderInfo.getHandoverTime().getTime() - System.currentTimeMillis();
         if ("cancel".equalsIgnoreCase(type)) {
 
             OrderCancelRule rule = cancelRuleService.getRuleInfo(period);

@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.pay.doc;
 
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.dal.bo.TaskInfo;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -19,7 +19,7 @@ public class EventTask implements Serializable {
 
 	private TaskInfo task;
 
-	private Event<? extends Notify> event;
+	private Event<? extends BaseNotify> event;
 
 	private Payment payment;
 

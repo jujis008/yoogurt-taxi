@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.system.service.impl;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.dal.beans.FeedbackRecord;
 import com.yoogurt.taxi.dal.condition.system.FeedbackRecordCondition;
 import com.yoogurt.taxi.system.dao.FeedbackRecordDao;
@@ -18,7 +18,7 @@ public class FeedBackRecordServiceImpl implements FeedBackRecordService {
     }
 
     @Override
-    public Pager<FeedbackRecord> getWebList(FeedbackRecordCondition condition) {
+    public BasePager<FeedbackRecord> getWebList(FeedbackRecordCondition condition) {
         return feedbackRecordDao.getWebList(condition);
     }
 

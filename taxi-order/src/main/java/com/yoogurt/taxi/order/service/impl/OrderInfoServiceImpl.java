@@ -8,7 +8,7 @@ import com.yoogurt.taxi.common.constant.Constants;
 import com.yoogurt.taxi.common.enums.StatusCode;
 import com.yoogurt.taxi.common.factory.PagerFactory;
 import com.yoogurt.taxi.common.helper.RedisHelper;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.utils.BeanRefUtils;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.common.vo.RestResult;
@@ -70,9 +70,12 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     @Autowired
     private RedisHelper redisHelper;
 
-    private ReentrantLock lock = new ReentrantLock(); //下单专用锁
+    /**
+     * 下单专用锁
+     */
+    private ReentrantLock lock = new ReentrantLock();
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseObj placeOrder(PlaceOrderForm orderForm) {
         boolean success = false;
@@ -104,7 +107,8 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
 
             redisHelper.del(CacheKey.MESSAGE_ORDER_TIMEOUT_KEY + rentId);
             //设置交车前1小时提醒任务
-            if (durationSeconds - 3600 > 10) {//如果接单时，距离交车时间不足一小时，就不用发通知了
+            //如果接单时，距离交车时间不足一小时，就不用发通知了
+            if (durationSeconds - 3600 > 10) {
                 redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_REMINDER1_KEY + rentId, rentId, durationSeconds - 3600);
             }
 
@@ -117,7 +121,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             long seconds = (TimeUnit.valueOf(rule.getUnit()).toSeconds(divide.longValue()) + durationSeconds);
             redisHelper.set(CacheKey.MESSAGE_ORDER_HANDOVER_UNFINISHED_REMINDER_KEY + rentId, rentId, seconds);
             //已接单，通知对方
-            super.push(orderInfo, UserType.getEnumsByCode(orderForm.getUserType()).equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_RENT, new HashMap<>());
+            super.push(orderInfo, UserType.getEnumsByCode(orderForm.getUserType()).equals(UserType.USER_APP_AGENT) ? UserType.USER_APP_OFFICE : UserType.USER_APP_AGENT, SendType.ORDER_RENT, new HashMap<>(1));
             OrderModel model = new OrderModel();
             BeanUtils.copyProperties(orderInfo, model);
             model.setOrderTime(orderInfo.getGmtCreate());
@@ -127,7 +131,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     }
 
     @Override
-    public Pager<OrderModel> getOrderList(OrderListCondition condition) {
+    public BasePager<OrderModel> getOrderList(OrderListCondition condition) {
 
         Page<OrderModel> orders = orderDao.getOrderList(condition);
 
@@ -143,7 +147,7 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
      * @author wudeyou
      */
     @Override
-    public Pager<OrderModel> getWebOrderList(OrderListCondition condition) {
+    public BasePager<OrderModel> getWebOrderList(OrderListCondition condition) {
         Page<OrderModel> webOrderList = orderDao.getWebOrderList(condition);
         return webPagerFactory.generatePager(webOrderList);
     }
@@ -165,7 +169,9 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     @Override
     public OrderInfo getOrderInfo(String orderId, String userId) {
         OrderInfo orderInfo = orderDao.selectById(orderId);
-        if (orderInfo == null) return null;
+        if (orderInfo == null) {
+            return null;
+        }
         //用户id不符合
         if (StringUtils.isNotBlank(userId) && !userId.equals(orderInfo.getAgentUserId()) && !userId.equals(orderInfo.getOfficialUserId())) {
             return null;
@@ -202,7 +208,9 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
     @Override
     public Map<String, Object> getOrderDetails(String orderId, String userId) {
         OrderInfo orderInfo = getOrderInfo(orderId, userId);
-        if (orderInfo == null) return null;
+        if (orderInfo == null) {
+            return null;
+        }
         Map<String, Object> result = Maps.newHashMap();
 
         //构造主订单的信息
@@ -218,7 +226,9 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             //根据订单状态生成对应的model，此时对象的属性还未注入
             OrderModel model = getOrderModel(previous);
             previous = previous.previous();
-            if (model == null) continue;
+            if (model == null) {
+                continue;
+            }
             //根据名称，获取service
             //这里需要子订单的各个service继承OrderBizService接口
             OrderBizService service = (OrderBizService) context.getBean(model.getServiceName());
@@ -229,13 +239,6 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
             String key = name.replaceFirst(firstLetter, firstLetter.toLowerCase(Locale.ENGLISH));
             result.put(key, BeanRefUtils.toMap(info, false));
         }
-        /*
-        //违约记录
-        DisobeyListCondition condition = new DisobeyListCondition();
-        condition.setOrderId(orderId);
-        List<OrderDisobeyInfo> disobeyList = disobeyService.getDisobeyList(orderId, null);
-        result.put("disobeys", disobeyList);
-        */
         return result;
     }
 
@@ -248,11 +251,21 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
      */
     @Override
     public boolean modifyStatus(String orderId, OrderStatus status) {
-        if (StringUtils.isBlank(orderId) || status == null) return false;
+        if (StringUtils.isBlank(orderId) || status == null) {
+            return false;
+        }
         OrderInfo orderInfo = getOrderInfo(orderId, null);
-        if (orderInfo == null) return false;
-        if (status.getCode().equals(orderInfo.getStatus())) return true; //与原租单状态相同，直接返回true
-        if (status.getCode() < orderInfo.getStatus()) return false; //不允许状态回退
+        if (orderInfo == null) {
+            return false;
+        }
+        if (status.getCode().equals(orderInfo.getStatus())) {
+            //与原租单状态相同，直接返回true
+            return true;
+        }
+        if (status.getCode() < orderInfo.getStatus()) {
+            //不允许状态回退
+            return false;
+        }
 
         orderInfo.setStatus(status.getCode());
         return saveOrderInfo(orderInfo, false) != null;
@@ -267,11 +280,17 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
      */
     @Override
     public OrderInfo saveOrderInfo(OrderInfo orderInfo, boolean add) {
-        if (orderInfo == null) return null;
+        if (orderInfo == null) {
+            return null;
+        }
         if (add) {
-            if (orderDao.insertSelective(orderInfo) != 1) return null;
+            if (orderDao.insertSelective(orderInfo) != 1) {
+                return null;
+            }
         } else {
-            if (orderDao.updateByIdSelective(orderInfo) != 1) return null;
+            if (orderDao.updateByIdSelective(orderInfo) != 1) {
+                return null;
+            }
         }
         return orderInfo;
     }
@@ -355,13 +374,16 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         }
         String userId = orderForm.getUserId();
         ResponseObj obj = super.isAllowed(userId, orderForm.getUserType());
-        if (!obj.isSuccess()) return obj;
+        if (!obj.isSuccess()) {
+            return obj;
+        }
 
         DateTimeSection section = new DateTimeSection(rentInfo.getHandoverTime(), rentInfo.getGiveBackTime());
         //3. 未完成订单数量不超过上限
         List<OrderInfo> orderList = getOrderList(userId, orderForm.getUserType(), OrderStatus.HAND_OVER.getCode(), OrderStatus.PICK_UP.getCode(), OrderStatus.GIVE_BACK.getCode(), OrderStatus.ACCEPT.getCode());
-        if (CollectionUtils.size(orderList) >= Constants.MAX_RENT_COUNT)
+        if (CollectionUtils.size(orderList) >= Constants.MAX_RENT_COUNT) {
             return ResponseObj.fail(StatusCode.BIZ_FAILED, "最多发布" + Constants.MAX_RENT_COUNT + "笔租单");
+        }
 
         //4. 交易时间不重叠
         for (OrderInfo orderInfo : orderList) {
@@ -379,7 +401,9 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
         //校验是否满足下单条件
         ResponseObj validateResult = isAllowOrder(rentInfo, orderForm);
         //下单校验未通过
-        if (!validateResult.isSuccess()) return validateResult;
+        if (!validateResult.isSuccess()) {
+            return validateResult;
+        }
         String userId = orderForm.getUserId();
         //用户信息
         RestResult<UserInfo> userResult = userService.getUserInfoById(userId);
@@ -485,19 +509,21 @@ public class OrderInfoServiceImpl extends AbstractOrderBizService implements Ord
      * @return OrderModel
      */
     private OrderModel getOrderModel(OrderStatus status) {
-        if (status == null) return null;
+        if (status == null) {
+            return null;
+        }
 
         switch (status) {
             case HAND_OVER:
-                return new HandoverOrderModel();
+                return new HandoverOrderModelBase();
             case PICK_UP:
                 return new PickUpOrderModel();
             case GIVE_BACK:
-                return new GiveBackOrderModel();
+                return new GiveBackOrderModelBase();
             case ACCEPT:
                 return new AcceptOrderModel();
             case CANCELED:
-                return new CancelOrderModel();
+                return new CancelOrderModelBase();
             default:
                 return null;
         }

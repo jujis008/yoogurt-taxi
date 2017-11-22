@@ -5,15 +5,13 @@ import com.github.pagehelper.PageHelper;
 import com.yoogurt.taxi.common.dao.impl.BaseDao;
 import com.yoogurt.taxi.dal.beans.RentInfo;
 import com.yoogurt.taxi.dal.condition.order.RentListCondition;
-import com.yoogurt.taxi.dal.condition.order.RentPOICondition;
-import com.yoogurt.taxi.dal.condition.order.RentWebListCondition;
+import com.yoogurt.taxi.dal.condition.order.RentPoiCondition;
 import com.yoogurt.taxi.dal.mapper.RentInfoMapper;
 import com.yoogurt.taxi.dal.model.order.RentInfoModel;
 import com.yoogurt.taxi.order.dao.RentDao;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class RentDaoImpl extends BaseDao<RentInfoMapper, RentInfo> implements Re
     private RentInfoMapper rentInfoMapper;
 
     @Override
-    public List<RentInfoModel> getRentList(RentPOICondition condition) {
+    public List<RentInfoModel> getRentList(RentPoiCondition condition) {
         return rentInfoMapper.getRentList(condition.getUserId(), condition.getUserType(), condition.getStatus(),
                 condition.getMaxLng(), condition.getMinLng(),
                 condition.getMaxLat(), condition.getMinLat(),

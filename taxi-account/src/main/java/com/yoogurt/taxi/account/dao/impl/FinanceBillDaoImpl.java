@@ -6,7 +6,7 @@ import com.yoogurt.taxi.account.dao.FinanceBillDao;
 import com.yoogurt.taxi.common.dao.impl.BaseDao;
 import com.yoogurt.taxi.common.factory.AppPagerFactory;
 import com.yoogurt.taxi.common.factory.WebPagerFactory;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.dal.beans.FinanceBill;
 import com.yoogurt.taxi.dal.condition.account.AccountListAppCondition;
 import com.yoogurt.taxi.dal.condition.account.BillListWebCondition;
@@ -31,21 +31,21 @@ public class FinanceBillDaoImpl extends BaseDao<FinanceBillMapper,FinanceBill> i
     @Autowired
     private WebPagerFactory webPagerFactory;
     @Override
-    public Pager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition) {
+    public BasePager<FinanceBillListAppModel> getFinanceBillListApp(AccountListAppCondition condition) {
         PageHelper.startPage(condition.getPageNum(),condition.getPageSize()).setOrderBy(" gmt_modify desc");
         Page<FinanceBillListAppModel> financeBillListApp = financeBillMapper.getFinanceBillListApp(condition);
         return appPagerFactory.generatePager(financeBillListApp);
     }
 
     @Override
-    public Pager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition) {
+    public BasePager<FinanceBillListWebModel> getFinanceBillListWeb(BillListWebCondition condition) {
         PageHelper.startPage(condition.getPageNum(),condition.getPageSize()).setOrderBy(" gmt_create desc");
         Page<FinanceBillListWebModel> financeBillListWeb = financeBillMapper.getFinanceBillListWeb(condition);
         return webPagerFactory.generatePager(financeBillListWeb);
     }
 
     @Override
-    public Pager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition) {
+    public BasePager<WithdrawBillListWebModel> getWithdrawBillListWeb(WithdrawListWebCondition condition) {
         PageHelper.startPage(condition.getPageNum(),condition.getPageSize());
         Page<WithdrawBillListWebModel> withdrawBillListWeb = financeBillMapper.getWithdrawBillListWeb(condition);
         return webPagerFactory.generatePager(withdrawBillListWeb);

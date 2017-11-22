@@ -68,7 +68,8 @@ public class CommonUtils {
         int i = -1;
         int pos = 0;
 
-        while ((i = unicode.indexOf("\\u", pos)) != -1) {
+        String str = "\\u";
+        while ((i = unicode.indexOf(str, pos)) != -1) {
             sb.append(unicode.substring(pos, i));
             if (i + 5 < unicode.length()) {
                 pos = i + 6;
@@ -255,7 +256,9 @@ public class CommonUtils {
      * @date 2016年12月31日
      */
     public static String readFile(File file) {
-        if (file == null || file.isDirectory()) return StringUtils.EMPTY;
+        if (file == null || file.isDirectory()) {
+            return StringUtils.EMPTY;
+        }
         StringBuilder dataBuilder = new StringBuilder();
         FileInputStream in = null;
         InputStreamReader inReader = null;
@@ -278,9 +281,15 @@ public class CommonUtils {
             e.printStackTrace();
         } finally {
             try {
-                if (in != null) in.close();
-                if (inReader != null) inReader.close();
-                if (bf != null) bf.close();
+                if (in != null) {
+                    in.close();
+                }
+                if (inReader != null) {
+                    inReader.close();
+                }
+                if (bf != null) {
+                    bf.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -308,8 +317,8 @@ public class CommonUtils {
         if (ipAddress == null || ipAddress.length() == 0
                 || Constants.UNKNOWN.equalsIgnoreCase(ipAddress)) {
             ipAddress = request.getRemoteAddr();
-            if (ipAddress.equals("127.0.0.1")
-                    || ipAddress.equals("0:0:0:0:0:0:0:1")) {
+            if ("127.0.0.1".equals(ipAddress)
+                    || "0:0:0:0:0:0:0:1".equals(ipAddress)) {
                 // 根据网卡取本机配置的IP
                 InetAddress inet = null;
                 try {
@@ -321,7 +330,8 @@ public class CommonUtils {
             }
         }
         // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
-        if (ipAddress != null && ipAddress.length() > 15) { // "***.***.***.***".length() = 15
+        // "***.***.***.***".length() = 15
+        if (ipAddress != null && ipAddress.length() > 15) {
             if (ipAddress.indexOf(",") > 0) {
                 ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
             }
@@ -353,14 +363,16 @@ public class CommonUtils {
      * @author liu.weihao
      */
     public static int getLength(String str) {
-        if (str == null)
+        if (str == null) {
             return 0;
+        }
         char[] c = str.toCharArray();
         int len = 0;
         for (char aC : c) {
             len++;
-            if (!isLetter(aC))
+            if (!isLetter(aC)) {
                 len++;
+            }
         }
         return len;
     }
@@ -389,7 +401,9 @@ public class CommonUtils {
      */
     public static String convertName(String name, String append, int left) {
 
-        if (StringUtils.isBlank(name)) return StringUtils.EMPTY;
+        if (StringUtils.isBlank(name)) {
+            return StringUtils.EMPTY;
+        }
         String leftStr = StringUtils.left(name, left);
         return StringUtils.isBlank(append) ? leftStr : (leftStr + append);
     }
@@ -416,7 +430,8 @@ public class CommonUtils {
     public static void xmlOutput(org.dom4j.Document document) {
         try {
             // 设置输出格式
-            OutputFormat format = new OutputFormat("    ", true);// 设置缩进为4个空格，并且另起一行为true
+            // 设置缩进为4个空格，并且另起一行为true
+            OutputFormat format = new OutputFormat("    ", true);
             // 输出到控制台
             XMLWriter xmlWriter = new XMLWriter(format);
             xmlWriter.write(document);

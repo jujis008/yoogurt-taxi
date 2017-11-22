@@ -4,7 +4,7 @@ import com.yoogurt.taxi.common.constant.CacheKey;
 import com.yoogurt.taxi.common.enums.MessageQueue;
 import com.yoogurt.taxi.common.helper.RedisHelper;
 import com.yoogurt.taxi.common.utils.RandomUtils;
-import com.yoogurt.taxi.dal.bo.Notify;
+import com.yoogurt.taxi.dal.bo.BaseNotify;
 import com.yoogurt.taxi.dal.bo.TaskInfo;
 import com.yoogurt.taxi.pay.doc.Event;
 import com.yoogurt.taxi.pay.doc.EventTask;
@@ -40,7 +40,7 @@ public class NotifyServiceImpl implements NotifyService {
      * @return EventTask。如果提交失败，将会返回null
      */
     @Override
-    public EventTask submit(Event<? extends Notify> event) {
+    public EventTask submit(Event<? extends BaseNotify> event) {
 
         try {
             return doSubmit(event, null, false);
@@ -60,7 +60,9 @@ public class NotifyServiceImpl implements NotifyService {
     public EventTask getTask(String taskId) {
 
         Object o = redis.getMapValue(CacheKey.NOTIFY_MAP, CacheKey.TASK_HASH_KEY + taskId);
-        if (o == null) return null;
+        if (o == null) {
+            return null;
+        }
         return (EventTask) o;
     }
 
@@ -71,10 +73,12 @@ public class NotifyServiceImpl implements NotifyService {
      * @return 回调对象
      */
     @Override
-    public <T extends Notify> Event<T> queryResult(String taskId) {
+    public <T extends BaseNotify> Event<T> queryResult(String taskId) {
 
         Object o = redis.getMapValue(CacheKey.NOTIFY_MAP, CacheKey.EVENT_HASH_KEY + taskId);
-        if (o == null) return null;
+        if (o == null) {
+            return null;
+        }
         return (Event<T>) o;
     }
 
@@ -106,11 +110,13 @@ public class NotifyServiceImpl implements NotifyService {
         return null;
     }
 
-    private EventTask doSubmit(Event<? extends Notify> event, String taskId, boolean isRetry) {
+    private EventTask doSubmit(Event<? extends BaseNotify> event, String taskId, boolean isRetry) {
         final EventTask eventTask;
         if (isRetry && StringUtils.isNoneBlank(taskId)) {
             eventTask = getTask(taskId);
-            if(eventTask != null) eventTask.getTask().doRetry();
+            if(eventTask != null) {
+                eventTask.getTask().doRetry();
+            }
         } else {
             Map metadata = event.getData().getMetadata();
             taskId = "pt_" + RandomUtils.getPrimaryKey();
@@ -129,7 +135,9 @@ public class NotifyServiceImpl implements NotifyService {
     }
 
     private Payment buildPayment(Map metadata) {
-        if(metadata == null || metadata.isEmpty()) return null;
+        if(metadata == null || metadata.isEmpty()) {
+            return null;
+        }
         if (metadata.get("payId") != null) {
             String payId = metadata.get("payId").toString();
             return payService.getPayment(payId);
@@ -138,7 +146,9 @@ public class NotifyServiceImpl implements NotifyService {
     }
 
     private MessageQueue buildMessageQueue(Map metadata) {
-        if(metadata == null || metadata.isEmpty()) return null;
+        if(metadata == null || metadata.isEmpty()) {
+            return null;
+        }
         if (metadata.get("biz") != null) {
             String biz = metadata.get("biz").toString();
             return MessageQueue.getEnumsByBiz(biz);

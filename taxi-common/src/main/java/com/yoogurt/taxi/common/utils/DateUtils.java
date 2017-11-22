@@ -110,8 +110,9 @@ public class DateUtils {
         }
     }
 	public static String dateToStr(Date date,String pattern) {
-	       if (date == null || date.equals(""))
-	    	 return null;
+	       if (date == null || "".equals(date)) {
+               return null;
+           }
 	       SimpleDateFormat formatter = new SimpleDateFormat(pattern);
 	       return formatter.format(date);
     } 

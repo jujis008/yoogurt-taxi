@@ -1,12 +1,33 @@
 package com.yoogurt.taxi.dal.enums;
 
 public enum TradeType {
+    /**
+     *充值
+     */
     CHARGE(10,"充值"),
+    /**
+     *提现
+     */
     WITHDRAW(20,"提现"),
+    /**
+     *罚款
+     */
     FINE_OUT(30,"罚款"),
+    /**
+     *补偿
+     */
     FINE_IN(40,"补偿"),
+    /**
+     *收入
+     */
     INCOME(50,"收入"),
+    /**
+     *支出
+     */
     OUTCOME(60,"支出"),
+    /**
+     *退款
+     */
     REFUND(70,"退款"),
 //    OTHERS(80,"其它")
     ;

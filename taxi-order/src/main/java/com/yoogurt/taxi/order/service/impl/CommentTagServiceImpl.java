@@ -25,21 +25,31 @@ public class CommentTagServiceImpl implements CommentTagService {
 
     @Override
     public CommentTag addCommentTag(CommentTag tag) {
-        if(tag == null) return null;
-        if(commentTagDao.insertSelective(tag) == 1) return tag;
+        if(tag == null) {
+            return null;
+        }
+        if(commentTagDao.insertSelective(tag) == 1) {
+            return tag;
+        }
         return null;
     }
 
     @Override
     public CommentTag updateCommentTag(CommentTag tag) {
-        if(tag == null) return null;
-        if(commentTagDao.updateByIdSelective(tag) == 1) return tag;
+        if(tag == null) {
+            return null;
+        }
+        if(commentTagDao.updateByIdSelective(tag) == 1) {
+            return tag;
+        }
         return null;
     }
 
     @Override
     public int deleteCommentTag(List<Long> tagIds) {
-        if(CollectionUtils.isEmpty(tagIds)) return 0;
+        if(CollectionUtils.isEmpty(tagIds)) {
+            return 0;
+        }
         Example ex = new Example(CommentTag.class);
         ex.createCriteria().andEqualTo("isDeleted", Boolean.FALSE).andIn("id", tagIds);
         CommentTag probe = new CommentTag();

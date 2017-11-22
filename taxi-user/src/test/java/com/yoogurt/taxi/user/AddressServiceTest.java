@@ -1,10 +1,10 @@
 package com.yoogurt.taxi.user;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.UserAddress;
-import com.yoogurt.taxi.dal.condition.user.UserWLCondition;
-import com.yoogurt.taxi.dal.model.user.UserWLModel;
+import com.yoogurt.taxi.dal.condition.user.UserWebListCondition;
+import com.yoogurt.taxi.dal.model.user.UserWebListModel;
 import com.yoogurt.taxi.user.service.UserAddressService;
 import com.yoogurt.taxi.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +43,8 @@ public class AddressServiceTest {
 
     @Test
     public void getUserList() {
-        UserWLCondition condition = new UserWLCondition();
-        Pager<UserWLModel> userWebList = userService.getUserWebList(condition);
+        UserWebListCondition condition = new UserWebListCondition();
+        BasePager<UserWebListModel> userWebList = userService.getUserWebList(condition);
         log.error(ResponseObj.success(userWebList).toJSON());
     }
 }

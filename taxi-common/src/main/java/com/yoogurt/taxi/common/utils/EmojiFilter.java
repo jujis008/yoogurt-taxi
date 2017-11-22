@@ -44,9 +44,9 @@ public class EmojiFilter {
      * @return 过滤后的文本
      */
     public static String filterEmoji(String source) {
-
+        //如果不包含，直接返回
         if (!containsEmoji(source)) {
-            return source;//如果不包含，直接返回
+            return source;
         }
         //到这里铁定包含
         StringBuilder buf = null;
@@ -66,9 +66,11 @@ public class EmojiFilter {
         }
 
         if (buf == null) {
-            return source;//如果没有找到 emoji表情，则返回源字符串
+            //如果没有找到 emoji表情，则返回源字符串
+            return source;
         } else {
-            if (buf.length() == len) {//这里的意义在于尽可能少的toString，因为会重新生成字符串
+            //这里的意义在于尽可能少的toString，因为会重新生成字符串
+            if (buf.length() == len) {
                 return source;
             } else {
                 return buf.toString();

@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Setter
 @Getter
-public class WebPager<E> extends Pager<E> {
+public class WebPager<E> extends BasePager<E> {
 
     /**
      * 是否有上一页

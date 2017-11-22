@@ -1,7 +1,7 @@
 package com.yoogurt.taxi.system.controller.web;
 
 import com.yoogurt.taxi.common.controller.BaseController;
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.FeedbackRecord;
 import com.yoogurt.taxi.dal.beans.FeedbackType;
@@ -29,7 +29,7 @@ public class FeedbackWebController extends BaseController{
     }
     @RequestMapping(value = "list",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public ResponseObj getWebList(FeedbackRecordCondition condition) {
-        Pager<FeedbackRecord> webList = feedBackRecordService.getWebList(condition);
+        BasePager<FeedbackRecord> webList = feedBackRecordService.getWebList(condition);
         return ResponseObj.success(webList);
     }
 

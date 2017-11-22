@@ -39,7 +39,7 @@ public class UpdateAspect {
             "||execution(* com.yoogurt.taxi.dal.mapper..*..*delete*(..))")
     public void before(JoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
-        if (args != null && args.length > 0)
+        if (args != null && args.length > 0) {
             Arrays.stream(args).forEach(arg -> {
                 if (arg != null) {
                     if (arg instanceof List) {
@@ -52,6 +52,7 @@ public class UpdateAspect {
                     }
                 }
             });
+        }
     }
 
     private void domainHandle(Object object) {

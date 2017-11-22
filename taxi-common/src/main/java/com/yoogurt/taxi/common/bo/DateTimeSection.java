@@ -67,7 +67,9 @@ public class DateTimeSection implements Comparable<DateTimeSection>, Serializabl
      * @return 重叠的毫秒数
      */
     public long getOverLength(DateTimeSection other){
-        if(!isInclude(other))	return 0;
+        if(!isInclude(other)) {
+            return 0;
+        }
         long len = Math.max(this.startTime.getTime(), this.endTime.getTime()) - Math.min(other.getStartTime().getTime(), other.getEndTime().getTime());
         return len==0?1000:len;
     }
@@ -91,7 +93,9 @@ public class DateTimeSection implements Comparable<DateTimeSection>, Serializabl
      * @return 跨度时间，以毫秒为单位
      */
     public long getRange(DateTimeSection other){
-        if(isContinuous(other))	return 0;
+        if(isContinuous(other)) {
+            return 0;
+        }
         return Math.min(other.getStartTime().getTime(), other.getEndTime().getTime()) - Math.max(this.getStartTime().getTime(), this.getEndTime().getTime());
     }
 
@@ -121,7 +125,9 @@ public class DateTimeSection implements Comparable<DateTimeSection>, Serializabl
 
         int result = this.getStartTime().compareTo(o.getStartTime());
         //如果开始时间相等，那么就以时长优先
-        if(result == 0) return this.period - o.getPeriod() < 0 ? -1 : 1;
+        if(result == 0) {
+            return this.period - o.getPeriod() < 0 ? -1 : 1;
+        }
         return result;
     }
 
@@ -133,8 +139,12 @@ public class DateTimeSection implements Comparable<DateTimeSection>, Serializabl
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DateTimeSection)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DateTimeSection)) {
+            return false;
+        }
 
         DateTimeSection that = (DateTimeSection) o;
 

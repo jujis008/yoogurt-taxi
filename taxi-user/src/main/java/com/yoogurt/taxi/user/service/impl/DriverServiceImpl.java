@@ -7,8 +7,8 @@ import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.CarInfo;
 import com.yoogurt.taxi.dal.beans.DriverInfo;
 import com.yoogurt.taxi.dal.beans.UserInfo;
-import com.yoogurt.taxi.dal.condition.user.DriverWLCondition;
-import com.yoogurt.taxi.dal.model.user.DriverWLModel;
+import com.yoogurt.taxi.dal.condition.user.DriverWebListCondition;
+import com.yoogurt.taxi.dal.model.user.DriverWebListModel;
 import com.yoogurt.taxi.user.dao.CarDao;
 import com.yoogurt.taxi.user.dao.DriverDao;
 import com.yoogurt.taxi.user.dao.UserDao;
@@ -48,9 +48,9 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public ResponseObj getDriverWebList(DriverWLCondition condition) {
+    public ResponseObj getDriverWebList(DriverWebListCondition condition) {
         PageHelper.startPage(condition.getPageNum(), condition.getPageSize());
-        Page<DriverWLModel> driverWebList = driverDao.getDriverWebList(condition);
+        Page<DriverWebListModel> driverWebList = driverDao.getDriverWebList(condition);
         return ResponseObj.success(webPagerFactory.generatePager(driverWebList));
     }
 

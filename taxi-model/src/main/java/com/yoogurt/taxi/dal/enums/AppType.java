@@ -4,7 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum AppType {
+    /**
+     *车主端
+     */
     office(1,"车主端"),
+    /**
+     *司机端
+     */
     agent(2,"司机端"),
     ;
 

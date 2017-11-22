@@ -109,7 +109,9 @@ public class TaskInfo implements Serializable {
      * @return 重试的间隔时间，单位：毫秒
      */
     public long retryInterval() throws IllegalAccessException {
-        if (!canRetry()) throw new IllegalAccessException("The PayTask cannot retry any more.");
+        if (!canRetry()) {
+            throw new IllegalAccessException("The PayTask cannot retry any more.");
+        }
         return (this.retryTimes.get() + 1) * 1000;
     }
 

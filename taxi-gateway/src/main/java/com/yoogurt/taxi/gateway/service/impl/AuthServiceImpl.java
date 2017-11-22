@@ -67,14 +67,19 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public String refreshToken(String token) {
-        if (StringUtils.isBlank(token)) return null;
+        if (StringUtils.isBlank(token)) {
+            return null;
+        }
         //先生成一个新的token
         String newToken = tokenHelper.refreshToken(token);
         if (StringUtils.isNoneBlank(newToken)) {
             String userId = tokenHelper.getUserId(newToken);
             //获取缓存用户信息
             Object obj = redisHelper.getObject(CacheKey.SESSION_USER_KEY + userId);
-            if(obj == null) return null; //缓存失效
+            //缓存失效
+            if(obj == null) {
+                return null;
+            }
             SessionUser user = (SessionUser) obj;
             //设置新的token
             user.setToken(newToken);

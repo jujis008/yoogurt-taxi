@@ -1,6 +1,6 @@
 package com.yoogurt.taxi.order;
 
-import com.yoogurt.taxi.common.pager.Pager;
+import com.yoogurt.taxi.common.pager.BasePager;
 import com.yoogurt.taxi.common.vo.ResponseObj;
 import com.yoogurt.taxi.dal.beans.OrderInfo;
 import com.yoogurt.taxi.dal.condition.order.OrderListCondition;
@@ -37,7 +37,7 @@ public class OrderInfoTests {
         condition.setPageSize(15);
         condition.setPhone("18814892833");
         condition.setStatus(10);
-        Pager<OrderModel> pager = orderInfoService.getOrderList(condition);
+        BasePager<OrderModel> pager = orderInfoService.getOrderList(condition);
         Assert.assertNotNull("获取订单列表失败", pager);
     }
 

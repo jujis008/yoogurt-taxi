@@ -31,18 +31,25 @@ public abstract class AbstractEventTaskRunner implements TaskRunner<EventTask> {
 
     @Override
     public void run(final EventTask eventTask) {
-        if (eventTask == null) return;
+        if (eventTask == null) {
+            return;
+        }
         final TaskInfo task = eventTask.getTask();
         TaskStatus status = TaskStatus.getEnumByStatus(task.getStatusCode());
         //只接收处于 【可执行状态】 的支付任务
-        if (status == null || !status.isExecutable()) return;
+        if (status == null || !status.isExecutable()) {
+            return;
+        }
         //记录任务开始的时间戳
         task.setStartTimestamp(System.currentTimeMillis());
         CompletableFuture<ResponseObj> future = doTask(eventTask);
-        if (future == null) return;
+        if (future == null) {
+            return;
+        }
         future.thenAccept(obj -> {
             final String taskId = task.getTaskId();
-            if (obj.isSuccess()) { //执行成功
+            //执行成功
+            if (obj.isSuccess()) {
                 //状态码
                 task.setStatusCode(TaskStatus.EXECUTE_SUCCESS.getCode());
                 //提示信息
@@ -71,10 +78,12 @@ public abstract class AbstractEventTaskRunner implements TaskRunner<EventTask> {
     public EventTask retry(EventTask eventTask) {
         TaskInfo task = eventTask.getTask();
         String taskId = task.getTaskId();
-        if (task.isNeedRetry()) {//触发任务重试
+        //触发任务重试
+        if (task.isNeedRetry()) {
             if (task.canRetry()) {
                 log.warn("[" + task.getTaskId() + "]任务执行失败!!");
-                return notifyService.retry(taskId); //重试
+                //重试
+                return notifyService.retry(taskId);
             } else {
                 //状态码
                 task.setStatusCode(TaskStatus.EXECUTE_FAILED.getCode());

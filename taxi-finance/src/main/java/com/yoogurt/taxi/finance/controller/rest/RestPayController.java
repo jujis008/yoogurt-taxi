@@ -18,7 +18,9 @@ public class RestPayController {
     @RequestMapping(value = "/payment", method = RequestMethod.PUT, produces = {"application/json;charset=utf-8"})
     public RestResult<Payment> updatePayment(@RequestBody PaymentVo paymentVo) {
         Payment payment = payService.getPayment(paymentVo.getPayId());
-        if(payment == null) return RestResult.fail(StatusCode.BIZ_FAILED, "找不到支付对象");
+        if(payment == null) {
+            return RestResult.fail(StatusCode.BIZ_FAILED, "找不到支付对象");
+        }
         payment.setPaid(true);
         payment.setPaidAmount(paymentVo.getPaidAmount());
         payment.setPaidTime(paymentVo.getPaidTime());

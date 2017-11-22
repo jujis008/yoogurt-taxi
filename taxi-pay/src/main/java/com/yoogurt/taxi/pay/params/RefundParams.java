@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class RefundParams extends CommonParams {
+public class RefundParams extends BaseCommonParams {
 
 	/**
 	 * 对应的付款对象ID

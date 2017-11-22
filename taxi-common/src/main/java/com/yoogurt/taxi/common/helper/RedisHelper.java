@@ -60,7 +60,9 @@ public class RedisHelper {
      */
     public <V> V get(String key, V defaultVal, boolean setIfNull, int expireSeconds) {
 
-        if (StringUtils.isBlank(key)) return null;
+        if (StringUtils.isBlank(key)) {
+            return null;
+        }
         Object value = get(key);
         if (value == null) {
             if(setIfNull) {
@@ -81,7 +83,9 @@ public class RedisHelper {
      */
     public <V> V get(String key, V defaultVal, boolean setIfNull) {
 
-        if (StringUtils.isBlank(key)) return null;
+        if (StringUtils.isBlank(key)) {
+            return null;
+        }
         Object value = get(key);
         if (value == null) {
             if(setIfNull) {
@@ -246,7 +250,9 @@ public class RedisHelper {
                 log.error("[Hessian2]对象序列化失败, {}", e);
             } finally {
                 try {
-                    if(output != null) output.close();
+                    if(output != null) {
+                        output.close();
+                    }
                 } catch (IOException e) {
                     log.error("输出流关闭异常, {}", e);
                 }
@@ -278,7 +284,9 @@ public class RedisHelper {
                 log.error("[Hessian2]对象反序列化失败, {}", e);
             } finally {
                 try {
-                    if(input != null) input.close();
+                    if(input != null) {
+                        input.close();
+                    }
                 } catch (IOException e) {
                     log.error("输入流关闭异常, {}", e);
                 }
@@ -293,7 +301,9 @@ public class RedisHelper {
      * @return 符合条件的key集合
      */
     public Set<?> keys(String pattern) {
-        if(StringUtils.isBlank(pattern)) return null;
+        if(StringUtils.isBlank(pattern)) {
+            return null;
+        }
         return redisTemplate.keys(pattern);
     }
 }
