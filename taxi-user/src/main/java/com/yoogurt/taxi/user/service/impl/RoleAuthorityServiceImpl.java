@@ -6,7 +6,6 @@ import com.yoogurt.taxi.dal.model.user.AuthorityModel;
 import com.yoogurt.taxi.dal.model.user.GroupAuthorityLModel;
 import com.yoogurt.taxi.user.dao.RoleAuthorityDao;
 import com.yoogurt.taxi.user.service.RoleAuthorityService;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -46,6 +45,9 @@ public class RoleAuthorityServiceImpl implements RoleAuthorityService {
         }
         for (Long authorityId:removeList) {
             Example example = new Example(RoleAuthorityInfo.class);
+            example.createCriteria()
+                    .andEqualTo("roleId",roleId)
+                    .andEqualTo("authorityId",authorityId);
             roleAuthorityDao.deleteByExample(example);
         }
         return ResponseObj.success();
