@@ -15,8 +15,8 @@ import javax.validation.Valid;
 @FeignClient(value = "taxi-account", fallback = RestAccountServiceImpl.class)
 public interface RestAccountService {
 
-    @RequestMapping(value = "/rest/account/userId/{userId}", method = RequestMethod.GET)
-    RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") String userId, Integer userType);
+    @RequestMapping(value = "/rest/account/userId/{userId}/{userType}", method = RequestMethod.GET)
+    RestResult<FinanceAccount> getAccountByUserId(@PathVariable(name = "userId") String userId, @PathVariable(name = "userType")Integer userType);
 
     @RequestMapping(value = "/rest/account/modification", method = RequestMethod.POST, produces = {"application/json;charset=utf-8"})
     RestResult updateAccount(@Valid @RequestBody ModificationVo vo);
