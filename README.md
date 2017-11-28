@@ -19,7 +19,7 @@ yoogurt-taxi包含都是业务代码，即为上图中的Business Service部分�
 
 4、taxi-system，系统设置模块，相对独立；
 
-5、taxi-auth，鉴权中心，待完善；
+5、taxi-pay，支付模块（maven module），需要对接支付功能的模块，可以依赖此模块，实现其中的若干接口；
 
 6、taxi-account，我的钱包模块；
 
@@ -29,4 +29,4 @@ yoogurt-taxi包含都是业务代码，即为上图中的Business Service部分�
 
 9、taxi-finance，支付，退款，转账等财务相关操作；
 
-10、taxi-notification，通知提醒服务。
+10、taxi-notification，通知提醒服务，包括短信，推送，消息中心。
