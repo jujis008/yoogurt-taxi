@@ -1,3 +1,10 @@
+## 注意
+
+此项目已不在GitHub上维护，可以通过关注微信公众号 技术汇(jishuhui_2015) 联系作者。
+
+<details>
+<summary>以下为原 README 内容</summary>
+
 # yoogurt-taxi
 
 ![项目架构图](https://github.com/liu-weihao/yoogurt-taxi/blob/master/architecture.png?raw=true)
@@ -30,3 +37,4 @@ yoogurt-taxi包含都是业务代码，即为上图中的Business Service部分�
 9、taxi-finance，支付，退款，转账等财务相关操作；
 
 10、taxi-notification，通知提醒服务，包括短信，推送，消息中心。
+</details>
